@@ -1,7 +1,0 @@
-# kdoctor
-
-## Introduction
-
-## Features
-
-## Parameters
