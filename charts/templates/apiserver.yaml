@@ -1,0 +1,23 @@
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.system.kdoctor.io
+  labels:
+    {{- include "project.kdoctorController.labels" . | nindent 4 }}
+      {{- if .Values.global.commonLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+      {{- end }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations:
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  insecureSkipTLSVerify: true
+  group: system.kdoctor.io
+  groupPriorityMinimum: 1000
+  versionPriority: 100
+  service:
+    name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+    namespace: {{ .Release.Namespace | quote }}
+  version: v1beta1

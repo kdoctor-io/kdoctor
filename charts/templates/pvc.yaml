@@ -1,0 +1,22 @@
+{{- if ( and .Values.feature.aggregateReport.enabled .Values.feature.aggregateReport.controller.pvc.enabled ) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.feature.aggregateReport.controller.pvc.storageClass }}
+  storageClassName: {{ .Values.feature.aggregateReport.controller.pvc.storageClass | quote }}
+  {{- end }}
+  resources:
+    {{- if .Values.feature.aggregateReport.controller.pvc.storageLimits }}
+    limits:
+      storage: {{ .Values.feature.aggregateReport.controller.pvc.storageLimits | quote }}
+    {{- end }}
+    {{- if .Values.feature.aggregateReport.controller.pvc.storageRequests }}
+    requests:
+      storage: {{ .Values.feature.aggregateReport.controller.pvc.storageRequests | quote }}
+    {{- end }}
+{{- end }}

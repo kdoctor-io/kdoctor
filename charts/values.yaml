@@ -1,0 +1,594 @@
+
+## @section Global parameters
+##
+global:
+  ## @param global.imageRegistryOverride Global Docker image registry
+  imageRegistryOverride: ""
+
+  ## @param global.imageTagOverride Global Docker image tag
+  imageTagOverride: ""
+
+  ## @param global.name instance name
+  ## default kdoctor
+  name: "kdoctor"
+
+  ## @param global.clusterDnsDomain cluster dns domain
+  clusterDnsDomain: "cluster.local"
+
+  ## @param global.commonAnnotations Annotations to add to all deployed objects
+  commonAnnotations: {}
+
+  ## @param global.commonLabels Labels to add to all deployed objects
+  commonLabels: {}
+  #  label1: v1
+  #  labele: v2
+
+  ## @param global.configName the configmap name
+  configName: "kdoctor"
+
+## @section feature parameters
+feature:
+  ## @param feature.enableIPv4 enable ipv4
+  enableIPv4: true
+
+  ## @param feature.enableIPv6 enable ipv6
+  enableIPv6: false
+
+  ## @param feature.nethttp_defaultRequest_Qps qps for kind nethttp
+  nethttp_defaultRequest_Qps: 10
+
+  ## @param feature.nethttp_defaultRequest_MaxQps qps for kind nethttp
+  nethttp_defaultRequest_MaxQps: 100
+
+  ## @param feature.nethttp_defaultConcurrency concurrency  for kind nethttp
+  nethttp_defaultConcurrency: 50
+
+  ## @param feature.nethttp_defaultMaxIdleConnsPerHost max idle connect for kind nethttp
+  nethttp_defaultMaxIdleConnsPerHost: 50
+
+  ## @param feature.nethttp_defaultRequest_DurationInSecond Duration In Second for kind nethttp
+  nethttp_defaultRequest_DurationInSecond: 2
+
+  ## @param feature.nethttp_defaultRequest_PerRequestTimeoutInMS PerRequest Timeout In MS for kind nethttp
+  nethttp_defaultRequest_PerRequestTimeoutInMS: 500
+
+  ## @param feature.nethttp_defaultFail_MeanDelayInMs mean delay in ms for kind nethttp
+  nethttp_defaultFail_MeanDelayInMs: 2000
+
+  ## @param feature.netdns_defaultConcurrency concurrency  for kind netdns
+  netdns_defaultConcurrency: 50
+
+  ## @param feature.taskPollIntervalInSecond the interval to poll the task in controller and agent pod
+  taskPollIntervalInSecond: 5
+
+  ## @param feature.multusPodAnnotationKey the multus annotation key for ip status
+  multusPodAnnotationKey: "k8s.v1.cni.cncf.io/networks-status"
+
+  ## @param feature.crdMaxHistory max history items inf CRD status
+  crdMaxHistory: 10
+
+  ## aggregate report from agent for each crd
+  aggregateReport:
+    ## @param feature.aggregateReport.enabled aggregate report from agent for each crd
+    enabled: true
+
+    ## @param feature.aggregateReport.cleanAgedReportIntervalInMinute the interval in minute for removing aged report
+    cleanAgedReportIntervalInMinute: "10"
+
+    agent:
+      ## @param feature.aggregateReport.agent.reportPath the path where the agent pod temporarily store task report.
+      reportPath: "/report"
+
+    controller:
+      ## @param feature.aggregateReport.controller.reportHostPath storage path when pvc is disabled
+      reportHostPath: "/var/run/kdoctor/reports"
+
+      ## @param feature.aggregateReport.controller.maxAgeInDay report file maximum age in days
+      maxAgeInDay: 30
+
+      ## @param feature.aggregateReport.controller.collectAgentReportIntervalInSecond how long the controller collects all agent report at interval in second
+      collectAgentReportIntervalInSecond: 600
+
+      # for store report
+      pvc:
+        ## @param feature.aggregateReport.controller.pvc.enabled store report to pvc
+        enabled: false
+
+        ## @param feature.aggregateReport.controller.pvc.storageClass storage class name
+        storageClass: ""
+
+        ## @param feature.aggregateReport.controller.pvc.storageRequests storage request
+        storageRequests: "100Mi"
+
+        ## @param feature.aggregateReport.controller.pvc.storageLimits storage limit
+        storageLimits: "1024Mi"
+
+## @section kdoctorAgent parameters
+##
+kdoctorAgent:
+  ## @param kdoctorAgent.name the kdoctorAgent name
+  name: "kdoctor-agent"
+
+  ## @param kdoctorAgent.cmdBinName the binary name of kdoctorAgent
+  cmdBinName: "/usr/bin/agent"
+
+  ## @param kdoctorAgent.hostnetwork enable hostnetwork mode of kdoctorAgent pod
+  hostnetwork: false
+
+  image:
+    ## @param kdoctorAgent.image.registry the image registry of kdoctorAgent
+    registry: ghcr.io
+
+    ## @param kdoctorAgent.image.repository the image repository of kdoctorAgent
+    repository: kdoctor-io/kdoctor-agent
+
+    ## @param kdoctorAgent.image.pullPolicy the image pullPolicy of kdoctorAgent
+    pullPolicy: IfNotPresent
+
+    ## @param kdoctorAgent.image.digest the image digest of kdoctorAgent, which takes preference over tag
+    digest: ""
+
+    ## @param kdoctorAgent.image.tag the image tag of kdoctorAgent, overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+    ## @param kdoctorAgent.image.imagePullSecrets the image imagePullSecrets of kdoctorAgent
+    imagePullSecrets: []
+    # - name: "image-pull-secret"
+
+  ## @skip kdoctorAgent.nodeSelector.kubernetes.io/os
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  serviceAccount:
+    ## @param kdoctorAgent.serviceAccount.create create the service account for the kdoctorAgent
+    create: true
+    ## @param kdoctorAgent.serviceAccount.annotations the annotations of kdoctorAgent service account
+    annotations: {}
+
+  ## @skip kdoctorAgent.updateStrategy.rollingUpdate.maxUnavailable
+  ## @skip kdoctorAgent.updateStrategy.type
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 2
+    type: RollingUpdate
+
+  service:
+    ## @param kdoctorAgent.service.annotations the annotations for kdoctorAgent service
+    annotations: {}
+    ## @param kdoctorAgent.service.type the type for kdoctorAgent service
+    type: LoadBalancer
+    #type: ClusterIP
+
+  ingress:
+    ## @param kdoctorAgent.ingress.enable install ingress
+    enable: true
+
+    ## @param kdoctorAgent.ingress.ingressClass ingress class name
+    ingressClass: ""
+
+    ## @param kdoctorAgent.ingress.route the route of agent ingress. Default to "/kdoctoragent", if it changes, ingress please re-write url forwarded to "/kdoctoragent"
+    route: "/kdoctoragent"
+
+  ## @skip kdoctorAgent.tolerations
+  # --  Node tolerations
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+  ## @param kdoctorAgent.priorityClassName the priority Class Name for kdoctorAgent
+  priorityClassName: "system-node-critical"
+
+  reportHostPath: "/var/run/kdoctor/agent"
+
+  ## @param kdoctorAgent.affinity the affinity of kdoctorAgent
+  affinity: {}
+
+  ## @param kdoctorAgent.extraArgs the additional arguments of kdoctorAgent container
+  extraArgs: []
+
+  ## @param kdoctorAgent.extraEnv the additional environment variables of kdoctorAgent container
+  extraEnv: []
+
+  ## @param kdoctorAgent.extraVolumes the additional volumes of kdoctorAgent container
+  extraVolumes: []
+
+  ## @param kdoctorAgent.extraVolumeMounts the additional hostPath mounts of kdoctorAgent container
+  extraVolumeMounts: []
+
+  ## @param kdoctorAgent.podAnnotations the additional annotations of kdoctorAgent pod
+  podAnnotations: {}
+
+  ## @param kdoctorAgent.podLabels the additional label of kdoctorAgent pod
+  podLabels: {}
+
+  resources:
+    ## @param kdoctorAgent.resources.limits.cpu the cpu limit of kdoctorAgent pod
+    ## @param kdoctorAgent.resources.limits.memory the memory limit of kdoctorAgent pod
+    ## @param kdoctorAgent.resources.requests.cpu the cpu requests of kdoctorAgent pod
+    ## @param kdoctorAgent.resources.requests.memory the memory requests of kdoctorAgent pod
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  ## @param kdoctorAgent.securityContext the security Context of kdoctorAgent pod
+  securityContext: {}
+  # runAsUser: 0
+
+  grpcServer:
+    ## @param kdoctorAgent.grpcServer.port the Port for grpc server
+    port: 3000
+
+  httpServer:
+    ## @param kdoctorAgent.httpServer.port the http Port for kdoctorAgent, for health checking
+    port: 80
+
+    startupProbe:
+      ## @param kdoctorAgent.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+      failureThreshold: 60
+      ## @param kdoctorAgent.httpServer.startupProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+      periodSeconds: 2
+
+    livenessProbe:
+      ## @param kdoctorAgent.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+      failureThreshold: 6
+      ## @param kdoctorAgent.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+      periodSeconds: 10
+
+    readinessProbe:
+      ## @param kdoctorAgent.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+      failureThreshold: 3
+      ## @param kdoctorAgent.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+      periodSeconds: 10
+
+  prometheus:
+    ## @param kdoctorAgent.prometheus.enabled enable template agent to collect metrics
+    enabled: false
+
+    ## @param kdoctorAgent.prometheus.port the metrics port of template agent
+    port: 5711
+
+    serviceMonitor:
+      ## @param kdoctorAgent.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorAgent.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorAgent.prometheus.serviceMonitor.annotations the additional annotations of kdoctorAgent serviceMonitor
+      annotations: {}
+
+      ## @param kdoctorAgent.prometheus.serviceMonitor.labels the additional label of kdoctorAgent serviceMonitor
+      labels: {}
+
+    prometheusRule:
+      ## @param kdoctorAgent.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorAgent.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorAgent.prometheus.prometheusRule.annotations the additional annotations of kdoctorAgent prometheusRule
+      annotations: {}
+
+      ## @param kdoctorAgent.prometheus.prometheusRule.labels the additional label of kdoctorAgent prometheusRule
+      labels: {}
+
+    grafanaDashboard:
+      ## @param kdoctorAgent.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorAgent.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorAgent.prometheus.grafanaDashboard.annotations the additional annotations of kdoctorAgent grafanaDashboard
+      annotations: {}
+
+      ## @param kdoctorAgent.prometheus.grafanaDashboard.labels the additional label of kdoctorAgent grafanaDashboard
+      labels: {}
+
+  debug:
+    ## @param kdoctorAgent.debug.logLevel the log level of template agent [debug, info, warn, error, fatal, panic]
+    logLevel: "info"
+    ## @param kdoctorAgent.debug.gopsPort the gops port of template agent
+    gopsPort: 5712
+
+## @section kdoctorController parameters
+##
+kdoctorController:
+  ## @param kdoctorController.name the kdoctorController name
+  name: "kdoctor-controller"
+
+  ## @param kdoctorController.replicas the replicas number of kdoctorController pod
+  replicas: 1
+
+  ## @param kdoctorController.binName the binName name of kdoctorController
+  cmdBinName: "/usr/bin/controller"
+
+  ## @param kdoctorController.hostnetwork enable hostnetwork mode of kdoctorController pod. Notice, if no CNI available before template installation, must enable this
+  hostnetwork: false
+
+  image:
+    ## @param kdoctorController.image.registry the image registry of kdoctorController
+    registry: ghcr.io
+
+    ## @param kdoctorController.image.repository the image repository of kdoctorController
+    repository: kdoctor-io/kdoctor-controller
+
+    ## @param kdoctorController.image.pullPolicy the image pullPolicy of kdoctorController
+    pullPolicy: IfNotPresent
+
+    ## @param kdoctorController.image.digest the image digest of kdoctorController, which takes preference over tag
+    digest: ""
+
+    ## @param kdoctorController.image.tag the image tag of kdoctorController, overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+    ## @param kdoctorController.image.imagePullSecrets the image imagePullSecrets of kdoctorController
+    imagePullSecrets: []
+    # - name: "image-pull-secret"
+
+  ## @skip kdoctorController.nodeSelector.kubernetes.io/os
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  serviceAccount:
+    ## @param kdoctorController.serviceAccount.create create the service account for the kdoctorController
+    create: true
+    ## @param kdoctorController.serviceAccount.annotations the annotations of kdoctorController service account
+    annotations: {}
+
+  service:
+    ## @param kdoctorController.service.annotations the annotations for kdoctorController service
+    annotations: {}
+    ## @param kdoctorController.service.type the type for kdoctorController service
+    type: ClusterIP
+
+  ## @skip kdoctorController.tolerations
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+  ## @param kdoctorController.priorityClassName the priority Class Name for kdoctorController
+  priorityClassName: "system-node-critical"
+
+  ## @param kdoctorController.affinity the affinity of kdoctorController
+  affinity: {}
+
+  ## @param kdoctorController.extraArgs the additional arguments of kdoctorController container
+  extraArgs: []
+
+  ## @param kdoctorController.extraEnv the additional environment variables of kdoctorController container
+  extraEnv: []
+
+  ## @param kdoctorController.extraVolumes the additional volumes of kdoctorController container
+  extraVolumes: []
+    # - name: test-val
+  #   mountPath: /host/tmp
+
+  ## @param kdoctorController.extraVolumeMounts the additional hostPath mounts of kdoctorController container
+  extraVolumeMounts: []
+    # - name: test-val
+  #   mountPath: /tmp
+
+  ## @param kdoctorController.podAnnotations the additional annotations of kdoctorController pod
+  podAnnotations: {}
+  # test: 100
+
+  ## @param kdoctorController.podLabels the additional label of kdoctorController pod
+  podLabels: {}
+
+  ## @param kdoctorController.securityContext the security Context of kdoctorController pod
+  securityContext: {}
+  # runAsUser: 0
+
+  resources:
+    ## @param kdoctorController.resources.limits.cpu the cpu limit of kdoctorController pod
+    ## @param kdoctorController.resources.limits.memory the memory limit of kdoctorController pod
+    ## @param kdoctorController.resources.requests.cpu the cpu requests of kdoctorController pod
+    ## @param kdoctorController.resources.requests.memory the memory requests of kdoctorController pod
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  podDisruptionBudget:
+    ## @param kdoctorController.podDisruptionBudget.enabled enable podDisruptionBudget for kdoctorController pod
+    enabled: false
+
+    ## @param kdoctorController.podDisruptionBudget.minAvailable minimum number/percentage of pods that should remain scheduled.
+    minAvailable: 1
+
+  httpServer:
+    ## @param kdoctorController.port the http Port for kdoctorController, for health checking and http service
+    port: 80
+
+    startupProbe:
+      ## @param kdoctorController.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for kdoctorController health checking
+      failureThreshold: 30
+
+      ## @param kdoctorController.httpServer.startupProbe.periodSeconds the period seconds of startup probe for kdoctorController health checking
+      periodSeconds: 2
+
+    livenessProbe:
+      ## @param kdoctorController.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for kdoctorController health checking
+      failureThreshold: 6
+
+      ## @param kdoctorController.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for kdoctorController health checking
+      periodSeconds: 10
+
+    readinessProbe:
+      ## @param kdoctorController.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for kdoctorController health checking
+      failureThreshold: 3
+
+      ## @param kdoctorController.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for kdoctorController health checking
+      periodSeconds: 10
+
+  ## @param kdoctorController.webhookPort the http port for kdoctorController webhook
+  webhookPort: 5722
+
+  prometheus:
+    ## @param kdoctorController.prometheus.enabled enable template Controller to collect metrics
+    enabled: false
+
+    ## @param kdoctorController.prometheus.port the metrics port of template Controller
+    port: 5721
+
+    serviceMonitor:
+      ## @param kdoctorController.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorController.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorController.prometheus.serviceMonitor.annotations the additional annotations of kdoctorController serviceMonitor
+      annotations: {}
+
+      ## @param kdoctorController.prometheus.serviceMonitor.labels the additional label of kdoctorController serviceMonitor
+      labels: {}
+
+    prometheusRule:
+      ## @param kdoctorController.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorController.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorController.prometheus.prometheusRule.annotations the additional annotations of kdoctorController prometheusRule
+      annotations: {}
+
+      ## @param kdoctorController.prometheus.prometheusRule.labels the additional label of kdoctorController prometheusRule
+      labels: {}
+
+    grafanaDashboard:
+      ## @param kdoctorController.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param kdoctorController.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param kdoctorController.prometheus.grafanaDashboard.annotations the additional annotations of kdoctorController grafanaDashboard
+      annotations: {}
+
+      ## @param kdoctorController.prometheus.grafanaDashboard.labels the additional label of kdoctorController grafanaDashboard
+      labels: {}
+
+  debug:
+    ## @param kdoctorController.debug.logLevel the log level of template Controller [debug, info, warn, error, fatal, panic]
+    logLevel: "info"
+
+    ## @param kdoctorController.debug.gopsPort the gops port of template Controller
+    gopsPort: 5724
+
+  ## TLS configuration for webhook
+  tls:
+    ## @param kdoctorController.tls.method the method for generating TLS certificates. [ provided , certmanager , auto]
+    ## - provided:     provide all certificates by helm options
+    ## - certmanager:  This method use cert-manager to generate & rotate certificates.
+    ## - auto:         Auto generate cert.
+    method: auto
+
+    ## @param kdoctorController.tls.secretName the secret name for storing TLS certificates
+    secretName: "template-controller-server-certs"
+
+    ## for certmanager method
+    certmanager:
+      ## @param kdoctorController.tls.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
+      certValidityDuration: 365
+
+      ## @param kdoctorController.tls.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
+      issuerName: ""
+
+      ## @param kdoctorController.tls.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
+      extraDnsNames: []
+
+      ## @param kdoctorController.tls.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
+      extraIPAddresses: []
+
+    ## for provided method
+    provided:
+      ## @param kdoctorController.tls.provided.tlsCert encoded tls certificate for provided method
+      ## @param kdoctorController.tls.provided.tlsKey encoded tls key for provided method
+      ## @param kdoctorController.tls.provided.tlsCa encoded tls CA for provided method
+      tlsCert: ""
+      tlsKey: ""
+      tlsCa: ""
+
+    ## for auto method
+    auto:
+      ## @param kdoctorController.tls.auto.caExpiration ca expiration for auto method
+      # in day , default 200 years
+      caExpiration: '73000'
+
+      ## @param kdoctorController.tls.auto.certExpiration server cert expiration for auto method
+      # in day, default 200 years
+      certExpiration: '73000'
+
+      ## @param kdoctorController.tls.auto.extraIpAddresses extra IP addresses of server certificate for auto method
+      extraIpAddresses: []
+
+      ## @param kdoctorController.tls.auto.extraDnsNames extra DNS names of server cert for auto method
+      extraDnsNames: []
+
+  apiserver:
+    ## @param kdoctorApiserver.name the kdoctorApiserver name
+    name: "kdoctor-apiserver"

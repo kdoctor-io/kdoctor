@@ -1,0 +1,223 @@
+apiVersion: {{ include "capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "project.kdoctorController.labels" . | nindent 4 }}
+      {{- if .Values.global.commonLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+      {{- end }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations:
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.kdoctorController.replicas }}
+  selector:
+    matchLabels:
+      {{- include "project.kdoctorController.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- if or .Values.kdoctorController.podAnnotations .Values.global.commonAnnotations }}
+      annotations:
+        {{- if .Values.global.commonAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.kdoctorController.podAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.kdoctorController.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- end }}
+      labels:
+        {{- include "project.kdoctorController.selectorLabels" . | nindent 8 }}
+        {{- if .Values.global.commonLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.kdoctorController.podLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.kdoctorController.podLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.kdoctorController.image.imagePullSecrets }}
+      imagePullSecrets:
+      {{- with .Values.kdoctorController.image.imagePullSecrets }}
+      {{- toYaml . | trim | nindent 6 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+      priorityClassName: {{ default "system-node-critical" .Values.kdoctorController.priorityClassName }}
+      {{- if .Values.kdoctorController.hostnetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- else }}
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.kdoctorController.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.kdoctorController.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.kdoctorController.affinity }}
+      affinity:
+      {{- include "tplvalues.render" (dict "value" .Values.kdoctorController.affinity "context" $) | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+          image: {{ include "project.kdoctorController.image" . | quote }}
+          imagePullPolicy: {{ .Values.kdoctorController.image.pullPolicy }}
+          command:
+            - {{ .Values.kdoctorController.cmdBinName }}
+          args:
+            - --config-path=/tmp/config-map/conf.yml
+            - --tls-ca-cert=/etc/tls/ca.crt
+            - --tls-server-cert=/etc/tls/tls.crt
+            - --tls-server-key=/etc/tls/tls.key
+          {{- with .Values.kdoctorController.extraArgs }}
+          {{- toYaml . | trim | nindent 8 }}
+          {{- end }}
+          ports:
+          {{- if .Values.kdoctorController.prometheus.enabled }}
+          - name: metrics
+            containerPort: {{ .Values.kdoctorController.prometheus.port }}
+            protocol: TCP
+          {{- end }}
+          - name: http
+            containerPort: {{ .Values.kdoctorController.httpServer.port }}
+            protocol: TCP
+          - name: webhook
+            containerPort: {{ .Values.kdoctorController.webhookPort }}
+            protocol: TCP
+          - name: apiserver
+            containerPort: 443
+            protocol: TCP
+          {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
+          startupProbe:
+            httpGet:
+              path: /healthy/readiness
+              port: {{ .Values.kdoctorController.httpServer.port }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.kdoctorController.httpServer.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.kdoctorController.httpServer.startupProbe.periodSeconds }}
+            successThreshold: 1
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthy/liveness
+              port: {{ .Values.kdoctorController.httpServer.port }}
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: {{ .Values.kdoctorController.httpServer.livenessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.kdoctorController.httpServer.livenessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthy/readiness
+              port: {{ .Values.kdoctorController.httpServer.port }}
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: {{ .Values.kdoctorController.httpServer.readinessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.kdoctorController.httpServer.readinessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          {{- with .Values.kdoctorController.resources }}
+          resources:
+          {{- toYaml . | trim | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ENV_LOG_LEVEL
+              value: {{ .Values.kdoctorController.debug.logLevel | quote }}
+            - name: ENV_ENABLED_METRIC
+              value: {{ .Values.kdoctorController.prometheus.enabled | quote }}
+            - name: ENV_METRIC_HTTP_PORT
+              value: {{ .Values.kdoctorController.prometheus.port | quote }}
+            - name: ENV_GOPS_LISTEN_PORT
+              value: {{ .Values.kdoctorController.debug.gopsPort | quote }}
+            - name: ENV_WEBHOOK_PORT
+              value: {{ .Values.kdoctorController.webhookPort | quote }}
+            - name: ENV_HTTP_PORT
+              value: {{ .Values.kdoctorController.httpServer.port | quote }}
+            - name: ENV_AGENT_GRPC_LISTEN_PORT
+              value: {{ .Values.kdoctorAgent.grpcServer.port | quote }}
+            - name: ENV_AGENT_DAEMONSET_NAME
+              value: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+            - name: ENV_ENABLE_AGGREGATE_AGENT_REPORT
+              value: {{ .Values.feature.aggregateReport.enabled | quote }}
+            {{- if .Values.feature.aggregateReport.enabled }}
+            - name: ENV_CONTROLLER_REPORT_STORAGE_PATH
+              value: "/report"
+            - name: ENV_CONTROLLER_REPORT_AGE_IN_DAY
+              value: {{ .Values.feature.aggregateReport.controller.maxAgeInDay | quote }}
+            - name: ENV_AGENT_REPORT_STORAGE_PATH
+              value: {{ .Values.feature.aggregateReport.agent.reportPath | quote }}
+            - name: ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE
+              value: {{ .Values.feature.aggregateReport.cleanAgedReportIntervalInMinute | quote }}
+            - name: ENV_COLLECT_AGENT_REPORT_INTERVAL_IN_SECOND
+              value: {{ .Values.feature.aggregateReport.controller.collectAgentReportIntervalInSecond | quote }}
+            {{- end }}
+            - name: ENV_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ENV_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- with .Values.kdoctorController.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.kdoctorController.securityContext }}
+          securityContext:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          volumeMounts:
+            - name: config-path
+              mountPath: /tmp/config-map
+              readOnly: true
+            {{- if .Values.feature.aggregateReport.enabled }}
+            - name: report-data
+              mountPath: /report
+            {{- end }}
+            - name: tls
+              mountPath: /etc/tls
+              readOnly: true
+            {{- if .Values.kdoctorController.extraVolumes }}
+            {{- include "tplvalues.render" ( dict "value" .Values.kdoctorController.extraVolumeMounts "context" $ ) | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.feature.aggregateReport.enabled }}
+        {{- if .Values.feature.aggregateReport.controller.pvc.enabled }}
+        - name: report-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
+        {{- else }}
+        - name: report-data
+          hostPath:
+            path: {{ .Values.feature.aggregateReport.controller.reportHostPath }}
+            type: DirectoryOrCreate
+        {{- end }}
+        {{- end }}
+        # To read the configuration from the config map
+        - name: config-path
+          configMap:
+            name: {{ .Values.global.configName }}
+        - name: tls
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  name: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+                  items:
+                    - key: tls.crt
+                      path: tls.crt
+                    - key: tls.key
+                      path: tls.key
+                    - key: ca.crt
+                      path: ca.crt
+      {{- if .Values.kdoctorController.extraVolumeMounts }}
+      {{- include "tplvalues.render" ( dict "value" .Values.kdoctorController.extraVolumeMounts "context" $ ) | nindent 6 }}
+      {{- end }}

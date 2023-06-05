@@ -1,0 +1,264 @@
+name: Auto PR CI
+
+permissions: write-all
+on:
+  workflow_call:
+    inputs:
+      kindNodeImage:
+        required: false
+        type: string
+      ipfamily:
+        required: false
+        type: string
+        default: 'all'
+      justE2E:
+        required: false
+        type: string
+        default: 'false'
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'sha, tag, branch'
+        required: true
+        default: main
+      e2e_labels:
+        description: 'e2e labels(if not set, ginkgo will run all test, multi labels separated by commas)'
+        required: false
+        type: string
+      ipfamily:
+        description: 'IP family for the e2e test'
+        required: true
+        type: choice
+        default: 'dual'
+        options:
+          - ipv4
+          - ipv6
+          - dual
+          - all
+      kindNodeImage:
+        description: 'kind node image tag'
+        required: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ env.RUN_REF }}
+      e2e_labels: ${{ env.RUN_E2E_LABEL }}
+      unitest_enabled: ${{ env.RUN_UNITEST_ENABLED }}
+      e2e_enabled: ${{ env.RUN_E2E_ENABLED }}
+      ipfamily_ipv4only_e2e: ${{ env.RUN_E2E_IPV4_ONLY }}
+      ipfamily_ipv6only_e2e: ${{ env.RUN_E2E_IPV6_ONLY }}
+      ipfamily_dual_e2e: ${{ env.RUN_E2E_DUAL_STACK }}
+      kindNodeImage: ${{ env.RUN_kindNodeImage }}
+      JustE2E: ${{ env.RUN_JustE2E }}
+    steps:
+      - name: Check Code Changes
+        uses: dorny/paths-filter@v2.11.1
+        if: ${{ github.event_name == 'pull_request_target' }}
+        id: filter_pr
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          filters: |
+            run_e2e:
+              - '**/*.sh'
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
+              - 'charts/**'
+              - 'Makefile*'
+              - '**/Makefile*'
+              - '**/Dockerfile'
+            all_e2e:
+              - 'test/e2e/**/*.go'
+              - 'vendor/github.com/kdoctor-io/**/*.go'
+
+      - name: Get Ref
+        id: get_ref
+        run: |
+          echo "event ${{ github.event_name }} "
+          echo "RUN_kindNodeImage=" >> $GITHUB_ENV
+          echo "RUN_JustE2E=false" >> $GITHUB_ENV
+          if ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ipfamily != '' }}; then
+              echo "call by self workflow_dispatch"
+              echo "RUN_TAG=${{ github.event.inputs.ref }}" >> $GITHUB_ENV
+              echo "RUN_E2E_LABEL=${{ github.event.inputs.e2e_labels }}" >> $GITHUB_ENV
+              echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+              echo "RUN_UNITEST_ENABLED=true" >> $GITHUB_ENV
+              if ${{ github.event.inputs.kindNodeImage != '' }}; then
+                  echo "RUN_kindNodeImage=${{ github.event.inputs.kindNodeImage }}" >> $GITHUB_ENV
+              fi
+              if ${{ github.event.inputs.ipfamily == 'ipv4' }}; then
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
+              elif ${{ github.event.inputs.ipfamily == 'ipv6' }}; then
+                echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
+              elif ${{ github.event.inputs.ipfamily == 'dual' }}; then
+                echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              elif ${{ github.event.inputs.ipfamily == 'all' }}; then
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              else
+                echo "error, unknown input ipfamily: ${{ github.event.inputs.ipfamily }} "
+                exit 1
+              fi
+          elif ${{ github.event_name == 'push' }} ; then
+              echo "trigger by push"
+              echo "RUN_TAG=${{ github.sha }}" >> $GITHUB_ENV
+              echo "RUN_E2E_LABEL=smoke" >> $GITHUB_ENV
+              echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+              # do it in another workflow
+              echo "RUN_UNITEST_ENABLED=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+          elif ${{ github.event_name == 'pull_request_target' }} ; then
+              echo "trigger by pull_request_target"
+                echo "RUN_TAG=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+              if ${{ steps.filter_pr.outputs.all_e2e == 'true' }} ; then
+                  # run all e2e
+                  echo "RUN_E2E_LABEL=" >> $GITHUB_ENV
+                  echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                  echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                  echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              else
+                  echo "RUN_E2E_LABEL=smoke" >> $GITHUB_ENV
+                  echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                  echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                  echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              fi
+              echo "RUN_E2E_ENABLED=${{ steps.filter_pr.outputs.run_e2e }}" >> $GITHUB_ENV
+              # do it in another workflow
+              echo "RUN_UNITEST_ENABLED=false" >> $GITHUB_ENV
+          else
+              # call by auto-nightly-ci, the event is schedule or its workflow_dispatch
+              # use main sha for ci image tag
+              echo "trigger by workflow_call"
+              echo "RUN_TAG=main" >> $GITHUB_ENV
+              echo "RUN_E2E_LABEL=" >> $GITHUB_ENV
+              echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+              echo "RUN_UNITEST_ENABLED=true" >> $GITHUB_ENV
+              if ${{ inputs.kindNodeImage != '' }}; then
+                echo "RUN_kindNodeImage=${{ inputs.kindNodeImage }}" >> $GITHUB_ENV
+              fi
+              if ${{ inputs.justE2E == 'true' }}; then
+                echo "RUN_JustE2E=true" >> $GITHUB_ENV
+              fi
+              if ${{ inputs.ipfamily == 'ipv4' }}; then
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
+              elif ${{ inputs.ipfamily == 'ipv6' }}; then
+                echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
+              elif ${{ inputs.ipfamily == 'dual' }}; then
+                echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              elif ${{ inputs.ipfamily == 'all' }}; then
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              else
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
+              fi
+          fi
+
+      # some event, the tag is not sha, so checkout it and get sha
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          ref: ${{ env.RUN_TAG }}
+
+      - name: Result Ref
+        id: result
+        run: |
+          ref=$( git show -s --format='format:%H')
+          echo "RUN_REF=${ref}" >> $GITHUB_ENV
+
+  call_unitest:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.unitest_enabled == 'true' && needs.prepare.outputs.JustE2E == 'false' }}
+    # forbid to specify version for local workflow, GITHUB_REF Same as the caller workflow
+    uses: ./.github/workflows/lint-golang.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+    secrets: inherit
+
+  call_build_ci_image:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' && needs.prepare.outputs.JustE2E == 'false' }}
+    # get  image:${{ needs.prepare.outputs.ref }} and image-ci:${{ needs.prepare.outputs.ref }}
+    uses: ./.github/workflows/build-image-ci.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+    secrets: inherit
+
+  lint_chart_against_release_image:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' && needs.prepare.outputs.JustE2E == 'false' }}
+    # forbid to specify version for local workflow, GITHUB_REF Same as the caller workflow
+    uses: ./.github/workflows/call-lint-chart.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+    secrets: inherit
+
+  e2e_dual:
+    needs: [call_build_ci_image, prepare]
+    if: ${{ always() && needs.prepare.outputs.e2e_enabled == 'true' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
+    uses: ./.github/workflows/call-e2e.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+      ipfamily: dual
+      e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}
+      kind_node_image: ${{ needs.prepare.outputs.kindNodeImage }}
+    secrets: inherit
+
+  e2e_ipv4:
+    needs: [call_build_ci_image, prepare]
+    if: ${{ always() && needs.prepare.outputs.e2e_enabled == 'true' && needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
+    uses: ./.github/workflows/call-e2e.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+      ipfamily: ipv4
+      e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}
+      kind_node_image: ${{ needs.prepare.outputs.kindNodeImage }}
+    secrets: inherit
+
+  e2e_ipv6:
+    needs: [call_build_ci_image, prepare]
+    if: ${{ always() && needs.prepare.outputs.e2e_enabled == 'true'  && needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
+    uses: ./.github/workflows/call-e2e.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+      ipfamily: ipv6
+      e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}
+      kind_node_image: ${{ needs.prepare.outputs.kindNodeImage }}
+    secrets: inherit
+
+  trivy_scan:
+    needs: [call_build_ci_image, prepare]
+    if: ${{ needs.prepare.outputs.JustE2E == 'false' }}
+    uses: ./.github/workflows/call-trivy.yaml
+    with:
+      ref: ${{ needs.prepare.outputs.ref }}
+    secrets: inherit

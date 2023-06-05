@@ -1,0 +1,230 @@
+# https://github.com/OAI/OpenAPI-Specification/blob/main/versions/2.0.md
+swagger: "2.0"
+info:
+  description: http server
+  title: http server API
+  version: v1
+x-schemes:
+  - http
+basePath: "/"
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  "/healthy/startup":
+    get:
+      summary: Startup probe
+      description: pod startup probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+  "/healthy/readiness":
+    get:
+      summary: Readiness probe
+      description: pod readiness probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+  "/healthy/liveness":
+    get:
+      summary: Liveness probe
+      description: pod liveness probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+#  "/endpoint/{id}":
+#    get:
+#      summary: Get endpoint by endpoint ID
+#      description: |
+#        Returns endpoint information implemented by controller pod
+#      tags:
+#        - controller
+#      parameters:
+#        - "$ref": "#/parameters/endpoint-id"
+#      responses:
+#        '200':
+#          description: Success
+#          schema:
+#            "$ref": "#/definitions/EndpointStatus"
+#        '400':
+#          description: Invalid endpoint ID format for specified type
+#          x-go-name: Invalid
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '404':
+#          description: Endpoint not found
+#        '429':
+#          description: Rate-limiting too many requests in the given time frame
+#    put:
+#      summary: Create endpoint
+#      description: |
+#        Creates a new endpoint implemented by controller pod
+#      tags:
+#        - controller
+#      parameters:
+#        - "$ref": "#/parameters/endpoint-id"
+#        - "$ref": "#/parameters/endpoint-change-request"
+#      responses:
+#        '201':
+#          description: Created
+#        '400':
+#          description: Invalid endpoint in request
+#          x-go-name: Invalid
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '409':
+#          description: Endpoint already exists
+#          x-go-name: Exists
+#        '500':
+#          description: Endpoint creation failed
+#          x-go-name: Failed
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '429':
+#          description: Rate-limiting too many requests in the given time frame
+#    patch:
+#      summary: Modify existing endpoint
+#      deprecated: true
+#      description: |
+#        Applies the endpoint change request to an existing endpoint implemented by controller pod
+#      tags:
+#        - controller
+#      parameters:
+#        - "$ref": "#/parameters/endpoint-id"
+#        - "$ref": "#/parameters/endpoint-change-request"
+#      responses:
+#        '200':
+#          description: Success
+#        '400':
+#          description: Invalid modify endpoint request
+#          x-go-name: Invalid
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '404':
+#          description: Endpoint does not exist
+#        '500':
+#          description: Endpoint update failed
+#          x-go-name: Failed
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '429':
+#          description: Rate-limiting too many requests in the given time frame
+#    delete:
+#      summary: Delete endpoint
+#      description: |
+#        Deletes the endpoint specified by the ID implemented by controller pod
+#      tags:
+#        - controller
+#      parameters:
+#        - "$ref": "#/parameters/endpoint-id"
+#      responses:
+#        '200':
+#          description: Success
+#        '206':
+#          description: Deleted with a number of errors encountered
+#          x-go-name: Errors
+#          schema:
+#            type: integer
+#        '400':
+#          description: |
+#            Invalid endpoint ID format for specified type. Details in error
+#            message
+#          x-go-name: Invalid
+#          schema:
+#            "$ref": "#/definitions/ErrorRes"
+#        '404':
+#          description: Endpoint not found
+#        '429':
+#          description: Rate-limiting too many requests in the given time frame
+#
+## https://github.com/OAI/OpenAPI-Specification/blob/main/versions/2.0.md#parameter-object
+## API请求参数，作为回调的入参，可来源多个地方：
+##  （1）从URL path 中获取,For example, in /items/{itemId}
+##  （2）QUERY，例如 /items?id=###
+##   (3) HEADER
+##   (4) body
+##   (5) Form 表单
+#parameters:
+#  endpoint-id:
+#    # The name of the parameter. Parameter names are case sensitive.
+#    # If in is "path", the name field MUST correspond to the associated path segment from the path field in the Paths Object. See Path Templating for further information.
+#    # For all other cases, the name corresponds to the parameter name used based on the in property.
+#    name: id
+#    description: |
+#      String describing an endpoint
+#    # 从 URL path 中获取参数. The location of the parameter. Possible values are "query", "header", "path", "formData" or "body".
+#    in: path
+#    required: true
+#    type: string
+#  endpoint-change-request:
+#    name: endpoint
+#    in: body
+#    required: true
+#    schema:
+#      "$ref": "#/definitions/EndpointChangeRequest"
+#
+#definitions:
+#  EndpointStatus:
+#    description: An endpoint is a namespaced network interface
+#    type: object
+#    properties:
+#      id:
+#        description: The cilium-agent-local ID of the endpoint
+#        type: integer
+#      status:
+#        description: The current state and configuration of the endpoint, its policy & datapath, and subcomponents
+#        type: object
+#        required:
+#          - k1
+#          - enabled
+#        properties:
+#          k1:
+#            description: key1
+#            type: string
+#          mode:
+#            description: mode
+#            type: string
+#            enum:
+#              - none
+#              - mode1
+#              - mode2
+#          enabled:
+#            description: enabled
+#            type: boolean
+#  EndpointChangeRequest:
+#    description: |
+#      Structure which contains the mutable elements of an Endpoint.
+#    type: object
+#    required:
+#      - id
+#      - enabled
+#    properties:
+#      id:
+#        description: Local endpoint ID
+#        type: integer
+#      enabled:
+#        description: enabled
+#        type: boolean
+#  ErrorRes:
+#    type: object
+#    required:
+#      - message
+#    properties:
+#      code:
+#        type: integer
+#        format: int64
+#      message:
+#        type: string

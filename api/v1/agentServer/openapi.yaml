@@ -1,0 +1,94 @@
+# https://github.com/OAI/OpenAPI-Specification/blob/main/versions/2.0.md
+swagger: "2.0"
+info:
+  description: agent http server
+  title: http server API
+  version: v1
+x-schemes:
+  - http
+basePath: "/"
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  "/healthy/startup":
+    get:
+      summary: Startup probe
+      description: pod startup probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+  "/healthy/readiness":
+    get:
+      summary: Readiness probe
+      description: pod readiness probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+  "/healthy/liveness":
+    get:
+      summary: Liveness probe
+      description: pod liveness probe for agent and controller pod
+      tags:
+        - healthy
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+  "/kdoctoragent":
+    get:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+  "/":
+    get:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+
+definitions:
+  EchoRes:
+    description: echo request
+    type: object
+    properties:
+      serverName:
+        description: server host name
+        type: string
+      clientIp:
+        description: client source ip
+        type: string
+      requestUrl:
+        description: request url
+        type: string
+      requestHeader:
+        description: request header
+        type: object
+        additionalProperties:
+          type: string
+      otherDetail:
+        description: other  information
+        type: object
+        additionalProperties:
+          type: string
