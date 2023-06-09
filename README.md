@@ -29,9 +29,9 @@ When the cluster scale is large, or the inspection frequency is high, or the ins
 
 kdoctor is a cloud native project of data plane test, which is derived from practices of the production operation and maintenance. Through the pressure injection, it realizes the active inspection for the function and performance of the cluster. kdoctor can be applied to scenarios:
 
-* applied to inspection after cluster deployment, daily operation and maintenance, to reduce the burden. 
+* inspection after creating new cluster, daily operation and maintenance. 
 
-* applied to E2E testing, bug recurrence, chaos testing, to reduce programming work.
+* E2E testing, bug reproduction, chaos testing.
 
 ## Architecture
 
