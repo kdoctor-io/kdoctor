@@ -35,7 +35,7 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	Get(params *GetParams, opts ...ClientOption) (*GetOK, error)
 
-	Getkdoctoragent(params *GetkdoctoragentParams, opts ...ClientOption) (*GetkdoctoragentOK, error)
+	GetKdoctoragent(params *GetKdoctoragentParams, opts ...ClientOption) (*GetKdoctoragentOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -81,24 +81,24 @@ func (a *Client) Get(params *GetParams, opts ...ClientOption) (*GetOK, error) {
 }
 
 /*
-Getkdoctoragent echos http request
+GetKdoctoragent echos http request
 
 echo http request
 */
-func (a *Client) Getkdoctoragent(params *GetkdoctoragentParams, opts ...ClientOption) (*GetkdoctoragentOK, error) {
+func (a *Client) GetKdoctoragent(params *GetKdoctoragentParams, opts ...ClientOption) (*GetKdoctoragentOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetkdoctoragentParams()
+		params = NewGetKdoctoragentParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "Getkdoctoragent",
+		ID:                 "GetKdoctoragent",
 		Method:             "GET",
 		PathPattern:        "/kdoctoragent",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &GetkdoctoragentReader{formats: a.formats},
+		Reader:             &GetKdoctoragentReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -110,13 +110,13 @@ func (a *Client) Getkdoctoragent(params *GetkdoctoragentParams, opts ...ClientOp
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*GetkdoctoragentOK)
+	success, ok := result.(*GetKdoctoragentOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for Getkdoctoragent: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for GetKdoctoragent: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

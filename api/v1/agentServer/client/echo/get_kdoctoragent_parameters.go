@@ -19,50 +19,50 @@ import (
 	"github.com/go-openapi/strfmt"
 )
 
-// NewGetkdoctoragentParams creates a new GetkdoctoragentParams object,
+// NewGetKdoctoragentParams creates a new GetKdoctoragentParams object,
 // with the default timeout for this client.
 //
 // Default values are not hydrated, since defaults are normally applied by the API server side.
 //
 // To enforce default values in parameter, use SetDefaults or WithDefaults.
-func NewGetkdoctoragentParams() *GetkdoctoragentParams {
-	return &GetkdoctoragentParams{
+func NewGetKdoctoragentParams() *GetKdoctoragentParams {
+	return &GetKdoctoragentParams{
 		timeout: cr.DefaultTimeout,
 	}
 }
 
-// NewGetkdoctoragentParamsWithTimeout creates a new GetkdoctoragentParams object
+// NewGetKdoctoragentParamsWithTimeout creates a new GetKdoctoragentParams object
 // with the ability to set a timeout on a request.
-func NewGetkdoctoragentParamsWithTimeout(timeout time.Duration) *GetkdoctoragentParams {
-	return &GetkdoctoragentParams{
+func NewGetKdoctoragentParamsWithTimeout(timeout time.Duration) *GetKdoctoragentParams {
+	return &GetKdoctoragentParams{
 		timeout: timeout,
 	}
 }
 
-// NewGetkdoctoragentParamsWithContext creates a new GetkdoctoragentParams object
+// NewGetKdoctoragentParamsWithContext creates a new GetKdoctoragentParams object
 // with the ability to set a context for a request.
-func NewGetkdoctoragentParamsWithContext(ctx context.Context) *GetkdoctoragentParams {
-	return &GetkdoctoragentParams{
+func NewGetKdoctoragentParamsWithContext(ctx context.Context) *GetKdoctoragentParams {
+	return &GetKdoctoragentParams{
 		Context: ctx,
 	}
 }
 
-// NewGetkdoctoragentParamsWithHTTPClient creates a new GetkdoctoragentParams object
+// NewGetKdoctoragentParamsWithHTTPClient creates a new GetKdoctoragentParams object
 // with the ability to set a custom HTTPClient for a request.
-func NewGetkdoctoragentParamsWithHTTPClient(client *http.Client) *GetkdoctoragentParams {
-	return &GetkdoctoragentParams{
+func NewGetKdoctoragentParamsWithHTTPClient(client *http.Client) *GetKdoctoragentParams {
+	return &GetKdoctoragentParams{
 		HTTPClient: client,
 	}
 }
 
 /*
-GetkdoctoragentParams contains all the parameters to send to the API endpoint
+GetKdoctoragentParams contains all the parameters to send to the API endpoint
 
 	for the get kdoctoragent operation.
 
 	Typically these are written to a http.Request.
 */
-type GetkdoctoragentParams struct {
+type GetKdoctoragentParams struct {
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -71,7 +71,7 @@ type GetkdoctoragentParams struct {
 // WithDefaults hydrates default values in the get kdoctoragent params (not the query body).
 //
 // All values with no default are reset to their zero value.
-func (o *GetkdoctoragentParams) WithDefaults() *GetkdoctoragentParams {
+func (o *GetKdoctoragentParams) WithDefaults() *GetKdoctoragentParams {
 	o.SetDefaults()
 	return o
 }
@@ -79,45 +79,45 @@ func (o *GetkdoctoragentParams) WithDefaults() *GetkdoctoragentParams {
 // SetDefaults hydrates default values in the get kdoctoragent params (not the query body).
 //
 // All values with no default are reset to their zero value.
-func (o *GetkdoctoragentParams) SetDefaults() {
+func (o *GetKdoctoragentParams) SetDefaults() {
 	// no default values defined for this parameter
 }
 
 // WithTimeout adds the timeout to the get kdoctoragent params
-func (o *GetkdoctoragentParams) WithTimeout(timeout time.Duration) *GetkdoctoragentParams {
+func (o *GetKdoctoragentParams) WithTimeout(timeout time.Duration) *GetKdoctoragentParams {
 	o.SetTimeout(timeout)
 	return o
 }
 
 // SetTimeout adds the timeout to the get kdoctoragent params
-func (o *GetkdoctoragentParams) SetTimeout(timeout time.Duration) {
+func (o *GetKdoctoragentParams) SetTimeout(timeout time.Duration) {
 	o.timeout = timeout
 }
 
 // WithContext adds the context to the get kdoctoragent params
-func (o *GetkdoctoragentParams) WithContext(ctx context.Context) *GetkdoctoragentParams {
+func (o *GetKdoctoragentParams) WithContext(ctx context.Context) *GetKdoctoragentParams {
 	o.SetContext(ctx)
 	return o
 }
 
 // SetContext adds the context to the get kdoctoragent params
-func (o *GetkdoctoragentParams) SetContext(ctx context.Context) {
+func (o *GetKdoctoragentParams) SetContext(ctx context.Context) {
 	o.Context = ctx
 }
 
 // WithHTTPClient adds the HTTPClient to the get kdoctoragent params
-func (o *GetkdoctoragentParams) WithHTTPClient(client *http.Client) *GetkdoctoragentParams {
+func (o *GetKdoctoragentParams) WithHTTPClient(client *http.Client) *GetKdoctoragentParams {
 	o.SetHTTPClient(client)
 	return o
 }
 
 // SetHTTPClient adds the HTTPClient to the get kdoctoragent params
-func (o *GetkdoctoragentParams) SetHTTPClient(client *http.Client) {
+func (o *GetKdoctoragentParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetkdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
+func (o *GetKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	if err := r.SetTimeout(o.timeout); err != nil {
 		return err

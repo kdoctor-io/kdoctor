@@ -60,8 +60,8 @@ func NewHTTPServerAPIAPI(spec *loads.Document) *HTTPServerAPIAPI {
 		HealthyGetHealthyStartupHandler: healthy.GetHealthyStartupHandlerFunc(func(params healthy.GetHealthyStartupParams) middleware.Responder {
 			return middleware.NotImplemented("operation healthy.GetHealthyStartup has not yet been implemented")
 		}),
-		EchoGetkdoctoragentHandler: echo.GetkdoctoragentHandlerFunc(func(params echo.GetkdoctoragentParams) middleware.Responder {
-			return middleware.NotImplemented("operation echo.Getkdoctoragent has not yet been implemented")
+		EchoGetKdoctoragentHandler: echo.GetKdoctoragentHandlerFunc(func(params echo.GetKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.GetKdoctoragent has not yet been implemented")
 		}),
 	}
 }
@@ -107,8 +107,8 @@ type HTTPServerAPIAPI struct {
 	HealthyGetHealthyReadinessHandler healthy.GetHealthyReadinessHandler
 	// HealthyGetHealthyStartupHandler sets the operation handler for the get healthy startup operation
 	HealthyGetHealthyStartupHandler healthy.GetHealthyStartupHandler
-	// EchoGetkdoctoragentHandler sets the operation handler for the get kdoctoragent operation
-	EchoGetkdoctoragentHandler echo.GetkdoctoragentHandler
+	// EchoGetKdoctoragentHandler sets the operation handler for the get kdoctoragent operation
+	EchoGetKdoctoragentHandler echo.GetKdoctoragentHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -198,8 +198,8 @@ func (o *HTTPServerAPIAPI) Validate() error {
 	if o.HealthyGetHealthyStartupHandler == nil {
 		unregistered = append(unregistered, "healthy.GetHealthyStartupHandler")
 	}
-	if o.EchoGetkdoctoragentHandler == nil {
-		unregistered = append(unregistered, "echo.GetkdoctoragentHandler")
+	if o.EchoGetKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.GetKdoctoragentHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -308,7 +308,7 @@ func (o *HTTPServerAPIAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/kdoctoragent"] = echo.NewGetkdoctoragent(o.context, o.EchoGetkdoctoragentHandler)
+	o.handlers["GET"]["/kdoctoragent"] = echo.NewGetKdoctoragent(o.context, o.EchoGetKdoctoragentHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP
