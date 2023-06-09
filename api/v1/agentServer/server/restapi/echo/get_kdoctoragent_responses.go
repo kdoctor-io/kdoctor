@@ -16,15 +16,15 @@ import (
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
-// GetkdoctoragentOKCode is the HTTP code returned for type GetkdoctoragentOK
-const GetkdoctoragentOKCode int = 200
+// GetKdoctoragentOKCode is the HTTP code returned for type GetKdoctoragentOK
+const GetKdoctoragentOKCode int = 200
 
 /*
-GetkdoctoragentOK Success
+GetKdoctoragentOK Success
 
-swagger:response getkdoctoragentOK
+swagger:response getKdoctoragentOK
 */
-type GetkdoctoragentOK struct {
+type GetKdoctoragentOK struct {
 
 	/*
 	  In: Body
@@ -32,25 +32,25 @@ type GetkdoctoragentOK struct {
 	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
-// NewGetkdoctoragentOK creates GetkdoctoragentOK with default headers values
-func NewGetkdoctoragentOK() *GetkdoctoragentOK {
+// NewGetKdoctoragentOK creates GetKdoctoragentOK with default headers values
+func NewGetKdoctoragentOK() *GetKdoctoragentOK {
 
-	return &GetkdoctoragentOK{}
+	return &GetKdoctoragentOK{}
 }
 
 // WithPayload adds the payload to the get kdoctoragent o k response
-func (o *GetkdoctoragentOK) WithPayload(payload *models.EchoRes) *GetkdoctoragentOK {
+func (o *GetKdoctoragentOK) WithPayload(payload *models.EchoRes) *GetKdoctoragentOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get kdoctoragent o k response
-func (o *GetkdoctoragentOK) SetPayload(payload *models.EchoRes) {
+func (o *GetKdoctoragentOK) SetPayload(payload *models.EchoRes) {
 	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *GetkdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *GetKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
 	if o.Payload != nil {

@@ -1,3 +1,9 @@
+// Copyright 2023 Authors of kdoctor-io
+// SPDX-License-Identifier: Apache-2.0
+
+// this is copied from Google project, and make some code modification
+// Copyright 2014 Google Inc. All Rights Reserved.
+
 // Copyright 2014 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +17,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// Copyright 2023 Authors of kdoctor-io
-// SPDX-License-Identifier: Apache-2.0
-// Remove unwanted metrics, optimize memory consumption, and optimize QPS requests
 
 package loadHttp
 

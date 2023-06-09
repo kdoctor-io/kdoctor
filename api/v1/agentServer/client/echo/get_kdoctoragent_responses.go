@@ -18,16 +18,16 @@ import (
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
-// GetkdoctoragentReader is a Reader for the Getkdoctoragent structure.
-type GetkdoctoragentReader struct {
+// GetKdoctoragentReader is a Reader for the GetKdoctoragent structure.
+type GetKdoctoragentReader struct {
 	formats strfmt.Registry
 }
 
 // ReadResponse reads a server response into the received o.
-func (o *GetkdoctoragentReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
+func (o *GetKdoctoragentReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 	case 200:
-		result := NewGetkdoctoragentOK()
+		result := NewGetKdoctoragentOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -37,63 +37,63 @@ func (o *GetkdoctoragentReader) ReadResponse(response runtime.ClientResponse, co
 	}
 }
 
-// NewGetkdoctoragentOK creates a GetkdoctoragentOK with default headers values
-func NewGetkdoctoragentOK() *GetkdoctoragentOK {
-	return &GetkdoctoragentOK{}
+// NewGetKdoctoragentOK creates a GetKdoctoragentOK with default headers values
+func NewGetKdoctoragentOK() *GetKdoctoragentOK {
+	return &GetKdoctoragentOK{}
 }
 
 /*
-GetkdoctoragentOK describes a response with status code 200, with default header values.
+GetKdoctoragentOK describes a response with status code 200, with default header values.
 
 Success
 */
-type GetkdoctoragentOK struct {
+type GetKdoctoragentOK struct {
 	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this get kdoctoragent o k response has a 2xx status code
-func (o *GetkdoctoragentOK) IsSuccess() bool {
+func (o *GetKdoctoragentOK) IsSuccess() bool {
 	return true
 }
 
 // IsRedirect returns true when this get kdoctoragent o k response has a 3xx status code
-func (o *GetkdoctoragentOK) IsRedirect() bool {
+func (o *GetKdoctoragentOK) IsRedirect() bool {
 	return false
 }
 
 // IsClientError returns true when this get kdoctoragent o k response has a 4xx status code
-func (o *GetkdoctoragentOK) IsClientError() bool {
+func (o *GetKdoctoragentOK) IsClientError() bool {
 	return false
 }
 
 // IsServerError returns true when this get kdoctoragent o k response has a 5xx status code
-func (o *GetkdoctoragentOK) IsServerError() bool {
+func (o *GetKdoctoragentOK) IsServerError() bool {
 	return false
 }
 
 // IsCode returns true when this get kdoctoragent o k response a status code equal to that given
-func (o *GetkdoctoragentOK) IsCode(code int) bool {
+func (o *GetKdoctoragentOK) IsCode(code int) bool {
 	return code == 200
 }
 
 // Code gets the status code for the get kdoctoragent o k response
-func (o *GetkdoctoragentOK) Code() int {
+func (o *GetKdoctoragentOK) Code() int {
 	return 200
 }
 
-func (o *GetkdoctoragentOK) Error() string {
-	return fmt.Sprintf("[GET /kdoctoragent][%d] getkdoctoragentOK  %+v", 200, o.Payload)
+func (o *GetKdoctoragentOK) Error() string {
+	return fmt.Sprintf("[GET /kdoctoragent][%d] getKdoctoragentOK  %+v", 200, o.Payload)
 }
 
-func (o *GetkdoctoragentOK) String() string {
-	return fmt.Sprintf("[GET /kdoctoragent][%d] getkdoctoragentOK  %+v", 200, o.Payload)
+func (o *GetKdoctoragentOK) String() string {
+	return fmt.Sprintf("[GET /kdoctoragent][%d] getKdoctoragentOK  %+v", 200, o.Payload)
 }
 
-func (o *GetkdoctoragentOK) GetPayload() *models.EchoRes {
+func (o *GetKdoctoragentOK) GetPayload() *models.EchoRes {
 	return o.Payload
 }
 
-func (o *GetkdoctoragentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *GetKdoctoragentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.EchoRes)
 

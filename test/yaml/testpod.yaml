@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: test
-          image: ghcr.m.daocloud.io/kdoctor-io/kdoctor/agent:<<EXAMPLE_APP_IMAGE_TAG>>
+          image: <<EXAMPLE_APP_IMAGE>>
           imagePullPolicy: IfNotPresent
           command: ["/usr/bin/agent"]
           args:

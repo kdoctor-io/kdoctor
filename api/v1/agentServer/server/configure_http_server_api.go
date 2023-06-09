@@ -62,9 +62,9 @@ func configureAPI(api *restapi.HTTPServerAPIAPI) http.Handler {
 			return middleware.NotImplemented("operation healthy.GetHealthyStartup has not yet been implemented")
 		})
 	}
-	if api.EchoGetkdoctoragentHandler == nil {
-		api.EchoGetkdoctoragentHandler = echo.GetkdoctoragentHandlerFunc(func(params echo.GetkdoctoragentParams) middleware.Responder {
-			return middleware.NotImplemented("operation echo.Getkdoctoragent has not yet been implemented")
+	if api.EchoGetKdoctoragentHandler == nil {
+		api.EchoGetKdoctoragentHandler = echo.GetKdoctoragentHandlerFunc(func(params echo.GetKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.GetKdoctoragent has not yet been implemented")
 		})
 	}
 

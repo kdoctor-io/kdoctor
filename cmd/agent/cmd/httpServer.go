@@ -63,7 +63,7 @@ type echoAgentHandler struct {
 	logger *zap.Logger
 }
 
-func (s *echoAgentHandler) Handle(r echo.GetkdoctoragentParams) middleware.Responder {
+func (s *echoAgentHandler) Handle(r echo.GetParams) middleware.Responder {
 	m := r.HTTPRequest
 	return (&echoHandler{logger: s.logger}).Handle(echo.GetParams{
 		HTTPRequest: m,
@@ -125,7 +125,7 @@ func SetupHttpServer() {
 	api.HealthyGetHealthyLivenessHandler = &livenessHealthyHandler{logger: logger.Named("route: liveness health")}
 	api.HealthyGetHealthyStartupHandler = &startupHealthyHandler{logger: logger.Named("route: startup health")}
 	api.EchoGetHandler = &echoHandler{logger: logger.Named("route: request")}
-	api.EchoGetkdoctoragentHandler = &echoAgentHandler{logger: logger.Named("route: request")}
+	api.EchoGetHandler = &echoAgentHandler{logger: logger.Named("route: request")}
 
 	//
 	srv := server.NewServer(api)

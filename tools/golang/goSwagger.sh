@@ -115,7 +115,7 @@ verifyCode() {
   if [[ $ret -eq 0 ]];then
     echo "${DIFFROOT} up to date."
   else
-    echo "Error: ${DIFFROOT} is out of date! Please run 'make openapi-code-gen'"
+    echo "Error: ${DIFFROOT} is out of date! Please run 'make update_openapi_sdk'"
     exit 1
   fi
 }
