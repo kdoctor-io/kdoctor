@@ -129,7 +129,7 @@ spec:
                     - PATCH
                     - HEAD
                     type: string
-                  tls-ca:
+                  tls-secret:
                     type: string
                 required:
                 - host

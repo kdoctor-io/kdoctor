@@ -7,8 +7,8 @@
 package lock_test
 
 import (
-	. "github.com/onsi/ginkgo/v2"
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
+	. "github.com/onsi/ginkgo/v2"
 )
 
 var _ = Describe("LockFast", Label("unitest"), func() {

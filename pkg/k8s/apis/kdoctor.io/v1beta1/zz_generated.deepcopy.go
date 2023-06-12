@@ -112,8 +112,8 @@ func (in *HttpAppHealthyTarget) DeepCopyInto(out *HttpAppHealthyTarget) {
 		*out = new(string)
 		**out = **in
 	}
-	if in.TlsCa != nil {
-		in, out := &in.TlsCa, &out.TlsCa
+	if in.TlsSecret != nil {
+		in, out := &in.TlsSecret, &out.TlsSecret
 		*out = new(string)
 		**out = **in
 	}

@@ -50,7 +50,7 @@ type NetReachHealthyTarget struct {
 }
 
 // scope(Namespaced or Cluster)
-// +kubebuilder:resource:categories={kdoctor},path="netreachhealthies",singular="netreachhealthies",shortName={netrh},scope="Cluster"
+// +kubebuilder:resource:categories={kdoctor},path="netreachhealthies",singular="netreachhealthy",shortName={netrh},scope="Cluster"
 // +kubebuilder:printcolumn:JSONPath=".status.finish",description="finish",name="finish",type=boolean
 // +kubebuilder:printcolumn:JSONPath=".status.expectedRound",description="expectedRound",name="expectedRound",type=integer
 // +kubebuilder:printcolumn:JSONPath=".status.doneRound",description="doneRound",name="doneRound",type=integer

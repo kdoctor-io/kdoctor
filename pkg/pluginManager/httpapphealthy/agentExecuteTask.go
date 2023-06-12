@@ -5,11 +5,15 @@ package httpapphealthy
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadHttp"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
@@ -77,7 +81,7 @@ func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		msg := "failed to get instance"
 		logger.Error(msg)
 		err = fmt.Errorf(msg)
-		return
+		return finalfailureReason, task, err
 	}
 
 	logger.Sugar().Infof("plugin implement task round, instance=%+v", instance)
@@ -85,7 +89,6 @@ func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	target := instance.Spec.Target
 	request := instance.Spec.Request
 	successCondition := instance.Spec.SuccessCondition
-
 	logger.Sugar().Infof("load test custom target: Method=%v, Url=%v , qps=%v, PerRequestTimeout=%vs, Duration=%vs", target.Method, target.Host, request.QPS, request.PerRequestTimeoutInMS, request.DurationInSecond)
 	task.TargetType = "HttpAppHealthy"
 	task.TargetNumber = 1
@@ -97,6 +100,58 @@ func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
 	}
+
+	// https cert
+	if target.TlsSecret != nil {
+		name, namespace, _ := utils.GetObjNameNamespace(*target.TlsSecret)
+		tlsData, err := k8sObjManager.GetK8sObjManager().GetSecret(context.Background(), name, namespace)
+		if err != nil {
+			msg := fmt.Sprintf("failed get [%s] secret err : %v", *target.TlsSecret, err)
+			logger.Sugar().Errorf(msg)
+			err = fmt.Errorf(msg)
+			return finalfailureReason, task, err
+		}
+		ca, caOk := tlsData.Data["ca.crt"]
+		if caOk {
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(ca)
+			d.CaCertPool = caCertPool
+		}
+		crt, crtOk := tlsData.Data["tls.crt"]
+		key, keyOk := tlsData.Data["tls.key"]
+		if crtOk && keyOk {
+			cert, err := tls.X509KeyPair(crt, key)
+			if err != nil {
+				msg := fmt.Sprintf("failed to load certificate and key: %v", err)
+				logger.Sugar().Errorf(msg)
+				err = fmt.Errorf(msg)
+				return finalfailureReason, task, err
+			}
+			d.ClientCert = cert
+		}
+
+	}
+
+	// body
+	if target.Body != nil {
+		name, namespace, _ := utils.GetObjNameNamespace(*target.Body)
+		bodyCM, err := k8sObjManager.GetK8sObjManager().GetConfigMap(context.Background(), name, namespace)
+		if err != nil {
+			msg := fmt.Sprintf("failed get [%s] configmap err : %v", *target.Body, err)
+			logger.Sugar().Errorf(msg)
+			err = fmt.Errorf(msg)
+			return finalfailureReason, task, err
+		}
+		body, ok := bodyCM.Data["body"]
+		if !ok {
+			msg := fmt.Sprintf("failed get body from [%s] configmap err : %v", *target.Body, err)
+			logger.Sugar().Errorf(msg)
+			err = fmt.Errorf(msg)
+			return finalfailureReason, task, err
+		}
+		d.Body = body
+	}
+
 	failureReason, itemReport := SendRequestAndReport(logger, "HttpAppHealthy target", d, successCondition)
 	if len(failureReason) > 0 {
 		finalfailureReason = fmt.Sprintf("test HttpAppHealthy target: %v", failureReason)
