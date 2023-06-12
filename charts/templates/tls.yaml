@@ -17,7 +17,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/mutate-kdoctor-io-v1beta1-httpapphealthy"
+        path: "/mutate-kdoctor-io-v1beta1-apphttphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -26,7 +26,7 @@ webhooks:
       {{- end }}
     failurePolicy: Fail
     sideEffects: None
-    name: httpapphealthy.kdoctor.io
+    name: apphttphealthy.kdoctor.io
     rules:
       - apiGroups:
           # ====modify====
@@ -37,14 +37,14 @@ webhooks:
           - CREATE
           - UPDATE
         resources:
-          - httpapphealthies
+          - apphttphealthies
   - admissionReviewVersions:
       - v1
     clientConfig:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/mutate-kdoctor-io-v1beta1-netreachhealthy"
+        path: "/mutate-kdoctor-io-v1beta1-netreach"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -53,7 +53,7 @@ webhooks:
       {{- end }}
     failurePolicy: Fail
     sideEffects: None
-    name: netreachhealthy.kdoctor.io
+    name: netreach.kdoctor.io
     rules:
       - apiGroups:
           # ====modify====
@@ -65,7 +65,7 @@ webhooks:
           - UPDATE
         resources:
           # ====modify==== crdName
-          - netreachhealthies
+          - netreaches
   - admissionReviewVersions:
       - v1
     clientConfig:
@@ -109,7 +109,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/validate-kdoctor-io-v1beta1-httpapphealthy"
+        path: "/validate-kdoctor-io-v1beta1-apphttphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -117,7 +117,7 @@ webhooks:
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
-    name: httpapphealthy.kdoctor.io
+    name: apphttphealthy.kdoctor.io
     sideEffects: None
     rules:
       - apiGroups:
@@ -128,14 +128,14 @@ webhooks:
           - CREATE
           - UPDATE
         resources:
-          - httpapphealthies
+          - apphttphealthies
   - admissionReviewVersions:
       - v1
     clientConfig:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/validate-kdoctor-io-v1beta1-netreachhealthy"
+        path: "/validate-kdoctor-io-v1beta1-netreach"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -143,7 +143,7 @@ webhooks:
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
-    name: netreachhealthy.kdoctor.io
+    name: netreach.kdoctor.io
     sideEffects: None
     rules:
       - apiGroups:
@@ -154,7 +154,7 @@ webhooks:
           - CREATE
           - UPDATE
         resources:
-          - netreachhealthies
+          - netreaches
   - admissionReviewVersions:
       - v1
     clientConfig:

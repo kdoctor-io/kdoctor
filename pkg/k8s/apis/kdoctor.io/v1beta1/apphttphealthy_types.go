@@ -7,12 +7,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type HttpAppHealthySpec struct {
+type AppHttpHealthySpec struct {
 	// +kubebuilder:validation:Optional
 	Schedule *SchedulePlan `json:"schedule,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	Target *HttpAppHealthyTarget `json:"target,omitempty"`
+	Target *AppHttpHealthyTarget `json:"target,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	Request *NetHttpRequest `json:"request,omitempty"`
@@ -21,7 +21,7 @@ type HttpAppHealthySpec struct {
 	SuccessCondition *NetSuccessCondition `json:"success,omitempty"`
 }
 
-type HttpAppHealthyTarget struct {
+type AppHttpHealthyTarget struct {
 
 	// +kubebuilder:validation:Type:=string
 	Host string `json:"host"`
@@ -47,7 +47,7 @@ type HttpAppHealthyTarget struct {
 }
 
 // scope(Namespaced or Cluster)
-// +kubebuilder:resource:categories={kdoctor},path="httpapphealthies",singular="httpapphealthy",shortName={netah},scope="Cluster"
+// +kubebuilder:resource:categories={kdoctor},path="apphttphealthies",singular="apphttphealthy",shortName={ahh},scope="Cluster"
 // +kubebuilder:printcolumn:JSONPath=".status.finish",description="finish",name="finish",type=boolean
 // +kubebuilder:printcolumn:JSONPath=".status.expectedRound",description="expectedRound",name="expectedRound",type=integer
 // +kubebuilder:printcolumn:JSONPath=".status.doneRound",description="doneRound",name="doneRound",type=integer
@@ -58,23 +58,23 @@ type HttpAppHealthyTarget struct {
 // +genclient
 // +genclient:nonNamespaced
 
-type HttpAppHealthy struct {
+type AppHttpHealthy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   HttpAppHealthySpec `json:"spec,omitempty"`
+	Spec   AppHttpHealthySpec `json:"spec,omitempty"`
 	Status TaskStatus         `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-type HttpAppHealthyList struct {
+type AppHttpHealthyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []HttpAppHealthy `json:"items"`
+	Items []AppHttpHealthy `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&HttpAppHealthy{}, &HttpAppHealthyList{})
+	SchemeBuilder.Register(&AppHttpHealthy{}, &AppHttpHealthyList{})
 }

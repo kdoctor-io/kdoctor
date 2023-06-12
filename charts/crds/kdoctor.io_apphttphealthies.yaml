@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (unknown)
   creationTimestamp: null
-  name: httpapphealthies.kdoctor.io
+  name: apphttphealthies.kdoctor.io
 spec:
   group: kdoctor.io
   names:
     categories:
     - kdoctor
-    kind: HttpAppHealthy
-    listKind: HttpAppHealthyList
-    plural: httpapphealthies
+    kind: AppHttpHealthy
+    listKind: AppHttpHealthyList
+    plural: apphttphealthies
     shortNames:
-    - netah
-    singular: httpapphealthy
+    - ahh
+    singular: apphttphealthy
   scope: Cluster
   versions:
   - additionalPrinterColumns:

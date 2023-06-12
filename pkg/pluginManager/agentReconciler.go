@@ -41,8 +41,8 @@ func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	// ------ add crd ------
 	switch s.crdKind {
-	case KindNameNetReachHealthy:
-		instance := crd.NetReachHealthy{}
+	case KindNameNetReach:
+		instance := crd.NetReach{}
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
 			return ctrl.Result{}, client.IgnoreNotFound(err)
@@ -78,8 +78,8 @@ func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			}
 		}
 
-	case KindNameHttpAppHealthy:
-		instance := crd.HttpAppHealthy{}
+	case KindNameAppHttpHealthy:
+		instance := crd.AppHttpHealthy{}
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
 			return ctrl.Result{}, client.IgnoreNotFound(err)

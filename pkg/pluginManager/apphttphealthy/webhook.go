@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package httpapphealthy
+package apphttphealthy
 
 import (
 	"context"
@@ -16,8 +16,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func (s *PluginHttpAppHealthy) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
-	req, ok := obj.(*crd.HttpAppHealthy)
+func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
+	req, ok := obj.(*crd.AppHttpHealthy)
 	if !ok {
 		s := "failed to get HttpAppHealthy obj"
 		logger.Error(s)
@@ -51,8 +51,8 @@ func (s *PluginHttpAppHealthy) WebhookMutating(logger *zap.Logger, ctx context.C
 	return nil
 }
 
-func (s *PluginHttpAppHealthy) WebhookValidateCreate(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
-	r, ok := obj.(*crd.HttpAppHealthy)
+func (s *PluginAppHttpHealthy) WebhookValidateCreate(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
+	r, ok := obj.(*crd.AppHttpHealthy)
 	if !ok {
 		s := "failed to get HttpAppHealthy obj"
 		logger.Error(s)
@@ -165,7 +165,7 @@ func (s *PluginHttpAppHealthy) WebhookValidateCreate(logger *zap.Logger, ctx con
 }
 
 // this will not be called, it is not allowed to modify crd
-func (s *PluginHttpAppHealthy) WebhookValidateUpdate(logger *zap.Logger, ctx context.Context, oldObj, newObj runtime.Object) error {
+func (s *PluginAppHttpHealthy) WebhookValidateUpdate(logger *zap.Logger, ctx context.Context, oldObj, newObj runtime.Object) error {
 
 	return nil
 }

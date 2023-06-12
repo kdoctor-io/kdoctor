@@ -9,7 +9,7 @@ And, more detailed report will print to kdoctor agent stdout, or save to disc by
 the following is the spec of nethttp
 ```shell
 apiVersion: kdoctor.io/v1beta1
-kind: HttpAppHealthy
+kind: AppHttpHealthy
 metadata:
   name: httphealthy
 spec:
@@ -128,9 +128,9 @@ a quick task to test kdoctor agent, to verify the whole network is ok, each agen
 
 ```shell
 
-cat <<EOF > test-httpapphealthy.yaml
+cat <<EOF > test-apphttphealthy.yaml
 apiVersion: kdoctor.io/v1beta1
-kind: HttpAppHealthy
+kind: AppHttpHealthy
 metadata:
   name: httphealthy
 spec:
@@ -154,7 +154,7 @@ spec:
     method: PUT
     tls-secret: kube-system/https-cert
 EOF
-kubectl apply -f test-httpapphealthy.yaml
+kubectl apply -f test-apphttphealthy.yaml
 
 ```
 
@@ -198,7 +198,7 @@ kubectl apply -f https-cert.yaml
 when something wrong happen, see the log for your task with following command
 ```shell
 #get log 
-CRD_KIND="httpapphealthy"
+CRD_KIND="apphttphealthy"
 CRD_NAME="httphealthy"
 kubectl logs -n kube-system  kdoctor-agent-v4vzx | grep -i "${CRD_KIND}.${CRD_NAME}"
 
@@ -245,8 +245,8 @@ metric introduction
 		"Succeed": "true",
 		"SucceedRate": "1",
 		"TargetMethod": "GET",
-		"TargetName": "HttpAppHealthy target",
+		"TargetName": "AppHttpHealthy target",
 		"TargetNumber": "1",
-		"TargetType": "HttpAppHealthy",
+		"TargetType": "AppHttpHealthy",
 		"TargetUrl": "http://kdoctor-agent-ipv4.kube-system.svc.cluster.local"
 ```

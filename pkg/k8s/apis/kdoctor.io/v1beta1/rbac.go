@@ -5,11 +5,11 @@
 // https://github.com/kubernetes-sigs/controller-tools/blob/master/pkg/rbac/parser.go
 // https://book.kubebuilder.io/reference/markers/rbac.html
 
-// +kubebuilder:rbac:groups=kdoctor.io,resources=netreachhealthies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kdoctor.io,resources=netreachhealthies/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=kdoctor.io,resources=netreaches,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kdoctor.io,resources=netreaches/status,verbs=get;update;patch
 
-// +kubebuilder:rbac:groups=kdoctor.io,resources=httpapphealthies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kdoctor.io,resources=httpapphealthies/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=kdoctor.io,resources=apphttphealthies,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kdoctor.io,resources=apphttphealthies/status,verbs=get;update;patch
 
 // +kubebuilder:rbac:groups=kdoctor.io,resources=netdnses,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=kdoctor.io,resources=netdnses/status,verbs=get;update;patch

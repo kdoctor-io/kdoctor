@@ -7,17 +7,17 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const HttpAppHealthyTaskName = "HttpAppHealthy"
+const AppHttpHealthyTaskName = "AppHttpHealthy"
 
-type HttpAppHealthyTask struct {
+type AppHttpHealthyTask struct {
 	TargetType    string                     `json:"TargetType"`
 	TargetNumber  int64                      `json:"TargetNumber"`
 	FailureReason *string                    `json:"FailureReason,omitempty"`
 	Succeed       bool                       `json:"Succeed"`
-	Detail        []HttpAppHealthyTaskDetail `json:"Detail"`
+	Detail        []AppHttpHealthyTaskDetail `json:"Detail"`
 }
 
-type HttpAppHealthyTaskDetail struct {
+type AppHttpHealthyTaskDetail struct {
 	TargetName    string      `json:"TargetName"`
 	TargetUrl     string      `json:"TargetUrl"`
 	TargetMethod  string      `json:"TargetMethod"`
@@ -43,6 +43,6 @@ type HttpMetrics struct {
 	StatusCodes   map[int]int `json:"StatusCodes"`
 }
 
-func (h *HttpAppHealthyTask) KindTask() string {
-	return HttpAppHealthyTaskName
+func (h *AppHttpHealthyTask) KindTask() string {
+	return AppHttpHealthyTaskName
 }

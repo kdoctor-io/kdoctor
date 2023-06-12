@@ -32,9 +32,9 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 	// ------ add crd ------
 	switch s.crdKind {
-	case KindNameNetReachHealthy:
+	case KindNameNetReach:
 		// ------ add crd ------
-		instance := crd.NetReachHealthy{}
+		instance := crd.NetReach{}
 
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
@@ -70,9 +70,9 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 			}
 		}
 
-	case KindNameHttpAppHealthy:
+	case KindNameAppHttpHealthy:
 		// ------ add crd ------
-		instance := crd.HttpAppHealthy{}
+		instance := crd.AppHttpHealthy{}
 
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)

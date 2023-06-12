@@ -7,12 +7,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type NetReachHealthySpec struct {
+type NetReachSpec struct {
 	// +kubebuilder:validation:Optional
 	Schedule *SchedulePlan `json:"schedule,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	Target *NetReachHealthyTarget `json:"target,omitempty"`
+	Target *NetReachTarget `json:"target,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	Request *NetHttpRequest `json:"request,omitempty"`
@@ -21,7 +21,7 @@ type NetReachHealthySpec struct {
 	SuccessCondition *NetSuccessCondition `json:"success,omitempty"`
 }
 
-type NetReachHealthyTarget struct {
+type NetReachTarget struct {
 	// +kubebuilder:default=true
 	// +kubebuilder:validation:Optional
 	IPv4 *bool `json:"ipv4,omitempty"`
@@ -50,7 +50,7 @@ type NetReachHealthyTarget struct {
 }
 
 // scope(Namespaced or Cluster)
-// +kubebuilder:resource:categories={kdoctor},path="netreachhealthies",singular="netreachhealthy",shortName={netrh},scope="Cluster"
+// +kubebuilder:resource:categories={kdoctor},path="netreaches",singular="netreach",shortName={nr},scope="Cluster"
 // +kubebuilder:printcolumn:JSONPath=".status.finish",description="finish",name="finish",type=boolean
 // +kubebuilder:printcolumn:JSONPath=".status.expectedRound",description="expectedRound",name="expectedRound",type=integer
 // +kubebuilder:printcolumn:JSONPath=".status.doneRound",description="doneRound",name="doneRound",type=integer
@@ -61,23 +61,23 @@ type NetReachHealthyTarget struct {
 // +genclient
 // +genclient:nonNamespaced
 
-type NetReachHealthy struct {
+type NetReach struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   NetReachHealthySpec `json:"spec,omitempty"`
-	Status TaskStatus          `json:"status,omitempty"`
+	Spec   NetReachSpec `json:"spec,omitempty"`
+	Status TaskStatus   `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-type NetReachHealthyList struct {
+type NetReachList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []NetReachHealthy `json:"items"`
+	Items []NetReach `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&NetReachHealthy{}, &NetReachHealthyList{})
+	SchemeBuilder.Register(&NetReach{}, &NetReachList{})
 }

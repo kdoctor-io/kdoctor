@@ -19,58 +19,58 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// HttpAppHealthyInformer provides access to a shared informer and lister for
-// HttpAppHealthies.
-type HttpAppHealthyInformer interface {
+// AppHttpHealthyInformer provides access to a shared informer and lister for
+// AppHttpHealthies.
+type AppHttpHealthyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1beta1.HttpAppHealthyLister
+	Lister() v1beta1.AppHttpHealthyLister
 }
 
-type httpAppHealthyInformer struct {
+type appHttpHealthyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 }
 
-// NewHttpAppHealthyInformer constructs a new informer for HttpAppHealthy type.
+// NewAppHttpHealthyInformer constructs a new informer for AppHttpHealthy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewHttpAppHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredHttpAppHealthyInformer(client, resyncPeriod, indexers, nil)
+func NewAppHttpHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAppHttpHealthyInformer(client, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredHttpAppHealthyInformer constructs a new informer for HttpAppHealthy type.
+// NewFilteredAppHttpHealthyInformer constructs a new informer for AppHttpHealthy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredHttpAppHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAppHttpHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.KdoctorV1beta1().HttpAppHealthies().List(context.TODO(), options)
+				return client.KdoctorV1beta1().AppHttpHealthies().List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.KdoctorV1beta1().HttpAppHealthies().Watch(context.TODO(), options)
+				return client.KdoctorV1beta1().AppHttpHealthies().Watch(context.TODO(), options)
 			},
 		},
-		&kdoctoriov1beta1.HttpAppHealthy{},
+		&kdoctoriov1beta1.AppHttpHealthy{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *httpAppHealthyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredHttpAppHealthyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *appHttpHealthyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredAppHttpHealthyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *httpAppHealthyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&kdoctoriov1beta1.HttpAppHealthy{}, f.defaultInformer)
+func (f *appHttpHealthyInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&kdoctoriov1beta1.AppHttpHealthy{}, f.defaultInformer)
 }
 
-func (f *httpAppHealthyInformer) Lister() v1beta1.HttpAppHealthyLister {
-	return v1beta1.NewHttpAppHealthyLister(f.Informer().GetIndexer())
+func (f *appHttpHealthyInformer) Lister() v1beta1.AppHttpHealthyLister {
+	return v1beta1.NewAppHttpHealthyLister(f.Informer().GetIndexer())
 }
