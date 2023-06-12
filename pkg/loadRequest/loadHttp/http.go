@@ -4,6 +4,8 @@
 package loadHttp
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"net/http"
 	"time"
 
@@ -33,6 +35,9 @@ type HttpRequestData struct {
 	PerRequestTimeoutMS int
 	RequestTimeSecond   int
 	Header              map[string]string
+	Body                string
+	ClientCert          tls.Certificate
+	CaCertPool          *x509.CertPool
 	Http2               bool
 	DisableKeepAlives   bool
 	DisableCompression  bool
@@ -41,6 +46,7 @@ type HttpRequestData struct {
 func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetrics {
 	logger.Sugar().Infof("http request=%v", reqData)
 	req, _ := http.NewRequest(string(reqData.Method), reqData.Url, nil)
+
 	duration := time.Duration(reqData.RequestTimeSecond) * time.Second
 	for k, v := range reqData.Header {
 		req.Header.Set(k, v)
@@ -56,6 +62,9 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 		DisableCompression: reqData.DisableCompression,
 		DisableKeepAlives:  reqData.DisableKeepAlives,
 		Http2:              reqData.Http2,
+		Cert:               reqData.ClientCert,
+		CertPool:           reqData.CaCertPool,
+		RequestBody:        []byte(reqData.Body),
 	}
 	logger.Sugar().Infof("do http requests work=%v", w)
 	w.Init()

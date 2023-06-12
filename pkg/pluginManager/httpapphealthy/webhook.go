@@ -6,9 +6,11 @@ package httpapphealthy
 import (
 	"context"
 	"fmt"
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
+	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -88,11 +90,55 @@ func (s *PluginHttpAppHealthy) WebhookValidateCreate(logger *zap.Logger, ctx con
 
 	// validate target
 	if true {
-		// TODO (ii2day) validate host body method tls header
+		// TODO (ii2day): validate host body method header
 		if r.Spec.Target == nil {
 			s := fmt.Sprintf("HttpAppHealthy %v, no target specified in the spec", r.Name)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
+		}
+
+		// tls
+		if r.Spec.Target.TlsSecret != nil {
+			name, namespace, err := utils.GetObjNameNamespace(*r.Spec.Target.TlsSecret)
+			if err != nil {
+				s := fmt.Sprintf("HttpAppHealthy %v requires Target.TlsCert enter correctly err: %v", r.Name, err)
+				logger.Error(s)
+				return apierrors.NewBadRequest(s)
+			}
+			tlsData, err := k8sObjManager.GetK8sObjManager().GetSecret(ctx, name, namespace)
+			if err != nil {
+				s := fmt.Sprintf("HttpAppHealthy %v failed get secret %s err: %v", r.Name, *r.Spec.Target.TlsSecret, err)
+				logger.Error(s)
+				return apierrors.NewBadRequest(s)
+			}
+
+			for k, v := range tlsData.Data {
+				switch k {
+				case "ca.crt":
+					if len(v) == 0 {
+						s := fmt.Sprintf("HttpAppHealthy %v get tls secret %s ca.crt value is nil", r.Name, *r.Spec.Target.TlsSecret)
+						logger.Error(s)
+						return apierrors.NewBadRequest(s)
+					}
+				case "tls.crt":
+					if len(v) == 0 {
+						s := fmt.Sprintf("HttpAppHealthy %v get tls secret %s tls.crt value is nil", r.Name, *r.Spec.Target.TlsSecret)
+						logger.Error(s)
+						return apierrors.NewBadRequest(s)
+					}
+				case "tls.key":
+					if len(v) == 0 {
+						s := fmt.Sprintf("HttpAppHealthy %v get tls secret %s tls.key value is nil", r.Name, *r.Spec.Target.TlsSecret)
+						logger.Error(s)
+						return apierrors.NewBadRequest(s)
+					}
+				default:
+					s := fmt.Sprintf("HttpAppHealthy %v get tls secret %s key %s,keys other than ca.crt, tls.crt, and tls.key cannot be used", r.Name, v, *r.Spec.Target.TlsSecret)
+					logger.Error(s)
+					return apierrors.NewBadRequest(s)
+				}
+			}
+
 		}
 	}
 

@@ -203,7 +203,7 @@ spec:
     targetDns:
       testIPv4: true
       testIPv6: false
-      serviceNamespaceName: kube-system/test-app
+      serviceNamespaceName: kube-system/kube-dns
     protocol: udp
   request:
     durationInSecond: 10

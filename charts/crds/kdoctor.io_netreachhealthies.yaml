@@ -16,7 +16,7 @@ spec:
     plural: netreachhealthies
     shortNames:
     - netrh
-    singular: netreachhealthies
+    singular: netreachhealthy
   scope: Cluster
   versions:
   - additionalPrinterColumns:

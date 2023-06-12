@@ -40,6 +40,12 @@ type K8sObjManager interface {
 	ListServicesDnsIP(ctx context.Context) ([]string, error)
 
 	GetIngress(ctx context.Context, name, namespace string) (*networkingv1.Ingress, error)
+
+	// secret
+	GetSecret(ctx context.Context, name, namespace string) (*corev1.Secret, error)
+
+	// configmap
+	GetConfigMap(ctx context.Context, name, namespace string) (*corev1.ConfigMap, error)
 }
 
 type k8sObjManager struct {

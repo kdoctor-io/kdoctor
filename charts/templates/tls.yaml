@@ -17,7 +17,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/mutate-kdoctor-kdoctor-io-v1beta1-httpapphealthy"
+        path: "/mutate-kdoctor-io-v1beta1-httpapphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -44,7 +44,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/mutate-kdoctor-kdoctor-io-v1beta1-netreachhealthy"
+        path: "/mutate-kdoctor-io-v1beta1-netreachhealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -72,7 +72,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/mutate-kdoctor-kdoctor-io-v1beta1-netdns"
+        path: "/mutate-kdoctor-io-v1beta1-netdns"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -109,7 +109,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/validate-kdoctor-kdoctor-io-v1beta1-httpapphealthy"
+        path: "/validate-kdoctor-io-v1beta1-httpapphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -135,7 +135,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/validate-kdoctor-kdoctor-io-v1beta1-netreachhealthy"
+        path: "/validate-kdoctor-io-v1beta1-netreachhealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
@@ -161,7 +161,7 @@ webhooks:
       service:
         name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        path: "/validate-kdoctor-kdoctor-io-v1beta1-netdns"
+        path: "/validate-kdoctor-io-v1beta1-netdns"
         port: {{ .Values.kdoctorController.webhookPort }}
       {{- if (eq .Values.kdoctorController.tls.method "provided") }}
       caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}

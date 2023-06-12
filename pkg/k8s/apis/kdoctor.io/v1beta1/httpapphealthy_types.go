@@ -40,7 +40,7 @@ type HttpAppHealthyTarget struct {
 
 	// +kubebuilder:validation:Type:=string
 	// +kubebuilder:validation:Optional
-	TlsCa *string `json:"tls-ca,omitempty"`
+	TlsSecret *string `json:"tls-secret,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	Header []string `json:"header,omitempty"`

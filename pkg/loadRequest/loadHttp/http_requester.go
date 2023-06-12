@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"golang.org/x/net/http2"
 	"io"
@@ -92,6 +93,9 @@ type Work struct {
 
 	RequestBody []byte
 
+	Cert tls.Certificate
+
+	CertPool *x509.CertPool
 	// RequestFunc is a function to generate requests. If it is nil, then
 	// Request and RequestData are cloned for each request.
 	RequestFunc func() *http.Request
@@ -235,8 +239,11 @@ func (b *Work) runWorker() {
 	if b.QPS > 0 {
 		ticker = time.NewTicker(time.Duration(1e6*b.Concurrency/(b.QPS)) * time.Microsecond)
 	}
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
+			Certificates:       []tls.Certificate{b.Cert},
+			RootCAs:            b.CertPool,
 			InsecureSkipVerify: true,
 			ServerName:         b.Request.Host,
 		},
@@ -245,6 +252,12 @@ func (b *Work) runWorker() {
 		DisableKeepAlives:   b.DisableKeepAlives,
 		Proxy:               http.ProxyURL(b.ProxyAddr),
 	}
+
+	// verify ca
+	if b.CertPool != nil {
+		tr.TLSClientConfig.InsecureSkipVerify = false
+	}
+
 	if b.Http2 {
 		_ = http2.ConfigureTransport(tr)
 	} else {
