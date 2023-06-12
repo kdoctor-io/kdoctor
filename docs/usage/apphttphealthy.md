@@ -9,7 +9,7 @@ And, more detailed report will print to kdoctor agent stdout, or save to disc by
 the following is the spec of nethttp
 ```shell
 apiVersion: kdoctor.io/v1beta1
-kind: HttpAppHealthy
+kind: AppHttpHealthy
 metadata:
   name: httphealthy
 spec:
@@ -130,7 +130,7 @@ a quick task to test kdoctor agent, to verify the whole network is ok, each agen
 
 cat <<EOF > test-httpapphealthy.yaml
 apiVersion: kdoctor.io/v1beta1
-kind: HttpAppHealthy
+kind: AppHttpHealthy
 metadata:
   name: httphealthy
 spec:
@@ -245,8 +245,8 @@ metric introduction
 		"Succeed": "true",
 		"SucceedRate": "1",
 		"TargetMethod": "GET",
-		"TargetName": "HttpAppHealthy target",
+		"TargetName": "AppHttpHealthy target",
 		"TargetNumber": "1",
-		"TargetType": "HttpAppHealthy",
+		"TargetType": "AppHttpHealthy",
 		"TargetUrl": "http://kdoctor-agent-ipv4.kube-system.svc.cluster.local"
 ```

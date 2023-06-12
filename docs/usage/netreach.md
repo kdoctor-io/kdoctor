@@ -9,7 +9,7 @@ And, more detailed report will print to kdoctor agent stdout, or save to disc by
 the following is the spec of nethttp
 ```shell
 apiVersion: kdoctor.io/v1beta1
-kind: NetReachHealthy
+kind: NetReach
 metadata:
   creationTimestamp: "2023-05-24T08:11:13Z"
   generation: 1
@@ -139,7 +139,7 @@ a quick task to test kdoctor agent, to verify the whole network is ok, each agen
 
 cat <<EOF > netreachhealthy-test-agent.yaml
 apiVersion: kdoctor.io/v1beta1
-kind: NetReachHealthy
+kind: NetReach
 metadata:
   generation: 1
   name: netreach

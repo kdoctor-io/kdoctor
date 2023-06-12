@@ -15,8 +15,8 @@ import (
 
 type KdoctorV1beta1Interface interface {
 	RESTClient() rest.Interface
-	HttpAppHealthiesGetter
-	NetReachHealthiesGetter
+	AppHttpHealthiesGetter
+	NetReachesGetter
 	NetdnsesGetter
 }
 
@@ -25,12 +25,12 @@ type KdoctorV1beta1Client struct {
 	restClient rest.Interface
 }
 
-func (c *KdoctorV1beta1Client) HttpAppHealthies() HttpAppHealthyInterface {
-	return newHttpAppHealthies(c)
+func (c *KdoctorV1beta1Client) AppHttpHealthies() AppHttpHealthyInterface {
+	return newAppHttpHealthies(c)
 }
 
-func (c *KdoctorV1beta1Client) NetReachHealthies() NetReachHealthyInterface {
-	return newNetReachHealthies(c)
+func (c *KdoctorV1beta1Client) NetReaches() NetReachInterface {
+	return newNetReaches(c)
 }
 
 func (c *KdoctorV1beta1Client) Netdnses() NetdnsInterface {

@@ -68,7 +68,7 @@ rules:
 - apiGroups:
   - kdoctor.io
   resources:
-  - httpapphealthies
+  - apphttphealthies
   verbs:
   - create
   - delete
@@ -80,7 +80,7 @@ rules:
 - apiGroups:
   - kdoctor.io
   resources:
-  - httpapphealthies/status
+  - apphttphealthies/status
   verbs:
   - get
   - patch
@@ -108,7 +108,7 @@ rules:
 - apiGroups:
   - kdoctor.io
   resources:
-  - netreachhealthies
+  - netreaches
   verbs:
   - create
   - delete
@@ -120,7 +120,7 @@ rules:
 - apiGroups:
   - kdoctor.io
   resources:
-  - netreachhealthies/status
+  - netreaches/status
   verbs:
   - get
   - patch

@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package httpapphealthy
+package apphttphealthy
 
 import (
 	"context"
@@ -32,7 +32,7 @@ func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResu
 	return
 }
 
-func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.HttpRequestData, successCondition *crd.NetSuccessCondition) (failureReason string, report v1beta1.HttpAppHealthyTaskDetail) {
+func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.HttpRequestData, successCondition *crd.NetSuccessCondition) (failureReason string, report v1beta1.AppHttpHealthyTaskDetail) {
 	report.TargetName = targetName
 	report.TargetUrl = req.Url
 	report.TargetMethod = string(req.Method)
@@ -71,12 +71,12 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
 	finalfailureReason = ""
-	task := &v1beta1.HttpAppHealthyTask{}
+	task := &v1beta1.AppHttpHealthyTask{}
 	err = nil
 
-	instance, ok := obj.(*crd.HttpAppHealthy)
+	instance, ok := obj.(*crd.AppHttpHealthy)
 	if !ok {
 		msg := "failed to get instance"
 		logger.Error(msg)
@@ -157,7 +157,7 @@ func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		finalfailureReason = fmt.Sprintf("test HttpAppHealthy target: %v", failureReason)
 	}
 
-	task.Detail = []v1beta1.HttpAppHealthyTaskDetail{itemReport}
+	task.Detail = []v1beta1.AppHttpHealthyTaskDetail{itemReport}
 	if len(finalfailureReason) > 0 {
 		logger.Sugar().Errorf("plugin finally failed, %v", finalfailureReason)
 		task.FailureReason = pointer.String(finalfailureReason)
@@ -170,13 +170,13 @@ func (s *PluginHttpAppHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 
 }
 
-func (s *PluginHttpAppHealthy) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
-	httpAppHealthySpec, ok := crdSpec.(*crd.HttpAppHealthySpec)
+func (s *PluginAppHttpHealthy) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
+	httpAppHealthySpec, ok := crdSpec.(*crd.AppHttpHealthySpec)
 	if !ok {
 		return fmt.Errorf("the given crd spec %#v doesn't match HttpAppHealthySpec", crdSpec)
 	}
 
-	httpAppHealthyTask, ok := task.(*v1beta1.HttpAppHealthyTask)
+	httpAppHealthyTask, ok := task.(*v1beta1.AppHttpHealthyTask)
 	if !ok {
 		return fmt.Errorf("task type %v doesn't match HttpAppHealthyTask", task.KindTask())
 	}

@@ -5,13 +5,13 @@
 
 package v1beta1
 
-// HttpAppHealthyListerExpansion allows custom methods to be added to
-// HttpAppHealthyLister.
-type HttpAppHealthyListerExpansion interface{}
+// AppHttpHealthyListerExpansion allows custom methods to be added to
+// AppHttpHealthyLister.
+type AppHttpHealthyListerExpansion interface{}
 
-// NetReachHealthyListerExpansion allows custom methods to be added to
-// NetReachHealthyLister.
-type NetReachHealthyListerExpansion interface{}
+// NetReachListerExpansion allows custom methods to be added to
+// NetReachLister.
+type NetReachListerExpansion interface{}
 
 // NetdnsListerExpansion allows custom methods to be added to
 // NetdnsLister.
