@@ -21,7 +21,7 @@ type NetdnsSpec struct {
 	Request *NetdnsRequest `json:"request,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	SuccessCondition *NetSuccessCondition `json:"success,omitempty"`
+	SuccessCondition *NetSuccessCondition `json:"expect,omitempty"`
 }
 
 type NetDnsTarget struct {
@@ -29,12 +29,6 @@ type NetDnsTarget struct {
 	NetDnsTargetUser *NetDnsTargetUserSpec `json:"targetUser,omitempty"`
 	// +kubebuilder:validation:Optional
 	NetDnsTargetDns *NetDnsTargetDnsSpec `json:"targetDns,omitempty"`
-
-	// +kubebuilder:validation:Optional
-	// +kubebuilder:default=udp
-	// +kubebuilder:validation:Type:=string
-	// +kubebuilder:validation:Enum=udp;tcp;tcp-tls
-	Protocol *string `json:"protocol,omitempty"`
 }
 
 type NetDnsTargetUserSpec struct {
@@ -47,7 +41,11 @@ type NetDnsTargetUserSpec struct {
 
 type NetDnsTargetDnsSpec struct {
 	// +kubebuilder:validation:Optional
-	ServiceNamespacedName *string `json:"serviceNamespaceName,omitempty"`
+	ServiceName *string `json:"serviceName,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	ServiceNamespace *string `json:"serviceNamespace,omitempty"`
+
 	// +kubebuilder:default=true
 	// +kubebuilder:validation:Optional
 	TestIPv4 *bool `json:"testIPv4,omitempty"`
@@ -77,6 +75,12 @@ type NetdnsRequest struct {
 	// +kubebuilder:default=kubernetes.default.svc.cluster.local
 	// +kubebuilder:validation:Optional
 	Domain string `json:"domain"`
+
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:default=udp
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Enum=udp;tcp;tcp-tls
+	Protocol *string `json:"protocol,omitempty"`
 }
 
 // scope(Namespaced or Cluster)

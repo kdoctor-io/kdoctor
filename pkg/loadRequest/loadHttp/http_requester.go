@@ -23,6 +23,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"golang.org/x/net/http2"
 	"io"
@@ -129,6 +130,10 @@ type Work struct {
 	// Optional.
 	ProxyAddr *url.URL
 
+	// ExpectStatusCode is the expect request return http code
+	// Optional.
+	ExpectStatusCode *int
+
 	initOnce  sync.Once
 	results   chan *result
 	stopCh    chan struct{}
@@ -221,7 +226,13 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	} else {
 		statusCode = 0
 	}
-
+	if b.ExpectStatusCode != nil {
+		if statusCode != *b.ExpectStatusCode {
+			if err == nil {
+				err = fmt.Errorf("The %d status code returned is not the expected %d ", statusCode, *b.ExpectStatusCode)
+			}
+		}
+	}
 	b.results <- &result{
 		duration:      finish,
 		statusCode:    statusCode,

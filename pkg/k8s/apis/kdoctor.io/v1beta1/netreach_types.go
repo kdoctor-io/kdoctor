@@ -18,7 +18,7 @@ type NetReachSpec struct {
 	Request *NetHttpRequest `json:"request,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	SuccessCondition *NetSuccessCondition `json:"success,omitempty"`
+	SuccessCondition *NetSuccessCondition `json:"expect,omitempty"`
 }
 
 type NetReachTarget struct {

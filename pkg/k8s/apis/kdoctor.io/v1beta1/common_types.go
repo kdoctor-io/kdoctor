@@ -93,6 +93,11 @@ type NetSuccessCondition struct {
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Optional
 	MeanAccessDelayInMs *int64 `json:"meanAccessDelayInMs,omitempty"`
+
+	// +kubebuilder:validation:Minimum=100
+	// +kubebuilder:validation:Maximum=599
+	// +kubebuilder:validation:Optional
+	StatusCode *int `json:"statusCode,omitempty"`
 }
 
 type NetHttpRequest struct {

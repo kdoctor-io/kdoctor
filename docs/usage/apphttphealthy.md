@@ -21,17 +21,20 @@ spec:
     roundNumber: 2
     roundTimeoutMinute: 1
     schedule: 1 1
-  success:
+  expect:
     meanAccessDelayInMs: 10000
     successRate: 1
+    statusCode: 200
   target:
-    body: kube-system/http-body
+    bodyConfigmapName: http-body
+    bodyConfigmapNamespace: kube-system
     header:
     - Accept:text/html
     host: https://10.6.172.20:9443
     http2: false
     method: PUT
-    tls-secret: kube-system/https-cert
+    tlsSecretName: https-cert
+    tlsSecretNamespace: kube-system
 status:
   doneRound: 2
   expectedRound: 2
@@ -77,9 +80,13 @@ status:
 
         method: http method, must be one of GET POST PUT DELETE CONNECT OPTIONS PATCH HEAD
         
-        body: The configmap format for logging HTTP requests is namespace/configmap-name
+        bodyConfigmapName: The body configmap name 
+* 
+        bodyConfigmapNamespace: The body configmap namespace 
         
-        tls-cert: The secret format for logging HTTPS request certificates is namespace/configmap-name
+        tlsSecretName: The tls secret name
+* 
+        tlsSecretNamespace: The tls secret namespace
 
         header:  HTTP request header
 
@@ -87,22 +94,26 @@ status:
 
         >notice: when test targetAgent case, it will send http request to all targets at the same time with spec.request.qps for each one. That meaning, the actually QPS may be bigger than spec.request.qps
 
-* spec.success: define the success condition of the task result 
+* spec.expect: define the success condition of the task result 
 
-    meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure
+      meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure
 
-    successRate: the success rate of all http requests. Notice, when a http response code is >=200 and < 400, it's treated as success. if the actual whole success rate is smaller than successRate, the task results to be failure
+      successRate: the success rate of all http requests. Notice, when a http response code is >=200 and < 400, it's treated as success. if the actual whole success rate is smaller than successRate, the task results to be failure
+      
+      statusCode: Expect the HTTP status code returned by each request 
 
 * status: the status of the task
-    doneRound: how many rounds have finished
 
-    expectedRound: how many rounds the task expect
+      doneRound: how many rounds have finished
 
-    finish: whether all rounds of this task have finished
+      expectedRound: how many rounds the task expect
 
-    lastRoundStatus: the result of last round
+      finish: whether all rounds of this task have finished
+
+      lastRoundStatus: the result of last round
 
     history:
+
         roundNumber: the round number
 
         status: the status of this round
@@ -142,17 +153,20 @@ spec:
     roundNumber: 2
     roundTimeoutMinute: 1
     schedule: 1 1
-  success:
+  expect:
     meanAccessDelayInMs: 10000
     successRate: 1
+    statusCode: 200
   target:
-    body: kube-system/http-body
+    bodyConfigmapName: http-body
+    bodyConfigmapNamespace: kube-system
     header:
     - Accept:text/html
     host: https://10.6.172.20:9443
     http2: false
     method: PUT
-    tls-secret: kube-system/https-cert
+    tlsSecretName: https-cert
+    tlsSecretNamespace: kube-system
 EOF
 kubectl apply -f test-httpapphealthy.yaml
 
@@ -198,7 +212,7 @@ kubectl apply -f https-cert.yaml
 when something wrong happen, see the log for your task with following command
 ```shell
 #get log 
-CRD_KIND="httpapphealthy"
+CRD_KIND="apphttphealthy"
 CRD_NAME="httphealthy"
 kubectl logs -n kube-system  kdoctor-agent-v4vzx | grep -i "${CRD_KIND}.${CRD_NAME}"
 
@@ -210,7 +224,7 @@ kubectl logs -n kube-system  kdoctor-agent-v4vzx | grep -i "${CRD_KIND}.${CRD_NA
 when the kdoctor is not enabled to aggerate reports, all reports will be printed in the stdout of kdoctor agent.
 Use the following command to get its report
 ```shell
-kubectl logs -n kube-system  kdoctor-agent-v4vzx | jq 'select( .TaskName=="httpapphealthy.httphealthy" )'
+kubectl logs -n kube-system  kdoctor-agent-v4vzx | jq 'select( .TaskName=="apphttphealthy.httphealthy" )'
 ```
 
 when the kdoctor is enabled to aggregate reports, all reports will be collected in the PVC or hostPath of kdoctor controller.

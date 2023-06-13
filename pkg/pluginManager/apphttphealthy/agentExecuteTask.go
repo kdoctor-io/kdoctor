@@ -13,7 +13,6 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadHttp"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
-	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
@@ -99,14 +98,15 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
+		ExpectStatusCode:    instance.Spec.SuccessCondition.StatusCode,
 	}
 
 	// https cert
-	if target.TlsSecret != nil {
-		name, namespace, _ := utils.GetObjNameNamespace(*target.TlsSecret)
-		tlsData, err := k8sObjManager.GetK8sObjManager().GetSecret(context.Background(), name, namespace)
+	if target.TlsSecretName != nil {
+
+		tlsData, err := k8sObjManager.GetK8sObjManager().GetSecret(context.Background(), *target.TlsSecretName, *target.TlsSecretNamespace)
 		if err != nil {
-			msg := fmt.Sprintf("failed get [%s] secret err : %v", *target.TlsSecret, err)
+			msg := fmt.Sprintf("failed get [%s/%s] secret err : %v", *target.TlsSecretNamespace, *target.TlsSecretName, err)
 			logger.Sugar().Errorf(msg)
 			err = fmt.Errorf(msg)
 			return finalfailureReason, task, err
@@ -133,18 +133,17 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	}
 
 	// body
-	if target.Body != nil {
-		name, namespace, _ := utils.GetObjNameNamespace(*target.Body)
-		bodyCM, err := k8sObjManager.GetK8sObjManager().GetConfigMap(context.Background(), name, namespace)
+	if target.BodyConfigName != nil {
+		bodyCM, err := k8sObjManager.GetK8sObjManager().GetConfigMap(context.Background(), *target.BodyConfigName, *target.BodyConfigNamespace)
 		if err != nil {
-			msg := fmt.Sprintf("failed get [%s] configmap err : %v", *target.Body, err)
+			msg := fmt.Sprintf("failed get [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
 			logger.Sugar().Errorf(msg)
 			err = fmt.Errorf(msg)
 			return finalfailureReason, task, err
 		}
 		body, ok := bodyCM.Data["body"]
 		if !ok {
-			msg := fmt.Sprintf("failed get body from [%s] configmap err : %v", *target.Body, err)
+			msg := fmt.Sprintf("failed get body from [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
 			logger.Sugar().Errorf(msg)
 			err = fmt.Errorf(msg)
 			return finalfailureReason, task, err

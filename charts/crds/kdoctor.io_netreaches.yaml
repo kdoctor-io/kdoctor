@@ -58,6 +58,23 @@ spec:
             type: object
           spec:
             properties:
+              expect:
+                properties:
+                  meanAccessDelayInMs:
+                    default: 5000
+                    format: int64
+                    minimum: 1
+                    type: integer
+                  statusCode:
+                    maximum: 599
+                    minimum: 100
+                    type: integer
+                  successRate:
+                    default: 1
+                    maximum: 1
+                    minimum: 0
+                    type: number
+                type: object
               request:
                 properties:
                   durationInSecond:
@@ -91,19 +108,6 @@ spec:
                 required:
                 - roundNumber
                 - roundTimeoutMinute
-                type: object
-              success:
-                properties:
-                  meanAccessDelayInMs:
-                    default: 5000
-                    format: int64
-                    minimum: 1
-                    type: integer
-                  successRate:
-                    default: 1
-                    maximum: 1
-                    minimum: 0
-                    type: number
                 type: object
               target:
                 properties:

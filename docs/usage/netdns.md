@@ -24,17 +24,18 @@ spec:
     targetDns:
       testIPv4: true
       testIPv6: false
-      serviceNamespaceName: kube-system/test-app
+      serviceName: coredns
+      serviceNamespace: kube-system
     targetUser:
       server: 172.18.0.1
       port: 53
-    protocol: udp
   request:
     durationInSecond: 10
     qps: 20
     perRequestTimeoutInMS: 500
     domain: "kube-dns.kube-system.svc.cluster.local"
-  success:
+    protocol: udp
+  expect:
     successRate: 1
     meanAccessDelayInMs: 10000
 EOF
@@ -79,11 +80,13 @@ kubectl apply -f netdns.yaml
 
         testIPv6: test DNS server IPv6 address and request is type AAAA.
 
-        serviceNamespaceName: Specify the namespace and name of the DNS to be tested, do not fill in the default test cluster for all DNS servers
+        serviceName: Specify the name of the DNS to be tested
+* 
+        serviceNamespace: Specify the namespace of the DNS to be tested
  
       protocol: Specify request protocol,Optional value udp，tcp，tcp-tls,default udp.
 
-* spec.success: define the success condition of the task result
+* spec.expect: define the success condition of the task result
 
   meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure
 
@@ -134,7 +137,6 @@ spec:
     roundNumber: 2
     roundTimeoutMinute: 1
   target:
-    protocol: udp
     targetUser:
       server: 172.18.0.1
       port: 53
@@ -143,7 +145,8 @@ spec:
     qps: 10
     perRequestTimeoutInMS: 500
     domain: "baidu.com"
-  success:
+    protocol: udp
+  expect:
     successRate: 1
     meanAccessDelayInMs: 1000
 EOF
@@ -176,7 +179,7 @@ spec:
     qps: 10
     perRequestTimeoutInMS: 500
     domain: "baidu.com"
-  success:
+  expect:
     successRate: 1
     meanAccessDelayInMs: 1000
 EOF
@@ -210,7 +213,7 @@ spec:
     qps: 20
     perRequestTimeoutInMS: 500
     domain: "kube-dns.kube-system.svc.cluster.local"
-  success:
+  expect:
     successRate: 1
     meanAccessDelayInMs: 10000
 EOF
@@ -244,7 +247,7 @@ spec:
     qps: 20
     perRequestTimeoutInMS: 500
     domain: "kube-dns.kube-system.svc.cluster.local"
-  success:
+  expect:
     successRate: 1
     meanAccessDelayInMs: 10000
 EOF
