@@ -19,58 +19,58 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// NetReachHealthyInformer provides access to a shared informer and lister for
-// NetReachHealthies.
-type NetReachHealthyInformer interface {
+// NetReachInformer provides access to a shared informer and lister for
+// NetReaches.
+type NetReachInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1beta1.NetReachHealthyLister
+	Lister() v1beta1.NetReachLister
 }
 
-type netReachHealthyInformer struct {
+type netReachInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 }
 
-// NewNetReachHealthyInformer constructs a new informer for NetReachHealthy type.
+// NewNetReachInformer constructs a new informer for NetReach type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNetReachHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNetReachHealthyInformer(client, resyncPeriod, indexers, nil)
+func NewNetReachInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredNetReachInformer(client, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredNetReachHealthyInformer constructs a new informer for NetReachHealthy type.
+// NewFilteredNetReachInformer constructs a new informer for NetReach type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNetReachHealthyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredNetReachInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.KdoctorV1beta1().NetReachHealthies().List(context.TODO(), options)
+				return client.KdoctorV1beta1().NetReaches().List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.KdoctorV1beta1().NetReachHealthies().Watch(context.TODO(), options)
+				return client.KdoctorV1beta1().NetReaches().Watch(context.TODO(), options)
 			},
 		},
-		&kdoctoriov1beta1.NetReachHealthy{},
+		&kdoctoriov1beta1.NetReach{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *netReachHealthyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNetReachHealthyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *netReachInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredNetReachInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *netReachHealthyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&kdoctoriov1beta1.NetReachHealthy{}, f.defaultInformer)
+func (f *netReachInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&kdoctoriov1beta1.NetReach{}, f.defaultInformer)
 }
 
-func (f *netReachHealthyInformer) Lister() v1beta1.NetReachHealthyLister {
-	return v1beta1.NewNetReachHealthyLister(f.Informer().GetIndexer())
+func (f *netReachInformer) Lister() v1beta1.NetReachLister {
+	return v1beta1.NewNetReachLister(f.Informer().GetIndexer())
 }

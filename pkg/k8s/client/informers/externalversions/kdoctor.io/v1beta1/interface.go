@@ -11,10 +11,10 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
-	// HttpAppHealthies returns a HttpAppHealthyInformer.
-	HttpAppHealthies() HttpAppHealthyInformer
-	// NetReachHealthies returns a NetReachHealthyInformer.
-	NetReachHealthies() NetReachHealthyInformer
+	// AppHttpHealthies returns a AppHttpHealthyInformer.
+	AppHttpHealthies() AppHttpHealthyInformer
+	// NetReaches returns a NetReachInformer.
+	NetReaches() NetReachInformer
 	// Netdnses returns a NetdnsInformer.
 	Netdnses() NetdnsInformer
 }
@@ -30,14 +30,14 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
-// HttpAppHealthies returns a HttpAppHealthyInformer.
-func (v *version) HttpAppHealthies() HttpAppHealthyInformer {
-	return &httpAppHealthyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// AppHttpHealthies returns a AppHttpHealthyInformer.
+func (v *version) AppHttpHealthies() AppHttpHealthyInformer {
+	return &appHttpHealthyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
-// NetReachHealthies returns a NetReachHealthyInformer.
-func (v *version) NetReachHealthies() NetReachHealthyInformer {
-	return &netReachHealthyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+// NetReaches returns a NetReachInformer.
+func (v *version) NetReaches() NetReachInformer {
+	return &netReachInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // Netdnses returns a NetdnsInformer.

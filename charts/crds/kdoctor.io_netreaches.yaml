@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (unknown)
   creationTimestamp: null
-  name: netreachhealthies.kdoctor.io
+  name: netreaches.kdoctor.io
 spec:
   group: kdoctor.io
   names:
     categories:
     - kdoctor
-    kind: NetReachHealthy
-    listKind: NetReachHealthyList
-    plural: netreachhealthies
+    kind: NetReach
+    listKind: NetReachList
+    plural: netreaches
     shortNames:
-    - netrh
-    singular: netreachhealthy
+    - nr
+    singular: netreach
   scope: Cluster
   versions:
   - additionalPrinterColumns:

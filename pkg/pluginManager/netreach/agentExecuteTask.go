@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package netreachhealthy
+package netreach
 
 import (
 	"context"
@@ -35,7 +35,7 @@ func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResu
 	return
 }
 
-func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.HttpRequestData, successCondition *crd.NetSuccessCondition) (failureReason string, report v1beta1.NetReachHealthyTaskDetail) {
+func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.HttpRequestData, successCondition *crd.NetSuccessCondition) (failureReason string, report v1beta1.NetReachTaskDetail) {
 	report.TargetName = targetName
 	report.TargetUrl = req.Url
 	report.TargetMethod = string(req.Method)
@@ -74,12 +74,12 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginNetReachHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
 	finalfailureReason = ""
 	err = nil
 	var e error
 
-	instance, ok := obj.(*crd.NetReachHealthy)
+	instance, ok := obj.(*crd.NetReach)
 	if !ok {
 		msg := "failed to get instance"
 		logger.Error(msg)
@@ -285,7 +285,7 @@ func (s *PluginNetReachHealthy) AgentExecuteTask(logger *zap.Logger, ctx context
 	}
 
 	// ------------------------ implement for agent case and selected-pod case
-	var reportList []v1beta1.NetReachHealthyTaskDetail
+	var reportList []v1beta1.NetReachTaskDetail
 
 	var wg sync.WaitGroup
 	var l lock.Mutex
@@ -315,9 +315,9 @@ func (s *PluginNetReachHealthy) AgentExecuteTask(logger *zap.Logger, ctx context
 	logger.Sugar().Infof("plugin finished all http request tests")
 
 	// ----------------------- aggregate report
-	task := &v1beta1.NetReachHealthyTask{}
+	task := &v1beta1.NetReachTask{}
 	task.Detail = reportList
-	task.TargetType = "NetReachHealthy"
+	task.TargetType = "NetReach"
 	task.TargetNumber = int64(len(testTargetList))
 	if len(finalfailureReason) > 0 {
 		logger.Sugar().Errorf("plugin finally failed, %v", finalfailureReason)
@@ -331,18 +331,17 @@ func (s *PluginNetReachHealthy) AgentExecuteTask(logger *zap.Logger, ctx context
 
 }
 
-func (s *PluginNetReachHealthy) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
-	netReachHealthySpec, ok := crdSpec.(*crd.NetReachHealthySpec)
+func (s *PluginNetReach) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
+	NetReachSpec, ok := crdSpec.(*crd.NetReachSpec)
 	if !ok {
-		return fmt.Errorf("the given crd spec %#v doesn't match NetReachHealthySpec", crdSpec)
+		return fmt.Errorf("the given crd spec %#v doesn't match NetReachSpec", crdSpec)
 	}
 
-	netReachHealthyTask, ok := task.(*v1beta1.NetReachHealthyTask)
+	NetReachTask, ok := task.(*v1beta1.NetReachTask)
 	if !ok {
-		return fmt.Errorf("task type %v doesn't match NetReachHealthyTask", task.KindTask())
+		return fmt.Errorf("task type %v doesn't match NetReachTask", task.KindTask())
 	}
-
-	report.NetReachHealthyTaskSpec = netReachHealthySpec
-	report.NetReachHealthyTask = netReachHealthyTask
+	report.NetReachTaskSpec = NetReachSpec
+	report.NetReachTask = NetReachTask
 	return nil
 }

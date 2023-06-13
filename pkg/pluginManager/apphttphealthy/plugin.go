@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package netreachhealthy
+package apphttphealthy
 
 import (
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
@@ -9,11 +9,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type PluginNetReachHealthy struct {
+type PluginAppHttpHealthy struct {
 }
 
-var _ types.ChainingPlugin = &PluginNetReachHealthy{}
+var _ types.ChainingPlugin = &PluginAppHttpHealthy{}
 
-func (s *PluginNetReachHealthy) GetApiType() client.Object {
-	return &crd.NetReachHealthy{}
+func (s *PluginAppHttpHealthy) GetApiType() client.Object {
+	return &crd.AppHttpHealthy{}
 }

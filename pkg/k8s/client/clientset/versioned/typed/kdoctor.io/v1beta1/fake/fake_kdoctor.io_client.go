@@ -15,12 +15,12 @@ type FakeKdoctorV1beta1 struct {
 	*testing.Fake
 }
 
-func (c *FakeKdoctorV1beta1) HttpAppHealthies() v1beta1.HttpAppHealthyInterface {
-	return &FakeHttpAppHealthies{c}
+func (c *FakeKdoctorV1beta1) AppHttpHealthies() v1beta1.AppHttpHealthyInterface {
+	return &FakeAppHttpHealthies{c}
 }
 
-func (c *FakeKdoctorV1beta1) NetReachHealthies() v1beta1.NetReachHealthyInterface {
-	return &FakeNetReachHealthies{c}
+func (c *FakeKdoctorV1beta1) NetReaches() v1beta1.NetReachInterface {
+	return &FakeNetReaches{c}
 }
 
 func (c *FakeKdoctorV1beta1) Netdnses() v1beta1.NetdnsInterface {

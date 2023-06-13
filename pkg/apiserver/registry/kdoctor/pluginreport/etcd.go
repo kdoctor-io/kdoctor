@@ -131,7 +131,7 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 		taskType = v1beta1.NetDNSTaskName
 	}
 
-	netReachHealthy, err := p.clientSet.KdoctorV1beta1().NetReachHealthies().Get(ctx, name, metav1.GetOptions{})
+	netReach, err := p.clientSet.KdoctorV1beta1().NetReaches().Get(ctx, name, metav1.GetOptions{})
 	if nil != err {
 		if errors.IsNotFound(err) {
 			klog.Infof("no NetReachHealthy %s found", name)
@@ -140,11 +140,11 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 		}
 	} else {
 		fmt.Printf("succeed to get NetReachHealthy %s\n", name)
-		taskStatus = netReachHealthy.Status.DeepCopy()
-		taskType = v1beta1.NetReachHealthyTaskName
+		taskStatus = netReach.Status.DeepCopy()
+		taskType = v1beta1.NetReachTaskName
 	}
 
-	httpAppHealthy, err := p.clientSet.KdoctorV1beta1().HttpAppHealthies().Get(ctx, name, metav1.GetOptions{})
+	appHttpHealthy, err := p.clientSet.KdoctorV1beta1().AppHttpHealthies().Get(ctx, name, metav1.GetOptions{})
 	if nil != err {
 		if errors.IsNotFound(err) {
 			klog.Infof("no HttpAppHealthy %s found", name)
@@ -153,8 +153,8 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 		}
 	} else {
 		fmt.Printf("succeed to get HttpAppHealthy %s\n", name)
-		taskStatus = httpAppHealthy.Status.DeepCopy()
-		taskType = v1beta1.HttpAppHealthyTaskName
+		taskStatus = appHttpHealthy.Status.DeepCopy()
+		taskType = v1beta1.AppHttpHealthyTaskName
 	}
 
 	if taskStatus == nil {
@@ -418,7 +418,7 @@ func (p pluginReportStorage) getNetDNSPluginReports(ctx context.Context, fileNam
 func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.PluginReport, error) {
 	var resList []*v1beta1.PluginReport
 
-	httpAppHealthyList, err := p.clientSet.KdoctorV1beta1().HttpAppHealthies().List(ctx, metav1.ListOptions{})
+	httpAppHealthyList, err := p.clientSet.KdoctorV1beta1().AppHttpHealthies().List(ctx, metav1.ListOptions{})
 	if nil != err {
 		return nil, err
 	}
@@ -426,7 +426,7 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 	httpAppHealthyNameList := func() []string {
 		var arr []string
 		for _, fileName := range fileNameList {
-			if strings.Contains(fileName, v1beta1.HttpAppHealthyTaskName) {
+			if strings.Contains(fileName, v1beta1.AppHttpHealthyTaskName) {
 				if strings.Contains(fileName, summary) {
 					continue
 				}
@@ -437,9 +437,9 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 		return arr
 	}()
 
-	for _, httpAppHealthy := range httpAppHealthyList.Items {
-		tmpHttpAppHealthy := httpAppHealthy.DeepCopy()
-		if httpAppHealthy.Status.DoneRound == nil || httpAppHealthy.Status.ExpectedRound == nil {
+	for _, appHttpHealthy := range httpAppHealthyList.Items {
+		tmpHttpAppHealthy := appHttpHealthy.DeepCopy()
+		if appHttpHealthy.Status.DoneRound == nil || appHttpHealthy.Status.ExpectedRound == nil {
 			klog.Infof("HttpAppHealthy %s has no expectedRound or no done round", tmpHttpAppHealthy.Name)
 			continue
 		}
@@ -464,7 +464,7 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 
 		pluginReportSpec := v1beta1.PluginReportSpec{
 			TaskName:            tmpHttpAppHealthy.Name,
-			TaskType:            v1beta1.HttpAppHealthyTaskName,
+			TaskType:            v1beta1.AppHttpHealthyTaskName,
 			ToTalRoundNumber:    *tmpHttpAppHealthy.Status.ExpectedRound,
 			FinishedRoundNumber: finishedRoundNumber,
 			FailedRoundNumber:   nil,
@@ -491,7 +491,7 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.PluginReport, error) {
 	var resList []*v1beta1.PluginReport
 
-	netReachHealthyList, err := p.clientSet.KdoctorV1beta1().NetReachHealthies().List(ctx, metav1.ListOptions{})
+	netReachHealthyList, err := p.clientSet.KdoctorV1beta1().NetReaches().List(ctx, metav1.ListOptions{})
 	if nil != err {
 		return nil, err
 	}
@@ -499,7 +499,7 @@ func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, file
 	netReachHealthyFileNameList := func() []string {
 		var arr []string
 		for _, fileName := range fileNameList {
-			if strings.HasPrefix(fileName, v1beta1.NetReachHealthyTaskName) {
+			if strings.HasPrefix(fileName, v1beta1.NetReachTaskName) {
 				if strings.Contains(fileName, summary) {
 					continue
 				}
@@ -510,8 +510,8 @@ func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, file
 		return arr
 	}()
 
-	for _, netReachHealthy := range netReachHealthyList.Items {
-		tmpNetReachHealthy := netReachHealthy.DeepCopy()
+	for _, netReach := range netReachHealthyList.Items {
+		tmpNetReachHealthy := netReach.DeepCopy()
 		if tmpNetReachHealthy.Status.DoneRound == nil || tmpNetReachHealthy.Status.ExpectedRound == nil {
 			klog.Infof("NetReachHealthy %s has no expectedRound or no done round", tmpNetReachHealthy.Name)
 			continue
@@ -537,7 +537,7 @@ func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, file
 
 		pluginReportSpec := v1beta1.PluginReportSpec{
 			TaskName:            tmpNetReachHealthy.Name,
-			TaskType:            v1beta1.NetReachHealthyTaskName,
+			TaskType:            v1beta1.NetReachTaskName,
 			ToTalRoundNumber:    *tmpNetReachHealthy.Status.ExpectedRound,
 			FinishedRoundNumber: finishedRoundNumber,
 			FailedRoundNumber:   nil,

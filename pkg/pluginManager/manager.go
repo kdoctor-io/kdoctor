@@ -5,9 +5,9 @@ package pluginManager
 
 import (
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
-	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/httpapphealthy"
+	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/apphttphealthy"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/netdns"
-	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/netreachhealthy"
+	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/netreach"
 	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"go.uber.org/zap"
 )
@@ -38,9 +38,9 @@ func InitPluginManager(logger *zap.Logger) PluginManager {
 
 const (
 	// ------ add crd ------
-	KindNameHttpAppHealthy  = "HttpAppHealthy"
-	KindNameNetReachHealthy = "NetReachHealthy"
-	KindNameNetdns          = "Netdns"
+	KindNameAppHttpHealthy = "AppHttpHealthy"
+	KindNameNetReach       = "NetReach"
+	KindNameNetdns         = "Netdns"
 )
 
 func init() {
@@ -49,8 +49,8 @@ func init() {
 	}
 
 	// ------ add crd ------
-	globalPluginManager.chainingPlugins[KindNameHttpAppHealthy] = &httpapphealthy.PluginHttpAppHealthy{}
-	globalPluginManager.chainingPlugins[KindNameNetReachHealthy] = &netreachhealthy.PluginNetReachHealthy{}
+	globalPluginManager.chainingPlugins[KindNameAppHttpHealthy] = &apphttphealthy.PluginAppHttpHealthy{}
+	globalPluginManager.chainingPlugins[KindNameNetReach] = &netreach.PluginNetReach{}
 	globalPluginManager.chainingPlugins[KindNameNetdns] = &netdns.PluginNetDns{}
 
 }

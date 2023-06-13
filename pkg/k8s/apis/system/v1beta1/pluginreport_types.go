@@ -55,11 +55,11 @@ type Report struct {
 	RoundDuration  string      `json:"RoundDuration"`
 	ReportType     string      `json:"ReportType"`
 
-	NetReachHealthyTaskSpec *v1beta1.NetReachHealthySpec `json:"NetReachHealthyTaskSpec,omitempty"`
-	NetReachHealthyTask     *NetReachHealthyTask         `json:"NetReachHealthyTask,omitempty"`
+	NetReachTaskSpec *v1beta1.NetReachSpec `json:"NetReachTaskSpec,omitempty"`
+	NetReachTask     *NetReachTask         `json:"NetReachTask,omitempty"`
 
-	HttpAppHealthyTaskSpec *v1beta1.HttpAppHealthySpec `json:"HttpAppHealthyTaskSpec,omitempty"`
-	HttpAppHealthyTask     *HttpAppHealthyTask         `json:"HttpAppHealthyTask,omitempty"`
+	HttpAppHealthyTaskSpec *v1beta1.AppHttpHealthySpec `json:"HttpAppHealthyTaskSpec,omitempty"`
+	HttpAppHealthyTask     *AppHttpHealthyTask         `json:"HttpAppHealthyTask,omitempty"`
 
 	NetDNSTaskSpec *v1beta1.NetdnsSpec `json:"netDNSTaskSpec,omitempty"`
 	NetDNSTask     *NetDNSTask         `json:"netDNSTask,omitempty"`
