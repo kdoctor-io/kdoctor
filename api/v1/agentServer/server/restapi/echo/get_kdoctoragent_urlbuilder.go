@@ -12,11 +12,17 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+
+	"github.com/go-openapi/swag"
 )
 
 // GetKdoctoragentURL generates an URL for the get kdoctoragent operation
 type GetKdoctoragentURL struct {
+	Delay *int64
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -45,6 +51,18 @@ func (o *GetKdoctoragentURL) Build() (*url.URL, error) {
 		_basePath = "/"
 	}
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var delayQ string
+	if o.Delay != nil {
+		delayQ = swag.FormatInt64(*o.Delay)
+	}
+	if delayQ != "" {
+		qs.Set("delay", delayQ)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

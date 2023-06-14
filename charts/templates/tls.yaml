@@ -1,7 +1,4 @@
-{{- if (eq .Values.kdoctorController.tls.method "auto") }}
 {{- $_ := include "generate-ca-certs" . }}
-{{- end }}
-
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
@@ -248,3 +245,28 @@ data:
   tls.crt: {{ $cert.Cert | b64enc }}
   tls.key: {{ $cert.Key  | b64enc }}
 {{- end }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.tls.ca.secretName | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace }}
+type: kubernetes.io/tls
+data:
+  tls.crt:  {{ .ca.Cert | b64enc }}
+  tls.key:  {{ .ca.Key  | b64enc }}
+
+---
+{{- $cn := printf "kdoctor.io" }}
+{{- $cert := genSignedCert $cn (list) (list) 73000 .ca }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.tls.client.secretName | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace }}
+type: kubernetes.io/tls
+data:
+  ca.crt:  {{ .ca.Cert | b64enc }}
+  tls.crt: {{ $cert.Cert | b64enc }}
+  tls.key: {{ $cert.Key  | b64enc }}

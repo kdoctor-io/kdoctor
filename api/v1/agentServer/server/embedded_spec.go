@@ -42,6 +42,155 @@ func init() {
           "echo"
         ],
         "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "echo http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request counts",
+        "parameters": [
+          {
+            "name": "test-args",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EchoBody"
+            }
+          },
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "delete": {
+        "description": "clean http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "clean http request counts",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "options": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -110,6 +259,155 @@ func init() {
           "echo"
         ],
         "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "echo http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request counts",
+        "parameters": [
+          {
+            "name": "test-args",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EchoBody"
+            }
+          },
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "delete": {
+        "description": "clean http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "clean http request counts",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "options": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -122,6 +420,18 @@ func init() {
     }
   },
   "definitions": {
+    "EchoBody": {
+      "description": "echo request body args",
+      "type": "object",
+      "properties": {
+        "test1": {
+          "type": "string"
+        },
+        "test2": {
+          "type": "string"
+        }
+      }
+    },
     "EchoRes": {
       "description": "echo request",
       "type": "object",
@@ -130,12 +440,20 @@ func init() {
           "description": "client source ip",
           "type": "string"
         },
-        "otherDetail": {
-          "description": "other  information",
+        "paramDetail": {
+          "description": "param detail",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "requestBody": {
+          "description": "request body",
+          "type": "string"
+        },
+        "requestCount": {
+          "description": "request count",
+          "type": "integer"
         },
         "requestHeader": {
           "description": "request header",
@@ -144,6 +462,14 @@ func init() {
             "type": "string"
           }
         },
+        "requestMethod": {
+          "description": "request method",
+          "type": "string"
+        },
+        "requestParam": {
+          "description": "request param",
+          "type": "string"
+        },
         "requestUrl": {
           "description": "request url",
           "type": "string"
@@ -151,6 +477,13 @@ func init() {
         "serverName": {
           "description": "server host name",
           "type": "string"
+        },
+        "supportedMethod": {
+          "description": "request body",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
@@ -181,6 +514,155 @@ func init() {
           "echo"
         ],
         "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "echo http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request counts",
+        "parameters": [
+          {
+            "name": "test-args",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EchoBody"
+            }
+          },
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "delete": {
+        "description": "clean http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "clean http request counts",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "options": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -249,6 +731,155 @@ func init() {
           "echo"
         ],
         "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "echo http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request counts",
+        "parameters": [
+          {
+            "name": "test-args",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EchoBody"
+            }
+          },
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "delete": {
+        "description": "clean http request counts",
+        "tags": [
+          "echo"
+        ],
+        "summary": "clean http request counts",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
+          }
+        }
+      },
+      "options": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EchoRes"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "echo http request",
+        "tags": [
+          "echo"
+        ],
+        "summary": "echo http request",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "delay some second return response",
+            "name": "delay",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -261,6 +892,18 @@ func init() {
     }
   },
   "definitions": {
+    "EchoBody": {
+      "description": "echo request body args",
+      "type": "object",
+      "properties": {
+        "test1": {
+          "type": "string"
+        },
+        "test2": {
+          "type": "string"
+        }
+      }
+    },
     "EchoRes": {
       "description": "echo request",
       "type": "object",
@@ -269,12 +912,20 @@ func init() {
           "description": "client source ip",
           "type": "string"
         },
-        "otherDetail": {
-          "description": "other  information",
+        "paramDetail": {
+          "description": "param detail",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "requestBody": {
+          "description": "request body",
+          "type": "string"
+        },
+        "requestCount": {
+          "description": "request count",
+          "type": "integer"
         },
         "requestHeader": {
           "description": "request header",
@@ -283,6 +934,14 @@ func init() {
             "type": "string"
           }
         },
+        "requestMethod": {
+          "description": "request method",
+          "type": "string"
+        },
+        "requestParam": {
+          "description": "request param",
+          "type": "string"
+        },
         "requestUrl": {
           "description": "request url",
           "type": "string"
@@ -290,6 +949,13 @@ func init() {
         "serverName": {
           "description": "server host name",
           "type": "string"
+        },
+        "supportedMethod": {
+          "description": "request body",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

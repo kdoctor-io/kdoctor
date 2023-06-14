@@ -48,6 +48,12 @@ func NewHTTPServerAPIAPI(spec *loads.Document) *HTTPServerAPIAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		EchoDeleteHandler: echo.DeleteHandlerFunc(func(params echo.DeleteParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Delete has not yet been implemented")
+		}),
+		EchoDeleteKdoctoragentHandler: echo.DeleteKdoctoragentHandlerFunc(func(params echo.DeleteKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.DeleteKdoctoragent has not yet been implemented")
+		}),
 		EchoGetHandler: echo.GetHandlerFunc(func(params echo.GetParams) middleware.Responder {
 			return middleware.NotImplemented("operation echo.Get has not yet been implemented")
 		}),
@@ -62,6 +68,36 @@ func NewHTTPServerAPIAPI(spec *loads.Document) *HTTPServerAPIAPI {
 		}),
 		EchoGetKdoctoragentHandler: echo.GetKdoctoragentHandlerFunc(func(params echo.GetKdoctoragentParams) middleware.Responder {
 			return middleware.NotImplemented("operation echo.GetKdoctoragent has not yet been implemented")
+		}),
+		EchoHeadHandler: echo.HeadHandlerFunc(func(params echo.HeadParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Head has not yet been implemented")
+		}),
+		EchoHeadKdoctoragentHandler: echo.HeadKdoctoragentHandlerFunc(func(params echo.HeadKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.HeadKdoctoragent has not yet been implemented")
+		}),
+		EchoOptionsHandler: echo.OptionsHandlerFunc(func(params echo.OptionsParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Options has not yet been implemented")
+		}),
+		EchoOptionsKdoctoragentHandler: echo.OptionsKdoctoragentHandlerFunc(func(params echo.OptionsKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.OptionsKdoctoragent has not yet been implemented")
+		}),
+		EchoPatchHandler: echo.PatchHandlerFunc(func(params echo.PatchParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Patch has not yet been implemented")
+		}),
+		EchoPatchKdoctoragentHandler: echo.PatchKdoctoragentHandlerFunc(func(params echo.PatchKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PatchKdoctoragent has not yet been implemented")
+		}),
+		EchoPostHandler: echo.PostHandlerFunc(func(params echo.PostParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Post has not yet been implemented")
+		}),
+		EchoPostKdoctoragentHandler: echo.PostKdoctoragentHandlerFunc(func(params echo.PostKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PostKdoctoragent has not yet been implemented")
+		}),
+		EchoPutHandler: echo.PutHandlerFunc(func(params echo.PutParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Put has not yet been implemented")
+		}),
+		EchoPutKdoctoragentHandler: echo.PutKdoctoragentHandlerFunc(func(params echo.PutKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PutKdoctoragent has not yet been implemented")
 		}),
 	}
 }
@@ -99,6 +135,10 @@ type HTTPServerAPIAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
+	// EchoDeleteHandler sets the operation handler for the delete operation
+	EchoDeleteHandler echo.DeleteHandler
+	// EchoDeleteKdoctoragentHandler sets the operation handler for the delete kdoctoragent operation
+	EchoDeleteKdoctoragentHandler echo.DeleteKdoctoragentHandler
 	// EchoGetHandler sets the operation handler for the get operation
 	EchoGetHandler echo.GetHandler
 	// HealthyGetHealthyLivenessHandler sets the operation handler for the get healthy liveness operation
@@ -109,6 +149,26 @@ type HTTPServerAPIAPI struct {
 	HealthyGetHealthyStartupHandler healthy.GetHealthyStartupHandler
 	// EchoGetKdoctoragentHandler sets the operation handler for the get kdoctoragent operation
 	EchoGetKdoctoragentHandler echo.GetKdoctoragentHandler
+	// EchoHeadHandler sets the operation handler for the head operation
+	EchoHeadHandler echo.HeadHandler
+	// EchoHeadKdoctoragentHandler sets the operation handler for the head kdoctoragent operation
+	EchoHeadKdoctoragentHandler echo.HeadKdoctoragentHandler
+	// EchoOptionsHandler sets the operation handler for the options operation
+	EchoOptionsHandler echo.OptionsHandler
+	// EchoOptionsKdoctoragentHandler sets the operation handler for the options kdoctoragent operation
+	EchoOptionsKdoctoragentHandler echo.OptionsKdoctoragentHandler
+	// EchoPatchHandler sets the operation handler for the patch operation
+	EchoPatchHandler echo.PatchHandler
+	// EchoPatchKdoctoragentHandler sets the operation handler for the patch kdoctoragent operation
+	EchoPatchKdoctoragentHandler echo.PatchKdoctoragentHandler
+	// EchoPostHandler sets the operation handler for the post operation
+	EchoPostHandler echo.PostHandler
+	// EchoPostKdoctoragentHandler sets the operation handler for the post kdoctoragent operation
+	EchoPostKdoctoragentHandler echo.PostKdoctoragentHandler
+	// EchoPutHandler sets the operation handler for the put operation
+	EchoPutHandler echo.PutHandler
+	// EchoPutKdoctoragentHandler sets the operation handler for the put kdoctoragent operation
+	EchoPutKdoctoragentHandler echo.PutKdoctoragentHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -186,6 +246,12 @@ func (o *HTTPServerAPIAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.EchoDeleteHandler == nil {
+		unregistered = append(unregistered, "echo.DeleteHandler")
+	}
+	if o.EchoDeleteKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.DeleteKdoctoragentHandler")
+	}
 	if o.EchoGetHandler == nil {
 		unregistered = append(unregistered, "echo.GetHandler")
 	}
@@ -200,6 +266,36 @@ func (o *HTTPServerAPIAPI) Validate() error {
 	}
 	if o.EchoGetKdoctoragentHandler == nil {
 		unregistered = append(unregistered, "echo.GetKdoctoragentHandler")
+	}
+	if o.EchoHeadHandler == nil {
+		unregistered = append(unregistered, "echo.HeadHandler")
+	}
+	if o.EchoHeadKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.HeadKdoctoragentHandler")
+	}
+	if o.EchoOptionsHandler == nil {
+		unregistered = append(unregistered, "echo.OptionsHandler")
+	}
+	if o.EchoOptionsKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.OptionsKdoctoragentHandler")
+	}
+	if o.EchoPatchHandler == nil {
+		unregistered = append(unregistered, "echo.PatchHandler")
+	}
+	if o.EchoPatchKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.PatchKdoctoragentHandler")
+	}
+	if o.EchoPostHandler == nil {
+		unregistered = append(unregistered, "echo.PostHandler")
+	}
+	if o.EchoPostKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.PostKdoctoragentHandler")
+	}
+	if o.EchoPutHandler == nil {
+		unregistered = append(unregistered, "echo.PutHandler")
+	}
+	if o.EchoPutKdoctoragentHandler == nil {
+		unregistered = append(unregistered, "echo.PutKdoctoragentHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -289,6 +385,14 @@ func (o *HTTPServerAPIAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"][""] = echo.NewDelete(o.context, o.EchoDeleteHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/kdoctoragent"] = echo.NewDeleteKdoctoragent(o.context, o.EchoDeleteKdoctoragentHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -309,6 +413,46 @@ func (o *HTTPServerAPIAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/kdoctoragent"] = echo.NewGetKdoctoragent(o.context, o.EchoGetKdoctoragentHandler)
+	if o.handlers["HEAD"] == nil {
+		o.handlers["HEAD"] = make(map[string]http.Handler)
+	}
+	o.handlers["HEAD"][""] = echo.NewHead(o.context, o.EchoHeadHandler)
+	if o.handlers["HEAD"] == nil {
+		o.handlers["HEAD"] = make(map[string]http.Handler)
+	}
+	o.handlers["HEAD"]["/kdoctoragent"] = echo.NewHeadKdoctoragent(o.context, o.EchoHeadKdoctoragentHandler)
+	if o.handlers["OPTIONS"] == nil {
+		o.handlers["OPTIONS"] = make(map[string]http.Handler)
+	}
+	o.handlers["OPTIONS"][""] = echo.NewOptions(o.context, o.EchoOptionsHandler)
+	if o.handlers["OPTIONS"] == nil {
+		o.handlers["OPTIONS"] = make(map[string]http.Handler)
+	}
+	o.handlers["OPTIONS"]["/kdoctoragent"] = echo.NewOptionsKdoctoragent(o.context, o.EchoOptionsKdoctoragentHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"][""] = echo.NewPatch(o.context, o.EchoPatchHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/kdoctoragent"] = echo.NewPatchKdoctoragent(o.context, o.EchoPatchKdoctoragentHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"][""] = echo.NewPost(o.context, o.EchoPostHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/kdoctoragent"] = echo.NewPostKdoctoragent(o.context, o.EchoPostKdoctoragentHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"][""] = echo.NewPut(o.context, o.EchoPutHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/kdoctoragent"] = echo.NewPutKdoctoragent(o.context, o.EchoPutKdoctoragentHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

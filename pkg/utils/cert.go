@@ -23,46 +23,74 @@ import (
 )
 
 const (
-	// 100 years
-	DefaultCAduration = time.Hour * 24 * 365 * 100
+	// 200 years
+	DefaultCAduration = time.Hour * 24 * 365 * 200
 )
 
 // host could be ip or dns
-func NewServerCertKey(host string, alternateIPs []net.IP, alternateDNS []string) (serverCert, serverKey, caCert []byte, err error) {
-
-	// ----------- generate self-signed ca
+func NewServerCertKey(host string, alternateIPs []net.IP, alternateDNS []string, caCertPath, caKeyPath string) (serverCert, serverKey, caCert []byte, err error) {
 	validFrom := time.Now().Add(-time.Hour) // valid an hour earlier to avoid flakes due to clock skew
+	var caCertificate *x509.Certificate
+	var caKey *rsa.PrivateKey
+	var caDERBytes []byte
+	// ----------- generate self-signed ca
+	if caCertPath == "" || caKeyPath == "" {
 
-	caKey, err := rsa.GenerateKey(cryptorand.Reader, 2048)
-	if err != nil {
-		return nil, nil, nil, err
-	}
+		caKey, err := rsa.GenerateKey(cryptorand.Reader, 2048)
 
-	CommonName := types.TlsCaCommonName
-	Organization := []string{types.TlsCaCommonName}
+		if err != nil {
+			return nil, nil, nil, err
+		}
 
-	tmpl := x509.Certificate{
-		SerialNumber: new(big.Int).SetInt64(0),
-		Subject: pkix.Name{
-			CommonName:   CommonName,
-			Organization: Organization,
-		},
-		DNSNames:              []string{CommonName},
-		NotBefore:             validFrom.UTC(),
-		NotAfter:              validFrom.Add(DefaultCAduration).UTC(),
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
-		BasicConstraintsValid: true,
-		IsCA:                  true,
-	}
+		CommonName := types.TlsCaCommonName
+		Organization := []string{types.TlsCaCommonName}
 
-	caDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &tmpl, &tmpl, caKey.Public(), caKey)
-	if err != nil {
-		return nil, nil, nil, err
-	}
+		tmpl := x509.Certificate{
+			SerialNumber: new(big.Int).SetInt64(0),
+			Subject: pkix.Name{
+				CommonName:   CommonName,
+				Organization: Organization,
+			},
+			DNSNames:              []string{CommonName},
+			NotBefore:             validFrom.UTC(),
+			NotAfter:              validFrom.Add(DefaultCAduration).UTC(),
+			KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+			BasicConstraintsValid: true,
+			IsCA:                  true,
+		}
 
-	caCertificate, err := x509.ParseCertificate(caDERBytes)
-	if err != nil {
-		return nil, nil, nil, err
+		caDERBytes, err := x509.CreateCertificate(cryptorand.Reader, &tmpl, &tmpl, caKey.Public(), caKey)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		caCertificate, err = x509.ParseCertificate(caDERBytes)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+	} else {
+		//read ca cert
+		caDERBytes, err = os.ReadFile(caCertPath)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		blockCert, _ := pem.Decode(caDERBytes)
+		caCertificate, err = x509.ParseCertificate(blockCert.Bytes)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		//read ca key
+		cakeyByte, err := os.ReadFile(caKeyPath)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		blockKey, _ := pem.Decode(cakeyByte)
+		caKey, err = x509.ParsePKCS1PrivateKey(blockKey.Bytes)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
 	}
 
 	// --------------- server cert
@@ -120,9 +148,8 @@ func NewServerCertKey(host string, alternateIPs []net.IP, alternateDNS []string)
 
 // generate cert for local host name and local ip, and write to files
 // alternateDNS could be pod dns name
-func NewServerCertKeyForLocalNode(alternateDNS []string, destCertFilePath, destKeyFilePath, destCaFilePath string) error {
+func NewServerCertKeyForLocalNode(alternateDNS []string, alternateIPs []net.IP, caCertPath, caKeyPath, destCertFilePath, destKeyFilePath, destCaCertPath string) error {
 	host, _ := os.Hostname()
-	alternateIPs := []net.IP{}
 
 	ipv4List, ipv6List, err := GetAllInterfaceUnicastAddrWithoutMask()
 	if err != nil {
@@ -131,7 +158,7 @@ func NewServerCertKeyForLocalNode(alternateDNS []string, destCertFilePath, destK
 	alternateIPs = append(alternateIPs, ipv4List...)
 	alternateIPs = append(alternateIPs, ipv6List...)
 
-	serverCert, serverKey, caCert, err := NewServerCertKey(host, alternateIPs, alternateDNS)
+	serverCert, serverKey, caCert, err := NewServerCertKey(host, alternateIPs, alternateDNS, caCertPath, caKeyPath)
 	if err != nil {
 		return err
 	}
@@ -139,17 +166,13 @@ func NewServerCertKeyForLocalNode(alternateDNS []string, destCertFilePath, destK
 	if err := cert.WriteCert(destCertFilePath, serverCert); err != nil {
 		return err
 	}
-	if err := cert.WriteCert(destCaFilePath, caCert); err != nil {
+
+	if err := cert.WriteCert(destCaCertPath, caCert); err != nil {
 		return err
 	}
+
 	if err := keyutil.WriteKey(destKeyFilePath, serverKey); err != nil {
 		return err
 	}
 	return nil
-}
-
-// CanReadCertAndKey returns true if the certificate and key files already exists,
-// otherwise returns false. If lost one of cert and key, returns error.
-func CanReadCertAndKey(certPath, keyPath string) (bool, error) {
-	return cert.CanReadCertAndKey(certPath, keyPath)
 }

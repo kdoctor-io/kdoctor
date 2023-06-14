@@ -25,6 +25,8 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
+	config "github.com/kdoctor-io/kdoctor/pkg/types"
+	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"golang.org/x/net/http2"
 	"io"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -35,9 +37,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
-	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 )
 
 // Max size of the buffer of result channel.
@@ -375,7 +374,6 @@ func cloneRequest(r *http.Request, body []byte) *http.Request {
 	}
 	if len(body) > 0 {
 		r2.Body = io.NopCloser(bytes.NewReader(body))
-
 	}
 	return r2
 }

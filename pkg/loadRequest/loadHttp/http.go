@@ -35,7 +35,7 @@ type HttpRequestData struct {
 	PerRequestTimeoutMS int
 	RequestTimeSecond   int
 	Header              map[string]string
-	Body                string
+	Body                []byte
 	ClientCert          tls.Certificate
 	CaCertPool          *x509.CertPool
 	Http2               bool
@@ -65,8 +65,8 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 		Http2:              reqData.Http2,
 		Cert:               reqData.ClientCert,
 		CertPool:           reqData.CaCertPool,
-		RequestBody:        []byte(reqData.Body),
 		ExpectStatusCode:   reqData.ExpectStatusCode,
+		RequestBody:        reqData.Body,
 	}
 	logger.Sugar().Infof("do http requests work=%v", w)
 	w.Init()

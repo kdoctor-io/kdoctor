@@ -71,6 +71,9 @@ func init() {
 	globalFlag := rootCmd.PersistentFlags()
 	globalFlag.StringVarP(&types.AgentConfig.ConfigMapPath, "config-path", "C", "", "configmap file path")
 	globalFlag.BoolVarP(&types.AgentConfig.AppMode, "app-mode", "A", false, "app mode")
+	globalFlag.BoolVarP(&types.AgentConfig.TlsInsecure, "tls-insecure", "K", true, "skip verify tls")
+	globalFlag.StringVarP(&types.AgentConfig.TlsCaCertPath, "tls-ca-cert", "R", "/etc/tls/ca.crt", "ca file path")
+	globalFlag.StringVarP(&types.AgentConfig.TlsCaKeyPath, "tls-ca-key", "Y", "/etc/tls/ca.key", "ca key file path")
 	if e := viper.BindPFlags(globalFlag); e != nil {
 		logger.Sugar().Fatalf("failed to BindPFlags, reason=%v", e)
 	}

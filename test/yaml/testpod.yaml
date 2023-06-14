@@ -1,24 +1,59 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: test
-  namespace: default
+  name: kdoctor-test
+  namespace: kube-system
   labels:
-    app: test
+    app: kdoctor-test
 spec:
   selector:
     matchLabels:
-      app: test
+      app: kdoctor-test
   template:
     metadata:
-      name: test
+      name: kdoctor-test
       labels:
-        app: test
+        app: kdoctor-test
     spec:
       containers:
-        - name: test
+        - name: kdoctor-test
           image: <<EXAMPLE_APP_IMAGE>>
           imagePullPolicy: IfNotPresent
           command: ["/usr/bin/agent"]
           args:
             - "--app-mode=true"
+            - "--tls-ca-cert=/etc/tls/ca.crt"
+            - "--tls-ca-key=/etc/tls/ca.key"
+          volumeMounts:
+            - mountPath: /etc/tls
+              name: tls
+      volumes:
+        - name: tls
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  items:
+                    - key: tls.key
+                      path: ca.key
+                    - key: tls.crt
+                      path: ca.crt
+                  name: kdoctor-ca
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kdoctor-test
+  namespace: kube-system
+spec:
+  selector:
+    app: kdoctor-test
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: https
+      port: 443
+      targetPort: 443
+  type: ClusterIP

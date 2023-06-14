@@ -23,17 +23,32 @@ type EchoRes struct {
 	// client source ip
 	ClientIP string `json:"clientIp,omitempty"`
 
-	// other  information
-	OtherDetail map[string]string `json:"otherDetail,omitempty"`
+	// param detail
+	ParamDetail map[string]string `json:"paramDetail,omitempty"`
+
+	// request body
+	RequestBody string `json:"requestBody,omitempty"`
+
+	// request count
+	RequestCount int64 `json:"requestCount,omitempty"`
 
 	// request header
 	RequestHeader map[string]string `json:"requestHeader,omitempty"`
+
+	// request method
+	RequestMethod string `json:"requestMethod,omitempty"`
+
+	// request param
+	RequestParam string `json:"requestParam,omitempty"`
 
 	// request url
 	RequestURL string `json:"requestUrl,omitempty"`
 
 	// server host name
 	ServerName string `json:"serverName,omitempty"`
+
+	// request body
+	SupportedMethod []string `json:"supportedMethod"`
 }
 
 // Validate validates this echo res
