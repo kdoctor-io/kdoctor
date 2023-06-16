@@ -18,7 +18,7 @@ type AppHttpHealthySpec struct {
 	Request *NetHttpRequest `json:"request,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	SuccessCondition *NetSuccessCondition `json:"success,omitempty"`
+	SuccessCondition *NetSuccessCondition `json:"expect,omitempty"`
 }
 
 type AppHttpHealthyTarget struct {
@@ -32,15 +32,23 @@ type AppHttpHealthyTarget struct {
 
 	// +kubebuilder:default=false
 	// +kubebuilder:validation:Optional
-
 	Http2 bool `json:"http2"`
-	// +kubebuilder:validation:Type:=string
-	// +kubebuilder:validation:Optional
-	Body *string `json:"body,omitempty"`
 
 	// +kubebuilder:validation:Type:=string
 	// +kubebuilder:validation:Optional
-	TlsSecret *string `json:"tls-secret,omitempty"`
+	BodyConfigName *string `json:"bodyConfigmapName,omitempty"`
+
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Optional
+	BodyConfigNamespace *string `json:"bodyConfigmapNamespace,omitempty"`
+
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Optional
+	TlsSecretName *string `json:"tlsSecretName,omitempty"`
+
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Optional
+	TlsSecretNamespace *string `json:"tlsSecretNamespace,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	Header []string `json:"header,omitempty"`

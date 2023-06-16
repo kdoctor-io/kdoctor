@@ -56,6 +56,23 @@ spec:
             type: object
           spec:
             properties:
+              expect:
+                properties:
+                  meanAccessDelayInMs:
+                    default: 5000
+                    format: int64
+                    minimum: 1
+                    type: integer
+                  statusCode:
+                    maximum: 599
+                    minimum: 100
+                    type: integer
+                  successRate:
+                    default: 1
+                    maximum: 1
+                    minimum: 0
+                    type: number
+                type: object
               request:
                 properties:
                   domain:
@@ -71,6 +88,13 @@ spec:
                     format: int64
                     minimum: 1
                     type: integer
+                  protocol:
+                    default: udp
+                    enum:
+                    - udp
+                    - tcp
+                    - tcp-tls
+                    type: string
                   qps:
                     default: 5
                     format: int64
@@ -144,31 +168,13 @@ spec:
                     type: object
                 type: object
                 x-kubernetes-map-type: atomic
-              success:
-                properties:
-                  meanAccessDelayInMs:
-                    default: 5000
-                    format: int64
-                    minimum: 1
-                    type: integer
-                  successRate:
-                    default: 1
-                    maximum: 1
-                    minimum: 0
-                    type: number
-                type: object
               target:
                 properties:
-                  protocol:
-                    default: udp
-                    enum:
-                    - udp
-                    - tcp
-                    - tcp-tls
-                    type: string
                   targetDns:
                     properties:
-                      serviceNamespaceName:
+                      serviceName:
+                        type: string
+                      serviceNamespace:
                         type: string
                       testIPv4:
                         default: true

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/miekg/dns"
@@ -102,7 +101,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 		ip := net.ParseIP(*instance.Spec.Target.NetDnsTargetUser.Server)
 		if ip.To4() != nil {
 			testTargetList = append(testTargetList, &testTarget{Name: "typeA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-				Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+				Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 				DnsType:               dns.TypeA,
 				TargetDomain:          instance.Spec.Request.Domain,
 				DnsServerAddr:         server,
@@ -112,7 +111,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 			}})
 		} else {
 			testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-				Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+				Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 				DnsType:               dns.TypeAAAA,
 				TargetDomain:          instance.Spec.Request.Domain,
 				DnsServerAddr:         server,
@@ -125,7 +124,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 
 	if instance.Spec.Target.NetDnsTargetDns != nil {
 		// When DNS service is not specified, search for DNS services within the cluster
-		if instance.Spec.Target.NetDnsTargetDns.ServiceNamespacedName == nil {
+		if instance.Spec.Target.NetDnsTargetDns.ServiceName == nil {
 			dnsServiceIPs, err := k8sObjManager.GetK8sObjManager().ListServicesDnsIP(ctx)
 			if err != nil {
 				finalfailureReason = fmt.Sprintf("ListServicesDnsIP err: %v", err)
@@ -136,7 +135,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				server = net.JoinHostPort(serviceIP, "53")
 				if ip.To4() != nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv4 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-						Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+						Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 						DnsType:               dns.TypeA,
 						TargetDomain:          instance.Spec.Request.Domain,
 						DnsServerAddr:         server,
@@ -146,7 +145,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 					}})
 				} else if ip.To4() == nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv6 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-						Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+						Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 						DnsType:               dns.TypeAAAA,
 						TargetDomain:          instance.Spec.Request.Domain,
 						DnsServerAddr:         server,
@@ -157,18 +156,16 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				}
 			}
 		} else {
-			// eg: kube-system/coredns
-			namespacedName := strings.Split(*instance.Spec.Target.NetDnsTargetDns.ServiceNamespacedName, "/")
-			dnsServices, err := k8sObjManager.GetK8sObjManager().GetService(ctx, namespacedName[1], namespacedName[0])
+			dnsServices, err := k8sObjManager.GetK8sObjManager().GetService(ctx, *instance.Spec.Target.NetDnsTargetDns.ServiceName, *instance.Spec.Target.NetDnsTargetDns.ServiceNamespace)
 			if err != nil {
-				finalfailureReason = fmt.Sprintf("GetService name: %s namespace: %s err: %v", namespacedName[1], namespacedName[0], err)
+				finalfailureReason = fmt.Sprintf("GetService name: %s namespace: %s err: %v", *instance.Spec.Target.NetDnsTargetDns.ServiceName, *instance.Spec.Target.NetDnsTargetDns.ServiceNamespace, err)
 			}
 			for _, serviceIP := range dnsServices.Spec.ClusterIPs {
 				ip := net.ParseIP(serviceIP)
 				server = net.JoinHostPort(serviceIP, "53")
 				if ip.To4() != nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv4 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-						Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+						Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 						DnsType:               dns.TypeA,
 						TargetDomain:          instance.Spec.Request.Domain,
 						DnsServerAddr:         server,
@@ -178,7 +175,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 					}})
 				} else if ip.To4() == nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv6 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
-						Protocol:              loadDns.RequestProtocol(*instance.Spec.Target.Protocol),
+						Protocol:              loadDns.RequestProtocol(*instance.Spec.Request.Protocol),
 						DnsType:               dns.TypeAAAA,
 						TargetDomain:          instance.Spec.Request.Domain,
 						DnsServerAddr:         server,

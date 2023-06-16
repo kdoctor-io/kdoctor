@@ -25,7 +25,7 @@ spec:
     roundNumber: 2
     roundTimeoutMinute: 1
     schedule: 1 1
-  success:
+  expect:
     meanAccessDelayInMs: 10000
     successRate: 1
   target:
@@ -96,7 +96,7 @@ status:
 
         >notice: when test targetAgent case, it will send http request to all targets at the same time with spec.request.qps for each one. That meaning, the actually QPS may be bigger than spec.request.qps
 
-* spec.success: define the success condition of the task result 
+* spec.expect: define the success condition of the task result 
 
     meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure
 
@@ -152,7 +152,7 @@ spec:
     roundNumber: 2
     roundTimeoutMinute: 1
     schedule: 1 1
-  success:
+  expect:
     meanAccessDelayInMs: 10000
     successRate: 1
   target:

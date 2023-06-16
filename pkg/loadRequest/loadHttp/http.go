@@ -41,6 +41,7 @@ type HttpRequestData struct {
 	Http2               bool
 	DisableKeepAlives   bool
 	DisableCompression  bool
+	ExpectStatusCode    *int
 }
 
 func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetrics {
@@ -65,6 +66,7 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 		Cert:               reqData.ClientCert,
 		CertPool:           reqData.CaCertPool,
 		RequestBody:        []byte(reqData.Body),
+		ExpectStatusCode:   reqData.ExpectStatusCode,
 	}
 	logger.Sugar().Infof("do http requests work=%v", w)
 	w.Init()
