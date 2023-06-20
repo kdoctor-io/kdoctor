@@ -3,7 +3,10 @@
 
 package v1beta1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type SchedulePlan struct {
 
@@ -117,4 +120,32 @@ type NetHttpRequest struct {
 	// +kubebuilder:default=5
 	// +kubebuilder:validation:Minimum=1
 	PerRequestTimeoutInMS int `json:"perRequestTimeoutInMS,omitempty"`
+}
+
+type AgentSpec struct {
+	// +kubebuilder:validation:Optional
+	Annotation map[string]string `json:"annotation,omitempty"`
+
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=Deployment;DaemonSet
+	Kind string `json:"kind"`
+
+	// +kubebuilder:validation:Optional
+	DeploymentReplicas *int32 `json:"deploymentReplicas,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Affinity *v1.Affinity `json:"affinity,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Env []v1.EnvVar `json:"env,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:default=false
+	HostNetwork bool `json:"hostNetwork,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	TerminationGracePeriodSeconds *int64 `json:"terminationGracePeriodSeconds,omitempty"`
 }

@@ -33,3 +33,11 @@ data:
     {{- end }}
     agentDaemonsetName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
     agentIngressName: {{ include "project.kdoctorAgent.ingressName" . }}
+    kdoctorAgent:
+      containerCommand: {{ .Values.kdoctorAgent.cmdBinName }}
+      hostNetwork: {{ .Values.kdoctorAgent.hostnetwork }}
+      imageConfig:
+        agentImage: {{ include "project.kdoctorAgent.image" . | quote }}
+        pullPolicy: {{ .Values.kdoctorAgent.image.pullPolicy }}
+      serviceAccountName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+

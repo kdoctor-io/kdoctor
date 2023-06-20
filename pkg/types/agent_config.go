@@ -54,6 +54,9 @@ type AgentConfigStruct struct {
 	TlsInsecure   bool
 	AppMode       bool
 
+	TaskKind string
+	TaskName string
+
 	// from configmap
 	Configmap ConfigmapConfig
 }
