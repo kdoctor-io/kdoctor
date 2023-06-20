@@ -33,3 +33,5 @@ data:
     {{- end }}
     agentDaemonsetName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
     agentIngressName: {{ include "project.kdoctorAgent.ingressName" . }}
+    kdoctorAgent:
+      uniqueMatchLabelKey: {{ .Values.kdoctorAgent.uniqueMatchLabelKey }}

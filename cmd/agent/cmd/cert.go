@@ -6,12 +6,16 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net"
+	"strings"
+	"time"
+
+	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/api/errors"
+
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
-	"go.uber.org/zap"
-	"net"
-	"strings"
 )
 
 var (
@@ -21,6 +25,7 @@ var (
 )
 
 func GenServerCert(logger *zap.Logger) {
+	checkServiceReady(logger)
 
 	// get svc domain and ip
 	alternateIP := []net.IP{}
@@ -28,9 +33,9 @@ func GenServerCert(logger *zap.Logger) {
 	servicePortName := "http"
 
 	if types.AgentConfig.Configmap.EnableIPv4 {
-		serviceIPv4, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.Configmap.AgentSerivceIpv4Name, types.AgentConfig.PodNamespace, servicePortName)
+		serviceIPv4, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace, servicePortName)
 		if err != nil {
-			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.Configmap.AgentSerivceIpv4Name, err)
+			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV4Name, err)
 		}
 		logger.Sugar().Debugf("get ipv4 serviceAccessurl %v", serviceIPv4)
 		// ipv4 ip
@@ -53,17 +58,17 @@ func GenServerCert(logger *zap.Logger) {
 		}
 
 		// ipv4 dns
-		alternateDNS = append(alternateDNS, types.AgentConfig.Configmap.AgentSerivceIpv4Name)
-		domain := fmt.Sprintf("%s.%s", types.AgentConfig.Configmap.AgentSerivceIpv4Name, types.AgentConfig.PodNamespace)
+		alternateDNS = append(alternateDNS, types.AgentConfig.ServiceV4Name)
+		domain := fmt.Sprintf("%s.%s", types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
 		alternateDNS = append(alternateDNS, domain)
 		alternateDNS = append(alternateDNS, fmt.Sprintf("%s.svc", domain))
 		alternateDNS = append(alternateDNS, fmt.Sprintf("%s.svc.cluster.local", domain))
 	}
 
 	if types.AgentConfig.Configmap.EnableIPv6 {
-		serviceIPv6, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.Configmap.AgentSerivceIpv6Name, types.AgentConfig.PodNamespace, servicePortName)
+		serviceIPv6, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace, servicePortName)
 		if err != nil {
-			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.Configmap.AgentSerivceIpv6Name, err)
+			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
 		}
 		// ipv6 ip
 		logger.Sugar().Debugf("get ipv6 serviceAccessurl %v", serviceIPv6)
@@ -87,8 +92,8 @@ func GenServerCert(logger *zap.Logger) {
 		}
 
 		// ipv6 dns
-		alternateDNS = append(alternateDNS, types.AgentConfig.Configmap.AgentSerivceIpv6Name)
-		domain := fmt.Sprintf("%s.%s", types.AgentConfig.Configmap.AgentSerivceIpv6Name, types.AgentConfig.PodNamespace)
+		alternateDNS = append(alternateDNS, types.AgentConfig.ServiceV6Name)
+		domain := fmt.Sprintf("%s.%s", types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace)
 		alternateDNS = append(alternateDNS, domain)
 		alternateDNS = append(alternateDNS, fmt.Sprintf("%s.svc", domain))
 		alternateDNS = append(alternateDNS, fmt.Sprintf("%s.svc.cluster.local", domain))
@@ -100,5 +105,41 @@ func GenServerCert(logger *zap.Logger) {
 	// generate self-signed certificates
 	if e := utils.NewServerCertKeyForLocalNode(alternateDNS, alternateIP, types.AgentConfig.TlsCaCertPath, types.AgentConfig.TlsCaKeyPath, TlsCertPath, TlsKeyPath, CaCertPath); e != nil {
 		logger.Sugar().Fatalf("failed to generate certiface, error=%v", e)
+	}
+}
+
+func checkServiceReady(logger *zap.Logger) {
+	ctx := context.TODO()
+
+	if types.AgentConfig.Configmap.EnableIPv4 {
+		for {
+			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
+			if nil != err {
+				if errors.IsNotFound(err) {
+					logger.Sugar().Errorf("agent runtime IPv4 service %s/%s not exists, wait for controller to create it", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV4Name)
+					time.Sleep(time.Second)
+					continue
+				}
+				logger.Sugar().Errorf("failed to get agent runtime IPv4 service %s/%s, error: %v", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV4Name, err)
+			} else {
+				break
+			}
+		}
+	}
+
+	if types.AgentConfig.Configmap.EnableIPv6 {
+		for {
+			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
+			if nil != err {
+				if errors.IsNotFound(err) {
+					logger.Sugar().Errorf("agent runtime IPv6 service %s/%s not exists, wait for controller to create it", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name)
+					time.Sleep(time.Second)
+					continue
+				}
+				logger.Sugar().Errorf("failed to get runtime agent IPv6 service %s/%s, error: %v", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
+			} else {
+				break
+			}
+		}
 	}
 }

@@ -20,6 +20,12 @@ type ConfigmapConfig struct {
 	AgentSerivceIpv6Name string `yaml:"agentSerivceIpv6Name"`
 	AgentIngressName     string `yaml:"agentIngressName"`
 	AgentDaemonsetName   string `yaml:"agentDaemonsetName"`
+
+	KdoctorAgent KdoctorAgentConfig `yaml:"kdoctorAgent"`
+}
+
+type KdoctorAgentConfig struct {
+	UniqueMatchLabelKey string `json:"uniqueMatchLabelKey"`
 }
 
 type EnvMapping struct {

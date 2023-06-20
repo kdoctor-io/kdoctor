@@ -26,6 +26,8 @@ global:
   ## @param global.configName the configmap name
   configName: "kdoctor"
 
+  configAppTemplate: "kdoctor-app-config-template"
+
 
 ## @section feature parameters
 feature:
@@ -107,6 +109,9 @@ feature:
 ## @section kdoctorAgent parameters
 ##
 kdoctorAgent:
+  ## @param kdoctorAgent.uniqueMatchLabelKey the unique match label key for Agent
+  uniqueMatchLabelKey: ""
+
   ## @param kdoctorAgent.name the kdoctorAgent name
   name: "kdoctor-agent"
 

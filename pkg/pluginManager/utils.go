@@ -5,9 +5,11 @@ package pluginManager
 
 import (
 	"fmt"
-	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 )
 
 func NewStatusHistoryRecord(startTime time.Time, RoundNumber int, schedulePlan *crd.SchedulePlan) *crd.StatusHistoryRecord {
@@ -41,4 +43,26 @@ func CheckItemInList(item string, checklist []string) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+type element interface {
+	~int | ~int32 | ~int64 |
+		~float64 | ~float32 |
+		~string
+}
+
+// RemoveDuplicates would clean up the duplicate element in a given slice
+func RemoveDuplicates[T element](arr []T) []T {
+	var newArr []T
+	dic := make(map[T]struct{})
+
+	for _, tmpElement := range arr {
+		dic[tmpElement] = struct{}{}
+	}
+
+	for tmpItem := range dic {
+		newArr = append(newArr, tmpItem)
+	}
+
+	return newArr
 }

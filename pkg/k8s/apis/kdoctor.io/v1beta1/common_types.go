@@ -3,7 +3,10 @@
 
 package v1beta1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type SchedulePlan struct {
 
@@ -31,11 +34,42 @@ type TaskStatus struct {
 	Finish bool `json:"finish"`
 
 	// +kubebuilder:validation:Optional
+	FinishTime *metav1.Time `json:"finishTime,omitempty"`
+
+	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Enum=succeed;fail;unknown
 	LastRoundStatus *string `json:"lastRoundStatus,omitempty"`
 
-	History []StatusHistoryRecord `json:"history"`
+	// +kubebuilder:validation:Optional
+	History []StatusHistoryRecord `json:"history,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Resource *TaskResource `json:"resource,omitempty"`
 }
+
+type TaskResource struct {
+	// +kubebuilder:validation:Required
+	RuntimeName string `json:"runtimeName,omitempty"`
+
+	// +kubebuilder:validation:Required
+	RuntimeType string `json:"runtimeType,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	ServiceNameV4 *string `json:"serviceNameV4,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	ServiceNameV6 *string `json:"serviceNameV6,omitempty"`
+
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=creating;created;deleted
+	RuntimeStatus string `json:"runtimeStatus,omitempty"`
+}
+
+const (
+	RuntimeCreating = "creating"
+	RuntimeCreated  = "created"
+	RuntimeDeleted  = "deleted"
+)
 
 const (
 	StatusHistoryRecordStatusSucceed    = "succeed"
@@ -116,4 +150,34 @@ type NetHttpRequest struct {
 	// +kubebuilder:default=5
 	// +kubebuilder:validation:Minimum=1
 	PerRequestTimeoutInMS int `json:"perRequestTimeoutInMS,omitempty"`
+}
+
+type AgentSpec struct {
+	// +kubebuilder:validation:Optional
+	Annotation map[string]string `json:"annotation,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:default=DaemonSet
+	// +kubebuilder:validation:Enum=Deployment;DaemonSet
+	Kind string `json:"kind,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	DeploymentReplicas *int32 `json:"deploymentReplicas,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Affinity *v1.Affinity `json:"affinity,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Env []v1.EnvVar `json:"env,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:default=false
+	HostNetwork bool `json:"hostNetwork,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
+
+	// +kubebuilder:default=60
+	// +kubebuilder:validation:Optional
+	TerminationGracePeriodMinutes *int64 `json:"terminationGracePeriodMinutes,omitempty"`
 }

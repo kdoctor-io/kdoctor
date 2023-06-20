@@ -4,14 +4,18 @@
 package cmd
 
 import (
-	"github.com/kdoctor-io/kdoctor/pkg/logger"
-	"github.com/kdoctor-io/kdoctor/pkg/types"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
 	"os"
 	"reflect"
 	"strconv"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	k8yaml "sigs.k8s.io/yaml"
+
+	"github.com/kdoctor-io/kdoctor/pkg/logger"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func init() {
@@ -70,6 +74,10 @@ func init() {
 	// command flags
 	globalFlag := rootCmd.PersistentFlags()
 	globalFlag.StringVarP(&types.ControllerConfig.ConfigMapPath, "config-path", "C", "", "configmap file path")
+	globalFlag.StringVar(&types.ControllerConfig.ConfigMapDeploymentPath, "configmap-deployment-template", "", "configmap deployment template file path")
+	globalFlag.StringVar(&types.ControllerConfig.ConfigMapDaemonsetPath, "configmap-daemonset-template", "", "configmap daemonset template file path")
+	globalFlag.StringVar(&types.ControllerConfig.ConfigMapPodPath, "configmap-pod-template", "", "configmap pod template file path")
+	globalFlag.StringVar(&types.ControllerConfig.ConfigMapServicePath, "configmap-service-template", "", "configmap service template file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsCaCertPath, "tls-ca-cert", "R", "", "ca file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsServerCertPath, "tls-server-cert", "T", "", "server cert file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsServerKeyPath, "tls-server-key", "Y", "", "server key file path")
@@ -78,6 +86,10 @@ func init() {
 	}
 	printFlag := func() {
 		logger.Info("config-path = " + types.ControllerConfig.ConfigMapPath)
+		logger.Info("configmap-deployment-template = " + types.ControllerConfig.ConfigMapDeploymentPath)
+		logger.Info("configmap-daemonset-template = " + types.ControllerConfig.ConfigMapDaemonsetPath)
+		logger.Info("configmap-pod-template = " + types.ControllerConfig.ConfigMapPodPath)
+		logger.Info("configmap-service-template = " + types.ControllerConfig.ConfigMapServicePath)
 		logger.Info("tls-ca-cert = " + types.ControllerConfig.TlsCaCertPath)
 		logger.Info("tls-server-cert = " + types.ControllerConfig.TlsServerCertPath)
 		logger.Info("tls-server-key = " + types.ControllerConfig.TlsServerKeyPath)
@@ -92,6 +104,24 @@ func init() {
 				logger.Sugar().Fatalf("failed to parse configmap data, error: %v", err)
 			}
 		}
+
+		// 1. load configmap deployment,daemonset,pod templates
+		// 2. singleton for deploy,daemonset,pod
+		fn := func(cmPath string, singleton client.Object) {
+			bytes, err := os.ReadFile(cmPath)
+			if nil != err {
+				logger.Sugar().Fatalf("failed to read configmap file %v, error: %v", cmPath, err)
+			}
+			err = k8yaml.Unmarshal(bytes, singleton)
+			if nil != err {
+				logger.Sugar().Fatalf("failed to unmarshal %s, error: %v", singleton.GetObjectKind().GroupVersionKind(), err)
+			}
+		}
+
+		fn(types.ControllerConfig.ConfigMapDeploymentPath, types.DeploymentTempl)
+		fn(types.ControllerConfig.ConfigMapDaemonsetPath, types.DaemonsetTempl)
+		fn(types.ControllerConfig.ConfigMapPodPath, types.PodTempl)
+		fn(types.ControllerConfig.ConfigMapServicePath, types.ServiceTempl)
 	}
 	cobra.OnInitialize(printFlag)
 

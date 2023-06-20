@@ -6,14 +6,18 @@ package netreach
 import (
 	"context"
 	"fmt"
-	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
-	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
-	"github.com/kdoctor-io/kdoctor/pkg/types"
+	"reflect"
+
 	"go.uber.org/zap"
 	networkingv1 "k8s.io/api/networking/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/strings/slices"
+
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
+	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
@@ -45,6 +49,7 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 		serviceAccessPortName := "http"
 		testLoadBalancer := false
 		if types.ControllerConfig.Configmap.EnableIPv4 {
+			// TODO: AgentSerivceIpv4Name???
 			agentV4Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, types.ControllerConfig.Configmap.AgentSerivceIpv4Name, types.ControllerConfig.PodNamespace, serviceAccessPortName)
 			if e != nil {
 				logger.Sugar().Errorf("failed to get agent ipv4 service url , error=%v", e)
@@ -54,7 +59,8 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 			}
 		}
 		if types.ControllerConfig.Configmap.EnableIPv6 {
-			agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, types.ControllerConfig.Configmap.AgentSerivceIpv4Name, types.ControllerConfig.PodNamespace, serviceAccessPortName)
+			// TODO: AgentSerivceIpv6Name???
+			agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, types.ControllerConfig.Configmap.AgentSerivceIpv6Name, types.ControllerConfig.PodNamespace, serviceAccessPortName)
 			if e != nil {
 				logger.Sugar().Errorf("failed to get agent ipv6 service url , error=%v", e)
 			}
@@ -175,11 +181,24 @@ func (s *PluginNetReach) WebhookValidateCreate(logger *zap.Logger, ctx context.C
 		}
 	}
 
+	// validate AgentSpec
+	if true {
+		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+		}
+	}
+
 	return nil
 }
 
 // this will not be called, it is not allowed to modify crd
 func (s *PluginNetReach) WebhookValidateUpdate(logger *zap.Logger, ctx context.Context, oldObj, newObj runtime.Object) error {
+	oldNetReach := oldObj.(*crd.NetReach)
+	newNetReach := newObj.(*crd.NetReach)
+
+	if !reflect.DeepEqual(oldNetReach.Spec, newNetReach.Spec) {
+		return apierrors.NewBadRequest(fmt.Sprintf("it's not allowed to modify NetReach %s Spec", oldNetReach.Name))
+	}
 
 	return nil
 }

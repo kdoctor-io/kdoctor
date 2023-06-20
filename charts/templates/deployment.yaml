@@ -73,6 +73,10 @@ spec:
             - {{ .Values.kdoctorController.cmdBinName }}
           args:
             - --config-path=/tmp/config-map/conf.yml
+            - --configmap-deployment-template=/tmp/configmap-app-template/deployment.yml
+            - --configmap-daemonset-template=/tmp/configmap-app-template/daemonset.yml
+            - --configmap-pod-template=/tmp/configmap-app-template/pod.yml
+            - --configmap-service-template=/tmp/configmap-app-template/service.yml
             - --tls-ca-cert=/etc/tls/ca.crt
             - --tls-server-cert=/etc/tls/tls.crt
             - --tls-server-key=/etc/tls/tls.key
@@ -178,6 +182,9 @@ spec:
             - name: config-path
               mountPath: /tmp/config-map
               readOnly: true
+            - name: configmap-app-template
+              mountPath: /tmp/configmap-app-template
+              readOnly: true
             {{- if .Values.feature.aggregateReport.enabled }}
             - name: report-data
               mountPath: /report
@@ -205,6 +212,9 @@ spec:
         - name: config-path
           configMap:
             name: {{ .Values.global.configName }}
+        - name: configmap-app-template
+          configMap:
+            name: {{ .Values.global.configAppTemplate }}
         - name: tls
           projected:
             defaultMode: 0400

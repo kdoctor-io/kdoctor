@@ -6,12 +6,16 @@ package netdns
 import (
 	"context"
 	"fmt"
-	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
-	"github.com/kdoctor-io/kdoctor/pkg/types"
+	"reflect"
+
 	"go.uber.org/zap"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/strings/slices"
+
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
+	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func (s *PluginNetDns) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
@@ -94,11 +98,25 @@ func (s *PluginNetDns) WebhookValidateCreate(logger *zap.Logger, ctx context.Con
 		}
 	}
 
+	// validate AgentSpec
+	if true {
+		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+		}
+	}
+
 	return nil
 }
 
 // this will not be called, it is not allowed to modify crd
 
 func (s *PluginNetDns) WebhookValidateUpdate(logger *zap.Logger, ctx context.Context, oldObj, newObj runtime.Object) error {
+	oldNetdns := oldObj.(*crd.Netdns)
+	newNetdns := newObj.(*crd.Netdns)
+
+	if !reflect.DeepEqual(oldNetdns.Spec, newNetdns.Spec) {
+		return apierrors.NewBadRequest(fmt.Sprintf("it's not allowed to modify Netdns %s Spec", oldNetdns.Name))
+	}
+
 	return nil
 }

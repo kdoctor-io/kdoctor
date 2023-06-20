@@ -6,14 +6,18 @@ package apphttphealthy
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"strings"
+
+	"go.uber.org/zap"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/strings/slices"
+
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/tools"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
-	"go.uber.org/zap"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/runtime"
-	"strings"
 )
 
 func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
@@ -172,11 +176,24 @@ func (s *PluginAppHttpHealthy) WebhookValidateCreate(logger *zap.Logger, ctx con
 		}
 	}
 
+	// validate AgentSpec
+	if true {
+		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+		}
+	}
+
 	return nil
 }
 
 // this will not be called, it is not allowed to modify crd
 func (s *PluginAppHttpHealthy) WebhookValidateUpdate(logger *zap.Logger, ctx context.Context, oldObj, newObj runtime.Object) error {
+	oldHealthy := oldObj.(*crd.AppHttpHealthy)
+	newHealthy := newObj.(*crd.AppHttpHealthy)
+
+	if !reflect.DeepEqual(oldHealthy.Spec, newHealthy.Spec) {
+		return apierrors.NewBadRequest(fmt.Sprintf("it's not allowed to modify AppHttpHealthy %s Spec", oldHealthy.Name))
+	}
 
 	return nil
 }
