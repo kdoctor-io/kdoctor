@@ -20,6 +20,9 @@ type ConfigmapConfig struct {
 	AgentSerivceIpv6Name string `yaml:"agentSerivceIpv6Name"`
 	AgentIngressName     string `yaml:"agentIngressName"`
 	AgentDaemonsetName   string `yaml:"agentDaemonsetName"`
+
+	AgentImage         string `yaml:"agentImage"`
+	ServiceAccountName string `yaml:"serviceAccountName"`
 }
 
 type EnvMapping struct {

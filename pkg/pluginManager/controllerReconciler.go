@@ -8,6 +8,8 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -48,6 +50,12 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 			return ctrl.Result{}, nil
 		}
 
+		err := scheduler.CreateTaskRuntimeIfNotExist(ctx, s.client, s.crdKind, types.ControllerConfig.PodNamespace, &instance, instance.Spec.AgentSpec, logger)
+		if nil != err {
+			s.logger.Error(err.Error())
+			return ctrl.Result{}, err
+		}
+
 		oldStatus := instance.Status.DeepCopy()
 		taskName := instance.Kind + "." + instance.Name
 		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), nil, taskName); err != nil {
@@ -86,6 +94,12 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 			return ctrl.Result{}, nil
 		}
 
+		err := scheduler.CreateTaskRuntimeIfNotExist(ctx, s.client, s.crdKind, types.ControllerConfig.PodNamespace, &instance, instance.Spec.AgentSpec, logger)
+		if nil != err {
+			s.logger.Error(err.Error())
+			return ctrl.Result{}, err
+		}
+
 		oldStatus := instance.Status.DeepCopy()
 		taskName := instance.Kind + "." + instance.Name
 		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), nil, taskName); err != nil {
@@ -120,6 +134,12 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
+		}
+
+		err := scheduler.CreateTaskRuntimeIfNotExist(ctx, s.client, s.crdKind, types.ControllerConfig.PodNamespace, &instance, instance.Spec.AgentSpec, logger)
+		if nil != err {
+			s.logger.Error(err.Error())
+			return ctrl.Result{}, err
 		}
 
 		oldStatus := instance.Status.DeepCopy()

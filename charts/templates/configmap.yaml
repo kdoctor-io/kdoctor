@@ -33,3 +33,5 @@ data:
     {{- end }}
     agentDaemonsetName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
     agentIngressName: {{ include "project.kdoctorAgent.ingressName" . }}
+    agentImage: {{ include "project.kdoctorAgent.image" . | quote }}
+    serviceAccountName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}

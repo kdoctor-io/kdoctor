@@ -9,6 +9,7 @@ import (
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"github.com/kdoctor-io/kdoctor/pkg/taskStatusManager"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -38,6 +39,12 @@ func (s *pluginAgentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // when err==nil && result.RequeueAfter > 0 , c.Queue.Forget(obj) and c.Queue.AddAfter(req, result.RequeueAfter)
 // or else, c.Queue.Forget(obj)
 func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	// filter other tasks
+	if req.NamespacedName.Name != types.AgentConfig.TaskName {
+		s.logger.With(zap.String(types.AgentConfig.TaskKind, types.AgentConfig.TaskName)).
+			Sugar().Debugf("ignore Task %s", req.NamespacedName.Name)
+		return ctrl.Result{}, nil
+	}
 
 	// ------ add crd ------
 	switch s.crdKind {

@@ -8,6 +8,9 @@ import (
 )
 
 type NetReachSpec struct {
+	// +kubebuilder:validation:Required
+	AgentSpec AgentSpec `json:"agentSpec"`
+
 	// +kubebuilder:validation:Optional
 	Schedule *SchedulePlan `json:"schedule,omitempty"`
 

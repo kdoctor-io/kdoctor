@@ -43,6 +43,8 @@ const (
 	KindNameNetdns         = "Netdns"
 )
 
+var TaskKinds = []string{KindNameAppHttpHealthy, KindNameNetReach, KindNameNetdns}
+
 func init() {
 	globalPluginManager = &pluginManager{
 		chainingPlugins: map[string]plugintypes.ChainingPlugin{},

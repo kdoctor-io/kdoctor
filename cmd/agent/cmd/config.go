@@ -70,6 +70,15 @@ func init() {
 	// command flags
 	globalFlag := rootCmd.PersistentFlags()
 	globalFlag.StringVarP(&types.AgentConfig.ConfigMapPath, "config-path", "C", "", "configmap file path")
+	globalFlag.StringVar(&types.AgentConfig.TaskKind, "task-kind", "", "")
+	globalFlag.StringVar(&types.AgentConfig.TaskName, "task-name", "", "")
+	if err := rootCmd.MarkPersistentFlagRequired("task-kind"); nil != err {
+		logger.Sugar().Fatalf("failed to mark persistentFlag 'task-kind' as required, error: %v", err)
+	}
+	if err := rootCmd.MarkPersistentFlagRequired("task-name"); nil != err {
+		logger.Sugar().Fatalf("failed to mark persistentFlag 'task-name' as required, error: %v", err)
+	}
+
 	globalFlag.BoolVarP(&types.AgentConfig.AppMode, "app-mode", "A", false, "app mode")
 	if e := viper.BindPFlags(globalFlag); e != nil {
 		logger.Sugar().Fatalf("failed to BindPFlags, reason=%v", e)
@@ -87,6 +96,9 @@ func init() {
 				logger.Sugar().Fatalf("failed to parse configmap data, error: %v", err)
 			}
 		}
+
+		logger.Info("task-kind = " + types.AgentConfig.TaskKind)
+		logger.Info("task-name = " + types.AgentConfig.TaskName)
 	}
 	cobra.OnInitialize(printFlag)
 
