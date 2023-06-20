@@ -20,6 +20,28 @@ type ConfigmapConfig struct {
 	AgentSerivceIpv6Name string `yaml:"agentSerivceIpv6Name"`
 	AgentIngressName     string `yaml:"agentIngressName"`
 	AgentDaemonsetName   string `yaml:"agentDaemonsetName"`
+
+	KdoctorAgent KdoctorAgentConfig `yaml:"kdoctorAgent"`
+}
+
+type KdoctorAgentConfig struct {
+	ContainerCommand string `yaml:"containerCommand"`
+	HostNetwork      bool   `yaml:"hostNetwork"`
+	ImageConfig      struct {
+		AgentImage string `yaml:"agentImage"`
+		PullPolicy string `yaml:"pullPolicy"`
+	} `yaml:"imageConfig"`
+	ServiceAccountName string `yaml:"serviceAccountName"`
+	HttpServer         struct {
+		HealthPort   int `yaml:"healthPort"`
+		AppHttpPort  int `yaml:"appHttpPort"`
+		AppHttpsPort int `yaml:"appHttpsPort"`
+	} `yaml:"httpServer"`
+
+	ReportHostPath string            `yaml:"reportHostPath"`
+	ConfigmapName  string            `yaml:"configmapName"`
+	TLSSecretName  string            `yaml:"tlsSecretName"`
+	Labels         map[string]string `yaml:"labels"`
 }
 
 type EnvMapping struct {

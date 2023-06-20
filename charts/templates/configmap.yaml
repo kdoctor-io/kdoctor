@@ -33,3 +33,18 @@ data:
     {{- end }}
     agentDaemonsetName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
     agentIngressName: {{ include "project.kdoctorAgent.ingressName" . }}
+    kdoctorAgent:
+      containerCommand: {{ .Values.kdoctorAgent.cmdBinName }}
+      imageConfig:
+        agentImage: {{ include "project.kdoctorAgent.image" . | quote }}
+        pullPolicy: {{ .Values.kdoctorAgent.image.pullPolicy }}
+      serviceAccountName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+      {{- with .Values.kdoctorAgent.httpServer }}
+      httpServer:
+      {{- toYaml . | trim | nindent 8 }}
+      {{- end }}
+      reportHostPath: {{ .Values.kdoctorAgent.reportHostPath }}
+      configMapName: {{ .Values.global.configName }}
+      tlsSecretName: {{ .Values.tls.ca.secretName }}
+      labels:
+        {{- include "project.kdoctorAgent.labels" . | nindent 8 }}

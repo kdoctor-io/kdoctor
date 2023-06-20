@@ -5,3 +5,14 @@ package types
 const (
 	TlsCaCommonName = "kdoctor.io"
 )
+
+const (
+	KindNameAppHttpHealthy = "AppHttpHealthy"
+	KindNameNetReach       = "NetReach"
+	KindNameNetdns         = "Netdns"
+
+	KindDeployment = "Deployment"
+	KindDaemonSet  = "DaemonSet"
+)
+
+var TaskKinds = []string{KindNameAppHttpHealthy, KindNameNetReach, KindNameNetdns}

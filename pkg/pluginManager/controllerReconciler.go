@@ -5,23 +5,31 @@ package pluginManager
 
 import (
 	"context"
-	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
-	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
-	"go.uber.org/zap"
 	"reflect"
+	"time"
+
+	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
+	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
 )
 
 type pluginControllerReconciler struct {
 	client      client.Client
+	apiReader   client.Reader
 	plugin      plugintypes.ChainingPlugin
 	logger      *zap.Logger
 	crdKind     string
 	fm          fileManager.FileManager
 	crdKindName string
+
+	tracker *scheduler.Tracker
 }
 
 // contorller reconcile
@@ -43,26 +51,85 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
 
+		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
+		// create resource
+		{
+			var resource crd.TaskResource
+			var err error
+			var deletionTime *metav1.Time
+
+			if instance.Status.Resource == nil {
+				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameNetReach, instance.Name, scheduler.UniqueMatchLabelKey, logger)
+				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
+				if nil != err {
+					logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+				instance.Status.Resource = &resource
+				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetReach, instance.Name, resource)
+				err = s.client.Status().Update(ctx, &instance)
+				if nil != err {
+					logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+			} else {
+				// avoid controller restarted
+				if instance.Status.FinishTime != nil {
+					deletionTime = instance.Status.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+				}
+			}
+
+			// let the tracker trace status
+			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetReach, instance.Name, deletionTime))
+			if nil != err {
+				logger.Error(err.Error())
+				return ctrl.Result{}, err
+			}
+		}
+
+		// the task corresponding agent pods have this unique label
+		runtimePodMatchLabels := client.MatchingLabels{
+			scheduler.UniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameNetReach, instance.Name),
+		}
+
 		oldStatus := instance.Status.DeepCopy()
 		taskName := instance.Kind + "." + instance.Name
-		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), nil, taskName); err != nil {
+		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), runtimePodMatchLabels, taskName); err != nil {
 			// requeue
 			logger.Sugar().Errorf("failed to UpdateStatus, will retry it, error=%v", err)
 			return ctrl.Result{}, err
 		} else {
-			if newStatus != nil && !reflect.DeepEqual(newStatus, oldStatus) {
-				instance.Status = *newStatus
-				if err := s.client.Status().Update(ctx, &instance); err != nil {
-					// requeue
-					logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
-					return ctrl.Result{}, err
+			if newStatus != nil {
+				if !reflect.DeepEqual(newStatus, oldStatus) {
+					instance.Status = *newStatus
+					if err := s.client.Status().Update(ctx, &instance); err != nil {
+						// requeue
+						logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
+						return ctrl.Result{}, err
+					}
+					logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
 				}
-				logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
+
+				// update tracker database
+				if newStatus.FinishTime != nil {
+					deletionTime := newStatus.FinishTime
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetReach, instance.Name, deletionTime))
+					if nil != err {
+						logger.Error(err.Error())
+						return ctrl.Result{}, err
+					}
+				}
 			}
 
 			if result != nil {
@@ -81,32 +148,92 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
 
+		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
+		// create resource
+		{
+			var resource crd.TaskResource
+			var err error
+			var deletionTime *metav1.Time
+
+			if instance.Status.Resource == nil {
+				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameAppHttpHealthy, instance.Name, scheduler.UniqueMatchLabelKey, logger)
+				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
+				if nil != err {
+					s.logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+				instance.Status.Resource = &resource
+				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameAppHttpHealthy, instance.Name, resource)
+				err = s.client.Status().Update(ctx, &instance)
+				if nil != err {
+					logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+			} else {
+				// avoid controller restarted
+				if instance.Status.FinishTime != nil {
+					deletionTime = instance.Status.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+				}
+			}
+
+			// let the tracker trace status
+			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameAppHttpHealthy, instance.Name, deletionTime))
+			if nil != err {
+				logger.Error(err.Error())
+				return ctrl.Result{}, err
+			}
+		}
+
+		// the task corresponding agent pods have this unique label
+		runtimePodMatchLabels := client.MatchingLabels{
+			scheduler.UniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameAppHttpHealthy, instance.Name),
+		}
+
 		oldStatus := instance.Status.DeepCopy()
 		taskName := instance.Kind + "." + instance.Name
-		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), nil, taskName); err != nil {
+		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), runtimePodMatchLabels, taskName); err != nil {
 			// requeue
 			logger.Sugar().Errorf("failed to UpdateStatus, will retry it, error=%v", err)
 			return ctrl.Result{}, err
 		} else {
-			if newStatus != nil && !reflect.DeepEqual(newStatus, oldStatus) {
-				instance.Status = *newStatus
-				if err := s.client.Status().Update(ctx, &instance); err != nil {
-					// requeue
-					logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
-					return ctrl.Result{}, err
+			if newStatus != nil {
+				if !reflect.DeepEqual(newStatus, oldStatus) {
+					instance.Status = *newStatus
+					if err := s.client.Status().Update(ctx, &instance); err != nil {
+						// requeue
+						logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
+						return ctrl.Result{}, err
+					}
+					logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
 				}
-				logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
+
+				// update tracker database
+				if newStatus.FinishTime != nil {
+					deletionTime := newStatus.FinishTime
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameAppHttpHealthy, instance.Name, deletionTime))
+					if nil != err {
+						logger.Error(err.Error())
+						return ctrl.Result{}, err
+					}
+				}
 			}
 
 			if result != nil {
 				return *result, nil
 			}
 		}
+
 	case KindNameNetdns:
 		// ------ add crd ------
 		instance := crd.Netdns{}
@@ -117,26 +244,86 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 		}
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
+
+		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
+		// create resource
+		{
+			var resource crd.TaskResource
+			var err error
+			var deletionTime *metav1.Time
+
+			if instance.Status.Resource == nil {
+				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameNetdns, instance.Name, scheduler.UniqueMatchLabelKey, logger)
+				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
+				if nil != err {
+					s.logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+				instance.Status.Resource = &resource
+				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetdns, instance.Name, resource)
+				err = s.client.Status().Update(ctx, &instance)
+				if nil != err {
+					logger.Error(err.Error())
+					return ctrl.Result{}, err
+				}
+			} else {
+				// avoid controller restarted
+				if instance.Status.FinishTime != nil {
+					deletionTime = instance.Status.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+				}
+			}
+
+			// let the tracker trace status
+			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetdns, instance.Name, deletionTime))
+			if nil != err {
+				logger.Error(err.Error())
+				return ctrl.Result{}, err
+			}
+		}
+
+		// the task corresponding agent pods have this unique label
+		runtimePodMatchLabels := client.MatchingLabels{
+			scheduler.UniqueMatchLabelKey: scheduler.TaskRuntimeName(KindNameNetdns, instance.Name),
+		}
+
 		oldStatus := instance.Status.DeepCopy()
 		taskName := instance.Kind + "." + instance.Name
-		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), instance.Spec.SourceAgentNodeSelector.DeepCopy(), taskName); err != nil {
+		if result, newStatus, err := s.UpdateStatus(logger, ctx, oldStatus, instance.Spec.Schedule.DeepCopy(), runtimePodMatchLabels, taskName); err != nil {
 			// requeue
 			logger.Sugar().Errorf("failed to UpdateStatus, will retry it, error=%v", err)
 			return ctrl.Result{}, err
 		} else {
-			if newStatus != nil && !reflect.DeepEqual(newStatus, oldStatus) {
-				instance.Status = *newStatus
-				if err := s.client.Status().Update(ctx, &instance); err != nil {
-					// requeue
-					logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
-					return ctrl.Result{}, err
+			if newStatus != nil {
+				if !reflect.DeepEqual(newStatus, oldStatus) {
+					instance.Status = *newStatus
+					if err := s.client.Status().Update(ctx, &instance); err != nil {
+						// requeue
+						logger.Sugar().Errorf("failed to update status, will retry it, error=%v", err)
+						return ctrl.Result{}, err
+					}
+					logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
 				}
-				logger.Sugar().Debugf("succeeded update status, newStatus=%+v", newStatus)
+
+				// update tracker database
+				if newStatus.FinishTime != nil {
+					deletionTime := newStatus.FinishTime
+					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
+						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					}
+					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetdns, instance.Name, deletionTime))
+					if nil != err {
+						logger.Error(err.Error())
+						return ctrl.Result{}, err
+					}
+				}
 			}
 			if result != nil {
 				return *result, nil
@@ -145,7 +332,6 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 	default:
 		s.logger.Sugar().Fatalf("unknown crd type , support kind=%v, detail=%+v", s.crdKind, req)
-
 	}
 	// forget this
 	return ctrl.Result{}, nil

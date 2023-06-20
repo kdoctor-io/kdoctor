@@ -3,6 +3,11 @@
 
 package types
 
+import (
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+)
+
 var ControllerEnvMapping = []EnvMapping{
 	{"ENV_ENABLED_METRIC", "false", &ControllerConfig.EnableMetric},
 	{"ENV_METRIC_HTTP_PORT", "", &ControllerConfig.MetricPort},
@@ -20,6 +25,11 @@ var ControllerEnvMapping = []EnvMapping{
 	{"ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE", "10", &ControllerConfig.CleanAgedReportInMinute},
 	{"ENV_CONTROLLER_REPORT_AGE_IN_DAY", "30", &ControllerConfig.ReportAgeInDay},
 	{"ENV_COLLECT_AGENT_REPORT_INTERVAL_IN_SECOND", "600", &ControllerConfig.CollectAgentReportIntervalInSecond},
+	{"ENV_RESOURCE_TRACKER_CHANNEL_BUFFER", "500", &ControllerConfig.ResourceTrackerChannelBuffer},
+	{"ENV_RESOURCE_TRACKER_MAX_DATABASE_CAP", "5000", &ControllerConfig.ResourceTrackerMaxDatabaseCap},
+	{"ENV_RESOURCE_TRACKER_EXECUTOR_WORKERS", "3", &ControllerConfig.ResourceTrackerExecutorWorkers},
+	{"ENV_RESOURCE_TRACKER_SIGNAL_TIMEOUT_SECONDS", "3", &ControllerConfig.ResourceTrackerSignalTimeoutSeconds},
+	{"ENV_RESOURCE_TRACKER_TRACE_GAP_SECONDS", "5", &ControllerConfig.ResourceTrackerTraceGapSeconds},
 }
 
 type ControllerConfigStruct struct {
@@ -43,14 +53,33 @@ type ControllerConfigStruct struct {
 	ReportAgeInDay                     int32
 	CollectAgentReportIntervalInSecond int32
 
+	ResourceTrackerChannelBuffer        int32
+	ResourceTrackerMaxDatabaseCap       int32
+	ResourceTrackerExecutorWorkers      int32
+	ResourceTrackerSignalTimeoutSeconds int32
+	ResourceTrackerTraceGapSeconds      int32
+
 	// -------- from flags
 	ConfigMapPath     string
 	TlsCaCertPath     string
 	TlsServerCertPath string
 	TlsServerKeyPath  string
 
+	ConfigMapDeploymentPath string
+	ConfigMapDaemonsetPath  string
+	ConfigMapPodPath        string
+	ConfigMapServicePath    string
+
 	// -------- from configmap
 	Configmap ConfigmapConfig
 }
 
 var ControllerConfig ControllerConfigStruct
+
+// singleton for Application templates from configmap
+var (
+	DeploymentTempl = new(appsv1.Deployment)
+	DaemonsetTempl  = new(appsv1.DaemonSet)
+	PodTempl        = new(corev1.Pod)
+	ServiceTempl    = new(corev1.Service)
+)

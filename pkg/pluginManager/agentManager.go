@@ -14,6 +14,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/utils/strings/slices"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
@@ -72,7 +73,15 @@ func (s *pluginManager) RunAgentController() {
 		logger.Sugar().Fatalf("failed to Initk8sObjManager, error=%v", e)
 	}
 
+	if !slices.Contains(types.TaskKinds, types.AgentConfig.TaskKind) {
+		logger.Sugar().Fatalf("unsupport TaskKind %s in %v", types.AgentConfig.TaskKind, types.TaskKinds)
+	}
+
 	for name, plugin := range s.chainingPlugins {
+		if name != types.AgentConfig.TaskKind {
+			continue
+		}
+
 		logger.Sugar().Infof("run controller for plugin %v", name)
 		k := &pluginAgentReconciler{
 			logger:        logger.Named(name + "Reconciler"),

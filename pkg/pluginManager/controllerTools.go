@@ -8,19 +8,77 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
+	"strings"
+	"time"
+
+	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/strings/slices"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"github.com/kdoctor-io/kdoctor/pkg/reportManager"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
-	"go.uber.org/zap"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"strings"
-	"time"
 )
 
-func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, agentNodeSelector *metav1.LabelSelector) (failNodelist []string, err error) {
+type item interface {
+	~int | ~string
+}
+
+func removeDuplicates[T item](arr []T) []T {
+	var newArr []T
+	dic := make(map[T]struct{})
+
+	for _, tmpItem := range arr {
+		dic[tmpItem] = struct{}{}
+	}
+
+	for tmpItem := range dic {
+		newArr = append(newArr, tmpItem)
+	}
+
+	return newArr
+}
+
+func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, podMatchLabel client.MatchingLabels) ([]string, error) {
+	var allNodeList, failNodeList []string
+	podList := corev1.PodList{}
+
+	err := s.client.List(ctx, &podList,
+		podMatchLabel,
+		client.InNamespace(types.ControllerConfig.PodNamespace),
+	)
+	if nil != err {
+		return nil, err
+	}
+
+	if len(podList.Items) == 0 {
+		return nil, fmt.Errorf("failed to find agent node with matchLabels '%s' namespace '%s'", podMatchLabel, types.ControllerConfig.PodNamespace)
+	}
+
+	for index := range podList.Items {
+		allNodeList = append(allNodeList, podList.Items[index].Spec.NodeName)
+	}
+
+	// if the runtime is deployment, we may get duplicated node
+	allNodeList = removeDuplicates(allNodeList)
+	s.logger.Sugar().Debugf("all agent nodes: %v", allNodeList)
+
+	// gather the failure Node list
+	slices.Filter(failNodeList, allNodeList, func(s string) bool {
+		if !slices.Contains(succeedNodeList, s) {
+			return true
+		}
+		return false
+	})
+
+	return failNodeList, nil
+}
+
+/*func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, agentNodeSelector *metav1.LabelSelector) (failNodelist []string, err error) {
 	var allNodeList []string
 	var e error
 	if agentNodeSelector == nil {
@@ -43,25 +101,24 @@ func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.C
 		}
 	}
 
-	failNodelist = []string{}
-OUTER:
-	for _, v := range allNodeList {
-		for _, m := range succeedNodeList {
-			if m == v {
-				continue OUTER
-			}
+	// gather the failure Node list
+	slices.Filter(failNodelist, allNodeList, func(s string) bool {
+		if !slices.Contains(succeedNodeList, s) {
+			return true
 		}
-		failNodelist = append(failNodelist, v)
-	}
+		return false
+	})
+
 	return failNodelist, nil
-}
+}*/
 
-func (s *pluginControllerReconciler) UpdateRoundFinalStatus(logger *zap.Logger, ctx context.Context, newStatus *crd.TaskStatus, agentNodeSelector *metav1.LabelSelector, deadline bool) (roundDone bool, err error) {
-
+func (s *pluginControllerReconciler) UpdateRoundFinalStatus(logger *zap.Logger, ctx context.Context, newStatus *crd.TaskStatus, runtimePodSelector client.MatchingLabels, deadline bool) (roundDone bool, err error) {
 	latestRecord := &(newStatus.History[0])
 	roundNumber := latestRecord.RoundNumber
 
-	if latestRecord.Status == crd.StatusHistoryRecordStatusFail || latestRecord.Status == crd.StatusHistoryRecordStatusSucceed || latestRecord.Status == crd.StatusHistoryRecordStatusNotstarted {
+	if latestRecord.Status == crd.StatusHistoryRecordStatusFail ||
+		latestRecord.Status == crd.StatusHistoryRecordStatusSucceed ||
+		latestRecord.Status == crd.StatusHistoryRecordStatusNotstarted {
 		return true, nil
 	}
 
@@ -75,47 +132,46 @@ func (s *pluginControllerReconciler) UpdateRoundFinalStatus(logger *zap.Logger, 
 	reportNode := []string{}
 	reportNode = append(reportNode, latestRecord.SucceedAgentNodeList...)
 	reportNode = append(reportNode, latestRecord.FailedAgentNodeList...)
-	if unknowReportNodeList, e := s.GetSpiderAgentNodeNotInRecord(ctx, reportNode, agentNodeSelector); e != nil {
+	unknownReportNodeList, e := s.GetSpiderAgentNodeNotInRecord(ctx, reportNode, runtimePodSelector)
+	if e != nil {
 		logger.Sugar().Errorf("round %v failed to GetSpiderAgentNodeNotInSucceedRecord, error=%v", roundNumber, e)
 		return false, e
-	} else {
-		if len(unknowReportNodeList) > 0 && !deadline {
-			// when not reach the deadline, ignore
-			logger.Sugar().Debugf("round %v , partial agents did not reported, wait for daedline", roundNumber)
-			return false, nil
-		}
-
-		// it's ok to collect round status
-		if len(unknowReportNodeList) > 0 || len(latestRecord.FailedAgentNodeList) > 0 {
-			latestRecord.NotReportAgentNodeList = unknowReportNodeList
-			n := crd.StatusHistoryRecordStatusFail
-			latestRecord.Status = n
-			newStatus.LastRoundStatus = &n
-			logger.Sugar().Errorf("round %v failed , failedNode=%v, unknowReportNode=%v", roundNumber, latestRecord.FailedAgentNodeList, unknowReportNodeList)
-
-			if len(latestRecord.FailedAgentNodeList) > 0 {
-				latestRecord.FailureReason = "some agents failed"
-			} else if len(unknowReportNodeList) > 0 {
-				latestRecord.FailureReason = "some agents did not report"
-			}
-
-		} else {
-			n := crd.StatusHistoryRecordStatusSucceed
-			latestRecord.Status = n
-			newStatus.LastRoundStatus = &n
-			logger.Sugar().Infof("round %v succeeded ", latestRecord.RoundNumber)
-		}
-		cnt := len(reportNode) + len(unknowReportNodeList)
-		latestRecord.ExpectedActorNumber = &cnt
-		latestRecord.EndTimeStamp = &metav1.Time{
-			Time: time.Now(),
-		}
-		i := time.Since(latestRecord.StartTimeStamp.Time).String()
-		latestRecord.Duration = &i
-
-		return true, nil
 	}
 
+	if len(unknownReportNodeList) > 0 && !deadline {
+		// when not reach the deadline, ignore
+		logger.Sugar().Debugf("round %v , partial agents did not reported, wait for deadline", roundNumber)
+		return false, nil
+	}
+
+	// it's ok to collect round status (we meet the deadline)
+	if len(unknownReportNodeList) > 0 || len(latestRecord.FailedAgentNodeList) > 0 {
+		latestRecord.NotReportAgentNodeList = unknownReportNodeList
+		n := crd.StatusHistoryRecordStatusFail
+		latestRecord.Status = n
+		newStatus.LastRoundStatus = &n
+		logger.Sugar().Errorf("round %v failed , failedNode=%v, unknowReportNode=%v", roundNumber, latestRecord.FailedAgentNodeList, unknownReportNodeList)
+
+		if len(latestRecord.FailedAgentNodeList) > 0 {
+			latestRecord.FailureReason = "some agents failed"
+		} else if len(unknownReportNodeList) > 0 {
+			latestRecord.FailureReason = "some agents did not report"
+		}
+	} else {
+		n := crd.StatusHistoryRecordStatusSucceed
+		latestRecord.Status = n
+		newStatus.LastRoundStatus = &n
+		logger.Sugar().Infof("round %v succeeded ", latestRecord.RoundNumber)
+	}
+	cnt := len(reportNode) + len(unknownReportNodeList)
+	latestRecord.ExpectedActorNumber = &cnt
+	latestRecord.EndTimeStamp = &metav1.Time{
+		Time: time.Now(),
+	}
+	i := time.Since(latestRecord.StartTimeStamp.Time).String()
+	latestRecord.Duration = &i
+
+	return true, nil
 }
 
 func (s *pluginControllerReconciler) WriteSummaryReport(taskName string, roundNumber int, newStatus *crd.TaskStatus) {
@@ -170,11 +226,12 @@ func (s *pluginControllerReconciler) WriteSummaryReport(taskName string, roundNu
 	}
 }
 
-func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx context.Context, oldStatus *crd.TaskStatus, schedulePlan *crd.SchedulePlan, sourceAgent *metav1.LabelSelector, taskName string) (result *reconcile.Result, taskStatus *crd.TaskStatus, e error) {
+func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx context.Context, oldStatus *crd.TaskStatus, schedulePlan *crd.SchedulePlan, runtimePodMatchLabels client.MatchingLabels, taskName string) (result *reconcile.Result, taskStatus *crd.TaskStatus, e error) {
 	newStatus := oldStatus.DeepCopy()
 	nextInterval := time.Duration(types.ControllerConfig.Configmap.TaskPollIntervalInSecond) * time.Second
 	nowTime := time.Now()
 	var startTime time.Time
+
 	// init new instance first
 	scheduler := NewSchedule(*schedulePlan.Schedule)
 	if newStatus.ExpectedRound == nil || len(newStatus.History) == 0 {
@@ -194,8 +251,8 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 		return result, newStatus, nil
 	}
 
+	// done task
 	if *newStatus.DoneRound == *newStatus.ExpectedRound {
-		// done task
 		return nil, nil, nil
 	}
 
@@ -206,7 +263,6 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 
 	switch {
 	case nowTime.After(latestRecord.StartTimeStamp.Time) && nowTime.Before(latestRecord.DeadLineTimeStamp.Time):
-
 		if latestRecord.Status == crd.StatusHistoryRecordStatusNotstarted {
 			latestRecord.Status = crd.StatusHistoryRecordStatusOngoing
 			// requeue immediately to make sure the update succeed , not conflicted
@@ -216,45 +272,49 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 
 		} else if latestRecord.Status == crd.StatusHistoryRecordStatusOngoing {
 			logger.Debug("try to poll the status of task " + taskName)
-			if roundDone, e := s.UpdateRoundFinalStatus(logger, ctx, newStatus, sourceAgent, false); e != nil {
+			// TODO: sourceAgent is a LabelSelector, we hope to find the Task Runtime Nodes
+			roundDone, e := s.UpdateRoundFinalStatus(logger, ctx, newStatus, runtimePodMatchLabels, false)
+			if e != nil {
 				return nil, nil, e
-			} else {
-				if roundDone {
-					logger.Sugar().Infof("round %v get reports from all agents ", roundNumber)
+			}
 
-					// before insert new record, write summary of last round
-					s.WriteSummaryReport(taskName, roundNumber, newStatus)
+			if roundDone {
+				logger.Sugar().Infof("round %v get reports from all agents ", roundNumber)
 
-					// add new round record
-					if *(newStatus.DoneRound) < *(newStatus.ExpectedRound) || *newStatus.ExpectedRound == -1 {
-						n := *(newStatus.DoneRound) + 1
-						newStatus.DoneRound = &n
-						startTime = scheduler.Next(latestRecord.StartTimeStamp.Time)
-						if n < *(newStatus.ExpectedRound) || *newStatus.ExpectedRound == -1 {
+				// before insert new record, write summary of last round
+				s.WriteSummaryReport(taskName, roundNumber, newStatus)
 
-							newRecord := NewStatusHistoryRecord(startTime, int(n+1), schedulePlan)
+				// add new round record
+				if *(newStatus.DoneRound) < *(newStatus.ExpectedRound) || *newStatus.ExpectedRound == -1 {
+					n := *(newStatus.DoneRound) + 1
+					newStatus.DoneRound = &n
+					startTime = scheduler.Next(latestRecord.StartTimeStamp.Time)
+					if n < *(newStatus.ExpectedRound) || *newStatus.ExpectedRound == -1 {
 
-							tmp := append([]crd.StatusHistoryRecord{*newRecord}, newStatus.History...)
-							if len(tmp) > types.ControllerConfig.Configmap.CrdMaxHistory {
-								tmp = tmp[:(types.ControllerConfig.Configmap.CrdMaxHistory)]
-							}
-							newStatus.History = tmp
+						newRecord := NewStatusHistoryRecord(startTime, int(n+1), schedulePlan)
 
-							logger.Sugar().Infof("insert new record for next round : %+v", *newRecord)
-						} else {
-							newStatus.Finish = true
+						tmp := append([]crd.StatusHistoryRecord{*newRecord}, newStatus.History...)
+						if len(tmp) > types.ControllerConfig.Configmap.CrdMaxHistory {
+							tmp = tmp[:(types.ControllerConfig.Configmap.CrdMaxHistory)]
 						}
-					}
+						newStatus.History = tmp
 
-					// requeue immediately to make sure the update succeed , not conflicted
-					result = &reconcile.Result{
-						Requeue: true,
+						logger.Sugar().Infof("insert new record for next round : %+v", *newRecord)
+					} else {
+						newStatus.Finish = true
+						now := metav1.Now()
+						newStatus.FinishTime = &now
 					}
-				} else {
-					// trigger after interval
-					result = &reconcile.Result{
-						RequeueAfter: nextInterval,
-					}
+				}
+
+				// requeue immediately to make sure the update succeed , not conflicted
+				result = &reconcile.Result{
+					Requeue: true,
+				}
+			} else {
+				// trigger after interval
+				result = &reconcile.Result{
+					RequeueAfter: nextInterval,
 				}
 			}
 		} else {
@@ -272,6 +332,8 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 		if *newStatus.DoneRound == *newStatus.ExpectedRound {
 			logger.Sugar().Debugf("task %s finish, ignore ", taskName)
 			newStatus.Finish = true
+			now := metav1.Now()
+			newStatus.FinishTime = &now
 			result = nil
 
 		} else {
@@ -280,7 +342,7 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 			if latestRecord.Status == crd.StatusHistoryRecordStatusOngoing {
 				// here, we should update last round status
 
-				if _, e := s.UpdateRoundFinalStatus(logger, ctx, newStatus, sourceAgent, true); e != nil {
+				if _, e := s.UpdateRoundFinalStatus(logger, ctx, newStatus, runtimePodMatchLabels, true); e != nil {
 					return nil, nil, e
 				} else {
 					// all agent finished, so try to update the summary
@@ -306,6 +368,8 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 							logger.Sugar().Infof("insert new record for next round : %+v", *newRecord)
 						} else {
 							newStatus.Finish = true
+							now := metav1.Now()
+							newStatus.FinishTime = &now
 						}
 					}
 

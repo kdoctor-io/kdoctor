@@ -26,6 +26,8 @@ global:
   ## @param global.configName the configmap name
   configName: "kdoctor"
 
+  configAppTemplate: "kdoctor-app-config-template"
+
 
 ## @section feature parameters
 feature:
