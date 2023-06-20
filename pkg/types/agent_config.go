@@ -48,6 +48,8 @@ type AgentConfigStruct struct {
 	TlsCaCertPath     string
 	TlsServerCertPath string
 	TlsServerKeyPath  string
+	TaskKind          string
+	TaskName          string
 
 	AppMode bool
 
