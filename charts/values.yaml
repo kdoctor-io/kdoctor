@@ -170,38 +170,8 @@ kdoctorAgent:
     route: "/kdoctoragent"
 
   ## @skip kdoctorAgent.tolerations
-  # --  Node tolerations
-  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
   tolerations:
-    - effect: NoExecute
-      key: node.kubernetes.io/not-ready
-      operator: Exists
-    - effect: NoExecute
-      key: node.kubernetes.io/unreachable
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/disk-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/memory-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/pid-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/unschedulable
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/network-unavailable
-      operator: Exists
-    - key: node.kubernetes.io/not-ready
-      effect: NoSchedule
-    - key: node-role.kubernetes.io/master
-      effect: NoSchedule
-    - key: node-role.kubernetes.io/control-plane
-      effect: NoSchedule
-    - key: CriticalAddonsOnly
-      operator: Exists
+    - operator: Exists
 
   ## @param kdoctorAgent.priorityClassName the priority Class Name for kdoctorAgent
   priorityClassName: "system-node-critical"
@@ -376,35 +346,7 @@ kdoctorController:
 
   ## @skip kdoctorController.tolerations
   tolerations:
-    - effect: NoExecute
-      key: node.kubernetes.io/not-ready
-      operator: Exists
-    - effect: NoExecute
-      key: node.kubernetes.io/unreachable
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/disk-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/memory-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/pid-pressure
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/unschedulable
-      operator: Exists
-    - effect: NoSchedule
-      key: node.kubernetes.io/network-unavailable
-      operator: Exists
-    - key: node.kubernetes.io/not-ready
-      effect: NoSchedule
-    - key: node-role.kubernetes.io/master
-      effect: NoSchedule
-    - key: node-role.kubernetes.io/control-plane
-      effect: NoSchedule
-    - key: CriticalAddonsOnly
-      operator: Exists
+    - operator: Exists
 
   ## @param kdoctorController.priorityClassName the priority Class Name for kdoctorController
   priorityClassName: "system-node-critical"
