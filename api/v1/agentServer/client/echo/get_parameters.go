@@ -17,6 +17,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetParams creates a new GetParams object,
@@ -63,6 +64,13 @@ GetParams contains all the parameters to send to the API endpoint
 	Typically these are written to a http.Request.
 */
 type GetParams struct {
+
+	/* Delay.
+
+	   delay some second return response
+	*/
+	Delay *int64
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -116,6 +124,17 @@ func (o *GetParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithDelay adds the delay to the get params
+func (o *GetParams) WithDelay(delay *int64) *GetParams {
+	o.SetDelay(delay)
+	return o
+}
+
+// SetDelay adds the delay to the get params
+func (o *GetParams) SetDelay(delay *int64) {
+	o.Delay = delay
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -123,6 +142,23 @@ func (o *GetParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry)
 		return err
 	}
 	var res []error
+
+	if o.Delay != nil {
+
+		// query param delay
+		var qrDelay int64
+
+		if o.Delay != nil {
+			qrDelay = *o.Delay
+		}
+		qDelay := swag.FormatInt64(qrDelay)
+		if qDelay != "" {
+
+			if err := r.SetQueryParam("delay", qDelay); err != nil {
+				return err
+			}
+		}
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

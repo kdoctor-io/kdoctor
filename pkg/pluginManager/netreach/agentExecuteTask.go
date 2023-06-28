@@ -125,14 +125,14 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 					if len(podips.IPv4) > 0 && (target.IPv4 == nil || (target.IPv4 != nil && *target.IPv4)) {
 						testTargetList = append(testTargetList, &TestTarget{
 							Name:   "AgentPodV4IP_" + podname + "_" + podips.IPv4,
-							Url:    fmt.Sprintf("http://%s:%d", podips.IPv4, config.AgentConfig.HttpPort),
+							Url:    fmt.Sprintf("http://%s:%d", podips.IPv4, config.AgentConfig.AppHttpPort),
 							Method: loadHttp.HttpMethodGet,
 						})
 					}
 					if len(podips.IPv6) > 0 && (target.IPv6 == nil || (target.IPv6 != nil && *target.IPv6)) {
 						testTargetList = append(testTargetList, &TestTarget{
 							Name:   "AgentPodV6IP_" + podname + "_" + podips.IPv6,
-							Url:    fmt.Sprintf("http://%s:%d", podips.IPv6, config.AgentConfig.HttpPort),
+							Url:    fmt.Sprintf("http://%s:%d", podips.IPv6, config.AgentConfig.AppHttpPort),
 							Method: loadHttp.HttpMethodGet,
 						})
 					}
@@ -269,7 +269,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				if len(agentIngress.Spec.TLS) > 0 {
 					http = "https"
 				}
-				url := fmt.Sprintf("%s://%s/%s", http, agentIngress.Status.LoadBalancer.Ingress[0].IP, agentIngress.Spec.Rules[0].HTTP.Paths[0].Path)
+				url := fmt.Sprintf("%s://%s%s", http, agentIngress.Status.LoadBalancer.Ingress[0].IP, agentIngress.Spec.Rules[0].HTTP.Paths[0].Path)
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentIngress_" + url,
 					Url:    url,
@@ -301,10 +301,10 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			}
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *d)
 			failureReason, itemReport := SendRequestAndReport(logger, t.Name, d, successCondition)
+			l.Lock()
 			if len(failureReason) > 0 {
 				finalfailureReason = fmt.Sprintf("test %v: %v", t.Name, failureReason)
 			}
-			l.Lock()
 			reportList = append(reportList, itemReport)
 			l.Unlock()
 			wg.Done()

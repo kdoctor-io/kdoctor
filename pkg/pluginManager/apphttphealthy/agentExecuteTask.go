@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
@@ -16,6 +17,7 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
+	"strings"
 )
 
 func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.HttpMetrics) (failureReason string, err error) {
@@ -141,14 +143,23 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 			err = fmt.Errorf(msg)
 			return finalfailureReason, task, err
 		}
-		body, ok := bodyCM.Data["body"]
-		if !ok {
+		body, err := json.Marshal(bodyCM.Data)
+		if err != nil {
 			msg := fmt.Sprintf("failed get body from [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
 			logger.Sugar().Errorf(msg)
 			err = fmt.Errorf(msg)
 			return finalfailureReason, task, err
 		}
 		d.Body = body
+	}
+
+	if len(target.Header) != 0 {
+		header := make(map[string]string, len(target.Header))
+		for _, v := range target.Header {
+			h := strings.Split(v, ":")
+			header[h[0]] = h[1]
+		}
+		d.Header = header
 	}
 
 	failureReason, itemReport := SendRequestAndReport(logger, "HttpAppHealthy target", d, successCondition)

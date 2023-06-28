@@ -198,10 +198,10 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 		go func(wg *sync.WaitGroup, l *lock.Mutex, t testTarget) {
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *t.Request)
 			failureReason, itemReport := SendRequestAndReport(logger, t.Name, t.Request, instance.Spec.SuccessCondition)
+			l.Lock()
 			if failureReason != "" {
 				finalfailureReason = fmt.Sprintf("test %v: %v", t.Name, failureReason)
 			}
-			l.Lock()
 			reportList = append(reportList, itemReport)
 			l.Unlock()
 			wg.Done()

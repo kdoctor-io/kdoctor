@@ -12,7 +12,10 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetParams creates a new GetParams object
@@ -31,6 +34,11 @@ type GetParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
+
+	/*delay some second return response
+	  In: query
+	*/
+	Delay *int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -42,8 +50,37 @@ func (o *GetParams) BindRequest(r *http.Request, route *middleware.MatchedRoute)
 
 	o.HTTPRequest = r
 
+	qs := runtime.Values(r.URL.Query())
+
+	qDelay, qhkDelay, _ := qs.GetOK("delay")
+	if err := o.bindDelay(qDelay, qhkDelay, route.Formats); err != nil {
+		res = append(res, err)
+	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindDelay binds and validates parameter Delay from query.
+func (o *GetParams) bindDelay(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("delay", "query", "int64", raw)
+	}
+	o.Delay = &value
+
 	return nil
 }

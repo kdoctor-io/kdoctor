@@ -510,10 +510,11 @@ install_nginx:
 .PHONY: install_example_app
 install_example_app: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 install_example_app: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
+install_example_app: IMAGE_TAG ?= $(GIT_COMMIT_VERSION)
 install_example_app:
 	@echo "---------- install example app"
-	sed 's?<<EXAMPLE_APP_IMAGE>>?ghcr.io/kdoctor-io/kdoctor-agent:'$(PROJECT_IMAGE_VERSION)'?' yaml/testpod.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
-	@ if ! kubectl rollout status  daemonset/test --kubeconfig $(KIND_KUBECONFIG) -w --timeout=120s ; then \
+	sed 's?<<EXAMPLE_APP_IMAGE>>?ghcr.io/kdoctor-io/kdoctor-agent:'$(IMAGE_TAG)'?' yaml/testpod.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
+	@ if ! kubectl rollout status  daemonset/kdoctor-test -n kube-system --kubeconfig $(KIND_KUBECONFIG) -w --timeout=120s ; then \
             kubectl get pod -A ; \
 			echo "error, failed to create a test pod" ; \
 			exit 1 ; \

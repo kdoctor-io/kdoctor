@@ -29,8 +29,12 @@ spec:
     {{- end }}
     {{- if .Values.feature.enableIPv4 }}
     - name: http
-      port: {{ .Values.kdoctorAgent.httpServer.port }}
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
       targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
+      targetPort: https
       protocol: TCP
     {{- end }}
   ipFamilyPolicy: SingleStack
@@ -71,8 +75,12 @@ spec:
     {{- end }}
     {{- if .Values.feature.enableIPv6 }}
     - name: http
-      port: {{ .Values.kdoctorAgent.httpServer.port }}
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
       targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
+      targetPort: https
       protocol: TCP
     {{- end }}
   ipFamilyPolicy: SingleStack

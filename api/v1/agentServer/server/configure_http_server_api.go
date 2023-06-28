@@ -42,6 +42,16 @@ func configureAPI(api *restapi.HTTPServerAPIAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	if api.EchoDeleteHandler == nil {
+		api.EchoDeleteHandler = echo.DeleteHandlerFunc(func(params echo.DeleteParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Delete has not yet been implemented")
+		})
+	}
+	if api.EchoDeleteKdoctoragentHandler == nil {
+		api.EchoDeleteKdoctoragentHandler = echo.DeleteKdoctoragentHandlerFunc(func(params echo.DeleteKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.DeleteKdoctoragent has not yet been implemented")
+		})
+	}
 	if api.EchoGetHandler == nil {
 		api.EchoGetHandler = echo.GetHandlerFunc(func(params echo.GetParams) middleware.Responder {
 			return middleware.NotImplemented("operation echo.Get has not yet been implemented")
@@ -65,6 +75,56 @@ func configureAPI(api *restapi.HTTPServerAPIAPI) http.Handler {
 	if api.EchoGetKdoctoragentHandler == nil {
 		api.EchoGetKdoctoragentHandler = echo.GetKdoctoragentHandlerFunc(func(params echo.GetKdoctoragentParams) middleware.Responder {
 			return middleware.NotImplemented("operation echo.GetKdoctoragent has not yet been implemented")
+		})
+	}
+	if api.EchoHeadHandler == nil {
+		api.EchoHeadHandler = echo.HeadHandlerFunc(func(params echo.HeadParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Head has not yet been implemented")
+		})
+	}
+	if api.EchoHeadKdoctoragentHandler == nil {
+		api.EchoHeadKdoctoragentHandler = echo.HeadKdoctoragentHandlerFunc(func(params echo.HeadKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.HeadKdoctoragent has not yet been implemented")
+		})
+	}
+	if api.EchoOptionsHandler == nil {
+		api.EchoOptionsHandler = echo.OptionsHandlerFunc(func(params echo.OptionsParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Options has not yet been implemented")
+		})
+	}
+	if api.EchoOptionsKdoctoragentHandler == nil {
+		api.EchoOptionsKdoctoragentHandler = echo.OptionsKdoctoragentHandlerFunc(func(params echo.OptionsKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.OptionsKdoctoragent has not yet been implemented")
+		})
+	}
+	if api.EchoPatchHandler == nil {
+		api.EchoPatchHandler = echo.PatchHandlerFunc(func(params echo.PatchParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Patch has not yet been implemented")
+		})
+	}
+	if api.EchoPatchKdoctoragentHandler == nil {
+		api.EchoPatchKdoctoragentHandler = echo.PatchKdoctoragentHandlerFunc(func(params echo.PatchKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PatchKdoctoragent has not yet been implemented")
+		})
+	}
+	if api.EchoPostHandler == nil {
+		api.EchoPostHandler = echo.PostHandlerFunc(func(params echo.PostParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Post has not yet been implemented")
+		})
+	}
+	if api.EchoPostKdoctoragentHandler == nil {
+		api.EchoPostKdoctoragentHandler = echo.PostKdoctoragentHandlerFunc(func(params echo.PostKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PostKdoctoragent has not yet been implemented")
+		})
+	}
+	if api.EchoPutHandler == nil {
+		api.EchoPutHandler = echo.PutHandlerFunc(func(params echo.PutParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.Put has not yet been implemented")
+		})
+	}
+	if api.EchoPutKdoctoragentHandler == nil {
+		api.EchoPutKdoctoragentHandler = echo.PutKdoctoragentHandlerFunc(func(params echo.PutKdoctoragentParams) middleware.Responder {
+			return middleware.NotImplemented("operation echo.PutKdoctoragent has not yet been implemented")
 		})
 	}
 

@@ -92,6 +92,8 @@ spec:
             - {{ .Values.kdoctorAgent.cmdBinName }}
           args:
             - --config-path=/tmp/config-map/conf.yml
+            - --tls-ca-cert=/etc/tls/ca.crt
+            - --tls-ca-key=/etc/tls/ca.key
           {{- with .Values.kdoctorAgent.extraArgs }}
           {{- toYaml . | trim | nindent 8 }}
           {{- end }}
@@ -102,15 +104,21 @@ spec:
               protocol: TCP
             {{- end }}
             {{- if or .Values.feature.enableIPv4 .Values.feature.enableIPv6 }}
+            - name: health
+              containerPort: {{ .Values.kdoctorAgent.httpServer.healthPort }}
+              protocol: TCP
             - name: http
-              containerPort: {{ .Values.kdoctorAgent.httpServer.port }}
+              containerPort: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
               protocol: TCP
             {{- end }}
           {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
           startupProbe:
             httpGet:
               path: /healthy/startup
-              port: {{ .Values.kdoctorAgent.httpServer.port }}
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
               scheme: HTTP
             failureThreshold: {{ .Values.kdoctorAgent.httpServer.startupProbe.failureThreshold }}
             periodSeconds: {{ .Values.kdoctorAgent.httpServer.startupProbe.periodSeconds }}
@@ -119,7 +127,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthy/liveness
-              port: {{ .Values.kdoctorAgent.httpServer.port }}
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
               scheme: HTTP
             initialDelaySeconds: 60
             periodSeconds: {{ .Values.kdoctorAgent.httpServer.livenessProbe.periodSeconds }}
@@ -129,7 +137,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthy/readiness
-              port: {{ .Values.kdoctorAgent.httpServer.port }}
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: {{ .Values.kdoctorAgent.httpServer.readinessProbe.periodSeconds }}
@@ -147,8 +155,12 @@ spec:
               value: {{ .Values.kdoctorAgent.prometheus.enabled | quote }}
             - name: ENV_METRIC_HTTP_PORT
               value: {{ .Values.kdoctorAgent.prometheus.port | quote }}
-            - name: ENV_HTTP_PORT
-              value: {{ .Values.kdoctorAgent.httpServer.port | quote }}
+            - name: ENV_AGENT_HEALTH_HTTP_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.healthPort | quote }}
+            - name: ENV_AGENT_APP_HTTP_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.appHttpPort | quote }}
+            - name: ENV_AGENT_APP_HTTPS_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.appHttpsPort | quote }}
             - name: ENV_GOPS_LISTEN_PORT
               value: {{ .Values.kdoctorAgent.debug.gopsPort | quote }}
             - name: ENV_AGENT_GRPC_LISTEN_PORT
@@ -192,6 +204,8 @@ spec:
               readOnly: true
             - name: report-data
               mountPath: /report
+            - name: tls
+              mountPath: /etc/tls
             {{- if .Values.kdoctorAgent.extraVolumes }}
             {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
             {{- end }}
@@ -205,6 +219,17 @@ spec:
           hostPath:
             path: {{ .Values.kdoctorAgent.reportHostPath }}
             type: DirectoryOrCreate
+        - name: tls
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  items:
+                    - key: tls.key
+                      path: ca.key
+                    - key: tls.crt
+                      path: ca.crt
+                  name: {{ .Values.tls.ca.secretName }}
       {{- if .Values.kdoctorAgent.extraVolumeMounts }}
       {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 6 }}
       {{- end }}

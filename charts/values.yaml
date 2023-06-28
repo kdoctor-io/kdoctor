@@ -26,6 +26,7 @@ global:
   ## @param global.configName the configmap name
   configName: "kdoctor"
 
+
 ## @section feature parameters
 feature:
   ## @param feature.enableIPv4 enable ipv4
@@ -220,8 +221,12 @@ kdoctorAgent:
     port: 3000
 
   httpServer:
-    ## @param kdoctorAgent.httpServer.port the http Port for kdoctorAgent, for health checking
-    port: 80
+    ## @param kdoctorAgent.httpServer.healthPort the http Port for kdoctorAgent, for health checking
+    healthPort: 5710
+    ## @param kdoctorAgent.httpServer.appPort the http Port for kdoctorAgent, testing connect
+    appHttpPort: 80
+    ## @param kdoctorAgent.httpServer.appPort the https Port for kdoctorAgent, testing connect
+    appHttpsPort: 443
 
     startupProbe:
       ## @param kdoctorAgent.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
@@ -293,8 +298,6 @@ kdoctorAgent:
     ## @param kdoctorAgent.debug.gopsPort the gops port of template agent
     gopsPort: 5712
 
-## @section kdoctorController parameters
-##
 kdoctorController:
   ## @param kdoctorController.name the kdoctorController name
   name: "kdoctor-controller"
@@ -534,3 +537,14 @@ kdoctorController:
   apiserver:
     ## @param kdoctorApiserver.name the kdoctorApiserver name
     name: "kdoctor-apiserver"
+
+## TLS configuration for kdoctor
+tls:
+  ca:
+    ## @param tls.ca.secretName the secret name for storing TLS certificates
+    secretName: "kdoctor-ca"
+
+  ## TLS configuration for kdoctor client
+  client:
+    ## @param tls.ca.client.secretName the secret name for storing TLS certificates
+    secretName: "kdoctor-client-cert"

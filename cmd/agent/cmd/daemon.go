@@ -4,9 +4,17 @@
 package cmd
 
 import (
+	agenthttpserver "github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
 	"github.com/kdoctor-io/kdoctor/pkg/debug"
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func SetupUtility() {
@@ -24,15 +32,41 @@ func SetupUtility() {
 func DaemonMain() {
 	rootLogger.Sugar().Infof("config: %+v", types.AgentConfig)
 
-	SetupHttpServer()
-	initGrpcServer()
 	// TODO: udp server, tcp server, websocket server
-
 	if types.AgentConfig.AppMode {
 		// app mode, just used to debug
 		rootLogger.Info("run in app mode")
-		// sleep forever
-		select {}
+		scheme := runtime.NewScheme()
+		if err := clientgoscheme.AddToScheme(scheme); err != nil {
+			rootLogger.Sugar().Fatalf("failed to add to scheme, reason=%v", err)
+		}
+
+		n := ctrl.Options{
+			Scheme:                 scheme,
+			MetricsBindAddress:     "0",
+			HealthProbeBindAddress: "0",
+			LeaderElection:         false,
+			// for this not watched obj, get directly from api-server
+			ClientDisableCacheFor: []client.Object{
+				&corev1.Node{},
+				&corev1.Namespace{},
+				&corev1.Pod{},
+				&corev1.Service{},
+				&appsv1.Deployment{},
+				&appsv1.StatefulSet{},
+				&appsv1.ReplicaSet{},
+				&appsv1.DaemonSet{},
+			},
+		}
+		mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), n)
+		if err != nil {
+			rootLogger.Sugar().Fatalf("failed to NewManager, reason=%v", err)
+		}
+
+		if e := k8sObjManager.Initk8sObjManager(mgr.GetClient()); e != nil {
+			rootLogger.Sugar().Fatalf("failed to Initk8sObjManager, error=%v", e)
+		}
+
 	} else {
 		rootLogger.Info("run in agent mode")
 
@@ -43,9 +77,14 @@ func DaemonMain() {
 		s := pluginManager.InitPluginManager(rootLogger.Named("agentContorller"))
 		s.RunAgentController()
 
-		rootLogger.Info("finish initialization")
-		// sleep forever
-		select {}
 	}
+	rootLogger.Sugar().Info("generate server cert and key")
+	GenServerCert(rootLogger)
+	agenthttpserver.SetupHealthHttpServer(rootLogger)
+	agenthttpserver.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
+	initGrpcServer()
 
+	rootLogger.Info("finish initialization")
+	// sleep forever
+	select {}
 }

@@ -45,29 +45,222 @@ paths:
           description: Success
         "500":
           description: Failed
-  "/kdoctoragent":
-    get:
-      summary: echo http request
-      description: echo http request
-      tags:
-        - echo
-      responses:
-        "200":
-          description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
   "/":
     get:
       summary: echo http request
       description: echo http request
       tags:
         - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
       responses:
         "200":
           description: Success
           schema:
             "$ref": "#/definitions/EchoRes"
-
+    post:
+      summary: echo http request counts
+      description: echo http request counts
+      tags:
+        - echo
+      parameters:
+        - name: test-args
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/EchoBody"
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
+    delete:
+      summary: clean http request counts
+      description: clean http request counts
+      tags:
+        - echo
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+    put:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    head:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    patch:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    options:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+  "/kdoctoragent":
+    get:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    post:
+      summary: echo http request counts
+      description: echo http request counts
+      tags:
+        - echo
+      parameters:
+        - name: test-args
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/EchoBody"
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
+    delete:
+      summary: clean http request counts
+      description: clean http request counts
+      tags:
+        - echo
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: Failed
+    put:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    head:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    patch:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
+    options:
+      summary: echo http request
+      description: echo http request
+      tags:
+        - echo
+      parameters:
+        - in: query
+          name: delay
+          type: integer
+          description: delay some second return response
+      responses:
+        "200":
+          description: Success
+          schema:
+            "$ref": "#/definitions/EchoRes"
 definitions:
   EchoRes:
     description: echo request
@@ -82,13 +275,38 @@ definitions:
       requestUrl:
         description: request url
         type: string
+      requestMethod:
+        description: request method
+        type: string
       requestHeader:
         description: request header
         type: object
         additionalProperties:
           type: string
-      otherDetail:
-        description: other  information
+      requestCount:
+        description: request count
+        type: integer
+      requestParam:
+        description: request param
+        type: string
+      requestBody:
+        description: request body
+        type: string
+      supportedMethod:
+        description: request body
+        type: array
+        items:
+          type: string
+      paramDetail:
+        description: param detail
         type: object
         additionalProperties:
           type: string
+  EchoBody:
+    description: echo request body args
+    type: object
+    properties:
+      test1:
+        type: string
+      test2:
+        type: string
