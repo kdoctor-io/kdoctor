@@ -1,0 +1,24 @@
+apiVersion: v1
+entries:
+  kdoctor:
+  - apiVersion: v2
+    appVersion: 0.1.0-rc0
+    created: "2023-06-29T09:55:12.944603724Z"
+    description: kdoctor
+    digest: d0fe119482e77a22355a98507d5d2f9385b59a874e4f7c45eb5e15dec3fd3bb2
+    home: https://kdoctor-io.github.io/kdoctor
+    keywords:
+    - kdoctor
+    - operation
+    kubeVersion: '>= 1.16.0-0'
+    maintainers:
+    - name: kdoctor-io
+      url: https://github.com/kdoctor-io
+    name: kdoctor
+    sources:
+    - https://github.com/kdoctor-io/kdoctor
+    type: application
+    urls:
+    - https://kdoctor-io.github.io/kdoctor/charts/kdoctor-0.1.0-rc0.tgz
+    version: 0.1.0-rc0
+generated: "2023-06-29T09:55:12.940154004Z"
