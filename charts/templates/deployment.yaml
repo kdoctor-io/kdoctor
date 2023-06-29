@@ -210,7 +210,7 @@ spec:
             defaultMode: 0400
             sources:
               - secret:
-                  name: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+                  name: {{ .Values.tls.server.secretName | trunc 63 | trimSuffix "-" }}
                   items:
                     - key: tls.crt
                       path: tls.crt

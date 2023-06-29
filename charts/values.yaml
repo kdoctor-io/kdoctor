@@ -484,56 +484,6 @@ kdoctorController:
     ## @param kdoctorController.debug.gopsPort the gops port of template Controller
     gopsPort: 5724
 
-  ## TLS configuration for webhook
-  tls:
-    ## @param kdoctorController.tls.method the method for generating TLS certificates. [ provided , certmanager , auto]
-    ## - provided:     provide all certificates by helm options
-    ## - certmanager:  This method use cert-manager to generate & rotate certificates.
-    ## - auto:         Auto generate cert.
-    method: auto
-
-    ## @param kdoctorController.tls.secretName the secret name for storing TLS certificates
-    secretName: "template-controller-server-certs"
-
-    ## for certmanager method
-    certmanager:
-      ## @param kdoctorController.tls.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
-      certValidityDuration: 365
-
-      ## @param kdoctorController.tls.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
-      issuerName: ""
-
-      ## @param kdoctorController.tls.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
-      extraDnsNames: []
-
-      ## @param kdoctorController.tls.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
-      extraIPAddresses: []
-
-    ## for provided method
-    provided:
-      ## @param kdoctorController.tls.provided.tlsCert encoded tls certificate for provided method
-      ## @param kdoctorController.tls.provided.tlsKey encoded tls key for provided method
-      ## @param kdoctorController.tls.provided.tlsCa encoded tls CA for provided method
-      tlsCert: ""
-      tlsKey: ""
-      tlsCa: ""
-
-    ## for auto method
-    auto:
-      ## @param kdoctorController.tls.auto.caExpiration ca expiration for auto method
-      # in day , default 200 years
-      caExpiration: '73000'
-
-      ## @param kdoctorController.tls.auto.certExpiration server cert expiration for auto method
-      # in day, default 200 years
-      certExpiration: '73000'
-
-      ## @param kdoctorController.tls.auto.extraIpAddresses extra IP addresses of server certificate for auto method
-      extraIpAddresses: []
-
-      ## @param kdoctorController.tls.auto.extraDnsNames extra DNS names of server cert for auto method
-      extraDnsNames: []
-
   apiserver:
     ## @param kdoctorApiserver.name the kdoctorApiserver name
     name: "kdoctor-apiserver"
@@ -548,3 +498,53 @@ tls:
   client:
     ## @param tls.ca.client.secretName the secret name for storing TLS certificates
     secretName: "kdoctor-client-cert"
+
+  ## TLS configuration for webhook
+  server:
+    ## @param tls.server.method the method for generating TLS certificates. [ provided , certmanager , auto]
+    ## - provided:     provide all certificates by helm options
+    ## - certmanager:  This method use cert-manager to generate & rotate certificates.
+    ## - auto:         Auto generate cert.
+    method: auto
+
+    ## @param tls.server.secretName the secret name for storing TLS certificates
+    secretName: "template-controller-server-certs"
+
+    ## for certmanager method
+    certmanager:
+      ## @param tls.server.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
+      certValidityDuration: 365
+
+      ## @param tls.server.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
+      issuerName: ""
+
+      ## @param tls.server.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
+      extraDnsNames: []
+
+      ## @param tls.server.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
+      extraIPAddresses: []
+
+    ## for provided method
+    provided:
+      ## @param tls.server.provided.tlsCert encoded tls certificate for provided method
+      ## @param tls.server.provided.tlsKey encoded tls key for provided method
+      ## @param tls.server.provided.tlsCa encoded tls CA for provided method
+      tlsCert: ""
+      tlsKey: ""
+      tlsCa: ""
+
+    ## for auto method
+    auto:
+      ## @param tls.server.auto.caExpiration ca expiration for auto method
+      # in day , default 200 years
+      caExpiration: '73000'
+
+      ## @param tls.server.auto.certExpiration server cert expiration for auto method
+      # in day, default 200 years
+      certExpiration: '73000'
+
+      ## @param tls.server.auto.extraIpAddresses extra IP addresses of server certificate for auto method
+      extraIpAddresses: []
+
+      ## @param tls.server.auto.extraDnsNames extra DNS names of server cert for auto method
+      extraDnsNames: []
