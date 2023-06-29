@@ -508,7 +508,7 @@ tls:
     method: auto
 
     ## @param tls.server.secretName the secret name for storing TLS certificates
-    secretName: "template-controller-server-certs"
+    secretName: "kdoctor-controller-cert"
 
     ## for certmanager method
     certmanager:
