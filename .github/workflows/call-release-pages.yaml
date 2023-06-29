@@ -89,8 +89,8 @@ jobs:
       - name: Prepare
         run: |
           # prepare directory
-          mv docs/charts charts
-          rm -rf docs
+          [ ! -d "docs/charts" ] || mv docs/charts charts
+          rm -rf docs || true
           mkdir docs
 
       - name: Download Artifact
