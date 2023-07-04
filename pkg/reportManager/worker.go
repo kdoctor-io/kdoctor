@@ -11,6 +11,7 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
+	"net"
 	"path"
 	"strings"
 	"time"
@@ -125,7 +126,13 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 			continue
 		}
 
-		address := fmt.Sprintf("%s:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+		ip := net.ParseIP(podip)
+		var address string
+		if ip.To4() == nil {
+			address = fmt.Sprintf("[%s]:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+		} else {
+			address = fmt.Sprintf("%s:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+		}
 		s.syncReportFromOneAgent(ctx, logger, grpcClient, localFileList, podName, address)
 
 	}
