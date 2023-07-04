@@ -4,24 +4,25 @@
 
 1. `make build_local_image`
 
-2. `make e2e_init`
+2. setup kind 
+
+        make e2e_init
+            -----------------------------------------------------------------------------------------------------
+             succeeded to setup cluster spider
+             you could use following command to access the cluster
+                export KUBECONFIG=$(pwd)/test/runtime/kubeconfig_kdoctor.config
+                kubectl get nodes
+            -----------------------------------------------------------------------------------------------------
+
+    for chian developer 
+
+        make e2e_init -e E2E_CHINA_IMAGE_REGISTRY=true -e E2E_HELM_HTTP_PROXY=http://xxxx
 
 3. `make e2e_run`
 
 4. check proscope, browser vists http://NodeIP:4040
 
-5. apply cr
-
-        cat <<EOF > mybook.yaml
-        apiVersion: kdoctor.io/v1beta1
-        kind: Mybook
-        metadata:
-          name: test
-        spec:
-          ipVersion: 4
-          subnet: "1.0.0.0/8"
-        EOF
-        kubectl apply -f mybook.yaml
+5. `make e2e_clean`
 
 ## chart develop
 
