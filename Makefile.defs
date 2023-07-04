@@ -137,11 +137,20 @@ LINT_TRIVY_SEVERITY_LEVEL ?= CRITICAL
 
 #===================== E2E
 
+E2E_CHINA_IMAGE_REGISTRY ?= false
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_PROXY_REGISTER ?= m.daocloud.
+else
+    E2E_PROXY_REGISTER ?=
+endif
+
 
 PROJECT_IMAGE_VERSION ?= $(GIT_COMMIT_VERSION)
 ifeq ($(PROJECT_IMAGE_VERSION),)
     PROJECT_IMAGE_VERSION = $(shell cat $(ROOT_DIR)/VERSION | tr -d ' ' | tr -d '\n' )
 endif
+
 
 #====== pyroscope
 PYROSCOPE_CONTAINER_NAME := pyroscope
@@ -176,9 +185,6 @@ E2E_KIND_IPV6_SERVICE_CIDR = fd41::/108
 E2E_KIND_IPV4_POD_CIDR = 172.40.0.0/16
 E2E_KIND_IPV6_POD_CIDR = fd40::/48
 
-E2E_PROXY_REGISTER := m.daocloud.
-#E2E_PROXY_REGISTER :=
-
 E2E_ENABLE_MULTUS = false
 MULTUS_CHART_VERSION = 0.1.4
 MULTUS_CHART_REPO = https://release.daocloud.io/chartrepo/system
@@ -186,21 +192,23 @@ MULTUS_REPO_NAME = network-release
 MULTUS_CHART_NAME = multus-underlay
 
 E2E_ENABLE_METALLB = true
-METALLB_CHART_VERSION = 0.13.7
+METALLB_CHART_VERSION = 0.13.10
 METALLB_CHART_REPO ?= https://metallb.github.io/metallb
 METALLB_REPO_NAME = metallb
 METALLB_CHART_NAME = metallb
 
 
 E2E_ENABLE_CONTOUR = true
-CONTOUR_CHART_VERSION = 10.1.1
+CONTOUR_CHART_VERSION = 12.1.1
 CONTOUR_CHART_REPO ?= https://charts.bitnami.com/bitnami
 CONTOUR_REPO_NAME = contour
 CONTOUR_CHART_NAME = contour
 
 
 E2E_ENABLE_NGINX = false
-NGINX_CHART_VERSION = 4.4.0
+NGINX_CHART_VERSION = 4.7.1
 NGINX_CHART_REPO ?= https://kubernetes.github.io/ingress-nginx
 NGINX_REPO_NAME = ingress-nginx
 NGINX_CHART_NAME = ingress-nginx
+
+E2E_HELM_HTTP_PROXY ?=

@@ -190,7 +190,8 @@ install_multus: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 install_multus:
 	@echo "beign to install multus"
 	- helm repo remove $(MULTUS_REPO_NAME)
-	helm repo add $(MULTUS_REPO_NAME) $(MULTUS_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(MULTUS_REPO_NAME) $(MULTUS_CHART_REPO) ; \
 		helm repo update $(MULTUS_REPO_NAME) ; \
 		echo "try to load local image for multus $(MULTUS_CHART_VERSION) " ; \
 		IMAGE_LIST=` helm template --version=$(MULTUS_CHART_VERSION)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME) | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
@@ -209,7 +210,8 @@ install_multus:
 			done ; \
 		fi
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system multus || true
-	helm install $(MULTUS_CHART_NAME)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME)  \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+			helm install $(MULTUS_CHART_NAME)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME)  \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG)  \
 			--version=$(MULTUS_CHART_VERSION) --wait \
 			--set sriov.manifests.enable=false \
@@ -301,11 +303,12 @@ install_metallb:
 	@echo "beign to install metallb"
 	- helm repo remove $(METALLB_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(METALLB_CHART_NAME) || true
-	helm repo add $(METALLB_REPO_NAME) $(METALLB_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(METALLB_REPO_NAME) $(METALLB_CHART_REPO) ; \
 		helm repo update $(METALLB_REPO_NAME) ; \
 		HELM_OPTIONS="	--set controller.image.repository=quay.$(E2E_PROXY_REGISTER)io/metallb/controller \
                       	--set speaker.image.repository=quay.$(E2E_PROXY_REGISTER)io/metallb/speaker \
-                      	--set speaker.frr.image.repository=docker.$(E2E_PROXY_REGISTER)io/frrouting/frr  --set speaker.frr.enabled=true " ; \
+                      	--set speaker.frr.image.repository=quay.$(E2E_PROXY_REGISTER)io/frrouting/frr  --set speaker.frr.enabled=true " ; \
 		IMAGE_LIST=` helm template --version=$(METALLB_CHART_VERSION)  $(METALLB_REPO_NAME)/$(METALLB_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
@@ -418,9 +421,11 @@ install_contour:
 	@echo "beign to install contour"
 	- helm repo remove $(CONTOUR_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(CONTOUR_CHART_NAME) || true
-	helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
 		helm repo update $(CONTOUR_REPO_NAME) ; \
-		IMAGE_LIST=` helm template --version=$(CONTOUR_CHART_VERSION)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+		HELM_OPTIONS=" --set global.imageRegistry=docker.$(E2E_PROXY_REGISTER)io  "  ; \
+		IMAGE_LIST=` helm template --version=$(CONTOUR_CHART_VERSION)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
 		else \
@@ -434,11 +439,10 @@ install_contour:
 				echo "load local image $${IMAGE} " ; \
 				kind load docker-image $${IMAGE}  --name $(KIND_CLUSTER_NAME)  ; \
 			done ; \
-		fi
-	helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
+		fi ; \
+		helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG) \
-			--version=$(CONTOUR_CHART_VERSION) --wait  --timeout 5m \
-			  --set global.imageRegistry="docker.$(E2E_PROXY_REGISTER)io" \
+			--version=$(CONTOUR_CHART_VERSION) --wait  --timeout 5m  $${HELM_OPTIONS} \
 			  --set envoy.kind=daemonset \
 			  --set envoy.service.type=LoadBalancer \
 			  --set envoy.service.externalTrafficPolicy=Local \
@@ -468,7 +472,8 @@ install_nginx:
 	@echo "beign to install nginx"
 	- helm repo remove $(NGINX_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(NGINX_CHART_NAME) || true
-	helm repo add $(NGINX_REPO_NAME) $(NGINX_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(NGINX_REPO_NAME) $(NGINX_CHART_REPO) ; \
 		helm repo update $(NGINX_REPO_NAME) ; \
 		HELM_OPTION="  --set controller.image.registry=k8s.$(E2E_PROXY_REGISTER)io \
                        --set defaultBackend.image.registry=k8s.$(E2E_PROXY_REGISTER)io \
