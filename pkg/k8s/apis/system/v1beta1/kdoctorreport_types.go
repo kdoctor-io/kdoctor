@@ -12,26 +12,26 @@ import (
 // +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// PluginReport
+// KdoctorReport
 // +k8s:openapi-gen=true
-type PluginReport struct {
+type KdoctorReport struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec PluginReportSpec `json:"spec,omitempty"`
+	Spec KdoctorReportSpec `json:"spec,omitempty"`
 }
 
-// PluginReportList
+// KdoctorReportList
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type PluginReportList struct {
+type KdoctorReportList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []PluginReport `json:"items"`
+	Items []KdoctorReport `json:"items"`
 }
 
-// PluginReportSpec defines the desired state of PluginReport
-type PluginReportSpec struct {
+// KdoctorReportSpec defines the desired state of KdoctorReport
+type KdoctorReportSpec struct {
 	TaskName            string    `json:"TaskName"`
 	TaskType            string    `json:"TaskType"`
 	ToTalRoundNumber    int64     `json:"RoundNumber"`

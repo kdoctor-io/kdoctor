@@ -11,10 +11,10 @@ import (
 
 const (
 	// GroupName is the group name used in this package.
-	GroupName            = "system.kdoctor.io"
-	V1betaVersion        = "v1beta1"
-	KindPluginReport     = "PluginReport"
-	KindPluginReportList = "PluginReportList"
+	GroupName             = "system.kdoctor.io"
+	V1betaVersion         = "v1beta1"
+	KindKdoctorReport     = "KdoctorReport"
+	KindKdoctorReportList = "KdoctorReportList"
 )
 
 // SchemeGroupVersion is group version used to register these objects.
@@ -30,8 +30,8 @@ var (
 // Adds the list of known types to the given scheme.
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
-		&PluginReport{},
-		&PluginReportList{},
+		&KdoctorReport{},
+		&KdoctorReportList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

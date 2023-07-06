@@ -64,13 +64,10 @@ func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadDns.Dn
 	report.Metrics = *result
 	if len(failureReason) == 0 {
 		report.FailureReason = nil
-	} else {
-		report.FailureReason = pointer.String(failureReason)
-	}
-	if report.FailureReason == nil {
 		report.Succeed = true
 		logger.Sugar().Infof("succeed to test %v", req.DnsServerAddr)
 	} else {
+		report.FailureReason = pointer.String(failureReason)
 		report.Succeed = false
 		logger.Sugar().Warnf("failed to test %v", req.DnsServerAddr)
 	}

@@ -44,7 +44,7 @@ func (t TableGenerator) ConvertToTable(ctx context.Context, obj runtime.Object, 
 
 	var err error
 	table.Rows, err = metatable.MetaToTableRow(obj, func(obj runtime.Object, m metav1.Object, name, age string) ([]interface{}, error) {
-		pluginReport := obj.(*v1beta1.PluginReport)
+		pluginReport := obj.(*v1beta1.KdoctorReport)
 		return []interface{}{
 			name,
 			pluginReport.Spec.ToTalRoundNumber,
