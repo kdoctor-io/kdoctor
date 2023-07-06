@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package pluginreport
+package kdoctorreport
 
 import (
 	"context"
@@ -36,15 +36,15 @@ const dir = "/report"
 func NewREST(clientSet *versioned.Clientset, scheme *runtime.Scheme, optsGetter generic.RESTOptionsGetter) (*registry.REST, error) {
 	strategy := NewStrategy(scheme)
 
-	restOptions, err := optsGetter.GetRESTOptions(v1beta1.Resource("pluginreports"))
+	restOptions, err := optsGetter.GetRESTOptions(v1beta1.Resource("kdoctorreports"))
 	if nil != err {
 		return nil, err
 	}
 
 	dryRunnableStorage, destroyFunc := NewStorage(clientSet, restOptions)
 	store := &genericregistry.Store{
-		NewFunc:     func() runtime.Object { return &v1beta1.PluginReport{} },
-		NewListFunc: func() runtime.Object { return &v1beta1.PluginReportList{} },
+		NewFunc:     func() runtime.Object { return &v1beta1.KdoctorReport{} },
+		NewListFunc: func() runtime.Object { return &v1beta1.KdoctorReportList{} },
 		KeyRootFunc: func(ctx context.Context) string {
 			return restOptions.ResourcePrefix
 		},
@@ -52,10 +52,10 @@ func NewREST(clientSet *versioned.Clientset, scheme *runtime.Scheme, optsGetter 
 			return genericregistry.NoNamespaceKeyFunc(ctx, restOptions.ResourcePrefix, name)
 		},
 		ObjectNameFunc: func(obj runtime.Object) (string, error) {
-			return obj.(*v1beta1.PluginReport).Name, nil
+			return obj.(*v1beta1.KdoctorReport).Name, nil
 		},
-		DefaultQualifiedResource: v1beta1.Resource("pluginreports"),
-		PredicateFunc:            MatchPluginReport,
+		DefaultQualifiedResource: v1beta1.Resource("kdoctorreports"),
+		PredicateFunc:            MatchKdoctorReport,
 
 		CreateStrategy:          strategy,
 		UpdateStrategy:          strategy,
@@ -65,7 +65,7 @@ func NewREST(clientSet *versioned.Clientset, scheme *runtime.Scheme, optsGetter 
 		Storage:     dryRunnableStorage,
 		DestroyFunc: destroyFunc,
 
-		// TableConvertor: printers.NewTableGenerator(v1beta1.Resource("pluginreports")),
+		// TableConvertor: printers.NewTableGenerator(v1beta1.Resource("kdoctorreports")),
 	}
 
 	return &registry.REST{Store: store}, nil
@@ -73,7 +73,7 @@ func NewREST(clientSet *versioned.Clientset, scheme *runtime.Scheme, optsGetter 
 
 func NewStorage(clientSet *versioned.Clientset, restOptions generic.RESTOptions) (genericregistry.DryRunnableStorage, factory.DestroyFunc) {
 	dryRunnableStorage := genericregistry.DryRunnableStorage{
-		Storage: &pluginReportStorage{
+		Storage: &kdoctorReportStorage{
 			clientSet: clientSet,
 		},
 		Codec: restOptions.StorageConfig.Codec,
@@ -82,31 +82,31 @@ func NewStorage(clientSet *versioned.Clientset, restOptions generic.RESTOptions)
 	return dryRunnableStorage, func() {}
 }
 
-var _ storage.Interface = &pluginReportStorage{}
+var _ storage.Interface = &kdoctorReportStorage{}
 
-type pluginReportStorage struct {
+type kdoctorReportStorage struct {
 	clientSet    *versioned.Clientset
 	resourceName string
 }
 
-func (p pluginReportStorage) Versioner() storage.Versioner {
+func (p kdoctorReportStorage) Versioner() storage.Versioner {
 	return storage.APIObjectVersioner{}
 }
 
-func (p pluginReportStorage) Create(ctx context.Context, key string, obj, out runtime.Object, ttl uint64) error {
+func (p kdoctorReportStorage) Create(ctx context.Context, key string, obj, out runtime.Object, ttl uint64) error {
 	return fmt.Errorf("create API not implement")
 }
 
-func (p pluginReportStorage) Delete(ctx context.Context, key string, out runtime.Object, preconditions *storage.Preconditions, validateDeletion storage.ValidateObjectFunc, cachedExistingObject runtime.Object) error {
+func (p kdoctorReportStorage) Delete(ctx context.Context, key string, out runtime.Object, preconditions *storage.Preconditions, validateDeletion storage.ValidateObjectFunc, cachedExistingObject runtime.Object) error {
 	return fmt.Errorf("delete API not implement")
 }
 
-func (p pluginReportStorage) Watch(ctx context.Context, key string, opts storage.ListOptions) (watch.Interface, error) {
+func (p kdoctorReportStorage) Watch(ctx context.Context, key string, opts storage.ListOptions) (watch.Interface, error) {
 	return nil, fmt.Errorf("watch API not implement")
 
 }
 
-func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.GetOptions, objPtr runtime.Object) error {
+func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.GetOptions, objPtr runtime.Object) error {
 	klog.Infof("Get called with key: %v on resource %v\n", key, p.resourceName)
 
 	var taskStatus *crd.TaskStatus
@@ -198,8 +198,8 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 		return fmt.Errorf("no '%s' reports found", name)
 	}
 
-	pluginReport := objPtr.(*v1beta1.PluginReport)
-	pluginReport.Spec = v1beta1.PluginReportSpec{
+	kdoctorReport := objPtr.(*v1beta1.KdoctorReport)
+	kdoctorReport.Spec = v1beta1.KdoctorReportSpec{
 		TaskName:            name,
 		TaskType:            taskType,
 		ToTalRoundNumber:    toTalRoundNumber,
@@ -210,11 +210,11 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 		Report:              getReports,
 	}
 
-	pluginReport.Name = name
-	pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+	kdoctorReport.Name = name
+	kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 		Group:   v1beta1.GroupName,
 		Version: v1beta1.V1betaVersion,
-		Kind:    v1beta1.KindPluginReport,
+		Kind:    v1beta1.KindKdoctorReport,
 	})
 
 	return nil
@@ -222,7 +222,7 @@ func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.G
 
 const summary = "summary"
 
-func (p pluginReportStorage) GetList(ctx context.Context, key string, opts storage.ListOptions, listObj runtime.Object) error {
+func (p kdoctorReportStorage) GetList(ctx context.Context, key string, opts storage.ListOptions, listObj runtime.Object) error {
 	readDir, err := os.ReadDir(dir)
 	if nil != err {
 		return fmt.Errorf("failed to read directory %s, error: %w", dir, err)
@@ -235,16 +235,16 @@ func (p pluginReportStorage) GetList(ctx context.Context, key string, opts stora
 		fileNameList = append(fileNameList, item.Name())
 	}
 
-	pluginReportList := listObj.(*v1beta1.PluginReportList)
+	kdoctorReportList := listObj.(*v1beta1.KdoctorReportList)
 	var resList []runtime.Object
 
 	{
-		netDNSPluginReports, err := p.getNetDNSPluginReports(ctx, fileNameList)
+		netDNSKdoctorReports, err := p.getNetDNSKdoctorReports(ctx, fileNameList)
 		if nil != err {
 			return err
 		}
-		for i := range netDNSPluginReports {
-			resList = append(resList, netDNSPluginReports[i].DeepCopy())
+		for i := range netDNSKdoctorReports {
+			resList = append(resList, netDNSKdoctorReports[i].DeepCopy())
 		}
 	}
 
@@ -268,29 +268,29 @@ func (p pluginReportStorage) GetList(ctx context.Context, key string, opts stora
 		}
 	}
 
-	err = meta.SetList(pluginReportList, resList)
+	err = meta.SetList(kdoctorReportList, resList)
 	if nil != err {
 		return err
 	}
 
-	pluginReportList.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+	kdoctorReportList.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 		Group:   v1beta1.GroupName,
 		Version: v1beta1.V1betaVersion,
-		Kind:    v1beta1.KindPluginReportList,
+		Kind:    v1beta1.KindKdoctorReportList,
 	})
 
 	return nil
 }
 
-func (p pluginReportStorage) GuaranteedUpdate(ctx context.Context, key string, destination runtime.Object, ignoreNotFound bool, preconditions *storage.Preconditions, tryUpdate storage.UpdateFunc, cachedExistingObject runtime.Object) error {
+func (p kdoctorReportStorage) GuaranteedUpdate(ctx context.Context, key string, destination runtime.Object, ignoreNotFound bool, preconditions *storage.Preconditions, tryUpdate storage.UpdateFunc, cachedExistingObject runtime.Object) error {
 	return fmt.Errorf("GuaranteedUpdate API not implement")
 }
 
-func (p pluginReportStorage) Count(key string) (int64, error) {
+func (p kdoctorReportStorage) Count(key string) (int64, error) {
 	return 0, fmt.Errorf("Count not supported for key: %s", key)
 }
 
-func (p pluginReportStorage) getLatestRoundReports(key string, fileNameList []string) (*[]v1beta1.Report, int64, error) {
+func (p kdoctorReportStorage) getLatestRoundReports(key string, fileNameList []string) (*[]v1beta1.Report, int64, error) {
 	var reports []v1beta1.Report
 	for _, netDNSFileName := range fileNameList {
 		split := strings.Split(netDNSFileName, "_")
@@ -342,8 +342,8 @@ func (p pluginReportStorage) getLatestRoundReports(key string, fileNameList []st
 	return result, latestRoundNumber, nil
 }
 
-func (p pluginReportStorage) getNetDNSPluginReports(ctx context.Context, fileNameList []string) ([]*v1beta1.PluginReport, error) {
-	var resList []*v1beta1.PluginReport
+func (p kdoctorReportStorage) getNetDNSKdoctorReports(ctx context.Context, fileNameList []string) ([]*v1beta1.KdoctorReport, error) {
+	var resList []*v1beta1.KdoctorReport
 
 	netDNSList, err := p.clientSet.KdoctorV1beta1().Netdnses().List(ctx, metav1.ListOptions{})
 	if nil != err {
@@ -389,7 +389,7 @@ func (p pluginReportStorage) getNetDNSPluginReports(ctx context.Context, fileNam
 			finishedRoundNumber = int64(tmpNetDNS.Status.History[0].RoundNumber)
 		}
 
-		pluginReportSpec := v1beta1.PluginReportSpec{
+		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
 			TaskName:            tmpNetDNS.Name,
 			TaskType:            v1beta1.NetDNSTaskName,
 			ToTalRoundNumber:    *tmpNetDNS.Status.ExpectedRound,
@@ -400,23 +400,23 @@ func (p pluginReportStorage) getNetDNSPluginReports(ctx context.Context, fileNam
 			Report:              result,
 		}
 
-		pluginReport := &v1beta1.PluginReport{}
-		pluginReport.Name = tmpNetDNS.Name
-		pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		kdoctorReport := &v1beta1.KdoctorReport{}
+		kdoctorReport.Name = tmpNetDNS.Name
+		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,
-			Kind:    v1beta1.KindPluginReport,
+			Kind:    v1beta1.KindKdoctorReport,
 		})
-		pluginReport.Spec = pluginReportSpec
+		kdoctorReport.Spec = kdoctorReportSpec
 
-		resList = append(resList, pluginReport)
+		resList = append(resList, kdoctorReport)
 	}
 
 	return resList, nil
 }
 
-func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.PluginReport, error) {
-	var resList []*v1beta1.PluginReport
+func (p kdoctorReportStorage) getHttpAppHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.KdoctorReport, error) {
+	var resList []*v1beta1.KdoctorReport
 
 	httpAppHealthyList, err := p.clientSet.KdoctorV1beta1().AppHttpHealthies().List(ctx, metav1.ListOptions{})
 	if nil != err {
@@ -462,7 +462,7 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 			finishedRoundNumber = int64(tmpHttpAppHealthy.Status.History[0].RoundNumber)
 		}
 
-		pluginReportSpec := v1beta1.PluginReportSpec{
+		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
 			TaskName:            tmpHttpAppHealthy.Name,
 			TaskType:            v1beta1.AppHttpHealthyTaskName,
 			ToTalRoundNumber:    *tmpHttpAppHealthy.Status.ExpectedRound,
@@ -473,23 +473,23 @@ func (p pluginReportStorage) getHttpAppHealthyReports(ctx context.Context, fileN
 			Report:              result,
 		}
 
-		pluginReport := &v1beta1.PluginReport{}
-		pluginReport.Name = tmpHttpAppHealthy.Name
-		pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		kdoctorReport := &v1beta1.KdoctorReport{}
+		kdoctorReport.Name = tmpHttpAppHealthy.Name
+		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,
-			Kind:    v1beta1.KindPluginReport,
+			Kind:    v1beta1.KindKdoctorReport,
 		})
-		pluginReport.Spec = pluginReportSpec
+		kdoctorReport.Spec = kdoctorReportSpec
 
-		resList = append(resList, pluginReport)
+		resList = append(resList, kdoctorReport)
 	}
 
 	return resList, nil
 }
 
-func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.PluginReport, error) {
-	var resList []*v1beta1.PluginReport
+func (p kdoctorReportStorage) getNetReachHealthyReports(ctx context.Context, fileNameList []string) ([]*v1beta1.KdoctorReport, error) {
+	var resList []*v1beta1.KdoctorReport
 
 	netReachHealthyList, err := p.clientSet.KdoctorV1beta1().NetReaches().List(ctx, metav1.ListOptions{})
 	if nil != err {
@@ -535,7 +535,7 @@ func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, file
 			finishedRoundNumber = int64(tmpNetReachHealthy.Status.History[0].RoundNumber)
 		}
 
-		pluginReportSpec := v1beta1.PluginReportSpec{
+		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
 			TaskName:            tmpNetReachHealthy.Name,
 			TaskType:            v1beta1.NetReachTaskName,
 			ToTalRoundNumber:    *tmpNetReachHealthy.Status.ExpectedRound,
@@ -546,16 +546,16 @@ func (p pluginReportStorage) getNetReachHealthyReports(ctx context.Context, file
 			Report:              result,
 		}
 
-		pluginReport := &v1beta1.PluginReport{}
-		pluginReport.Name = tmpNetReachHealthy.Name
-		pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		kdoctorReport := &v1beta1.KdoctorReport{}
+		kdoctorReport.Name = tmpNetReachHealthy.Name
+		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,
-			Kind:    v1beta1.KindPluginReport,
+			Kind:    v1beta1.KindKdoctorReport,
 		})
-		pluginReport.Spec = pluginReportSpec
+		kdoctorReport.Spec = kdoctorReportSpec
 
-		resList = append(resList, pluginReport)
+		resList = append(resList, kdoctorReport)
 	}
 
 	return resList, nil

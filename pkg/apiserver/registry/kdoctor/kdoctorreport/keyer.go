@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Tigera, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package pluginreport
+package kdoctorreport
 
 import (
 	"fmt"
