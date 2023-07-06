@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"strings"
 )
 
 func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.Context, obj runtime.Object) error {
@@ -45,6 +46,17 @@ func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.C
 	if req.Spec.SuccessCondition == nil {
 		req.Spec.SuccessCondition = tools.GetDefaultNetSuccessCondition()
 		logger.Sugar().Debugf("set default SuccessCondition for HttpAppHealthy %v", req.Name)
+	}
+
+	// target
+	if true {
+		protoclHttp := strings.Contains(req.Spec.Target.Host, "http")
+		protoclHttps := strings.Contains(req.Spec.Target.Host, "https")
+		// default http
+		if !protoclHttp && !protoclHttps {
+			req.Spec.Target.Host = fmt.Sprintf("http://%s", req.Spec.Target.Host)
+			logger.Sugar().Debugf("set default target host protocol http for HttpAppHealthy %v", req.Name)
+		}
 	}
 
 	return nil
@@ -132,6 +144,12 @@ func (s *PluginAppHttpHealthy) WebhookValidateCreate(logger *zap.Logger, ctx con
 				}
 			}
 
+		}
+
+		// host is ip or domain
+		err := tools.ValidataAppHttpHealthyHost(r)
+		if err != nil {
+			return err
 		}
 	}
 
