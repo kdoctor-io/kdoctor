@@ -37,4 +37,4 @@ kdoctor 是一个 kubernetes 数据面测试项目，来源于生产运维过程
 
 ## License
 
-Spiderpool is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
