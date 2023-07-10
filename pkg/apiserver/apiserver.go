@@ -21,12 +21,12 @@ import (
 
 	"github.com/kdoctor-io/kdoctor/pkg/apiserver/filters"
 	"github.com/kdoctor-io/kdoctor/pkg/apiserver/registry"
-	"github.com/kdoctor-io/kdoctor/pkg/apiserver/registry/kdoctor/pluginreport"
+	"github.com/kdoctor-io/kdoctor/pkg/apiserver/registry/kdoctor/kdoctorreport"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/client/clientset/versioned"
 )
 
-const DefaultPluginReportPath = "/report"
+const DefaultKdoctorReportPath = "/report"
 
 var (
 	Scheme    = runtime.NewScheme()
@@ -60,7 +60,7 @@ func (s *kdoctorServerOptions) Config() (*Config, error) {
 		return nil, err
 	}
 
-	pluginReportDir := DefaultPluginReportPath
+	pluginReportDir := DefaultKdoctorReportPath
 	env, ok := os.LookupEnv("ENV_CONTROLLER_REPORT_STORAGE_PATH")
 	if ok {
 		pluginReportDir = env
@@ -140,7 +140,7 @@ func (c completedConfig) New() (*kdoctorServer, error) {
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(GroupName, Scheme, metav1.ParameterCodec, Codecs)
 
 	v1beta1storage := map[string]rest.Storage{}
-	v1beta1storage["pluginreports"] = registry.RESTInPeace(pluginreport.NewREST(clientSet, Scheme, c.GenericConfig.RESTOptionsGetter))
+	v1beta1storage["kdoctorreports"] = registry.RESTInPeace(kdoctorreport.NewREST(clientSet, Scheme, c.GenericConfig.RESTOptionsGetter))
 	apiGroupInfo.VersionedResourcesStorageMap["v1beta1"] = v1beta1storage
 
 	err = s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo)
