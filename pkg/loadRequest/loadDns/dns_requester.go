@@ -25,6 +25,7 @@
 package loadDns
 
 import (
+	"crypto/tls"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"github.com/miekg/dns"
@@ -125,6 +126,12 @@ func (b *Work) runWorker() {
 	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
 	conn, _ := client.Dial(b.ServerAddr)
 	client.SingleInflight = true
+	if b.Protocol == "tcp-tls" {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true,
+		}
+		client.TLSConfig = tlsConfig
+	}
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.

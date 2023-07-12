@@ -29,11 +29,14 @@ type EchoRes struct {
 	// request body
 	RequestBody string `json:"requestBody,omitempty"`
 
-	// request count
-	RequestCount int64 `json:"requestCount,omitempty"`
+	// request dns count
+	RequestDNSCount int64 `json:"requestDnsCount,omitempty"`
 
 	// request header
 	RequestHeader map[string]string `json:"requestHeader,omitempty"`
+
+	// request http count
+	RequestHTTPCount int64 `json:"requestHttpCount,omitempty"`
 
 	// request method
 	RequestMethod string `json:"requestMethod,omitempty"`
