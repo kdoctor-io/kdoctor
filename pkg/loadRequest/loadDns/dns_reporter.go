@@ -8,10 +8,9 @@ import (
 	"time"
 )
 
-// We report for max 1M results.
-const maxRes = 1000000
-
 type report struct {
+	enableLatencyMetric bool
+
 	avgTotal float64
 	average  float64
 	tps      float64
@@ -27,13 +26,14 @@ type report struct {
 	ReplyCode    map[string]int
 }
 
-func newReport(results chan *result) *report {
+func newReport(results chan *result, enableLatencyMetric bool) *report {
 	return &report{
-		results:   results,
-		done:      make(chan bool, 1),
-		errorDist: make(map[string]int),
-		lats:      make([]float32, 0, maxRes),
-		ReplyCode: make(map[string]int),
+		results:             results,
+		done:                make(chan bool, 1),
+		errorDist:           make(map[string]int),
+		lats:                make([]float32, 0),
+		ReplyCode:           make(map[string]int),
+		enableLatencyMetric: enableLatencyMetric,
 	}
 }
 
@@ -46,7 +46,7 @@ func runReporter(r *report) {
 			r.failedCount++
 		} else {
 			r.avgTotal += res.duration.Seconds()
-			if len(r.lats) < maxRes {
+			if r.enableLatencyMetric {
 				r.lats = append(r.lats, float32(res.duration.Milliseconds()))
 			}
 			rcodeStr := dns.RcodeToString[res.msg.Rcode]

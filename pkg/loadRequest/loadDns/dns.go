@@ -34,6 +34,7 @@ type DnsRequestData struct {
 	PerRequestTimeoutInMs int
 	Qps                   int
 	DurationInSecond      int
+	EnableLatencyMetric   bool
 }
 
 func DnsRequest(logger *zap.Logger, reqData *DnsRequestData) (result *v1beta1.DNSMetrics, err error) {
@@ -52,12 +53,13 @@ func DnsRequest(logger *zap.Logger, reqData *DnsRequestData) (result *v1beta1.DN
 	duration := time.Duration(reqData.DurationInSecond) * time.Second
 
 	w := &Work{
-		Concurrency: config.AgentConfig.Configmap.NetdnsDefaultConcurrency,
-		QPS:         reqData.Qps,
-		Timeout:     reqData.PerRequestTimeoutInMs,
-		Msg:         new(dns.Msg).SetQuestion(reqData.TargetDomain, reqData.DnsType),
-		Protocol:    string(reqData.Protocol),
-		ServerAddr:  reqData.DnsServerAddr,
+		Concurrency:         config.AgentConfig.Configmap.NetdnsDefaultConcurrency,
+		QPS:                 reqData.Qps,
+		Timeout:             reqData.PerRequestTimeoutInMs,
+		Msg:                 new(dns.Msg).SetQuestion(reqData.TargetDomain, reqData.DnsType),
+		Protocol:            string(reqData.Protocol),
+		ServerAddr:          reqData.DnsServerAddr,
+		EnableLatencyMetric: reqData.EnableLatencyMetric,
 	}
 	w.Init()
 

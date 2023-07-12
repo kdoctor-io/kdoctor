@@ -115,6 +115,9 @@ spec:
                     type: string
                   bodyConfigmapNamespace:
                     type: string
+                  enableLatencyMetric:
+                    default: false
+                    type: boolean
                   header:
                     items:
                       type: string
