@@ -4,7 +4,8 @@
 package cmd
 
 import (
-	agenthttpserver "github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
+	"github.com/kdoctor-io/kdoctor/pkg/agentDnsServer"
+	"github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
 	"github.com/kdoctor-io/kdoctor/pkg/debug"
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager"
@@ -66,7 +67,6 @@ func DaemonMain() {
 		if e := k8sObjManager.Initk8sObjManager(mgr.GetClient()); e != nil {
 			rootLogger.Sugar().Fatalf("failed to Initk8sObjManager, error=%v", e)
 		}
-
 	} else {
 		rootLogger.Info("run in agent mode")
 
@@ -80,9 +80,10 @@ func DaemonMain() {
 	}
 	rootLogger.Sugar().Info("generate server cert and key")
 	GenServerCert(rootLogger)
-	agenthttpserver.SetupHealthHttpServer(rootLogger)
-	agenthttpserver.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
+	agentHttpServer.SetupHealthHttpServer(rootLogger)
+	agentHttpServer.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
 	initGrpcServer()
+	agentDnsServer.SetupAppDnsServer(rootLogger, TlsCertPath, TlsKeyPath)
 
 	rootLogger.Info("finish initialization")
 	// sleep forever

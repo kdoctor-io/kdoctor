@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package agenthttpserver
+package agentHttpServer
 
 import (
 	"fmt"

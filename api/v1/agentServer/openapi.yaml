@@ -283,8 +283,11 @@ definitions:
         type: object
         additionalProperties:
           type: string
-      requestCount:
-        description: request count
+      requestHttpCount:
+        description: request http count
+        type: integer
+      requestDnsCount:
+        description: request dns count
         type: integer
       requestParam:
         description: request param
