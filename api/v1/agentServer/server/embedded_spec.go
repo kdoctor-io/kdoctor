@@ -451,8 +451,8 @@ func init() {
           "description": "request body",
           "type": "string"
         },
-        "requestCount": {
-          "description": "request count",
+        "requestDnsCount": {
+          "description": "request dns count",
           "type": "integer"
         },
         "requestHeader": {
@@ -461,6 +461,10 @@ func init() {
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "requestHttpCount": {
+          "description": "request http count",
+          "type": "integer"
         },
         "requestMethod": {
           "description": "request method",
@@ -923,8 +927,8 @@ func init() {
           "description": "request body",
           "type": "string"
         },
-        "requestCount": {
-          "description": "request count",
+        "requestDnsCount": {
+          "description": "request dns count",
           "type": "integer"
         },
         "requestHeader": {
@@ -933,6 +937,10 @@ func init() {
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "requestHttpCount": {
+          "description": "request http count",
+          "type": "integer"
         },
         "requestMethod": {
           "description": "request method",

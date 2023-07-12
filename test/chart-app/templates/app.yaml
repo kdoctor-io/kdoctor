@@ -110,6 +110,15 @@ spec:
             - name: https
               containerPort: {{ .Values.http.appHttpsPort }}
               protocol: TCP
+            - name: dns-udp
+              containerPort: {{ .Values.dns.appDnsUdpPort }}
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: {{ .Values.dns.appDnsTcpPort }}
+              protocol: TCP
+            - name: dns-tcp-tls
+              containerPort: {{ .Values.dns.appDnsTcpTlsPort }}
+              protocol: TCP
           {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
           startupProbe:
             httpGet:
