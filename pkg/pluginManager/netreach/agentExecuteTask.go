@@ -299,6 +299,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				Qps:                 request.QPS,
 				PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 				RequestTimeSecond:   request.DurationInSecond,
+				EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 			}
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *d)
 			failureReason, itemReport := SendRequestAndReport(logger, t.Name, d, successCondition)

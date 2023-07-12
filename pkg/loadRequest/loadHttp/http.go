@@ -61,6 +61,7 @@ type HttpRequestData struct {
 	DisableKeepAlives   bool
 	DisableCompression  bool
 	ExpectStatusCode    *int
+	EnableLatencyMetric bool
 }
 
 func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetrics {
@@ -75,17 +76,18 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 	logger.Sugar().Infof("http request Concurrency=%d", config.AgentConfig.Configmap.NethttpDefaultConcurrency)
 
 	w := &Work{
-		Request:            req,
-		Concurrency:        config.AgentConfig.Configmap.NethttpDefaultConcurrency,
-		QPS:                reqData.Qps,
-		Timeout:            reqData.PerRequestTimeoutMS,
-		DisableCompression: reqData.DisableCompression,
-		DisableKeepAlives:  reqData.DisableKeepAlives,
-		Http2:              reqData.Http2,
-		Cert:               reqData.ClientCert,
-		CertPool:           reqData.CaCertPool,
-		ExpectStatusCode:   reqData.ExpectStatusCode,
-		RequestBody:        reqData.Body,
+		Request:             req,
+		Concurrency:         config.AgentConfig.Configmap.NethttpDefaultConcurrency,
+		QPS:                 reqData.Qps,
+		Timeout:             reqData.PerRequestTimeoutMS,
+		DisableCompression:  reqData.DisableCompression,
+		DisableKeepAlives:   reqData.DisableKeepAlives,
+		Http2:               reqData.Http2,
+		Cert:                reqData.ClientCert,
+		CertPool:            reqData.CaCertPool,
+		ExpectStatusCode:    reqData.ExpectStatusCode,
+		RequestBody:         reqData.Body,
+		EnableLatencyMetric: reqData.EnableLatencyMetric,
 	}
 	logger.Sugar().Infof("do http requests work=%v", w)
 	w.Init()

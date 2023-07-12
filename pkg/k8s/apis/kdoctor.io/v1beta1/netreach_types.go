@@ -47,6 +47,10 @@ type NetReachTarget struct {
 
 	// +kubebuilder:default=false
 	Ingress bool `json:"ingress,omitempty"`
+
+	// +kubebuilder:default=false
+	// +kubebuilder:validation:Optional
+	EnableLatencyMetric bool `json:"enableLatencyMetric,omitempty"`
 }
 
 // scope(Namespaced or Cluster)

@@ -170,6 +170,9 @@ spec:
                 x-kubernetes-map-type: atomic
               target:
                 properties:
+                  enableLatencyMetric:
+                    default: false
+                    type: boolean
                   targetDns:
                     properties:
                       serviceName:
