@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package agenthttpserver
+package agentHttpServer
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ import (
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi/echo"
+	"github.com/kdoctor-io/kdoctor/pkg/agentDnsServer"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"os"
@@ -23,11 +24,8 @@ var (
 	ParamInformation = map[string]string{
 		"delay": "in query, delay some second return response",
 	}
-	SupportedMethod       = []string{"GET", "PUT", "POST", "DELETE", "HEAD", "PATCH", "OPTIONS"}
-	requestCounts   int64 = 0
-
-	HttpsCertPath = "/etc/app-tls/tls.crt"
-	HttpsKeyPath  = "/etc/app-tls/tls.key"
+	SupportedMethod         = []string{"GET", "PUT", "POST", "DELETE", "HEAD", "PATCH", "OPTIONS"}
+	requestHttpCounts int64 = 0
 )
 
 // route /
@@ -55,17 +53,18 @@ func (s *echoGetHandler) Handle(r echo.GetParams) middleware.Responder {
 		}
 		head[k] = t
 	}
-	atomic.AddInt64(&requestCounts, 1)
+	atomic.AddInt64(&requestHttpCounts, 1)
 	t := echo.NewGetOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -80,7 +79,8 @@ type echoDeleteHandler struct {
 }
 
 func (s *echoDeleteHandler) Handle(r echo.DeleteParams) middleware.Responder {
-	atomic.StoreInt64(&requestCounts, 0)
+	atomic.StoreInt64(&requestHttpCounts, 0)
+	atomic.StoreInt64(&agentDnsServer.RequestDnsCounts, 0)
 	return echo.NewDeleteOK()
 }
 
@@ -109,14 +109,15 @@ func (s *echoPutHandler) Handle(r echo.PutParams) middleware.Responder {
 	}
 	t := echo.NewPutOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -151,14 +152,15 @@ func (s *echoPostHandler) Handle(r echo.PostParams) middleware.Responder {
 	}
 	t := echo.NewPostOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 
 	body, _ := r.TestArgs.MarshalBinary()
@@ -232,17 +234,18 @@ func (s *echoKdoctorGetHandler) Handle(r echo.GetKdoctoragentParams) middleware.
 		}
 		head[k] = t
 	}
-	atomic.AddInt64(&requestCounts, 1)
+	atomic.AddInt64(&requestHttpCounts, 1)
 	t := echo.NewGetKdoctoragentOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -257,7 +260,8 @@ type echoKdoctorDeleteHandler struct {
 }
 
 func (s *echoKdoctorDeleteHandler) Handle(r echo.DeleteKdoctoragentParams) middleware.Responder {
-	atomic.StoreInt64(&requestCounts, 0)
+	atomic.StoreInt64(&requestHttpCounts, 0)
+	atomic.StoreInt64(&agentDnsServer.RequestDnsCounts, 0)
 	return echo.NewDeleteKdoctoragentOK()
 }
 
@@ -286,14 +290,15 @@ func (s *echoKdoctorPutHandler) Handle(r echo.PutKdoctoragentParams) middleware.
 	}
 	t := echo.NewPutKdoctoragentOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -328,14 +333,15 @@ func (s *echoKdoctorPostHandler) Handle(r echo.PostKdoctoragentParams) middlewar
 	}
 	t := echo.NewPostKdoctoragentOK()
 	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
+		ClientIP:         r.HTTPRequest.RemoteAddr,
+		RequestHeader:    head,
+		RequestURL:       r.HTTPRequest.RequestURI,
+		RequestMethod:    r.HTTPRequest.Method,
+		ServerName:       hostname,
+		RequestHTTPCount: atomic.LoadInt64(&requestHttpCounts),
+		RequestDNSCount:  atomic.LoadInt64(&agentDnsServer.RequestDnsCounts),
+		ParamDetail:      ParamInformation,
+		SupportedMethod:  SupportedMethod,
 	}
 
 	body, _ := r.TestArgs.MarshalBinary()
