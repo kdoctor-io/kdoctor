@@ -109,6 +109,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 				Qps:                   int(*instance.Spec.Request.QPS),
 				DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
 		} else {
 			testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
@@ -119,6 +120,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 				Qps:                   int(*instance.Spec.Request.QPS),
 				DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
 		}
 	}
@@ -143,6 +145,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 						Qps:                   int(*instance.Spec.Request.QPS),
 						DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
 				} else if ip.To4() == nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv6 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
@@ -153,6 +156,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 						Qps:                   int(*instance.Spec.Request.QPS),
 						DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
 				}
 			}
@@ -173,6 +177,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 						Qps:                   int(*instance.Spec.Request.QPS),
 						DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
 				} else if ip.To4() == nil && *instance.Spec.Target.NetDnsTargetDns.TestIPv6 {
 					testTargetList = append(testTargetList, &testTarget{Name: "typeAAAA_" + server + "_" + instance.Spec.Request.Domain, Request: &loadDns.DnsRequestData{
@@ -183,6 +188,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						PerRequestTimeoutInMs: int(*instance.Spec.Request.PerRequestTimeoutInMS),
 						Qps:                   int(*instance.Spec.Request.QPS),
 						DurationInSecond:      int(*instance.Spec.Request.DurationInSecond),
+						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
 				}
 			}

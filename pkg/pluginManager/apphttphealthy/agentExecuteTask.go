@@ -102,6 +102,7 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
 		ExpectStatusCode:    instance.Spec.SuccessCondition.StatusCode,
+		EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 	}
 
 	// https cert

@@ -29,6 +29,10 @@ type NetDnsTarget struct {
 	NetDnsTargetUser *NetDnsTargetUserSpec `json:"targetUser,omitempty"`
 	// +kubebuilder:validation:Optional
 	NetDnsTargetDns *NetDnsTargetDnsSpec `json:"targetDns,omitempty"`
+
+	// +kubebuilder:default=false
+	// +kubebuilder:validation:Optional
+	EnableLatencyMetric bool `json:"enableLatencyMetric,omitempty"`
 }
 
 type NetDnsTargetUserSpec struct {

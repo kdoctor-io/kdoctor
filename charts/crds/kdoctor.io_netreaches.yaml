@@ -114,6 +114,9 @@ spec:
                   clusterIP:
                     default: true
                     type: boolean
+                  enableLatencyMetric:
+                    default: false
+                    type: boolean
                   endpoint:
                     default: true
                     type: boolean
