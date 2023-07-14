@@ -159,7 +159,7 @@ return the kdoctorController image
 generate the CA cert
 */}}
 {{- define "generate-ca-certs" }}
-    {{- $ca := genCA "kdoctor.io" (.Values.kdoctorController.tls.auto.caExpiration | int) -}}
+    {{- $ca := genCA "kdoctor.io" (.Values.tls.server.auto.caExpiration | int) -}}
     {{- $_ := set . "ca" $ca -}}
 {{- end }}
 
