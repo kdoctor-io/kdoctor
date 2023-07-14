@@ -18,6 +18,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Based on https://github.com/rakyll/hey/blob/master/requester/report.go
+//
+// Changes:
+// - remove metrics that we don't use
+
 package loadHttp
 
 import (
