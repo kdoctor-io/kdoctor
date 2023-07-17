@@ -107,6 +107,7 @@ func (s *echoPutHandler) Handle(r echo.PutParams) middleware.Responder {
 		}
 		head[k] = t
 	}
+	atomic.AddInt64(&requestCounts, 1)
 	t := echo.NewPutOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -122,7 +123,6 @@ func (s *echoPutHandler) Handle(r echo.PutParams) middleware.Responder {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
 		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
 	}
-
 	return t
 }
 
@@ -149,6 +149,7 @@ func (s *echoPostHandler) Handle(r echo.PostParams) middleware.Responder {
 		}
 		head[k] = t
 	}
+	atomic.AddInt64(&requestCounts, 1)
 	t := echo.NewPostOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -163,7 +164,6 @@ func (s *echoPostHandler) Handle(r echo.PostParams) middleware.Responder {
 
 	body, _ := r.TestArgs.MarshalBinary()
 	t.Payload.RequestBody = string(body)
-
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
 		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
@@ -179,7 +179,7 @@ type echoHeadHandler struct {
 }
 
 func (s *echoHeadHandler) Handle(r echo.HeadParams) middleware.Responder {
-
+	atomic.AddInt64(&requestCounts, 1)
 	return echo.NewHeadOK()
 }
 
@@ -284,6 +284,7 @@ func (s *echoKdoctorPutHandler) Handle(r echo.PutKdoctoragentParams) middleware.
 		}
 		head[k] = t
 	}
+	atomic.AddInt64(&requestCounts, 1)
 	t := echo.NewPutKdoctoragentOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -326,6 +327,7 @@ func (s *echoKdoctorPostHandler) Handle(r echo.PostKdoctoragentParams) middlewar
 		}
 		head[k] = t
 	}
+	atomic.AddInt64(&requestCounts, 1)
 	t := echo.NewPostKdoctoragentOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -340,7 +342,6 @@ func (s *echoKdoctorPostHandler) Handle(r echo.PostKdoctoragentParams) middlewar
 
 	body, _ := r.TestArgs.MarshalBinary()
 	t.Payload.RequestBody = string(body)
-
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
 		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
@@ -356,7 +357,7 @@ type echoKdoctorHeadHandler struct {
 }
 
 func (s *echoKdoctorHeadHandler) Handle(r echo.HeadKdoctoragentParams) middleware.Responder {
-
+	atomic.AddInt64(&requestCounts, 1)
 	return echo.NewHeadKdoctoragentOK()
 }
 
