@@ -4,7 +4,7 @@ kind: MutatingWebhookConfiguration
 metadata:
   name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
   annotations:
-    {{- if (eq .Values.kdoctorController.tls.method "certmanager") }}
+    {{- if (eq .Values.tls.server.method "certmanager") }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}-server-certs
     {{- end }}
 webhooks:
@@ -16,9 +16,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/mutate-kdoctor-io-v1beta1-apphttphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -43,9 +43,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/mutate-kdoctor-io-v1beta1-netreach"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -71,9 +71,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/mutate-kdoctor-io-v1beta1-netdns"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -96,7 +96,7 @@ kind: ValidatingWebhookConfiguration
 metadata:
   name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
   annotations:
-    {{- if (eq .Values.kdoctorController.tls.method "certmanager") }}
+    {{- if (eq .Values.tls.server.method "certmanager") }}
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}-server-certs
     {{- end }}
 webhooks:
@@ -108,9 +108,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/validate-kdoctor-io-v1beta1-apphttphealthy"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -134,9 +134,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/validate-kdoctor-io-v1beta1-netreach"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -160,9 +160,9 @@ webhooks:
         namespace: {{ .Release.Namespace }}
         path: "/validate-kdoctor-io-v1beta1-netdns"
         port: {{ .Values.kdoctorController.webhookPort }}
-      {{- if (eq .Values.kdoctorController.tls.method "provided") }}
-      caBundle: {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.kdoctorController.tls.method "auto") }}
+      {{- if (eq .Values.tls.server.method "provided") }}
+      caBundle: {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.tls.server.method "auto") }}
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
@@ -179,7 +179,7 @@ webhooks:
         resources:
           - netdnses
 
-{{- if eq .Values.kdoctorController.tls.method "certmanager" -}}
+{{- if eq .Values.tls.server.method "certmanager" -}}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -188,56 +188,56 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   issuerRef:
-    name: {{ .Values.kdoctorController.tls.certmanager.issuerName | trunc 63 | trimSuffix "-" }}
-  secretName: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+    name: {{ .Values.tls.server.certmanager.issuerName | trunc 63 | trimSuffix "-" }}
+  secretName: {{ .Values.tls.server.secretName | trunc 63 | trimSuffix "-" }}
   commonName: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}.{{ .Release.Namespace }}.svc
   dnsNames:
     - {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
     - {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}.{{ .Release.Namespace }}
     - {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}.{{ .Release.Namespace }}.svc
     - {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDnsDomain }}
-  {{- range $dns := .Values.kdoctorController.tls.certmanager.extraDnsNames }}
-  - {{ $dns | quote }}
+  {{- range $dns := .Values.tls.server.certmanager.extraDnsNames }}
+    - {{ $dns | quote }}
   {{- end }}
-  {{- if .Values.kdoctorController.tls.certmanager.extraIPAddresses }}
+  {{- if .Values.tls.server.certmanager.extraIPAddresses }}
   ipAddresses:
-  {{- range $ip := .Values.kdoctorController.tls.certmanager.extraIPAddresses }}
-  - {{ $ip | quote }}
+  {{- range $ip := .Values.tls.server.certmanager.extraIPAddresses }}
+    - {{ $ip | quote }}
   {{- end }}
   {{- end }}
-  duration: {{ printf "%dh" (mul .Values.kdoctorController.tls.certmanager.certValidityDuration 24) }}
+  duration: {{ printf "%dh" (mul .Values.tls.server.certmanager.certValidityDuration 24) }}
   {{- end }}
 
-{{- if (eq .Values.kdoctorController.tls.method "provided") }}
+{{- if (eq .Values.tls.server.method "provided") }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+  name: {{ .Values.tls.server.secretName | trunc 63 | trimSuffix "-" }}
   namespace: {{ .Release.Namespace }}
 type: kubernetes.io/tls
 data:
-  ca.crt:  {{ .Values.kdoctorController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-  tls.crt: {{ .Values.kdoctorController.tls.provided.tlsCert | required "missing tls.provided.tlsCert" }}
-  tls.key: {{ .Values.kdoctorController.tls.provided.tlsKey  | required "missing tls.provided.tlsKey"  }}
+  ca.crt:  {{ .Values.tls.server.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+  tls.crt: {{ .Values.tls.server.provided.tlsCert | required "missing tls.provided.tlsCert" }}
+  tls.key: {{ .Values.tls.server.provided.tlsKey  | required "missing tls.provided.tlsKey"  }}
   {{- end }}
 
-{{- if eq .Values.kdoctorController.tls.method "auto" }}
+{{- if eq .Values.tls.server.method "auto" }}
 ---
 {{- $cn := printf "kdoctor.io" }}
-{{- $ip := .Values.kdoctorController.tls.auto.extraIpAddresses }}
+{{- $ip := .Values.tls.server.auto.extraIpAddresses }}
 {{- $dns1 := printf "%s.%s" .Values.kdoctorController.name .Release.Namespace }}
 {{- $dns2 := printf "%s.%s.svc" .Values.kdoctorController.name .Release.Namespace }}
 {{- $dns3 := printf "%s.%s.svc.%s" .Values.kdoctorController.name .Release.Namespace .Values.global.clusterDnsDomain }}
-{{- $dns := prepend .Values.kdoctorController.tls.auto.extraDnsNames $dns1 }}
+{{- $dns := prepend .Values.tls.server.auto.extraDnsNames $dns1 }}
 {{- $dns = prepend $dns $dns2 }}
 {{- $dns = prepend $dns $dns3 }}
 {{- $dns = prepend $dns $cn }}
-{{- $cert := genSignedCert $cn $ip $dns (.Values.kdoctorController.tls.auto.certExpiration | int) .ca }}
+{{- $cert := genSignedCert $cn $ip $dns (.Values.tls.server.auto.certExpiration | int) .ca }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+  name: {{ .Values.tls.server.secretName | trunc 63 | trimSuffix "-" }}
   namespace: {{ .Release.Namespace }}
 type: kubernetes.io/tls
 data:

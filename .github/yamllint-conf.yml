@@ -13,6 +13,7 @@ ignore: |
   .github/
   test/yaml/
   charts/
+  test/chart-app
 
 rules:
   line-length: disable
