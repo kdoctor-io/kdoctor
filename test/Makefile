@@ -159,6 +159,7 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
+		HELM_OPTION+=" --set feature.nethttp_defaultConcurrency=10 " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
 		HELM_OPTION+=" --set kdoctorAgent.debug.logLevel=debug --set kdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set kdoctorAgent.prometheus.enabled=true --set kdoctorController.prometheus.enabled=true  " ; \
@@ -511,6 +512,14 @@ install_nginx:
 
 #==========================
 
+.PHONY: install_apiserver_token
+install_apiserver_token: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+install_apiserver_token: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
+install_apiserver_token:
+	@echo "---------- install apiserver token"
+	sed 's?<<TEST_NAMESPACE>>?$(E2E_INSTALL_NAMESPACE)?' yaml/kdoctortoken.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
+
+
 .PHONY: clean
 clean:
 	-@ kind delete cluster --name $(E2E_KIND_CLUSTER_NAME)
@@ -534,6 +543,12 @@ e2e_test:
 		echo "find cluster node: $${NODE_LIST}" ; \
 		export E2E_KIND_CLUSTER_NODE_LIST="$${NODE_LIST}" ; \
 		export E2E_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ; \
+		export APISERVER=`kubectl config view  --kubeconfig $(KIND_KUBECONFIG) |grep server | awk '{print $$2}'` ;\
+		export E2E_INSTALL_NAMESPACE=$(E2E_INSTALL_NAMESPACE) ;\
+		export GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) ;\
+		export APP_CHART_DIR=$(APP_CHART_DIR) ;\
+		export E2E_KIND_KUBECONFIG_PATH=$(E2E_KIND_KUBECONFIG_PATH) ;\
+		export AGENT_REGISTER=$(REGISTER)/$(GIT_REPO)-agent ; \
 		if [ "$(E2E_IP_FAMILY)" == "ipv4" ] ; then \
 			export E2E_IPV4_ENABLED=true ; export E2E_IPV6_ENABLED=false ; \
 		elif [ "$(E2E_IP_FAMILY)" == "ipv6" ] ; then \

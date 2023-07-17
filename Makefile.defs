@@ -24,6 +24,7 @@ DESTDIR_BIN ?= $(ROOT_DIR)/output/$(TARGETARCH)/bin
 DESTDIR_BASH_COMPLETION ?= $(ROOT_DIR)/output/$(TARGETARCH)/bash-completion
 
 CHART_DIR := $(ROOT_DIR)/charts
+APP_CHART_DIR := $(ROOT_DIR)/test/chart-app
 DESTDIR_CHART ?= $(ROOT_DIR)/output/chart
 
 UNITEST_OUTPUT ?= $(ROOT_DIR)/output/test
