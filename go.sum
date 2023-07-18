@@ -435,8 +435,8 @@ github.com/prometheus/common v0.42.0 h1:EKsfXEYo4JpWMHH5cg+KOUWeuJSov1Id8zGR8eeI
 github.com/prometheus/common v0.42.0/go.mod h1:xBwqVerjNdUDjgODMpudtOMwlOwf2SaTr1yjz4b7Zbc=
 github.com/prometheus/procfs v0.10.1 h1:kYK1Va/YMlutzCGazswoHKo//tZVlFpKYh+PymziUAg=
 github.com/prometheus/procfs v0.10.1/go.mod h1:nwNm2aOCAYw8uTR/9bWRREkZFxAUcWzPHWJq+XBB/FM=
-github.com/pyroscope-io/client v0.7.0 h1:LWuuqPQ1oa6x7BnmUOuo/aGwdX85QGhWZUBYWWW3zdk=
-github.com/pyroscope-io/client v0.7.0/go.mod h1:4h21iOU4pUOq0prKyDlvYRL+SCKsBc5wKiEtV+rJGqU=
+github.com/pyroscope-io/client v0.7.1 h1:yFRhj3vbgjBxehvxQmedmUWJQ4CAfCHhn+itPsuWsHw=
+github.com/pyroscope-io/client v0.7.1/go.mod h1:4h21iOU4pUOq0prKyDlvYRL+SCKsBc5wKiEtV+rJGqU=
 github.com/pyroscope-io/godeltaprof v0.1.0 h1:UBqtjt0yZi4jTxqZmLAs34XG6ycS3vUTlhEUSq4NHLE=
 github.com/pyroscope-io/godeltaprof v0.1.0/go.mod h1:psMITXp90+8pFenXkKIpNhrfmI9saQnPbba27VIaiQE=
 github.com/robfig/cron v1.2.0 h1:ZjScXvvxeQ63Dbyxy76Fj3AT3Ut0aKsyd2/tl3DTMuQ=
