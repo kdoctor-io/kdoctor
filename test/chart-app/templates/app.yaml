@@ -14,14 +14,15 @@ metadata:
 spec:
   {{- if eq .Values.appKind "Deployment" }}
   replicas: {{ .Values.deploymentReplicas }}
-  {{- end }}
-  selector:
-    matchLabels:
-      {{- include "project.selectorLabels" . | nindent 6 }}
+  {{ else }}}
   {{- with .Values.updateStrategy }}
   updateStrategy:
     {{- toYaml . | trim | nindent 4 }}
   {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "project.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- if or .Values.podAnnotations .Values.commonAnnotations }}
