@@ -29,11 +29,8 @@ import (
 	"time"
 )
 
-// We report for max 1M results.
-// todo (ii2day) configmap limit
-const maxRes = 1000000
-
 type report struct {
+	enableLatencyMetric bool
 	// transactions Per Second
 	tps float64
 
@@ -48,13 +45,14 @@ type report struct {
 	totalCount  int64
 }
 
-func newReport(results chan *result, n int) *report {
+func newReport(results chan *result, enableLatencyMetric bool) *report {
 	return &report{
-		results:     results,
-		done:        make(chan bool, 1),
-		errorDist:   make(map[string]int),
-		latencies:   make([]float32, 0, maxRes),
-		statusCodes: make(map[int]int),
+		results:             results,
+		done:                make(chan bool, 1),
+		errorDist:           make(map[string]int),
+		latencies:           make([]float32, 0),
+		statusCodes:         make(map[int]int),
+		enableLatencyMetric: enableLatencyMetric,
 	}
 }
 
@@ -66,7 +64,7 @@ func runReporter(r *report) {
 		if res.err != nil {
 			r.errorDist[res.err.Error()]++
 		} else {
-			if len(r.latencies) < maxRes {
+			if r.enableLatencyMetric {
 				r.latencies = append(r.latencies, float32(res.duration.Milliseconds()))
 			}
 			if res.contentLength > 0 {

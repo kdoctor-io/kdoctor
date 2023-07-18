@@ -46,6 +46,37 @@ var _ = Describe("test dns ", Label("dns"), func() {
 
 	})
 
+	It("test latency ", func() {
+
+		dnsServer := "223.5.5.5:53"
+		req := &loadDns.DnsRequestData{
+			Protocol:              loadDns.RequestMethodUdp,
+			DnsType:               dns.TypeA,
+			TargetDomain:          "www.baidu.com",
+			DnsServerAddr:         dnsServer,
+			PerRequestTimeoutInMs: 1000,
+			DurationInSecond:      1,
+			Qps:                   10,
+			EnableLatencyMetric:   true,
+		}
+
+		log := logger.NewStdoutLogger("debug", "test")
+		result, e := loadDns.DnsRequest(log, req)
+		Expect(e).NotTo(HaveOccurred(), "failed to execute , error=%v", e)
+		Expect(int(result.FailedCounts)).To(Equal(0))
+		Expect(len(result.ReplyCode)).To(Equal(1))
+		Expect(result.ReplyCode).Should(HaveKey(dns.RcodeToString[dns.RcodeSuccess]))
+
+		jsongByte, e := json.Marshal(result)
+		Expect(e).NotTo(HaveOccurred(), "failed to Marshal , error=%v", e)
+
+		var out bytes.Buffer
+		e = json.Indent(&out, jsongByte, "", "\t")
+		Expect(e).NotTo(HaveOccurred(), "failed to Indent , error=%v", e)
+		fmt.Printf("%s\n", out.String())
+
+	})
+
 	It("test tcp ", func() {
 
 		dnsServer := "223.5.5.5:53"
