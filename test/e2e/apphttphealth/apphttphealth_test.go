@@ -294,7 +294,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("https://%s:%d", testSvcIP, httpsPort)
 		}
-
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &testAppNamespace
 		appHttpHealth.Spec.Target = target
@@ -349,7 +348,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
 		}
-
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -402,7 +400,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
 		}
-
 		target.BodyConfigName = &bodyConfigMapName
 		target.BodyConfigNamespace = &common.TestNameSpace
 		target.Header = []string{"Content-Type: application/json"}
@@ -504,7 +501,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// target
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "PATCH"
-
 		if net.ParseIP(testSvcIP).To4() == nil {
 			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
 		} else {
@@ -557,7 +553,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// target
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "OPTIONS"
-
 		if net.ParseIP(testSvcIP).To4() == nil {
 			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
 		} else {
@@ -662,7 +657,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// target
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
-
 		if net.ParseIP(testPodIPs[0]).To4() == nil {
 			target.Host = fmt.Sprintf("https://[%s]", testPodIPs[0])
 		} else {

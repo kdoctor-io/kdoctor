@@ -37,12 +37,13 @@ type report struct {
 	results chan *result
 	done    chan bool
 
-	total       time.Duration
-	statusCodes map[int]int
-	errorDist   map[string]int
-	latencies   []float32
-	sizeTotal   int64
-	totalCount  int64
+	total          time.Duration
+	statusCodes    map[int]int
+	errorDist      map[string]int
+	latencies      []float32
+	totalLatencies float32
+	sizeTotal      int64
+	totalCount     int64
 }
 
 func newReport(results chan *result, enableLatencyMetric bool) *report {
@@ -66,6 +67,8 @@ func runReporter(r *report) {
 		} else {
 			if r.enableLatencyMetric {
 				r.latencies = append(r.latencies, float32(res.duration.Milliseconds()))
+			} else {
+				r.totalLatencies += float32(res.duration.Milliseconds())
 			}
 			if res.contentLength > 0 {
 				r.sizeTotal += res.contentLength
