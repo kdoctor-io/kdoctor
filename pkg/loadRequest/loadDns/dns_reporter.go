@@ -37,15 +37,16 @@ type report struct {
 	average  float64
 	tps      float64
 
-	results      chan *result
-	done         chan bool
-	total        time.Duration
-	errorDist    map[string]int
-	lats         []float32
-	totalCount   int64
-	successCount int64
-	failedCount  int64
-	ReplyCode    map[string]int
+	results        chan *result
+	done           chan bool
+	total          time.Duration
+	errorDist      map[string]int
+	lats           []float32
+	totalLatencies float32
+	totalCount     int64
+	successCount   int64
+	failedCount    int64
+	ReplyCode      map[string]int
 }
 
 func newReport(results chan *result, enableLatencyMetric bool) *report {
@@ -70,6 +71,8 @@ func runReporter(r *report) {
 			r.avgTotal += res.duration.Seconds()
 			if r.enableLatencyMetric {
 				r.lats = append(r.lats, float32(res.duration.Milliseconds()))
+			} else {
+				r.totalLatencies += float32(res.duration.Milliseconds())
 			}
 			rcodeStr := dns.RcodeToString[res.msg.Rcode]
 			r.ReplyCode[rcodeStr]++

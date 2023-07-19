@@ -76,12 +76,11 @@ func ValidataAppHttpHealthyHost(r *crd.AppHttpHealthy) error {
 	// protocol
 	protoclHttp := strings.Contains(r.Spec.Target.Host, "http")
 	protoclHttps := strings.Contains(r.Spec.Target.Host, "https")
-
 	var ip string
-	if protoclHttp {
-		ip = r.Spec.Target.Host[len("http://"):]
-	} else if protoclHttps {
+	if protoclHttps {
 		ip = r.Spec.Target.Host[len("https://"):]
+	} else if protoclHttp {
+		ip = r.Spec.Target.Host[len("http://"):]
 	} else {
 		ip = r.Spec.Target.Host
 	}

@@ -349,6 +349,8 @@ func (b *Work) AggregateMetric() *v1beta1.HttpMetrics {
 
 		t, _ = stats.Percentile(b.report.latencies, 99)
 		latency.P99 = t
+	} else {
+		latency.Mean = b.report.totalLatencies / float32(b.report.totalCount)
 	}
 
 	var errNum int64
