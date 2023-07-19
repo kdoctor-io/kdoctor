@@ -185,6 +185,8 @@ func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 
 		t, _ = stats.Percentile(b.report.lats, 99)
 		latency.P99 = t
+	} else {
+		latency.Mean = b.report.totalLatencies / float32(b.report.totalCount)
 	}
 
 	metric := &v1beta1.DNSMetrics{
