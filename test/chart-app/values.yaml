@@ -78,6 +78,14 @@ http:
     ## @param kdoctorAgent.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
     periodSeconds: 10
 
+dns:
+  ## @param kdoctorAgent.DnsServer.appDnsUdpPort the dns udp Port for kdoctorAgent, testing connect
+  appDnsUdpPort: 53
+  ## @param kdoctorAgent.DnsServer.appDnsTcpPort the dns tcp Port for kdoctorAgent, testing connect
+  appDnsTcpPort: 53
+  ## @param kdoctorAgent.DnsServer.appDnsTcpTlsPort the dns tcp-tls Port for kdoctorAgent, testing connect
+  appDnsTcpTlsPort: 853
+
 grpcServer:
   ## @param kdoctorAgent.grpcServer.port the Port for grpc server
   port: 3000

@@ -5,7 +5,6 @@ package common
 
 import (
 	"os"
-	"time"
 )
 
 const (
@@ -14,7 +13,6 @@ const (
 	KDoctorAgentDSName         = "kdoctor-agent"
 	KDoctorCaName              = "kdoctor-ca"
 	KdoctorTestTokenSecretName = "apiserver-token"
-	ServiceAccountReadyTimeout = time.Second * 20
 )
 
 var (

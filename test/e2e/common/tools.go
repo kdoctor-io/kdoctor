@@ -49,7 +49,7 @@ func WaitKdoctorTaskDone(f *frame.Framework, task client.Object, taskKind string
 			default:
 				rs := &v1beta1.NetReach{}
 				if err := f.GetResource(key, rs); err != nil {
-					return fmt.Errorf("failed get resource NetReach %s", task.GetName())
+					return fmt.Errorf("failed get resource NetReach %s ,err : %v", task.GetName(), err)
 				}
 				if rs.Status.Finish {
 					return nil
@@ -73,7 +73,7 @@ func WaitKdoctorTaskDone(f *frame.Framework, task client.Object, taskKind string
 			default:
 				rs := &v1beta1.AppHttpHealthy{}
 				if err := f.GetResource(key, rs); err != nil {
-					return fmt.Errorf("failed get resource AppHttpHealthy %s", task.GetName())
+					return fmt.Errorf("failed get resource AppHttpHealthy %s,err: %v ", task.GetName(), err)
 				}
 				if rs.Status.Finish {
 					return nil
@@ -95,9 +95,9 @@ func WaitKdoctorTaskDone(f *frame.Framework, task client.Object, taskKind string
 			case <-after:
 				return fmt.Errorf("timeout wait task Netdns %s finish", task.GetName())
 			default:
-				rs := &v1beta1.NetReach{}
+				rs := &v1beta1.Netdns{}
 				if err := f.GetResource(key, rs); err != nil {
-					return fmt.Errorf("failed get resource Netdns %s", task.GetName())
+					return fmt.Errorf("failed get resource Netdns %s, err: %v", task.GetName(), err)
 				}
 				if rs.Status.Finish {
 					return nil
@@ -217,7 +217,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				expectRequestCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realRequestCount := float64(m.Metrics.RequestCounts)
 				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1 ")
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
 				}
 			}
 			// startTime
@@ -266,7 +266,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1")
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
 				}
 			}
 			// startTime
@@ -279,11 +279,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		// real request count
 		if len(podIPs) != 0 {
 			for _, ip := range podIPs {
-				c, e := GetRealRequestCount(ip)
+				count, _, e := GetRealRequestCount(ip)
 				if e != nil {
 					return GetResultFromReport(r), e
 				}
-				realRequestCount += c
+				realRequestCount += count
 			}
 
 			if realRequestCount != reportRequestCount {
@@ -303,7 +303,65 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 
 		return GetResultFromReport(r), nil
 	case pluginManager.KindNameNetdns:
+		fake := &v1beta1.Netdns{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: name,
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.Netdns{}
+		if err = f.GetResource(key, rs); err != nil {
+			return GetResultFromReport(r), fmt.Errorf("failed get resource AppHttpHealthy %s", name)
+		}
 
+		if r.Spec.Report == nil {
+			return false, fmt.Errorf("failed get resource AppHttpHealthy %s report", name)
+		}
+
+		var reportRequestCount int64
+		var realRequestCount int64
+		for _, v := range *r.Spec.Report {
+			for _, m := range v.NetDNSTask.Detail {
+				// qps
+				expectCount := float64((*rs.Spec.Request.QPS) * (*rs.Spec.Request.DurationInSecond))
+				realCount := float64(m.Metrics.RequestCounts)
+				// report request count
+				reportRequestCount += m.Metrics.RequestCounts
+				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				}
+			}
+			// startTime
+			shcedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
+			startTime := shcedule.StartTime(rs.CreationTimestamp.Time)
+			if v.StartTimeStamp.Time.Compare(startTime) > 5 {
+				return GetResultFromReport(r), fmt.Errorf("The task start time error is greater than 5 seconds ")
+			}
+		}
+		// real request count
+		if len(podIPs) != 0 {
+			for _, ip := range podIPs {
+				_, count, e := GetRealRequestCount(ip)
+				if e != nil {
+					return GetResultFromReport(r), e
+				}
+				realRequestCount += count
+			}
+
+			if realRequestCount != reportRequestCount {
+				return GetResultFromReport(r), fmt.Errorf("real request count %d not equal report request count %d ", int(realRequestCount), int(reportRequestCount))
+			}
+		}
+
+		// roundNumber
+		rounds := []int64{r.Spec.FinishedRoundNumber, r.Spec.ReportRoundNumber, r.Spec.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
+		for i := 0; i < len(rounds); i++ {
+			for j := i + 1; j < len(rounds); j++ {
+				if rounds[i] != rounds[j] {
+					return GetResultFromReport(r), fmt.Errorf("roundNumber not equal ")
+				}
+			}
+		}
 		return GetResultFromReport(r), nil
 	default:
 		return GetResultFromReport(r), fmt.Errorf("unknown task type: %s", taskKind)
@@ -326,7 +384,7 @@ func GetResultFromReport(r *kdoctor_report.KdoctorReport) bool {
 	return true
 }
 
-func GetRealRequestCount(ip string) (int64, error) {
+func GetRealRequestCount(ip string) (int64, int64, error) {
 	cmd := []string{"curl"}
 	if net.ParseIP(ip).To4() == nil {
 		cmd = append(cmd, fmt.Sprintf("http://[%s]", ip))
@@ -341,12 +399,12 @@ func GetRealRequestCount(ip string) (int64, error) {
 		docker_client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
-		return 0, fmt.Errorf("new docker client failed : %v", err)
+		return 0, 0, fmt.Errorf("new docker client failed : %v", err)
 	}
 	listOpt := types.ContainerListOptions{}
 	containers, err := cli.ContainerList(ctx, listOpt)
 	if err != nil {
-		return 0, fmt.Errorf("list docker containers failed : %v", err)
+		return 0, 0, fmt.Errorf("list docker containers failed : %v", err)
 	}
 	var containerID string
 	for _, container := range containers {
@@ -355,6 +413,9 @@ func GetRealRequestCount(ip string) (int64, error) {
 				containerID = container.ID
 				break
 			}
+		}
+		if containerID != "" {
+			break
 		}
 	}
 	execCfg := types.ExecConfig{
@@ -366,16 +427,16 @@ func GetRealRequestCount(ip string) (int64, error) {
 	}
 	exec, err := cli.ContainerExecCreate(ctx, containerID, execCfg)
 	if err != nil {
-		return 0, fmt.Errorf("create docker container cmd failed : %v", err)
+		return 0, 0, fmt.Errorf("create docker container cmd failed : %v", err)
 	}
 	resp, err := cli.ContainerExecAttach(ctx, exec.ID, types.ExecStartCheck{})
 	if err != nil {
-		return 0, fmt.Errorf("exec docker container cmd failed : %v", err)
+		return 0, 0, fmt.Errorf("exec docker container cmd failed : %v", err)
 	}
 	defer resp.Close()
 	r, err := io.ReadAll(resp.Reader)
 	if err != nil {
-		return 0, fmt.Errorf("read docker server response failed : %v", err)
+		return 0, 0, fmt.Errorf("read docker server response failed : %v", err)
 	}
 	s := string(r)[strings.Index(string(r), "{") : strings.LastIndex(string(r), "}")+1]
 	ginkgo.GinkgoWriter.Println(s)
@@ -383,9 +444,9 @@ func GetRealRequestCount(ip string) (int64, error) {
 	echoRes := new(models.EchoRes)
 	err = json.Unmarshal([]byte(s), echoRes)
 	if err != nil {
-		return 0, fmt.Errorf("unmarshal docker server response failed : %v", err)
+		return 0, 0, fmt.Errorf("unmarshal docker server response failed : %v", err)
 	}
-	return echoRes.RequestCount - 1, nil
+	return echoRes.RequestHTTPCount - 1, echoRes.RequestDNSCount, nil
 }
 
 func CreateTestApp(name, namespace string, o []string) error {
@@ -402,7 +463,7 @@ func CreateTestApp(name, namespace string, o []string) error {
 		fmt.Sprintf("--kubeconfig=%s", KubeConfigPath),
 	)
 	cmd.Args = append(cmd.Args, o...)
-	cmd.Stdout = &stdout // 标准输出
+	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Start(); err != nil {
 		ginkgo.GinkgoWriter.Println(stderr.String())

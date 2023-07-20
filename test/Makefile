@@ -160,6 +160,7 @@ deploy_project:
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
 		HELM_OPTION+=" --set feature.nethttp_defaultConcurrency=10 " ; \
+		HELM_OPTION+=" --set feature.netdns_defaultConcurrency=10 " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
 		HELM_OPTION+=" --set kdoctorAgent.debug.logLevel=debug --set kdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set kdoctorAgent.prometheus.enabled=true --set kdoctorController.prometheus.enabled=true  " ; \

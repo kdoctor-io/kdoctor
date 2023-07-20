@@ -25,8 +25,6 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		testAppName := "app-" + tools.RandomName()
 		testAppNamespace = "ns-" + tools.RandomName()
 
-		//e = frame.CreateNamespaceUntilDefaultServiceAccountReady(testAppNamespace, time.Second*10)
-		//Expect(e).NotTo(HaveOccurred(), "create test app")
 		// create test app
 		args := []string{
 			fmt.Sprintf("--set=image.tag=%s", common.AppImageTag),
