@@ -279,7 +279,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		// real request count
 		if len(podIPs) != 0 {
 			for _, ip := range podIPs {
-				count, _, e := GetRealRequestCount(ip)
+				count, e := GetRealRequestCount(name, ip)
 				if e != nil {
 					return GetResultFromReport(r), e
 				}
@@ -341,7 +341,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		// real request count
 		if len(podIPs) != 0 {
 			for _, ip := range podIPs {
-				_, count, e := GetRealRequestCount(ip)
+				count, e := GetRealRequestCount(name, ip)
 				if e != nil {
 					return GetResultFromReport(r), e
 				}
@@ -384,13 +384,13 @@ func GetResultFromReport(r *kdoctor_report.KdoctorReport) bool {
 	return true
 }
 
-func GetRealRequestCount(ip string) (int64, int64, error) {
+func GetRealRequestCount(name string, ip string) (int64, error) {
 	cmd := []string{"curl"}
 	if net.ParseIP(ip).To4() == nil {
-		cmd = append(cmd, fmt.Sprintf("http://[%s]", ip))
+		cmd = append(cmd, fmt.Sprintf("http://[%s]/?task=%s", ip, name))
 		cmd = append(cmd, "-6g")
 	} else {
-		cmd = append(cmd, fmt.Sprintf("http://%s", ip))
+		cmd = append(cmd, fmt.Sprintf("http://%s/?task=%s", ip, name))
 	}
 
 	ctx := context.Background()
@@ -399,12 +399,12 @@ func GetRealRequestCount(ip string) (int64, int64, error) {
 		docker_client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
-		return 0, 0, fmt.Errorf("new docker client failed : %v", err)
+		return 0, fmt.Errorf("new docker client failed : %v", err)
 	}
 	listOpt := types.ContainerListOptions{}
 	containers, err := cli.ContainerList(ctx, listOpt)
 	if err != nil {
-		return 0, 0, fmt.Errorf("list docker containers failed : %v", err)
+		return 0, fmt.Errorf("list docker containers failed : %v", err)
 	}
 	var containerID string
 	for _, container := range containers {
@@ -427,26 +427,31 @@ func GetRealRequestCount(ip string) (int64, int64, error) {
 	}
 	exec, err := cli.ContainerExecCreate(ctx, containerID, execCfg)
 	if err != nil {
-		return 0, 0, fmt.Errorf("create docker container cmd failed : %v", err)
+		return 0, fmt.Errorf("create docker container cmd failed : %v", err)
 	}
 	resp, err := cli.ContainerExecAttach(ctx, exec.ID, types.ExecStartCheck{})
 	if err != nil {
-		return 0, 0, fmt.Errorf("exec docker container cmd failed : %v", err)
+		return 0, fmt.Errorf("exec docker container cmd failed : %v", err)
 	}
 	defer resp.Close()
 	r, err := io.ReadAll(resp.Reader)
 	if err != nil {
-		return 0, 0, fmt.Errorf("read docker server response failed : %v", err)
+		return 0, fmt.Errorf("read docker server response failed : %v", err)
 	}
-	s := string(r)[strings.Index(string(r), "{") : strings.LastIndex(string(r), "}")+1]
+	var start int
+	if string(r)[strings.Index(string(r), "{")+1] == '{' {
+		start = strings.Index(string(r), "{") + 1
+	} else {
+		start = strings.Index(string(r), "{")
+	}
+	s := string(r)[start : strings.LastIndex(string(r), "}")+1]
 	ginkgo.GinkgoWriter.Println(s)
-
 	echoRes := new(models.EchoRes)
 	err = json.Unmarshal([]byte(s), echoRes)
 	if err != nil {
-		return 0, 0, fmt.Errorf("unmarshal docker server response failed : %v", err)
+		return 0, fmt.Errorf("unmarshal docker server response failed : %v", err)
 	}
-	return echoRes.RequestHTTPCount - 1, echoRes.RequestDNSCount, nil
+	return echoRes.RequestCount - 1, nil
 }
 
 func CreateTestApp(name, namespace string, o []string) error {

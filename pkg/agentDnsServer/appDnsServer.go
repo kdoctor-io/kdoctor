@@ -4,16 +4,17 @@
 package agentDnsServer
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/miekg/dns"
 	"go.uber.org/zap"
 	"net"
-	"sync/atomic"
+	"strings"
 )
-
-var RequestDnsCounts int64 = 0
 
 func SetupAppDnsServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 	logger := rootLogger.Named("app dns server")
@@ -25,22 +26,47 @@ func SetupAppDnsServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
-
-	handler := dns.HandlerFunc(func(w dns.ResponseWriter, r *dns.Msg) {
-		m := new(dns.Msg)
-		m.SetReply(r)
-		m.Answer = []dns.RR{
-			&dns.A{
-				Hdr: dns.RR_Header{Name: r.Question[0].Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 3600},
-				A:   net.ParseIP("127.0.0.1"),
-			},
-			&dns.AAAA{
-				Hdr:  dns.RR_Header{Name: r.Question[0].Name, Rrtype: dns.TypeAAAA, Class: dns.ClassINET, Ttl: 3600},
-				AAAA: net.ParseIP("::1"),
-			},
+	var resolver *dns.Client
+	var coreDnsAddr string
+	if types.AgentConfig.AppDnsUpstream {
+		resolver = &dns.Client{
+			Net: "udp",
 		}
-		atomic.AddInt64(&RequestDnsCounts, 1)
+		dnsServiceIPs, err := k8sObjManager.GetK8sObjManager().ListServicesDnsIP(context.Background())
+		if err != nil {
+			logger.Sugar().Fatalf("failed get kube dns service,err: %v", err)
+		}
+		logger.Sugar().Infof("kube dns service %s ", dnsServiceIPs)
+		coreDnsAddr = fmt.Sprintf("%s:53", dnsServiceIPs[0])
+	}
+	handler := dns.HandlerFunc(func(w dns.ResponseWriter, r *dns.Msg) {
+		qname := r.Question[0].Name
+		e2e := strings.HasPrefix(qname, "netdns-e2e")
+		m := new(dns.Msg)
+		if e2e {
+			m.SetReply(r)
+			m.Answer = []dns.RR{
+				&dns.A{
+					Hdr: dns.RR_Header{Name: r.Question[0].Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 3600},
+					A:   net.ParseIP("127.0.0.1"),
+				},
+				&dns.AAAA{
+					Hdr:  dns.RR_Header{Name: r.Question[0].Name, Rrtype: dns.TypeAAAA, Class: dns.ClassINET, Ttl: 3600},
+					AAAA: net.ParseIP("::1"),
+				},
+			}
+			task := strings.Split(qname, ".")[0]
+			agentHttpServer.RequestCounts.AddOneCount(task)
+		} else if types.AgentConfig.AppDnsUpstream {
+			m, _, err = resolver.Exchange(r, coreDnsAddr)
+			if err != nil {
+				fmt.Println("Error forwarding DNS query:", err)
+				return
+			}
+		}
+
 		_ = w.WriteMsg(m)
+
 	})
 
 	tlsServer := &dns.Server{

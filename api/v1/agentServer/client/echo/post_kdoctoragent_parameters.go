@@ -73,6 +73,12 @@ type PostKdoctoragentParams struct {
 	*/
 	Delay *int64
 
+	/* Task.
+
+	   task name
+	*/
+	Task *string
+
 	// TestArgs.
 	TestArgs *models.EchoBody
 
@@ -140,6 +146,17 @@ func (o *PostKdoctoragentParams) SetDelay(delay *int64) {
 	o.Delay = delay
 }
 
+// WithTask adds the task to the post kdoctoragent params
+func (o *PostKdoctoragentParams) WithTask(task *string) *PostKdoctoragentParams {
+	o.SetTask(task)
+	return o
+}
+
+// SetTask adds the task to the post kdoctoragent params
+func (o *PostKdoctoragentParams) SetTask(task *string) {
+	o.Task = task
+}
+
 // WithTestArgs adds the testArgs to the post kdoctoragent params
 func (o *PostKdoctoragentParams) WithTestArgs(testArgs *models.EchoBody) *PostKdoctoragentParams {
 	o.SetTestArgs(testArgs)
@@ -171,6 +188,23 @@ func (o *PostKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg str
 		if qDelay != "" {
 
 			if err := r.SetQueryParam("delay", qDelay); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Task != nil {
+
+		// query param task
+		var qrTask string
+
+		if o.Task != nil {
+			qrTask = *o.Task
+		}
+		qTask := qrTask
+		if qTask != "" {
+
+			if err := r.SetQueryParam("task", qTask); err != nil {
 				return err
 			}
 		}

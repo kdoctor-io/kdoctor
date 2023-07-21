@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // OptionsOKCode is the HTTP code returned for type OptionsOK
@@ -25,11 +23,6 @@ OptionsOK Success
 swagger:response optionsOK
 */
 type OptionsOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewOptionsOK creates OptionsOK with default headers values
@@ -38,25 +31,35 @@ func NewOptionsOK() *OptionsOK {
 	return &OptionsOK{}
 }
 
-// WithPayload adds the payload to the options o k response
-func (o *OptionsOK) WithPayload(payload *models.EchoRes) *OptionsOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the options o k response
-func (o *OptionsOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *OptionsOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// OptionsInternalServerErrorCode is the HTTP code returned for type OptionsInternalServerError
+const OptionsInternalServerErrorCode int = 500
+
+/*
+OptionsInternalServerError Failed
+
+swagger:response optionsInternalServerError
+*/
+type OptionsInternalServerError struct {
+}
+
+// NewOptionsInternalServerError creates OptionsInternalServerError with default headers values
+func NewOptionsInternalServerError() *OptionsInternalServerError {
+
+	return &OptionsInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *OptionsInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

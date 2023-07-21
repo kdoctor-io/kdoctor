@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // OptionsKdoctoragentOKCode is the HTTP code returned for type OptionsKdoctoragentOK
@@ -25,11 +23,6 @@ OptionsKdoctoragentOK Success
 swagger:response optionsKdoctoragentOK
 */
 type OptionsKdoctoragentOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewOptionsKdoctoragentOK creates OptionsKdoctoragentOK with default headers values
@@ -38,25 +31,35 @@ func NewOptionsKdoctoragentOK() *OptionsKdoctoragentOK {
 	return &OptionsKdoctoragentOK{}
 }
 
-// WithPayload adds the payload to the options kdoctoragent o k response
-func (o *OptionsKdoctoragentOK) WithPayload(payload *models.EchoRes) *OptionsKdoctoragentOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the options kdoctoragent o k response
-func (o *OptionsKdoctoragentOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *OptionsKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// OptionsKdoctoragentInternalServerErrorCode is the HTTP code returned for type OptionsKdoctoragentInternalServerError
+const OptionsKdoctoragentInternalServerErrorCode int = 500
+
+/*
+OptionsKdoctoragentInternalServerError Failed
+
+swagger:response optionsKdoctoragentInternalServerError
+*/
+type OptionsKdoctoragentInternalServerError struct {
+}
+
+// NewOptionsKdoctoragentInternalServerError creates OptionsKdoctoragentInternalServerError with default headers values
+func NewOptionsKdoctoragentInternalServerError() *OptionsKdoctoragentInternalServerError {
+
+	return &OptionsKdoctoragentInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *OptionsKdoctoragentInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

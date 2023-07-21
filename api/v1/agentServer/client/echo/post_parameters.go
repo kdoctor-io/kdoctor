@@ -73,6 +73,12 @@ type PostParams struct {
 	*/
 	Delay *int64
 
+	/* Task.
+
+	   task name
+	*/
+	Task *string
+
 	// TestArgs.
 	TestArgs *models.EchoBody
 
@@ -140,6 +146,17 @@ func (o *PostParams) SetDelay(delay *int64) {
 	o.Delay = delay
 }
 
+// WithTask adds the task to the post params
+func (o *PostParams) WithTask(task *string) *PostParams {
+	o.SetTask(task)
+	return o
+}
+
+// SetTask adds the task to the post params
+func (o *PostParams) SetTask(task *string) {
+	o.Task = task
+}
+
 // WithTestArgs adds the testArgs to the post params
 func (o *PostParams) WithTestArgs(testArgs *models.EchoBody) *PostParams {
 	o.SetTestArgs(testArgs)
@@ -171,6 +188,23 @@ func (o *PostParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry
 		if qDelay != "" {
 
 			if err := r.SetQueryParam("delay", qDelay); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Task != nil {
+
+		// query param task
+		var qrTask string
+
+		if o.Task != nil {
+			qrTask = *o.Task
+		}
+		qTask := qrTask
+		if qTask != "" {
+
+			if err := r.SetQueryParam("task", qTask); err != nil {
 				return err
 			}
 		}

@@ -11,57 +11,18 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/spidernet-io/e2eframework/tools"
-	"time"
 )
 
 var _ = Describe("testing netDns ", Label("netDns"), func() {
-	var testSvcIP string
-	var testPodIPs []string
-	var testAppNamespace string
-	var targetDomain = "kubernetes.default.svc.cluster.local"
-	BeforeEach(func() {
-		var e error
 
-		testAppName := "app-" + tools.RandomName()
-		testAppNamespace = "ns-" + tools.RandomName()
+	var targetDomain = "%s.kubernetes.default.svc.cluster.local"
 
-		// create test app
-		args := []string{
-			fmt.Sprintf("--set=image.tag=%s", common.AppImageTag),
-			fmt.Sprintf("--set=appName=%s", testAppName),
-		}
-		e = common.CreateTestApp(testAppName, testAppNamespace, args)
-		Expect(e).NotTo(HaveOccurred(), "create test app")
-
-		//  get test app service ip and pod ip
-		svc, e := frame.GetService(testAppName, testAppNamespace)
-		Expect(e).NotTo(HaveOccurred(), "get test app service")
-		testSvcIP = svc.Spec.ClusterIP
-		GinkgoWriter.Printf("get test service ip %v \n", testSvcIP)
-
-		podLIst, e := frame.WaitDeploymentReadyAndCheckIP(testAppName, testAppNamespace, time.Second*60)
-		Expect(e).NotTo(HaveOccurred(), "wait test app deploy ready")
-
-		testPodIPs = make([]string, 0)
-		for _, v := range podLIst.Items {
-			testPodIPs = append(testPodIPs, v.Status.PodIP)
-		}
-
-		GinkgoWriter.Printf("get test pod ips %v \n", testPodIPs)
-
-		// Clean test env
-		DeferCleanup(func() {
-			GinkgoWriter.Printf("delete namespace %v \n", testAppNamespace)
-			Expect(frame.DeleteNamespace(testAppNamespace)).NotTo(HaveOccurred())
-		})
-
-	})
 	It("success testing netDns", Label("D00001"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
 		crontab := "0 1"
-		netDnsName := "netdns-" + tools.RandomName()
+		netDnsName := "netdns-e2e-" + tools.RandomName()
 
 		netDns := new(v1beta1.Netdns)
 		netDns.Name = netDnsName
@@ -90,7 +51,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
 		request.QPS = &qps
 		request.DurationInSecond = &durationInSecond
-		request.Domain = targetDomain
+		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
 		netDns.Spec.Request = request
@@ -119,7 +80,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		successRate := float64(1)
 		successMean := int64(1500)
 		crontab := "0 1"
-		netDnsName := "netdns-" + tools.RandomName()
+		netDnsName := "netdns-e2e-" + tools.RandomName()
 
 		netDns := new(v1beta1.Netdns)
 		netDns.Name = netDnsName
@@ -147,7 +108,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
 		request.QPS = &qps
 		request.DurationInSecond = &durationInSecond
-		request.Domain = targetDomain
+		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
 		netDns.Spec.Request = request

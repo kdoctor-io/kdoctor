@@ -18,6 +18,7 @@ import (
 	"github.com/robfig/cron"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"net"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -73,18 +74,13 @@ func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 
 // ValidataAppHttpHealthyHost check host protocol,ipv4 and ipv6 addr
 func ValidataAppHttpHealthyHost(r *crd.AppHttpHealthy) error {
-	// protocol
-	protoclHttp := strings.Contains(r.Spec.Target.Host, "http")
-	protoclHttps := strings.Contains(r.Spec.Target.Host, "https")
 	var ip string
-	if protoclHttps {
-		ip = r.Spec.Target.Host[len("https://"):]
-	} else if protoclHttp {
-		ip = r.Spec.Target.Host[len("http://"):]
-	} else {
-		ip = r.Spec.Target.Host
+	u, err := url.Parse(r.Spec.Target.Host)
+	if err != nil {
+		s := fmt.Sprintf("HttpAppHealthy %v, The IP address of the host is incorrect,err: %v ", r.Name, err)
+		return apierrors.NewBadRequest(s)
 	}
-
+	ip = u.Hostname()
 	for i := 0; i < len(ip); i++ {
 		// ipv4 or domain
 		if ip[i] == '.' {
@@ -104,13 +100,15 @@ func ValidataAppHttpHealthyHost(r *crd.AppHttpHealthy) error {
 
 			// ipv6
 		} else if ip[i] == ':' {
-			if !strings.Contains(ip, "[") || !strings.Contains(ip, "]") {
+			if r.Spec.Target.Host[strings.Index(r.Spec.Target.Host, ip)-1] != '[' {
 				s := fmt.Sprintf("HttpAppHealthy %v, using bad/illegal format or missing URL,example: http://[ipv6]:port", r.Name)
 				return apierrors.NewBadRequest(s)
 			}
-			// if host contains port remove port
-			ipAddr := ip[strings.Index(ip, "[")+1 : strings.Index(ip, "]")]
-			if net.ParseIP(ipAddr).To16() == nil {
+			if r.Spec.Target.Host[strings.Index(r.Spec.Target.Host, ip)+len(ip)] != ']' {
+				s := fmt.Sprintf("HttpAppHealthy %v, using bad/illegal format or missing URL,example: http://[ipv6]:port", r.Name)
+				return apierrors.NewBadRequest(s)
+			}
+			if net.ParseIP(ip).To16() == nil {
 				s := fmt.Sprintf("HttpAppHealthy %v, The IP address of the host is incorrect", r.Name)
 				return apierrors.NewBadRequest(s)
 			}
