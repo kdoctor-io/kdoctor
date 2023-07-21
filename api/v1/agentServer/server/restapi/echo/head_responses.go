@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // HeadOKCode is the HTTP code returned for type HeadOK
@@ -25,11 +23,6 @@ HeadOK Success
 swagger:response headOK
 */
 type HeadOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewHeadOK creates HeadOK with default headers values
@@ -38,25 +31,35 @@ func NewHeadOK() *HeadOK {
 	return &HeadOK{}
 }
 
-// WithPayload adds the payload to the head o k response
-func (o *HeadOK) WithPayload(payload *models.EchoRes) *HeadOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the head o k response
-func (o *HeadOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *HeadOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// HeadInternalServerErrorCode is the HTTP code returned for type HeadInternalServerError
+const HeadInternalServerErrorCode int = 500
+
+/*
+HeadInternalServerError Failed
+
+swagger:response headInternalServerError
+*/
+type HeadInternalServerError struct {
+}
+
+// NewHeadInternalServerError creates HeadInternalServerError with default headers values
+func NewHeadInternalServerError() *HeadInternalServerError {
+
+	return &HeadInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *HeadInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

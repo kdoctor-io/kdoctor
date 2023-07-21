@@ -71,6 +71,12 @@ type GetKdoctoragentParams struct {
 	*/
 	Delay *int64
 
+	/* Task.
+
+	   task name
+	*/
+	Task *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -135,6 +141,17 @@ func (o *GetKdoctoragentParams) SetDelay(delay *int64) {
 	o.Delay = delay
 }
 
+// WithTask adds the task to the get kdoctoragent params
+func (o *GetKdoctoragentParams) WithTask(task *string) *GetKdoctoragentParams {
+	o.SetTask(task)
+	return o
+}
+
+// SetTask adds the task to the get kdoctoragent params
+func (o *GetKdoctoragentParams) SetTask(task *string) {
+	o.Task = task
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -155,6 +172,23 @@ func (o *GetKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg strf
 		if qDelay != "" {
 
 			if err := r.SetQueryParam("delay", qDelay); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Task != nil {
+
+		// query param task
+		var qrTask string
+
+		if o.Task != nil {
+			qrTask = *o.Task
+		}
+		qTask := qrTask
+		if qTask != "" {
+
+			if err := r.SetQueryParam("task", qTask); err != nil {
 				return err
 			}
 		}

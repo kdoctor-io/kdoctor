@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PatchKdoctoragentReader is a Reader for the PatchKdoctoragent structure.
@@ -32,6 +29,12 @@ func (o *PatchKdoctoragentReader) ReadResponse(response runtime.ClientResponse, 
 			return nil, err
 		}
 		return result, nil
+	case 500:
+		result := NewPatchKdoctoragentInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -48,7 +51,6 @@ PatchKdoctoragentOK describes a response with status code 200, with default head
 Success
 */
 type PatchKdoctoragentOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this patch kdoctoragent o k response has a 2xx status code
@@ -82,25 +84,70 @@ func (o *PatchKdoctoragentOK) Code() int {
 }
 
 func (o *PatchKdoctoragentOK) Error() string {
-	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentOK ", 200)
 }
 
 func (o *PatchKdoctoragentOK) String() string {
-	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentOK  %+v", 200, o.Payload)
-}
-
-func (o *PatchKdoctoragentOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentOK ", 200)
 }
 
 func (o *PatchKdoctoragentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.EchoRes)
+	return nil
+}
 
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+// NewPatchKdoctoragentInternalServerError creates a PatchKdoctoragentInternalServerError with default headers values
+func NewPatchKdoctoragentInternalServerError() *PatchKdoctoragentInternalServerError {
+	return &PatchKdoctoragentInternalServerError{}
+}
+
+/*
+PatchKdoctoragentInternalServerError describes a response with status code 500, with default header values.
+
+Failed
+*/
+type PatchKdoctoragentInternalServerError struct {
+}
+
+// IsSuccess returns true when this patch kdoctoragent internal server error response has a 2xx status code
+func (o *PatchKdoctoragentInternalServerError) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this patch kdoctoragent internal server error response has a 3xx status code
+func (o *PatchKdoctoragentInternalServerError) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this patch kdoctoragent internal server error response has a 4xx status code
+func (o *PatchKdoctoragentInternalServerError) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this patch kdoctoragent internal server error response has a 5xx status code
+func (o *PatchKdoctoragentInternalServerError) IsServerError() bool {
+	return true
+}
+
+// IsCode returns true when this patch kdoctoragent internal server error response a status code equal to that given
+func (o *PatchKdoctoragentInternalServerError) IsCode(code int) bool {
+	return code == 500
+}
+
+// Code gets the status code for the patch kdoctoragent internal server error response
+func (o *PatchKdoctoragentInternalServerError) Code() int {
+	return 500
+}
+
+func (o *PatchKdoctoragentInternalServerError) Error() string {
+	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentInternalServerError ", 500)
+}
+
+func (o *PatchKdoctoragentInternalServerError) String() string {
+	return fmt.Sprintf("[PATCH /kdoctoragent][%d] patchKdoctoragentInternalServerError ", 500)
+}
+
+func (o *PatchKdoctoragentInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

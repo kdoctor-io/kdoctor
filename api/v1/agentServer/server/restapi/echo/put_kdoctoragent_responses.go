@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PutKdoctoragentOKCode is the HTTP code returned for type PutKdoctoragentOK
@@ -25,11 +23,6 @@ PutKdoctoragentOK Success
 swagger:response putKdoctoragentOK
 */
 type PutKdoctoragentOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPutKdoctoragentOK creates PutKdoctoragentOK with default headers values
@@ -38,25 +31,35 @@ func NewPutKdoctoragentOK() *PutKdoctoragentOK {
 	return &PutKdoctoragentOK{}
 }
 
-// WithPayload adds the payload to the put kdoctoragent o k response
-func (o *PutKdoctoragentOK) WithPayload(payload *models.EchoRes) *PutKdoctoragentOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the put kdoctoragent o k response
-func (o *PutKdoctoragentOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PutKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// PutKdoctoragentInternalServerErrorCode is the HTTP code returned for type PutKdoctoragentInternalServerError
+const PutKdoctoragentInternalServerErrorCode int = 500
+
+/*
+PutKdoctoragentInternalServerError Failed
+
+swagger:response putKdoctoragentInternalServerError
+*/
+type PutKdoctoragentInternalServerError struct {
+}
+
+// NewPutKdoctoragentInternalServerError creates PutKdoctoragentInternalServerError with default headers values
+func NewPutKdoctoragentInternalServerError() *PutKdoctoragentInternalServerError {
+
+	return &PutKdoctoragentInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *PutKdoctoragentInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

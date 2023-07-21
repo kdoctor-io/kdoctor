@@ -20,6 +20,9 @@ import (
 // swagger:model EchoRes
 type EchoRes struct {
 
+	// task name
+	TaskName string `json:"TaskName,omitempty"`
+
 	// client source ip
 	ClientIP string `json:"clientIp,omitempty"`
 
@@ -29,14 +32,11 @@ type EchoRes struct {
 	// request body
 	RequestBody string `json:"requestBody,omitempty"`
 
-	// request dns count
-	RequestDNSCount int64 `json:"requestDnsCount,omitempty"`
+	// request count
+	RequestCount int64 `json:"requestCount,omitempty"`
 
 	// request header
 	RequestHeader map[string]string `json:"requestHeader,omitempty"`
-
-	// request http count
-	RequestHTTPCount int64 `json:"requestHttpCount,omitempty"`
 
 	// request method
 	RequestMethod string `json:"requestMethod,omitempty"`

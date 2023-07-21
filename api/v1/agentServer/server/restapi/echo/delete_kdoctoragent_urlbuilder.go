@@ -16,7 +16,11 @@ import (
 
 // DeleteKdoctoragentURL generates an URL for the delete kdoctoragent operation
 type DeleteKdoctoragentURL struct {
+	Task *string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -45,6 +49,18 @@ func (o *DeleteKdoctoragentURL) Build() (*url.URL, error) {
 		_basePath = "/"
 	}
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var taskQ string
+	if o.Task != nil {
+		taskQ = *o.Task
+	}
+	if taskQ != "" {
+		qs.Set("task", taskQ)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

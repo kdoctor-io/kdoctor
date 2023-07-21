@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PostKdoctoragentReader is a Reader for the PostKdoctoragent structure.
@@ -54,7 +51,6 @@ PostKdoctoragentOK describes a response with status code 200, with default heade
 Success
 */
 type PostKdoctoragentOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this post kdoctoragent o k response has a 2xx status code
@@ -88,25 +84,14 @@ func (o *PostKdoctoragentOK) Code() int {
 }
 
 func (o *PostKdoctoragentOK) Error() string {
-	return fmt.Sprintf("[POST /kdoctoragent][%d] postKdoctoragentOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /kdoctoragent][%d] postKdoctoragentOK ", 200)
 }
 
 func (o *PostKdoctoragentOK) String() string {
-	return fmt.Sprintf("[POST /kdoctoragent][%d] postKdoctoragentOK  %+v", 200, o.Payload)
-}
-
-func (o *PostKdoctoragentOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[POST /kdoctoragent][%d] postKdoctoragentOK ", 200)
 }
 
 func (o *PostKdoctoragentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.EchoRes)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

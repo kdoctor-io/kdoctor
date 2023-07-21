@@ -43,6 +43,10 @@ type PostParams struct {
 	  In: query
 	*/
 	Delay *int64
+	/*task name
+	  In: query
+	*/
+	Task *string
 	/*
 	  Required: true
 	  In: body
@@ -63,6 +67,11 @@ func (o *PostParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 
 	qDelay, qhkDelay, _ := qs.GetOK("delay")
 	if err := o.bindDelay(qDelay, qhkDelay, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qTask, qhkTask, _ := qs.GetOK("task")
+	if err := o.bindTask(qTask, qhkTask, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -118,6 +127,24 @@ func (o *PostParams) bindDelay(rawData []string, hasKey bool, formats strfmt.Reg
 		return errors.InvalidType("delay", "query", "int64", raw)
 	}
 	o.Delay = &value
+
+	return nil
+}
+
+// bindTask binds and validates parameter Task from query.
+func (o *PostParams) bindTask(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+	o.Task = &raw
 
 	return nil
 }
