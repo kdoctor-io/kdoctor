@@ -101,6 +101,7 @@ func (s *echoGetHandler) Handle(r echo.GetParams) middleware.Responder {
 		RequestCount:    RequestCounts.GetCount(task),
 		ParamDetail:     ParamInformation,
 		SupportedMethod: SupportedMethod,
+		TaskName:        *r.Task,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -291,6 +292,7 @@ func (s *echoKdoctorGetHandler) Handle(r echo.GetKdoctoragentParams) middleware.
 		RequestCount:    RequestCounts.GetCount(task),
 		ParamDetail:     ParamInformation,
 		SupportedMethod: SupportedMethod,
+		TaskName:        *r.Task,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
