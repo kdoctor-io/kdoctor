@@ -25,18 +25,14 @@ func TestNetReach(t *testing.T) {
 }
 
 var (
-	frame             *e2e.Framework
-	httpPort          = 80
-	httpsPort         = 443
-	bodyConfigMapName string
-	caSecret          *v1.Secret
-	KubeDnsName       string
-	KubeDnsNamespace  string
-	reportNum         int
-	testAppName       string
-	testAppNamespace  string
-	testSvcIP         string
-	testPodIPs        []string
+	frame            *e2e.Framework
+	KubeDnsName      string
+	KubeDnsNamespace string
+	reportNum        int
+	testAppName      string
+	testAppNamespace string
+	testSvcIP        string
+	testPodIPs       []string
 )
 
 var _ = BeforeSuite(func() {
