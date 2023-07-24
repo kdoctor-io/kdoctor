@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // HeadReader is a Reader for the Head structure.
@@ -32,6 +29,12 @@ func (o *HeadReader) ReadResponse(response runtime.ClientResponse, consumer runt
 			return nil, err
 		}
 		return result, nil
+	case 500:
+		result := NewHeadInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -48,7 +51,6 @@ HeadOK describes a response with status code 200, with default header values.
 Success
 */
 type HeadOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this head o k response has a 2xx status code
@@ -82,25 +84,70 @@ func (o *HeadOK) Code() int {
 }
 
 func (o *HeadOK) Error() string {
-	return fmt.Sprintf("[HEAD /][%d] headOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[HEAD /][%d] headOK ", 200)
 }
 
 func (o *HeadOK) String() string {
-	return fmt.Sprintf("[HEAD /][%d] headOK  %+v", 200, o.Payload)
-}
-
-func (o *HeadOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[HEAD /][%d] headOK ", 200)
 }
 
 func (o *HeadOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.EchoRes)
+	return nil
+}
 
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+// NewHeadInternalServerError creates a HeadInternalServerError with default headers values
+func NewHeadInternalServerError() *HeadInternalServerError {
+	return &HeadInternalServerError{}
+}
+
+/*
+HeadInternalServerError describes a response with status code 500, with default header values.
+
+Failed
+*/
+type HeadInternalServerError struct {
+}
+
+// IsSuccess returns true when this head internal server error response has a 2xx status code
+func (o *HeadInternalServerError) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this head internal server error response has a 3xx status code
+func (o *HeadInternalServerError) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this head internal server error response has a 4xx status code
+func (o *HeadInternalServerError) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this head internal server error response has a 5xx status code
+func (o *HeadInternalServerError) IsServerError() bool {
+	return true
+}
+
+// IsCode returns true when this head internal server error response a status code equal to that given
+func (o *HeadInternalServerError) IsCode(code int) bool {
+	return code == 500
+}
+
+// Code gets the status code for the head internal server error response
+func (o *HeadInternalServerError) Code() int {
+	return 500
+}
+
+func (o *HeadInternalServerError) Error() string {
+	return fmt.Sprintf("[HEAD /][%d] headInternalServerError ", 500)
+}
+
+func (o *HeadInternalServerError) String() string {
+	return fmt.Sprintf("[HEAD /][%d] headInternalServerError ", 500)
+}
+
+func (o *HeadInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

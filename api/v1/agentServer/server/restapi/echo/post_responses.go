@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PostOKCode is the HTTP code returned for type PostOK
@@ -25,11 +23,6 @@ PostOK Success
 swagger:response postOK
 */
 type PostOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPostOK creates PostOK with default headers values
@@ -38,27 +31,12 @@ func NewPostOK() *PostOK {
 	return &PostOK{}
 }
 
-// WithPayload adds the payload to the post o k response
-func (o *PostOK) WithPayload(payload *models.EchoRes) *PostOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the post o k response
-func (o *PostOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PostOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
 }
 
 // PostInternalServerErrorCode is the HTTP code returned for type PostInternalServerError

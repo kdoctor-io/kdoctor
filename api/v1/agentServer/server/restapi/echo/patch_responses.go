@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PatchOKCode is the HTTP code returned for type PatchOK
@@ -25,11 +23,6 @@ PatchOK Success
 swagger:response patchOK
 */
 type PatchOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPatchOK creates PatchOK with default headers values
@@ -38,25 +31,35 @@ func NewPatchOK() *PatchOK {
 	return &PatchOK{}
 }
 
-// WithPayload adds the payload to the patch o k response
-func (o *PatchOK) WithPayload(payload *models.EchoRes) *PatchOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the patch o k response
-func (o *PatchOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PatchOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// PatchInternalServerErrorCode is the HTTP code returned for type PatchInternalServerError
+const PatchInternalServerErrorCode int = 500
+
+/*
+PatchInternalServerError Failed
+
+swagger:response patchInternalServerError
+*/
+type PatchInternalServerError struct {
+}
+
+// NewPatchInternalServerError creates PatchInternalServerError with default headers values
+func NewPatchInternalServerError() *PatchInternalServerError {
+
+	return &PatchInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *PatchInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

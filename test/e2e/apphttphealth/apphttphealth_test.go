@@ -12,50 +12,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/spidernet-io/e2eframework/tools"
 	"net"
-	"time"
 )
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
-	var testSvcIP string
-	var testPodIPs []string
-	var testAppNamespace string
-	BeforeEach(func() {
-		var e error
-
-		testAppName := "app-" + tools.RandomName()
-		testAppNamespace = "ns-" + tools.RandomName()
-
-		// create test app
-		args := []string{
-			fmt.Sprintf("--set=image.tag=%s", common.AppImageTag),
-			fmt.Sprintf("--set=appName=%s", testAppName),
-		}
-		e = common.CreateTestApp(testAppName, testAppNamespace, args)
-		Expect(e).NotTo(HaveOccurred(), "create test app")
-
-		//  get test app service ip and pod ip
-		svc, e := frame.GetService(testAppName, testAppNamespace)
-		Expect(e).NotTo(HaveOccurred(), "get test app service")
-		testSvcIP = svc.Spec.ClusterIP
-		GinkgoWriter.Printf("get test service ip %v \n", testSvcIP)
-
-		podLIst, e := frame.WaitDeploymentReadyAndCheckIP(testAppName, testAppNamespace, time.Second*60)
-		Expect(e).NotTo(HaveOccurred(), "wait test app deploy ready")
-
-		testPodIPs = make([]string, 0)
-		for _, v := range podLIst.Items {
-			testPodIPs = append(testPodIPs, v.Status.PodIP)
-		}
-
-		GinkgoWriter.Printf("get test pod ips %v \n", testPodIPs)
-
-		// Clean test env
-		DeferCleanup(func() {
-			GinkgoWriter.Printf("delete namespace %v \n", testAppNamespace)
-			Expect(frame.DeleteNamespace(testAppNamespace)).NotTo(HaveOccurred())
-		})
-
-	})
 
 	It("success http testing appHttpHealth method GET", Label("A00001"), func() {
 		var e error
@@ -77,9 +36,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -130,9 +89,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -182,9 +141,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d/?delay=1", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d/?delay=1", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -233,9 +192,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testPodIPs[0]).To4() == nil {
-			target.Host = fmt.Sprintf("https://[%s]", testPodIPs[0])
+			target.Host = fmt.Sprintf("https://[%s]/?task=%s", testPodIPs[0], appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("https://%s", testPodIPs[0])
+			target.Host = fmt.Sprintf("https://%s/?task=%s", testPodIPs[0], appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &testAppNamespace
@@ -288,9 +247,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target.Method = "GET"
 		// The service IP is not signed in the test pod, so using the service IP will fail certificate validation
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("https://[%s]:%d", testSvcIP, httpsPort)
+			target.Host = fmt.Sprintf("https://[%s]:%d/?task=%s", testSvcIP, httpsPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("https://%s:%d", testSvcIP, httpsPort)
+			target.Host = fmt.Sprintf("https://%s:%d/?task=%s", testSvcIP, httpsPort, appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &testAppNamespace
@@ -342,9 +301,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "PUT"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -394,9 +353,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "POST"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		target.BodyConfigName = &bodyConfigMapName
 		target.BodyConfigNamespace = &common.TestNameSpace
@@ -448,9 +407,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "HEAD"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -500,9 +459,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "PATCH"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -552,9 +511,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "OPTIONS"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -604,9 +563,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testSvcIP).To4() == nil {
-			target.Host = fmt.Sprintf("http://[%s]:%d/?delay=1", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://[%s]:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("http://%s:%d/?delay=1", testSvcIP, httpPort)
+			target.Host = fmt.Sprintf("http://%s:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
 		appHttpHealth.Spec.Target = target
 
@@ -656,9 +615,9 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		if net.ParseIP(testPodIPs[0]).To4() == nil {
-			target.Host = fmt.Sprintf("https://[%s]", testPodIPs[0])
+			target.Host = fmt.Sprintf("https://[%s]/?task=%s", testPodIPs[0], appHttpHealthName)
 		} else {
-			target.Host = fmt.Sprintf("https://%s", testPodIPs[0])
+			target.Host = fmt.Sprintf("https://%s/?task=%s", testPodIPs[0], appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &testAppNamespace

@@ -63,6 +63,13 @@ DeleteKdoctoragentParams contains all the parameters to send to the API endpoint
 	Typically these are written to a http.Request.
 */
 type DeleteKdoctoragentParams struct {
+
+	/* Task.
+
+	   task name
+	*/
+	Task *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -116,6 +123,17 @@ func (o *DeleteKdoctoragentParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithTask adds the task to the delete kdoctoragent params
+func (o *DeleteKdoctoragentParams) WithTask(task *string) *DeleteKdoctoragentParams {
+	o.SetTask(task)
+	return o
+}
+
+// SetTask adds the task to the delete kdoctoragent params
+func (o *DeleteKdoctoragentParams) SetTask(task *string) {
+	o.Task = task
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *DeleteKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -123,6 +141,23 @@ func (o *DeleteKdoctoragentParams) WriteToRequest(r runtime.ClientRequest, reg s
 		return err
 	}
 	var res []error
+
+	if o.Task != nil {
+
+		// query param task
+		var qrTask string
+
+		if o.Task != nil {
+			qrTask = *o.Task
+		}
+		qTask := qrTask
+		if qTask != "" {
+
+			if err := r.SetQueryParam("task", qTask); err != nil {
+				return err
+			}
+		}
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

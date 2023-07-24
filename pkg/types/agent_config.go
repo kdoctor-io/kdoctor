@@ -54,11 +54,12 @@ type AgentConfigStruct struct {
 	CleanAgedReportInMinute    int32
 
 	// ------- from flags
-	ConfigMapPath string
-	TlsCaCertPath string
-	TlsCaKeyPath  string
-	TlsInsecure   bool
-	AppMode       bool
+	ConfigMapPath  string
+	TlsCaCertPath  string
+	TlsCaKeyPath   string
+	TlsInsecure    bool
+	AppMode        bool
+	AppDnsUpstream bool
 
 	// from configmap
 	Configmap ConfigmapConfig

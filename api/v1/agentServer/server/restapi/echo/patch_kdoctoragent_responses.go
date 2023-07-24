@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PatchKdoctoragentOKCode is the HTTP code returned for type PatchKdoctoragentOK
@@ -25,11 +23,6 @@ PatchKdoctoragentOK Success
 swagger:response patchKdoctoragentOK
 */
 type PatchKdoctoragentOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPatchKdoctoragentOK creates PatchKdoctoragentOK with default headers values
@@ -38,25 +31,35 @@ func NewPatchKdoctoragentOK() *PatchKdoctoragentOK {
 	return &PatchKdoctoragentOK{}
 }
 
-// WithPayload adds the payload to the patch kdoctoragent o k response
-func (o *PatchKdoctoragentOK) WithPayload(payload *models.EchoRes) *PatchKdoctoragentOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the patch kdoctoragent o k response
-func (o *PatchKdoctoragentOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PatchKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// PatchKdoctoragentInternalServerErrorCode is the HTTP code returned for type PatchKdoctoragentInternalServerError
+const PatchKdoctoragentInternalServerErrorCode int = 500
+
+/*
+PatchKdoctoragentInternalServerError Failed
+
+swagger:response patchKdoctoragentInternalServerError
+*/
+type PatchKdoctoragentInternalServerError struct {
+}
+
+// NewPatchKdoctoragentInternalServerError creates PatchKdoctoragentInternalServerError with default headers values
+func NewPatchKdoctoragentInternalServerError() *PatchKdoctoragentInternalServerError {
+
+	return &PatchKdoctoragentInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *PatchKdoctoragentInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }
