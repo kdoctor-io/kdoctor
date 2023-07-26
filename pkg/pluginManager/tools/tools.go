@@ -120,7 +120,7 @@ func ValidataAppHttpHealthyHost(r *crd.AppHttpHealthy) error {
 }
 
 func GetDefaultSchedule() (plan *crd.SchedulePlan) {
-	s := "0 60"
+	s := "0 1"
 	return &crd.SchedulePlan{
 		RoundTimeoutMinute: 60,
 		Schedule:           &s,
