@@ -180,7 +180,8 @@ chart_package: lint_chart_format lint_chart_version
 	cd $(DESTDIR_CHART) ; \
    		echo "package chart " ; \
    		helm package  $(CHART_DIR) ; \
-
+   		echo "package app chart " ; \
+   		helm package  $(APP_CHART_DIR) ; \
 
 .PHONY: update_chart_version
 update_chart_version:
@@ -189,6 +190,8 @@ update_chart_version:
 		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
 		sed -E -i 's?^version: .*?version: '$${CHART_VERSION}'?g' $(CHART_DIR)/Chart.yaml &>/dev/null  ; \
 		sed -E -i 's?^appVersion: .*?appVersion: "'$${CHART_VERSION}'"?g' $(CHART_DIR)/Chart.yaml &>/dev/null  ; \
+		sed -E -i 's?^version: .*?version: '$${CHART_VERSION}'?g' $(APP_CHART_DIR)/Chart.yaml &>/dev/null  ; \
+		sed -E -i 's?^appVersion: .*?appVersion: "'$${CHART_VERSION}'"?g' $(APP_CHART_DIR)/Chart.yaml &>/dev/null  ; \
    		echo "version of all chart is right"
 
 
@@ -196,7 +199,9 @@ update_chart_version:
 lint_chart_format:
 	mkdir -p $(DESTDIR_CHART) ; \
    			echo "check chart" ; \
-   			helm lint --with-subcharts $(CHART_DIR)
+   			helm lint --with-subcharts $(CHART_DIR) ;\
+    		echo "check app chart" ; \
+    		helm lint --with-subcharts $(APP_CHART_DIR)
 
 
 .PHONY: lint_chart_version
@@ -206,6 +211,8 @@ lint_chart_version:
 		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
 			grep -E "^version: $${CHART_VERSION}" $(CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong version in Chart.yaml" ; exit 1 ; } ; \
 			grep -E "^appVersion: \"$${CHART_VERSION}\"" $(CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong appVersion in Chart.yaml" ; exit 1 ; } ; \
+			grep -E "^version: $${CHART_VERSION}" $(APP_CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong version in Chart.yaml" ; exit 1 ; } ; \
+			grep -E "^appVersion: \"$${CHART_VERSION}\"" $(APP_CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong appVersion in Chart.yaml" ; exit 1 ; } ; \
    		echo "version of all chart is right"
 
 
