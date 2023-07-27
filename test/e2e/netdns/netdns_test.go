@@ -17,7 +17,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 	var targetDomain = "%s.kubernetes.default.svc.cluster.local"
 
-	It("success testing netDns", Label("D00001"), func() {
+	It("Successfully testing Cluster Dns Server case", Label("D00001", "C00005"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -75,7 +75,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 	})
 
-	It("success testing netDns User", Label("D00002"), func() {
+	It("Successfully testing User Define Dns server case", Label("D00002"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
