@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
 
-	It("success testing netReach", Label("B00001"), func() {
+	It("success testing netReach", Label("B00001", "C00004"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)

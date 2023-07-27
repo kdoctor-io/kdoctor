@@ -1,4 +1,4 @@
-# E2E Cases for IP NetReach
+# E2E Cases for NetReach
 
 | Case ID | Title                                                  | Priority | Smoke | Status |    Other    |
 |---------|--------------------------------------------------------|----------|-------|--------|-------------|
