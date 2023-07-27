@@ -16,7 +16,7 @@ import (
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
-	It("success http testing appHttpHealth method GET", Label("A00001"), func() {
+	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -543,7 +543,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 	})
 
-	It("Successfully http testing appHttpHealth due to success rate", Label("A000012"), func() {
+	It("Successfully http testing appHttpHealth due to success rate", Label("A00012"), func() {
 		var e error
 		successRate := float64(0.2)
 		successMean := int64(1200)
@@ -595,7 +595,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 	})
 
-	It("Successfully https testing appHttpHealth method GET Protocol Http2", Label("A000013"), func() {
+	It("Successfully https testing appHttpHealth method GET Protocol Http2", Label("A00013"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
