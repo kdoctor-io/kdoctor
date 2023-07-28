@@ -109,7 +109,6 @@ type NetHttpRequest struct {
 
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:default=5
-	// +kubebuilder:validation:Maximum=100
 	// +kubebuilder:validation:Minimum=1
 	QPS int `json:"qps,omitempty"`
 
