@@ -98,7 +98,6 @@ spec:
                   qps:
                     default: 5
                     format: int64
-                    maximum: 20
                     minimum: 1
                     type: integer
                 type: object
