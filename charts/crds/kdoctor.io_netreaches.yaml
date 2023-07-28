@@ -87,7 +87,6 @@ spec:
                     type: integer
                   qps:
                     default: 5
-                    maximum: 100
                     minimum: 1
                     type: integer
                 type: object
