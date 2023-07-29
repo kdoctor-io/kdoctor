@@ -388,7 +388,7 @@ preview_doc:
         --entrypoint sh \
         --stop-timeout 3 \
         --stop-signal "SIGKILL" \
-        squidfunk/mkdocs-material  -c "cd /host ; cp docs/mkdocs.yml ./ ;  mkdocs serve -a 0.0.0.0:8000"
+        squidfunk/mkdocs-material:8.5.11  -c "cd /host ; cp docs/mkdocs.yml ./ ;  mkdocs serve -a 0.0.0.0:8000"
 	#sleep 10 ; if curl 127.0.0.1:8000 &>/dev/null  ; then echo "succeeded to set up preview server" ; else echo "error, failed to set up preview server" ; docker stop doc_previewer ; exit 1 ; fi
 
 
@@ -406,10 +406,35 @@ build_doc:
 		docker run --rm --name doc_builder  \
 		-v ${PROJECT_DOC_DIR}:/host/docs \
         --entrypoint sh \
-        squidfunk/mkdocs-material -c "cd /host ; cp ./docs/mkdocs.yml ./ ; mkdocs build ; cd site ; tar -czvf site.tar.gz * ; mv ${OUTPUT_TAR} ../docs/"
-	@ [ -f "$(PROJECT_DOC_DIR)/$(OUTPUT_TAR)" ] || { echo "failed to build site to $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) " ; exit 1 ; }
+		squidfunk/mkdocs-material:8.5.11 -c "cd /host && cp ./docs/mkdocs.yml ./ && mkdocs build 2>&1 && cd site && tar -czvf site.tar.gz * && mv ${OUTPUT_TAR} ../docs/"	@ [ -f "$(PROJECT_DOC_DIR)/$(OUTPUT_TAR)" ] || { echo "failed to build site to $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) " ; exit 1 ; }
 	@ mv $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) $(DOC_OUTPUT)/$(OUTPUT_TAR)
 	@ echo "succeeded to build site to $(DOC_OUTPUT)/$(OUTPUT_TAR) "
+
+
+.PHONY: check_doc
+check_doc: PROJECT_DOC_DIR := ${ROOT_DIR}/docs
+check_doc: OUTPUT_TAR := site.tar.gz
+check_doc:
+	-docker stop doc_builder &>/dev/null
+	-docker rm doc_builder &>/dev/null
+	[ -f "docs/mkdocs.yml" ] || { echo "error, miss docs/mkdocs.yml "; exit 1 ; }
+	-@ rm -f ./docs/$(OUTPUT_TAR)
+	@echo "check doc" ; \
+		MESSAGE=`docker run --rm --name doc_builder  \
+		-v ${PROJECT_DOC_DIR}:/host/docs \
+        --entrypoint sh \
+        squidfunk/mkdocs-material:8.5.11 -c "cd /host && cp ./docs/mkdocs.yml ./ && mkdocs build 2>&1 && cd site && tar -czvf site.tar.gz * && mv ${OUTPUT_TAR} ../docs/" 2>&1` ; \
+        if (( $$? !=0 )) ; then \
+        	echo "!!! error, failed to build doc" ; \
+        	exit 1 ; \
+        fi ; \
+        if grep -E "WARNING .* which is not found" <<< "$${MESSAGE}" ; then  \
+        	echo "!!! error, some link is bad" ; \
+        	exit 1 ; \
+        fi
+	@ [ -f "$(PROJECT_DOC_DIR)/$(OUTPUT_TAR)" ] || { echo "failed to build site to $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) " ; exit 1 ; }
+	-@ rm -f ./docs/$(OUTPUT_TAR)
+	@ echo "all doc is ok "
 
 
 
