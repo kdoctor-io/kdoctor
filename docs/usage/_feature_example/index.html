@@ -15,7 +15,7 @@
     
     
       
-        <title>develop new crd - kdoctor</title>
+        <title>某功能 - kdoctor</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#develop-new-crd" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              develop new crd
+              某功能
             
           </span>
         </div>
@@ -190,7 +190,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../usage/install/" class="md-tabs__link">
+      <a href="../install/" class="md-tabs__link">
         Installation
       </a>
     </li>
@@ -206,7 +206,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../usage/apphttphealthy/" class="md-tabs__link">
+      <a href="../apphttphealthy/" class="md-tabs__link">
         Usage
       </a>
     </li>
@@ -254,7 +254,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../release/" class="md-tabs__link">
+      <a href="../../develop/release/" class="md-tabs__link">
         Development
       </a>
     </li>
@@ -365,7 +365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/install/" class="md-nav__link">
+      <a href="../install/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -422,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/apphttphealthy/" class="md-nav__link">
+      <a href="../apphttphealthy/" class="md-nav__link">
         AppHttpHealthy
       </a>
     </li>
@@ -436,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/netreach/" class="md-nav__link">
+      <a href="../netreach/" class="md-nav__link">
         NetReach
       </a>
     </li>
@@ -450,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/netdns/" class="md-nav__link">
+      <a href="../netdns/" class="md-nav__link">
         NetDns
       </a>
     </li>
@@ -675,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release/" class="md-nav__link">
+      <a href="../../develop/release/" class="md-nav__link">
         Release workflow
       </a>
     </li>
@@ -689,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../develop/roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -723,6 +723,42 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    项目功能
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    实施要求
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    步骤
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -742,38 +778,15 @@
   
 
 
-<h1 id="develop-new-crd">develop new crd</h1>
-<ol>
-<li>
-<p>define CRD in pkg/k8s/apis/kdoctor.io/v1beta1/xx_types.go
-   add role to pkg/k8s/apis/kdoctor.io/v1beta1/rbac.go</p>
-</li>
-<li>
-<p>make update_openapi_sdk</p>
-</li>
-<li>
-<p>add crd to MutatingWebhookConfiguration and ValidatingWebhookConfiguration in charts/templates/tls.yaml </p>
-</li>
-<li>
-<p>add your crd to charts/template/role.yaml</p>
-</li>
-<li>
-<p>implement the interface pkg/pluginManager/types in pkg/plugins/xxxx
-   register your interface in pkg/pluginManager/types/manager.go</p>
-</li>
-</ol>
-<p>the plugin manager will auto help plugins to finish following jobs:</p>
-<ol>
-<li>
-<p>schedule task and call plugin to implement each round task</p>
-</li>
-<li>
-<p>collect all report and save to controller disc</p>
-</li>
-<li>
-<p>summarize each round result and update to CRD</p>
-</li>
-</ol>
+<h1 id="_1">某功能</h1>
+<h2 id="_2">介绍</h2>
+<p>本文为了演示什么，它的应用场景</p>
+<h2 id="_3">项目功能</h2>
+<p>本项目有什么功能，它为什么能解决问题，功能的应用场景，功能实施的限制有哪些</p>
+<h2 id="_4">实施要求</h2>
+<p>安装要求，如 内核限制、K8S版本、第三方项目版本等，本项目安装时哪些选型要打开或关闭</p>
+<h2 id="_5">步骤</h2>
+<p>step by step 小白可实施，每一步骤的结果确认和状态查看(用于排障)，特殊说明，yaml 有对应的工程文件</p>
 
 
 

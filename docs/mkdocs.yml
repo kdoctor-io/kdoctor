@@ -35,3 +35,23 @@ markdown_extensions:
   - fenced_code
   - tables
   - attr_list
+
+nav:
+  - README.md
+  - Installation:
+      - Installation: usage/install.md
+  - Usage:
+      - AppHttpHealthy: usage/apphttphealthy.md
+      - NetReach: usage/netreach.md
+      - NetDns: usage/netdns.md
+  - Concepts:
+      - Architecture: reference/arch.md
+  - Reference:
+      - AppHttpHealthy: reference/apphttphealthy-zh_CN.md
+      - NetReach: reference/netreach-zh_CN.md
+      - NetDns: reference/netdns-zh_CN.md
+      - Report: reference/report.md
+      - Performance: reference/performance.md
+  - Development:
+      - Release workflow: develop/release.md
+      - Roadmap: develop/roadmap.md
