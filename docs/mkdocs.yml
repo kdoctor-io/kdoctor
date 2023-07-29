@@ -51,7 +51,7 @@ nav:
       - NetReach: reference/netreach-zh_CN.md
       - NetDns: reference/netdns-zh_CN.md
       - Report: reference/report.md
-      - Performance: reference/performance.md
+      - Performance: usage/performance.md
   - Development:
       - Release workflow: develop/release.md
       - Roadmap: develop/roadmap.md
