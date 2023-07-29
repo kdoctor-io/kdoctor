@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/kdoctor-io/kdoctor/branch/main/graph/badge.svg?token=rLmsuiBLM2)](https://codecov.io/gh/kdoctor-io/kdoctor)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kdoctor-io/kdoctor)](https://goreportcard.com/report/github.com/kdoctor-io/kdoctor)
 [![CodeFactor](https://www.codefactor.io/repository/github/kdoctor-io/kdoctor/badge)](https://www.codefactor.io/repository/github/kdoctor-io/kdoctor)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ii2day/0300d0a99d701fec02909d843792e67d/raw/e2ereport.json)
 
 ***
 

@@ -7,7 +7,9 @@ env:
   BADGE_CODELINE_ID:
   BADGE_COMMENT_FILENAME:
   BADGE_COMMENT_ID:
-
+  E2ECOVERSTATUSSCRIPT: "./tools/scripts/e2ecover.sh"
+  BADGE_E2ECOVER_FILENAME: e2ereport.json
+  BADGE_E2ECOVER_ID: 0300d0a99d701fec02909d843792e67d
 
 on:
   push:
@@ -34,6 +36,9 @@ jobs:
           COMMENT_PERCENTAGE=$(  ${TOOL_PATH} --comment-percent )
           echo "CODE_LINES=${CODE_LINES}" >> $GITHUB_ENV
           echo "COMMENT_PERCENTAGE=${COMMENT_PERCENTAGE}" >> $GITHUB_ENV
+          TOOL_PATH=${{ env.E2ECOVERSTATUSSCRIPT }}
+          E2E_COVER=$( ${TOOL_PATH} )
+          echo "E2E_COVER=${E2E_COVER}" >> $GITHUB_ENV
 
       - name: Create Lines-of-Code-Badge
         if: ${{ env.BADGE_CODELINE_ID != '' }}
@@ -59,3 +64,13 @@ jobs:
           maxColorRange: 100
           minColorRange: 0
 
+      - name: Create E2E-Badge
+        if: ${{ env.BADGE_E2ECOVER_ID != '' }}
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.E2ECOVER_II2DAY }}
+          gistID: ${{ env.BADGE_E2ECOVER_ID }}
+          filename: ${{ env.BADGE_E2ECOVER_FILENAME }}
+          label: e2e cover
+          message: ${{ env.E2E_COVER }}
+          color: lightgrey
