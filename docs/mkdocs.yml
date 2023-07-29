@@ -39,7 +39,7 @@ markdown_extensions:
 nav:
   - README.md
   - Installation:
-      - Installation: usage/install.md
+      - Installation: usage/install-zh_CN.md
   - Usage:
       - AppHttpHealthy: usage/apphttphealthy.md
       - NetReach: usage/netreach.md
