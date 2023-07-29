@@ -33,7 +33,7 @@ feature:
   enableIPv4: true
 
   ## @param feature.enableIPv6 enable ipv6
-  enableIPv6: false
+  enableIPv6: true
 
   ## @param feature.nethttp_defaultRequest_Qps qps for kind nethttp
   nethttp_defaultRequest_Qps: 10
