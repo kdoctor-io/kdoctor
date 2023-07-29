@@ -15,7 +15,7 @@
     
     
       
-        <title>develop new crd - kdoctor</title>
+        <title>安装文档 - kdoctor</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#develop-new-crd" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              develop new crd
+              安装文档
             
           </span>
         </div>
@@ -190,7 +190,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../usage/install/" class="md-tabs__link">
+      <a href="../install/" class="md-tabs__link">
         Installation
       </a>
     </li>
@@ -206,7 +206,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../usage/apphttphealthy/" class="md-tabs__link">
+      <a href="../apphttphealthy/" class="md-tabs__link">
         Usage
       </a>
     </li>
@@ -254,7 +254,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../release/" class="md-tabs__link">
+      <a href="../../develop/release/" class="md-tabs__link">
         Development
       </a>
     </li>
@@ -365,7 +365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/install/" class="md-nav__link">
+      <a href="../install/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -422,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/apphttphealthy/" class="md-nav__link">
+      <a href="../apphttphealthy/" class="md-nav__link">
         AppHttpHealthy
       </a>
     </li>
@@ -436,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/netreach/" class="md-nav__link">
+      <a href="../netreach/" class="md-nav__link">
         NetReach
       </a>
     </li>
@@ -450,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/netdns/" class="md-nav__link">
+      <a href="../netdns/" class="md-nav__link">
         NetDns
       </a>
     </li>
@@ -675,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release/" class="md-nav__link">
+      <a href="../../develop/release/" class="md-nav__link">
         Release workflow
       </a>
     </li>
@@ -689,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../develop/roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -723,6 +723,89 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    介绍
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    实施要求
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    安装
+  </a>
+  
+    <nav class="md-nav" aria-label="安装">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    添加 helm 仓库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kdoctor" class="md-nav__link">
+    安装 kdoctor
+  </a>
+  
+    <nav class="md-nav" aria-label="安装 kdoctor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1.非高可用安装
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2.高可用安装
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kdoctor_1" class="md-nav__link">
+    确认 kdoctor 所有组件正常运行
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kdoctor_2" class="md-nav__link">
+    卸载 kdoctor
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -742,38 +825,46 @@
   
 
 
-<h1 id="develop-new-crd">develop new crd</h1>
-<ol>
-<li>
-<p>define CRD in pkg/k8s/apis/kdoctor.io/v1beta1/xx_types.go
-   add role to pkg/k8s/apis/kdoctor.io/v1beta1/rbac.go</p>
-</li>
-<li>
-<p>make update_openapi_sdk</p>
-</li>
-<li>
-<p>add crd to MutatingWebhookConfiguration and ValidatingWebhookConfiguration in charts/templates/tls.yaml </p>
-</li>
-<li>
-<p>add your crd to charts/template/role.yaml</p>
-</li>
-<li>
-<p>implement the interface pkg/pluginManager/types in pkg/plugins/xxxx
-   register your interface in pkg/pluginManager/types/manager.go</p>
-</li>
-</ol>
-<p>the plugin manager will auto help plugins to finish following jobs:</p>
-<ol>
-<li>
-<p>schedule task and call plugin to implement each round task</p>
-</li>
-<li>
-<p>collect all report and save to controller disc</p>
-</li>
-<li>
-<p>summarize each round result and update to CRD</p>
-</li>
-</ol>
+<h1 id="_1">安装文档</h1>
+<h2 id="_2">介绍</h2>
+<p>安装 kdoctor 对集群内外的网络及性能进行检查</p>
+<h2 id="_3">实施要求</h2>
+<p>1.一套完整的 k8s 集群</p>
+<p>2.已安装 <a href="https://helm.sh/docs/intro/install/">Helm</a></p>
+<p>3.storageClass(可选) 如果需要 kdoctor-controller 高可用且需要报告持久化</p>
+<h2 id="_4">安装</h2>
+<h3 id="helm">添加 helm 仓库</h3>
+<pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
+helm repo update kdoctor
+</code></pre>
+<h3 id="kdoctor">安装 kdoctor</h3>
+<p>kdoctor 可以根据不同的需求进行安装，以下为几个场景的推荐安装方式</p>
+<h4 id="1">1.非高可用安装</h4>
+<p>以下方法 kdoctor agent 只将报告打印到标准输出</p>
+<pre><code class="language-shell">helm install kdoctor kdoctor/kdoctor \
+    -n kdoctor --wait --debug --create-namespace 
+</code></pre>
+<h4 id="2">2.高可用安装</h4>
+<p>以下方法将 kdoctor-controller 的收集报告引导到存储，因此,需要安装storageClass</p>
+<pre><code class="language-shell">
+helm  install kdoctor kdoctor/kdoctor \
+    -n kdoctor --wait --debug --create-namespace \
+    --set kdoctorController.replicas=2 \
+    --set feature.aggregateReport.controller.pvc.enabled=true \
+    --set feature.aggregateReport.controller.pvc.storageClass=local-path  \
+    --set feature.aggregateReport.controller.pvc.storageRequests=&quot;100Mi&quot; \
+    --set feature.aggregateReport.controller.pvc.storageLimits=&quot;500Mi&quot;
+</code></pre>
+<h3 id="kdoctor_1">确认 kdoctor 所有组件正常运行</h3>
+<pre><code class="language-shell">kubectl get pod -n kdoctor
+NAME                                  READY   STATUS    RESTARTS   AGE
+kdoctor-agent-gp5mh                   1/1     Running   0          137m
+kdoctor-agent-xkjn4                   1/1     Running   0          137m
+kdoctor-controller-686b75d6d7-k4dcq   1/1     Running   0          137m
+</code></pre>
+<h3 id="kdoctor_2">卸载 kdoctor</h3>
+<pre><code class="language-shell">helm uninstall kdoctor -n kdoctor
+</code></pre>
 
 
 

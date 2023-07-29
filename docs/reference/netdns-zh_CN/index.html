@@ -9,13 +9,17 @@
       
       
       
+        <link rel="prev" href="../netreach-zh_CN/">
+      
+      
+        <link rel="next" href="../report/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.0, mkdocs-material-9.1.21">
     
     
       
-        <title>develop new crd - kdoctor</title>
+        <title>NetDns - kdoctor</title>
       
     
     
@@ -63,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#develop-new-crd" class="md-skip">
+        <a href="#netdns" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              develop new crd
+              NetDns
             
           </span>
         </div>
@@ -222,7 +226,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../reference/arch/" class="md-tabs__link">
+      <a href="../arch/" class="md-tabs__link">
         Concepts
       </a>
     </li>
@@ -232,13 +236,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../../reference/apphttphealthy-zh_CN/" class="md-tabs__link">
+      <a href="../apphttphealthy-zh_CN/" class="md-tabs__link md-tabs__link--active">
         Reference
       </a>
     </li>
@@ -254,7 +260,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../release/" class="md-tabs__link">
+      <a href="../../develop/release/" class="md-tabs__link">
         Development
       </a>
     </li>
@@ -503,7 +509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/arch/" class="md-nav__link">
+      <a href="../arch/" class="md-nav__link">
         Architecture
       </a>
     </li>
@@ -523,14 +529,16 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
       
       
         
@@ -551,7 +559,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Reference
@@ -564,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/apphttphealthy-zh_CN/" class="md-nav__link">
+      <a href="../apphttphealthy-zh_CN/" class="md-nav__link">
         AppHttpHealthy
       </a>
     </li>
@@ -578,7 +586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/netreach-zh_CN/" class="md-nav__link">
+      <a href="../netreach-zh_CN/" class="md-nav__link">
         NetReach
       </a>
     </li>
@@ -590,11 +598,174 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../reference/netdns-zh_CN/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          NetDns
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         NetDns
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    基本描述
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns_1" class="md-nav__link">
+    netdns 示例
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns 示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dns-server" class="md-nav__link">
+    集群 Dns Server 检查
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-server_1" class="md-nav__link">
+    指定 dns server 检查
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns_2" class="md-nav__link">
+    netdns 定义
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns 定义">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spec" class="md-nav__link">
+    Spec
+  </a>
+  
+    <nav class="md-nav" aria-label="Spec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schedule" class="md-nav__link">
+    Schedule
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request" class="md-nav__link">
+    Request
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target" class="md-nav__link">
+    Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expect" class="md-nav__link">
+    Expect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetuser" class="md-nav__link">
+    TargetUser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetdns" class="md-nav__link">
+    TargetDns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    status
+  </a>
+  
+    <nav class="md-nav" aria-label="status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -606,7 +777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         Report
       </a>
     </li>
@@ -620,7 +791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/performance.md" class="md-nav__link">
+      <a href="../performance.md" class="md-nav__link">
         Performance
       </a>
     </li>
@@ -675,7 +846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release/" class="md-nav__link">
+      <a href="../../develop/release/" class="md-nav__link">
         Release workflow
       </a>
     </li>
@@ -689,7 +860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../develop/roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -723,6 +894,143 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    基本描述
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns_1" class="md-nav__link">
+    netdns 示例
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns 示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dns-server" class="md-nav__link">
+    集群 Dns Server 检查
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-server_1" class="md-nav__link">
+    指定 dns server 检查
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns_2" class="md-nav__link">
+    netdns 定义
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns 定义">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spec" class="md-nav__link">
+    Spec
+  </a>
+  
+    <nav class="md-nav" aria-label="Spec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schedule" class="md-nav__link">
+    Schedule
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request" class="md-nav__link">
+    Request
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target" class="md-nav__link">
+    Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expect" class="md-nav__link">
+    Expect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetuser" class="md-nav__link">
+    TargetUser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetdns" class="md-nav__link">
+    TargetDns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    status
+  </a>
+  
+    <nav class="md-nav" aria-label="status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -742,38 +1050,507 @@
   
 
 
-<h1 id="develop-new-crd">develop new crd</h1>
-<ol>
-<li>
-<p>define CRD in pkg/k8s/apis/kdoctor.io/v1beta1/xx_types.go
-   add role to pkg/k8s/apis/kdoctor.io/v1beta1/rbac.go</p>
-</li>
-<li>
-<p>make update_openapi_sdk</p>
-</li>
-<li>
-<p>add crd to MutatingWebhookConfiguration and ValidatingWebhookConfiguration in charts/templates/tls.yaml </p>
-</li>
-<li>
-<p>add your crd to charts/template/role.yaml</p>
-</li>
-<li>
-<p>implement the interface pkg/pluginManager/types in pkg/plugins/xxxx
-   register your interface in pkg/pluginManager/types/manager.go</p>
-</li>
-</ol>
-<p>the plugin manager will auto help plugins to finish following jobs:</p>
-<ol>
-<li>
-<p>schedule task and call plugin to implement each round task</p>
-</li>
-<li>
-<p>collect all report and save to controller disc</p>
-</li>
-<li>
-<p>summarize each round result and update to CRD</p>
-</li>
-</ol>
+<h1 id="netdns">netdns</h1>
+<h2 id="_1">基本描述</h2>
+<p>对于这种任务，每个 kdoctor 代理都会向指定的目标发送 Dns 请求，并获得成功率和平均延迟。 它可以指定成功条件来告知结果成功或失败。</p>
+<h2 id="netdns_1">netdns 示例</h2>
+<h3 id="dns-server">集群 Dns Server 检查</h3>
+<p>对集群内的 dns server（coredns）发送对应请求，获取集群内 dns server 性能状态。</p>
+<pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
+kind: Netdns
+metadata:
+  name: netdns-cluster
+spec:
+  expect:
+    meanAccessDelayInMs: 1500
+    successRate: 1
+  request:
+    domain: kubernetes.default.svc.cluster.local
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
+  schedule:
+    roundNumber: 1
+    roundTimeoutMinute: 1
+    schedule: 0 1
+  target:
+    enableLatencyMetric: false
+    targetDns:
+      serviceName: kube-dns
+      serviceNamespace: kube-system
+      testIPv4: true
+      testIPv6: true
+status:
+  doneRound: 1
+  expectedRound: 1
+  finish: true
+  history:
+    - deadLineTimeStamp: &quot;2023-07-28T09:45:03Z&quot;
+      duration: 15.809063339s
+      endTimeStamp: &quot;2023-07-28T09:44:18Z&quot;
+      expectedActorNumber: 2
+      failedAgentNodeList: []
+      notReportAgentNodeList: []
+      roundNumber: 1
+      startTimeStamp: &quot;2023-07-28T09:44:03Z&quot;
+      status: succeed
+      succeedAgentNodeList:
+        - kdoctor-control-plane
+        - kdoctor-worker
+  lastRoundStatus: succeed
+</code></pre>
+<h3 id="dns-server_1">指定 dns server 检查</h3>
+<p>对集群外部的 dns server 发送对应请求，获取集群外部 dns server 性能状态。</p>
+<pre><code class="language-Yaml">apiVersion: kdoctor.io/v1beta1
+kind: Netdns
+metadata:
+  name: netdns- user
+spec:
+  expect:
+    meanAccessDelayInMs: 1500
+    successRate: 1
+  request:
+    domain: www.baidu.com
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
+  schedule:
+    roundNumber: 1
+    roundTimeoutMinute: 1
+    schedule: 0 1
+  target:
+    enableLatencyMetric: false
+    targetUser:
+      port: 53
+      server: 172.41.54.83
+</code></pre>
+<h2 id="netdns_2">netdns 定义</h2>
+<h3 id="metadata">Metadata</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>netdns 资源的名称</td>
+<td>string</td>
+<td>必填</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spec">Spec</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>schedule</td>
+<td>调度任务执行</td>
+<td><a href="./#Schedule">schedule</a></td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>request</td>
+<td>对目标地址请求配置</td>
+<td><a href="./#Request">request</a></td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>target</td>
+<td>请求目标设置</td>
+<td><a href="./#Target">target</a></td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>expect</td>
+<td>任务成功条件判断</td>
+<td><a href="./#Expect">expect</a></td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="schedule">Schedule</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>roundNumber</td>
+<td>任务执行轮数</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于-1，为 -1 时表示永久执行,大于 0 表示将要执行的轮数</td>
+<td>1</td>
+</tr>
+<tr>
+<td>schedule</td>
+<td>任务执行时间, 执行时间应小于roundTimeoutMinute</td>
+<td>string</td>
+<td>可选</td>
+<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
+<td>"0 60"</td>
+</tr>
+<tr>
+<td>roundTimeoutMinute</td>
+<td>任务超时时间，需要大于 durationInSecond 和 任务执行时间</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于 1</td>
+<td>60</td>
+</tr>
+</tbody>
+</table>
+<h4 id="request">Request</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>durationInSecond</td>
+<td>每轮任务的请求发压的持续时间，小于roundTimeoutMinute</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于 1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>perRequestTimeoutInMS</td>
+<td>每个请求的超时时间，不可大于 durationInSecond</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于 1</td>
+<td>500</td>
+</tr>
+<tr>
+<td>qps</td>
+<td>每一个 agent 每秒请求数量</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于 1</td>
+<td>5</td>
+</tr>
+<tr>
+<td>protocol</td>
+<td>请求协议</td>
+<td>string</td>
+<td>可选</td>
+<td>udp、tcp、tcp-tls</td>
+<td>udp</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>dns 请求解析的域名</td>
+<td>string</td>
+<td>可选</td>
+<td></td>
+<td>kubernetes.default.svc.cluster.local</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 qps 等于 agent 数量 * 设置的qps。</p>
+</blockquote>
+<h4 id="target">Target</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>targetUser</td>
+<td>对用户自定义的 dns server 进行 dns 请求</td>
+<td><a href="./#TargetUser">targetUser</a></td>
+<td>可选</td>
+<td></td>
+<td>true</td>
+</tr>
+<tr>
+<td>targetDns</td>
+<td>对集群的 dns server（coredns）进行 dns 请求</td>
+<td><a href="./#TargetDns">targetDns</a></td>
+<td>可选</td>
+<td></td>
+<td>true</td>
+</tr>
+<tr>
+<td>enableLatencyMetric</td>
+<td>统计演示分布,开启后会增加内存使用量</td>
+<td>bool</td>
+<td>可选</td>
+<td>true,false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<h4 id="expect">Expect</h4>
+<p>任务成功条件，若任务结果没有达到期望条件，任务失败</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meanAccessDelayInMs</td>
+<td>平均延时,如果最终的结果 超过本值，任务会判定为失败</td>
+<td>int</td>
+<td>可选</td>
+<td>大于等于 1</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>successRate</td>
+<td>http请求成功率,如果最终的结果 小于本值，任务会判定为失败</td>
+<td>float</td>
+<td>可选</td>
+<td>0-1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="targetuser">TargetUser</h4>
+<p>测试用户自定义 dns server</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>server</td>
+<td>dns server 地址</td>
+<td>string</td>
+<td>必填</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>port</td>
+<td>dns server 端口</td>
+<td>int</td>
+<td>必填</td>
+<td>1-65535</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="targetdns">TargetDns</h4>
+<p>测试集群内 dns server</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>验证</th>
+<th>取值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>testIPv4</td>
+<td>测试 ipv4 地址 请求 A 记录</td>
+<td>bool</td>
+<td>可选</td>
+<td>true,false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>testIPv6</td>
+<td>测试 ipv6 地址 请求 AAAA 记录</td>
+<td>bool</td>
+<td>可选</td>
+<td>true,false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>serviceName</td>
+<td>集群 dns server service 地址</td>
+<td>string</td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>serviceNamespace</td>
+<td>集群 dns server service 端口</td>
+<td>string</td>
+<td>可选</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="status">status</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>doneRound</td>
+<td>完成的任务轮数</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>expectedRound</td>
+<td>期望执行的轮数</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>finish</td>
+<td>任务是否完成</td>
+<td>bool</td>
+<td>true、false</td>
+</tr>
+<tr>
+<td>lastRoundStatus</td>
+<td>最后一轮任务状态</td>
+<td>string</td>
+<td>notstarted、ongoing、succeed、fail</td>
+</tr>
+<tr>
+<td>history</td>
+<td>任务历史</td>
+<td>元素为<a href="../apphttphealthy-zh_CN/#History">history</a>的数组</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="history">History</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+<th>结构</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>roundNumber</td>
+<td>任务轮数</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>任务状态</td>
+<td>string</td>
+<td>notstarted、ongoing、succeed、fail</td>
+</tr>
+<tr>
+<td>startTimeStamp</td>
+<td>本轮任务开始时间</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>endTimeStamp</td>
+<td>本轮任务结束时间</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>duration</td>
+<td>本轮任执行时间</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>deadLineTimeStamp</td>
+<td>本轮任务 deadline</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>failedAgentNodeList</td>
+<td>任务失败的 agent</td>
+<td>元素为string的数组</td>
+<td></td>
+</tr>
+<tr>
+<td>succeedAgentNodeList</td>
+<td>任务成功的 agent</td>
+<td>元素为string的数组</td>
+<td></td>
+</tr>
+<tr>
+<td>notReportAgentNodeList</td>
+<td>没有上传任务报告的 agent</td>
+<td>元素为string的数组</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
 
