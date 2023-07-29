@@ -15,7 +15,7 @@
     
     
       
-        <title>develop new crd - kdoctor</title>
+        <title>CRD - kdoctor</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#develop-new-crd" class="md-skip">
+        <a href="#crd" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              develop new crd
+              CRD
             
           </span>
         </div>
@@ -222,7 +222,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../reference/arch/" class="md-tabs__link">
+      <a href="../arch/" class="md-tabs__link">
         Concepts
       </a>
     </li>
@@ -238,7 +238,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../reference/apphttphealthy-zh_CN/" class="md-tabs__link">
+      <a href="../apphttphealthy-zh_CN/" class="md-tabs__link">
         Reference
       </a>
     </li>
@@ -254,7 +254,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../release/" class="md-tabs__link">
+      <a href="../../develop/release/" class="md-tabs__link">
         Development
       </a>
     </li>
@@ -503,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/arch/" class="md-nav__link">
+      <a href="../arch/" class="md-nav__link">
         Architecture
       </a>
     </li>
@@ -564,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/apphttphealthy-zh_CN/" class="md-nav__link">
+      <a href="../apphttphealthy-zh_CN/" class="md-nav__link">
         AppHttpHealthy
       </a>
     </li>
@@ -578,7 +578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/netreach-zh_CN/" class="md-nav__link">
+      <a href="../netreach-zh_CN/" class="md-nav__link">
         NetReach
       </a>
     </li>
@@ -592,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/netdns-zh_CN/" class="md-nav__link">
+      <a href="../netdns-zh_CN/" class="md-nav__link">
         NetDns
       </a>
     </li>
@@ -606,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         Report
       </a>
     </li>
@@ -620,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/performance.md" class="md-nav__link">
+      <a href="../performance.md" class="md-nav__link">
         Performance
       </a>
     </li>
@@ -675,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release/" class="md-nav__link">
+      <a href="../../develop/release/" class="md-nav__link">
         Release workflow
       </a>
     </li>
@@ -689,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../develop/roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -723,6 +723,35 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    基本描述
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    配置说明
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    使用例子
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -742,38 +771,13 @@
   
 
 
-<h1 id="develop-new-crd">develop new crd</h1>
-<ol>
-<li>
-<p>define CRD in pkg/k8s/apis/kdoctor.io/v1beta1/xx_types.go
-   add role to pkg/k8s/apis/kdoctor.io/v1beta1/rbac.go</p>
-</li>
-<li>
-<p>make update_openapi_sdk</p>
-</li>
-<li>
-<p>add crd to MutatingWebhookConfiguration and ValidatingWebhookConfiguration in charts/templates/tls.yaml </p>
-</li>
-<li>
-<p>add your crd to charts/template/role.yaml</p>
-</li>
-<li>
-<p>implement the interface pkg/pluginManager/types in pkg/plugins/xxxx
-   register your interface in pkg/pluginManager/types/manager.go</p>
-</li>
-</ol>
-<p>the plugin manager will auto help plugins to finish following jobs:</p>
-<ol>
-<li>
-<p>schedule task and call plugin to implement each round task</p>
-</li>
-<li>
-<p>collect all report and save to controller disc</p>
-</li>
-<li>
-<p>summarize each round result and update to CRD</p>
-</li>
-</ol>
+<h1 id="crd">CRD</h1>
+<h2 id="_1">基本描述</h2>
+<p>本CRD 是做什么的</p>
+<h2 id="_2">配置说明</h2>
+<p>表格（字段、描述、取值范文和缺省值），包括了 status 的信息说明</p>
+<h2 id="_3">使用例子</h2>
+<p>给出一些场景场景下的 CR yaml</p>
 
 
 
