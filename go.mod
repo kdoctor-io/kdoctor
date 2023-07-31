@@ -61,7 +61,7 @@ require (
 )
 
 require (
-	github.com/docker/docker v24.0.4+incompatible
+	github.com/docker/docker v24.0.5+incompatible
 	k8s.io/apiserver v0.26.3
 )
 
