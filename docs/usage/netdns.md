@@ -1,5 +1,7 @@
 # netdns
 
+[**简体中文**](./netdns-zh_CN.md) | **English**
+
 ## concept
 
 Fo this kind task, each kdoctor agent will send dns request to specified target, and get success rate and mean delay.

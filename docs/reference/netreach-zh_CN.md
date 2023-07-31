@@ -1,5 +1,7 @@
 # NetReach
 
+[**English**](./netreach.md) | **简体中文**
+
 ## 基本描述 
 
 对于这种任务，每个kdoctor agent都会相互发送http请求，请求地址为每一个 agent 的 pod ip 、service ip、ingress ip 等等，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
@@ -22,7 +24,7 @@ spec:
   schedule:
     roundNumber: 1
     roundTimeoutMinute: 1
-    schedule: 0 0
+    schedule: 0 1
   target:
     clusterIP: true
     enableLatencyMetric: false

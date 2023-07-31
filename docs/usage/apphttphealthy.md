@@ -1,5 +1,7 @@
 # Nethttp
 
+[**简体中文**](./apphttphealthy-zh_CN.md) | **English**
+
 ## concept 
 
 Fo this kind task, each kdoctor agent will send http request to specified target, and get success rate and mean delay. 
