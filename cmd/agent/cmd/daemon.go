@@ -4,18 +4,19 @@
 package cmd
 
 import (
-	"github.com/kdoctor-io/kdoctor/pkg/agentDnsServer"
-	"github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
-	"github.com/kdoctor-io/kdoctor/pkg/debug"
-	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
-	"github.com/kdoctor-io/kdoctor/pkg/pluginManager"
-	"github.com/kdoctor-io/kdoctor/pkg/types"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/kdoctor-io/kdoctor/pkg/agentDnsServer"
+	"github.com/kdoctor-io/kdoctor/pkg/agentHttpServer"
+	"github.com/kdoctor-io/kdoctor/pkg/debug"
+	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
+	"github.com/kdoctor-io/kdoctor/pkg/pluginManager"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func SetupUtility() {

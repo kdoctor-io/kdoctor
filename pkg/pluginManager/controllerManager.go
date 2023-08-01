@@ -109,13 +109,21 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 	for name, plugin := range s.chainingPlugins {
 		// setup reconcile
 		logger.Sugar().Infof("run controller for plugin %v", name)
+
+		uniqueMatchLabelKey := types.ControllerConfig.Configmap.KdoctorAgent.UniqueMatchLabelKey
+		if len(uniqueMatchLabelKey) == 0 {
+			logger.Sugar().Debugf("there's no uniqueMatchLabelKey in the configmap, try to use the default '%s'", scheduler.UniqueMatchLabelKey)
+			uniqueMatchLabelKey = scheduler.UniqueMatchLabelKey
+		}
 		k := &pluginControllerReconciler{
-			logger:      logger.Named(name + "Reconciler"),
-			plugin:      plugin,
-			client:      mgr.GetClient(),
-			crdKind:     name,
-			fm:          fm,
-			crdKindName: name,
+			logger:                     logger.Named(name + "Reconciler"),
+			plugin:                     plugin,
+			client:                     mgr.GetClient(),
+			apiReader:                  mgr.GetAPIReader(),
+			crdKind:                    name,
+			fm:                         fm,
+			crdKindName:                name,
+			runtimeUniqueMatchLabelKey: uniqueMatchLabelKey,
 			tracker: scheduler.NewTracker(mgr.GetClient(), mgr.GetAPIReader(), scheduler.TrackerConfig{
 				ItemChannelBuffer:     int(types.ControllerConfig.ResourceTrackerChannelBuffer),
 				MaxDatabaseCap:        int(types.ControllerConfig.ResourceTrackerMaxDatabaseCap),

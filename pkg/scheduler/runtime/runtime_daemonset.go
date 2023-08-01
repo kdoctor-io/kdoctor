@@ -35,18 +35,18 @@ func NewDaemonSetRuntime(c client.Client, apiReader client.Reader, namespace, na
 }
 
 func (rd *runtimeDaemonSet) IsReady(ctx context.Context) bool {
-	var daemonset appsv1.DaemonSet
+	var daemonSet appsv1.DaemonSet
 
-	err := rd.client.Get(ctx, types.NamespacedName{
+	err := rd.apiReader.Get(ctx, types.NamespacedName{
 		Namespace: rd.Namespace,
 		Name:      rd.Name,
-	}, &daemonset)
+	}, &daemonSet)
 	if nil != err {
 		rd.log.Sugar().Errorf("failed to get deployment %s/%s, error: %v", rd.Namespace, rd.Name, err)
 		return false
 	}
 
-	if daemonset.Status.DesiredNumberScheduled == daemonset.Status.NumberReady {
+	if daemonSet.Status.DesiredNumberScheduled == daemonSet.Status.NumberReady {
 		return true
 	}
 
@@ -54,12 +54,12 @@ func (rd *runtimeDaemonSet) IsReady(ctx context.Context) bool {
 }
 
 func (rd *runtimeDaemonSet) Delete(ctx context.Context) error {
-	var daemonset appsv1.DaemonSet
+	var daemonSet appsv1.DaemonSet
 
-	err := rd.client.Get(ctx, types.NamespacedName{
+	err := rd.apiReader.Get(ctx, types.NamespacedName{
 		Namespace: rd.Namespace,
 		Name:      rd.Name,
-	}, &daemonset)
+	}, &daemonSet)
 	if nil != err {
 		if apierrors.IsNotFound(err) {
 			return nil
@@ -67,11 +67,11 @@ func (rd *runtimeDaemonSet) Delete(ctx context.Context) error {
 		return err
 	}
 
-	if daemonset.DeletionTimestamp != nil {
+	if daemonSet.DeletionTimestamp != nil {
 		return nil
 	}
 
-	err = rd.client.Delete(ctx, &daemonset)
+	err = rd.client.Delete(ctx, &daemonSet)
 	if nil != err {
 		return err
 	}

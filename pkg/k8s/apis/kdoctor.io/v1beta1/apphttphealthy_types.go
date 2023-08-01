@@ -8,8 +8,8 @@ import (
 )
 
 type AppHttpHealthySpec struct {
-	// +kubebuilder:validation:Required
-	AgentSpec AgentSpec `json:"agentSpec"`
+	// +kubebuilder:validation:Optional
+	AgentSpec AgentSpec `json:"agentSpec,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	Schedule *SchedulePlan `json:"schedule,omitempty"`

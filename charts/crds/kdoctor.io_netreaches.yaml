@@ -1052,6 +1052,7 @@ spec:
                     default: false
                     type: boolean
                   kind:
+                    default: DaemonSet
                     enum:
                     - Deployment
                     - DaemonSet
@@ -1105,11 +1106,10 @@ spec:
                           to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                         type: object
                     type: object
-                  terminationGracePeriodSeconds:
+                  terminationGracePeriodMinutes:
+                    default: 60
                     format: int64
                     type: integer
-                required:
-                - kind
                 type: object
               expect:
                 properties:
@@ -1191,8 +1191,6 @@ spec:
                     default: true
                     type: boolean
                 type: object
-            required:
-            - agentSpec
             type: object
           status:
             properties:

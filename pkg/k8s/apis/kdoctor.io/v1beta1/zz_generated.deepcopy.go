@@ -21,6 +21,11 @@ func (in *AgentSpec) DeepCopyInto(out *AgentSpec) {
 			(*out)[key] = val
 		}
 	}
+	if in.Kind != nil {
+		in, out := &in.Kind, &out.Kind
+		*out = new(string)
+		**out = **in
+	}
 	if in.DeploymentReplicas != nil {
 		in, out := &in.DeploymentReplicas, &out.DeploymentReplicas
 		*out = new(int32)
@@ -43,8 +48,8 @@ func (in *AgentSpec) DeepCopyInto(out *AgentSpec) {
 		*out = new(v1.ResourceRequirements)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.TerminationGracePeriodSeconds != nil {
-		in, out := &in.TerminationGracePeriodSeconds, &out.TerminationGracePeriodSeconds
+	if in.TerminationGracePeriodMinutes != nil {
+		in, out := &in.TerminationGracePeriodMinutes, &out.TerminationGracePeriodMinutes
 		*out = new(int64)
 		**out = **in
 	}

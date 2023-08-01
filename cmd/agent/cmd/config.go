@@ -70,8 +70,10 @@ func init() {
 	// command flags
 	globalFlag := rootCmd.PersistentFlags()
 	globalFlag.StringVarP(&types.AgentConfig.ConfigMapPath, "config-path", "C", "", "configmap file path")
-	globalFlag.StringVar(&types.AgentConfig.TaskKind, "task-kind", "", "")
-	globalFlag.StringVar(&types.AgentConfig.TaskName, "task-name", "", "")
+	globalFlag.StringVar(&types.AgentConfig.TaskKind, "task-kind", "", "task kind")
+	globalFlag.StringVar(&types.AgentConfig.TaskName, "task-name", "", "task name")
+	globalFlag.StringVar(&types.AgentConfig.ServiceV4Name, "service-ipv4-name", "", "agent IPv4 service name")
+	globalFlag.StringVar(&types.AgentConfig.ServiceV6Name, "service-ipv6-name", "", "agent IPv6 service name")
 	if err := rootCmd.MarkPersistentFlagRequired("task-kind"); nil != err {
 		logger.Sugar().Fatalf("failed to mark persistentFlag 'task-kind' as required, error: %v", err)
 	}
@@ -103,6 +105,8 @@ func init() {
 
 		logger.Info("task-kind = " + types.AgentConfig.TaskKind)
 		logger.Info("task-name = " + types.AgentConfig.TaskName)
+		logger.Info("service-ipv4-name = " + types.AgentConfig.ServiceV4Name)
+		logger.Info("service-ipv6-name = " + types.AgentConfig.ServiceV6Name)
 	}
 	cobra.OnInitialize(printFlag)
 

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -29,7 +30,8 @@ type pluginControllerReconciler struct {
 	fm          fileManager.FileManager
 	crdKindName string
 
-	tracker *scheduler.Tracker
+	runtimeUniqueMatchLabelKey string
+	tracker                    *scheduler.Tracker
 }
 
 // contorller reconcile
@@ -46,58 +48,44 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
+			// since we have OwnerReference for task corresponding runtime and service, we could just delete the tracker DB record directly
+			if errors.IsNotFound(err) && instance.Status.Resource != nil {
+				s.tracker.DB.Delete(scheduler.BuildItem(*instance.Status.Resource, KindNameNetReach, instance.Name, nil))
+			}
 			return ctrl.Result{}, client.IgnoreNotFound(err)
 		}
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
 
-		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
-		// create resource
-		{
-			var resource crd.TaskResource
-			var err error
-			var deletionTime *metav1.Time
-
-			if instance.Status.Resource == nil {
-				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameNetReach, instance.Name, scheduler.UniqueMatchLabelKey, logger)
-				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
-				if nil != err {
-					logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-				instance.Status.Resource = &resource
-				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetReach, instance.Name, resource)
-				err = s.client.Status().Update(ctx, &instance)
-				if nil != err {
-					logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-			} else {
-				// avoid controller restarted
-				if instance.Status.FinishTime != nil {
-					deletionTime = instance.Status.FinishTime.DeepCopy()
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
-					}
-				}
-			}
-
-			// let the tracker trace status
-			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetReach, instance.Name, deletionTime))
+		newStatus, err := s.TaskResourceReconcile(ctx, KindNameNetReach, &instance, instance.Spec.AgentSpec, instance.Status.DeepCopy(), logger)
+		if nil != err {
+			logger.Sugar().Errorf(err.Error())
+			return ctrl.Result{}, err
+		}
+		if !reflect.DeepEqual(newStatus, instance.Status.DeepCopy()) {
+			instance.Status = *newStatus
+			logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetReach, instance.Name, newStatus.Resource)
+			err := s.client.Status().Update(ctx, &instance)
 			if nil != err {
-				logger.Error(err.Error())
-				return ctrl.Result{}, err
+				logger.Sugar().Errorf("failed to update %s/%s status with resource %v, error: %v", KindNameNetReach, instance.Name, newStatus.Resource, err)
+				return reconcile.Result{}, err
 			}
+		}
+
+		// runtime creating status means the agent is not ready, so we don't need to initial the task right now.
+		// the tracker DB will update the status asynchronously, and we would receive the task event after it updated.
+		if instance.Status.Resource.RuntimeStatus == crd.RuntimeCreating {
+			return ctrl.Result{}, nil
 		}
 
 		// the task corresponding agent pods have this unique label
 		runtimePodMatchLabels := client.MatchingLabels{
-			scheduler.UniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameNetReach, instance.Name),
+			s.runtimeUniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameNetReach, instance.Name),
 		}
 
 		oldStatus := instance.Status.DeepCopy()
@@ -120,10 +108,13 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 				// update tracker database
 				if newStatus.FinishTime != nil {
-					deletionTime := newStatus.FinishTime
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					deletionTime := newStatus.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodMinutes != nil {
+						newTime := metav1.NewTime(deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodMinutes) * time.Minute))
+						deletionTime = newTime.DeepCopy()
 					}
+					logger.Sugar().Debugf("task finish time '%s' and runtime deletion time '%s'", newStatus.FinishTime, deletionTime)
+					// record the task resource to the tracker DB, and the tracker will update the task subresource resource status asynchronously
 					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetReach, instance.Name, deletionTime))
 					if nil != err {
 						logger.Error(err.Error())
@@ -143,58 +134,45 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
+			// since we have OwnerReference for task corresponding runtime and service, we could just delete the tracker DB record directly
+			if errors.IsNotFound(err) && instance.DeletionTimestamp != nil {
+				s.tracker.DB.Delete(scheduler.BuildItem(*instance.Status.Resource, KindNameAppHttpHealthy, instance.Name, nil))
+
+			}
 			return ctrl.Result{}, client.IgnoreNotFound(err)
 		}
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
 
-		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
-		// create resource
-		{
-			var resource crd.TaskResource
-			var err error
-			var deletionTime *metav1.Time
-
-			if instance.Status.Resource == nil {
-				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameAppHttpHealthy, instance.Name, scheduler.UniqueMatchLabelKey, logger)
-				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
-				if nil != err {
-					s.logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-				instance.Status.Resource = &resource
-				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameAppHttpHealthy, instance.Name, resource)
-				err = s.client.Status().Update(ctx, &instance)
-				if nil != err {
-					logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-			} else {
-				// avoid controller restarted
-				if instance.Status.FinishTime != nil {
-					deletionTime = instance.Status.FinishTime.DeepCopy()
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
-					}
-				}
-			}
-
-			// let the tracker trace status
-			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameAppHttpHealthy, instance.Name, deletionTime))
+		newStatus, err := s.TaskResourceReconcile(ctx, KindNameAppHttpHealthy, &instance, instance.Spec.AgentSpec, instance.Status.DeepCopy(), logger)
+		if nil != err {
+			logger.Sugar().Errorf(err.Error())
+			return ctrl.Result{}, err
+		}
+		if !reflect.DeepEqual(newStatus, instance.Status.DeepCopy()) {
+			instance.Status = *newStatus
+			logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameAppHttpHealthy, instance.Name, newStatus.Resource)
+			err := s.client.Status().Update(ctx, &instance)
 			if nil != err {
-				logger.Error(err.Error())
-				return ctrl.Result{}, err
+				logger.Sugar().Errorf("failed to update %s/%s status with resource %v, error: %v", KindNameAppHttpHealthy, instance.Name, newStatus.Resource, err)
+				return reconcile.Result{}, err
 			}
+		}
+
+		// runtime creating status means the agent is not ready, so we don't need to initial the task right now.
+		// the tracker DB will update the status asynchronously, and we would receive the task event after it updated.
+		if instance.Status.Resource.RuntimeStatus == crd.RuntimeCreating {
+			return ctrl.Result{}, nil
 		}
 
 		// the task corresponding agent pods have this unique label
 		runtimePodMatchLabels := client.MatchingLabels{
-			scheduler.UniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameAppHttpHealthy, instance.Name),
+			s.runtimeUniqueMatchLabelKey: scheduler.UniqueMatchLabelValue(KindNameAppHttpHealthy, instance.Name),
 		}
 
 		oldStatus := instance.Status.DeepCopy()
@@ -217,10 +195,12 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 				// update tracker database
 				if newStatus.FinishTime != nil {
-					deletionTime := newStatus.FinishTime
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					deletionTime := newStatus.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodMinutes != nil {
+						newTime := metav1.NewTime(deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodMinutes) * time.Minute))
+						deletionTime = newTime.DeepCopy()
 					}
+					logger.Sugar().Debugf("task finish time '%s' and runtime deletion time '%s'", newStatus.FinishTime, deletionTime)
 					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameAppHttpHealthy, instance.Name, deletionTime))
 					if nil != err {
 						logger.Error(err.Error())
@@ -240,58 +220,44 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 		if err := s.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 			s.logger.Sugar().Errorf("unable to fetch obj , error=%v", err)
+			// since we have OwnerReference for task corresponding runtime and service, we could just delete the tracker DB record directly
+			if errors.IsNotFound(err) && instance.DeletionTimestamp != nil {
+				s.tracker.DB.Delete(scheduler.BuildItem(*instance.Status.Resource, KindNameNetdns, instance.Name, nil))
+			}
 			return ctrl.Result{}, client.IgnoreNotFound(err)
 		}
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
 
-		// since we set ownerRef for the corresponding resource, we don't need to care about the cleanup procession
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
 		}
 
-		// create resource
-		{
-			var resource crd.TaskResource
-			var err error
-			var deletionTime *metav1.Time
-
-			if instance.Status.Resource == nil {
-				newScheduler := scheduler.NewScheduler(s.client, s.apiReader, KindNameNetdns, instance.Name, scheduler.UniqueMatchLabelKey, logger)
-				resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, &instance, instance.Spec.AgentSpec)
-				if nil != err {
-					s.logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-				instance.Status.Resource = &resource
-				logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetdns, instance.Name, resource)
-				err = s.client.Status().Update(ctx, &instance)
-				if nil != err {
-					logger.Error(err.Error())
-					return ctrl.Result{}, err
-				}
-			} else {
-				// avoid controller restarted
-				if instance.Status.FinishTime != nil {
-					deletionTime = instance.Status.FinishTime.DeepCopy()
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
-					}
-				}
-			}
-
-			// let the tracker trace status
-			err = s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetdns, instance.Name, deletionTime))
+		newStatus, err := s.TaskResourceReconcile(ctx, KindNameNetdns, &instance, instance.Spec.AgentSpec, instance.Status.DeepCopy(), logger)
+		if nil != err {
+			logger.Sugar().Errorf(err.Error())
+			return ctrl.Result{}, err
+		}
+		if !reflect.DeepEqual(newStatus, instance.Status.DeepCopy()) {
+			instance.Status = *newStatus
+			logger.Sugar().Infof("try to update %s/%s status with resource %v", KindNameNetdns, instance.Name, newStatus.Resource)
+			err := s.client.Status().Update(ctx, &instance)
 			if nil != err {
-				logger.Error(err.Error())
-				return ctrl.Result{}, err
+				logger.Sugar().Errorf("failed to update %s/%s status with resource %v, error: %v", KindNameNetdns, instance.Name, newStatus.Resource, err)
+				return reconcile.Result{}, err
 			}
+		}
+
+		// runtime creating status means the agent is not ready, so we don't need to initial the task right now.
+		// the tracker DB will update the status asynchronously, and we would receive the task event after it updated.
+		if instance.Status.Resource.RuntimeStatus == crd.RuntimeCreating {
+			return ctrl.Result{}, nil
 		}
 
 		// the task corresponding agent pods have this unique label
 		runtimePodMatchLabels := client.MatchingLabels{
-			scheduler.UniqueMatchLabelKey: scheduler.TaskRuntimeName(KindNameNetdns, instance.Name),
+			s.runtimeUniqueMatchLabelKey: scheduler.TaskRuntimeName(KindNameNetdns, instance.Name),
 		}
 
 		oldStatus := instance.Status.DeepCopy()
@@ -314,10 +280,12 @@ func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcil
 
 				// update tracker database
 				if newStatus.FinishTime != nil {
-					deletionTime := newStatus.FinishTime
-					if instance.Spec.AgentSpec.TerminationGracePeriodSeconds != nil {
-						deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodSeconds) * time.Second)
+					deletionTime := newStatus.FinishTime.DeepCopy()
+					if instance.Spec.AgentSpec.TerminationGracePeriodMinutes != nil {
+						newTime := metav1.NewTime(deletionTime.Add(time.Duration(*instance.Spec.AgentSpec.TerminationGracePeriodMinutes) * time.Minute))
+						deletionTime = newTime.DeepCopy()
 					}
+					logger.Sugar().Debugf("task finish time '%s' and runtime deletion time '%s'", newStatus.FinishTime, deletionTime)
 					err := s.tracker.DB.Apply(scheduler.BuildItem(*instance.Status.Resource, KindNameNetdns, instance.Name, deletionTime))
 					if nil != err {
 						logger.Error(err.Error())

@@ -16,3 +16,4 @@ const (
 )
 
 var TaskKinds = []string{KindNameAppHttpHealthy, KindNameNetReach, KindNameNetdns}
+var TaskRuntimes = []string{KindDeployment, KindDaemonSet}

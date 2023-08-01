@@ -36,7 +36,7 @@ func NewDeploymentRuntime(c client.Client, apiReader client.Reader, namespace, n
 func (rd *runtimeDeployment) IsReady(ctx context.Context) bool {
 	var deploy appsv1.Deployment
 
-	err := rd.client.Get(ctx, types.NamespacedName{
+	err := rd.apiReader.Get(ctx, types.NamespacedName{
 		Namespace: rd.Namespace,
 		Name:      rd.Name,
 	}, &deploy)
@@ -57,7 +57,7 @@ func (rd *runtimeDeployment) IsReady(ctx context.Context) bool {
 func (rd *runtimeDeployment) Delete(ctx context.Context) error {
 	var deploy appsv1.Deployment
 
-	err := rd.client.Get(ctx, types.NamespacedName{
+	err := rd.apiReader.Get(ctx, types.NamespacedName{
 		Namespace: rd.Namespace,
 		Name:      rd.Name,
 	}, &deploy)

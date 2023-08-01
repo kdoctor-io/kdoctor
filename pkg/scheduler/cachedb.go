@@ -51,6 +51,8 @@ type Item struct {
 
 	RuntimeStatus       string
 	RuntimeDeletionTime *metav1.Time
+	ServiceNameV4       *string
+	ServiceNameV6       *string
 
 	TaskKind string
 	TaskName string
@@ -64,6 +66,8 @@ func BuildItem(resource crd.TaskResource, taskKind, taskName string, deletionTim
 		},
 		RuntimeStatus:       resource.RuntimeStatus,
 		RuntimeDeletionTime: deletionTime,
+		ServiceNameV4:       resource.ServiceNameV4,
+		ServiceNameV6:       resource.ServiceNameV6,
 		TaskKind:            taskKind,
 		TaskName:            taskName,
 	}
@@ -89,7 +93,7 @@ func (d *Database) Apply(item Item) error {
 		if !reflect.DeepEqual(old, item) {
 			d.cache[item.RuntimeKey] = item
 			d.Unlock()
-			d.log.Sugar().Debugf("item %v has  changed, the old one it %v, and the new one is%v",
+			d.log.Sugar().Debugf("item %v has changed, the old one is %v, and the new one is %v",
 				item.RuntimeKey, old, item)
 			return nil
 		}

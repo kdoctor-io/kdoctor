@@ -4,20 +4,25 @@
 package pluginManager
 
 import (
+	"context"
 	"fmt"
+	"time"
+
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	k8types "k8s.io/apimachinery/pkg/types"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/utils/strings/slices"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
+
 	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/taskStatusManager"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/utils/strings/slices"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
 )
 
 func (s *pluginManager) RunAgentController() {
@@ -74,7 +79,7 @@ func (s *pluginManager) RunAgentController() {
 	}
 
 	if !slices.Contains(types.TaskKinds, types.AgentConfig.TaskKind) {
-		logger.Sugar().Fatalf("unsupport TaskKind %s in %v", types.AgentConfig.TaskKind, types.TaskKinds)
+		logger.Sugar().Fatalf("unsupported TaskKind %s in %v", types.AgentConfig.TaskKind, types.TaskKinds)
 	}
 
 	for name, plugin := range s.chainingPlugins {
@@ -107,4 +112,31 @@ func (s *pluginManager) RunAgentController() {
 		time.Sleep(5 * time.Second)
 	}()
 
+	err = checkTaskExist(mgr)
+	if nil != err {
+		s.logger.Sugar().Fatalf("failed to get agent task '%s/%s', error: %v", types.AgentConfig.TaskKind, types.AgentConfig.TaskName, err)
+	}
+}
+
+// checkTaskExist will check the task whether exist or not
+func checkTaskExist(mgr manager.Manager) error {
+	// wait for mgr client ready
+	mgr.GetCache().WaitForCacheSync(context.TODO())
+
+	// check whether the task exists or not
+	var task client.Object
+	switch types.AgentConfig.TaskKind {
+	case KindNameAppHttpHealthy:
+		task = &crd.AppHttpHealthy{}
+	case KindNameNetReach:
+		task = &crd.NetReach{}
+	case KindNameNetdns:
+		task = &crd.Netdns{}
+	}
+	err := mgr.GetClient().Get(context.TODO(), k8types.NamespacedName{Name: types.AgentConfig.TaskName}, task)
+	if nil != err {
+		return err
+	}
+
+	return nil
 }

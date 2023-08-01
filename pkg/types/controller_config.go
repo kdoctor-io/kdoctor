@@ -28,8 +28,8 @@ var ControllerEnvMapping = []EnvMapping{
 	{"ENV_RESOURCE_TRACKER_CHANNEL_BUFFER", "500", &ControllerConfig.ResourceTrackerChannelBuffer},
 	{"ENV_RESOURCE_TRACKER_MAX_DATABASE_CAP", "5000", &ControllerConfig.ResourceTrackerMaxDatabaseCap},
 	{"ENV_RESOURCE_TRACKER_EXECUTOR_WORKERS", "3", &ControllerConfig.ResourceTrackerExecutorWorkers},
-	{"ENV_RESOURCE_TRACKER_SIGNAL_TIMEOUT_SECONDS", "3", &ControllerConfig.ResourceTrackerSignalTimeoutSeconds},
-	{"ENV_RESOURCE_TRACKER_TRACE_GAP_SECONDS", "5", &ControllerConfig.ResourceTrackerTraceGapSeconds},
+	{"ENV_RESOURCE_TRACKER_SIGNAL_TIMEOUT_SECONDS", "5", &ControllerConfig.ResourceTrackerSignalTimeoutSeconds},
+	{"ENV_RESOURCE_TRACKER_TRACE_GAP_SECONDS", "10", &ControllerConfig.ResourceTrackerTraceGapSeconds},
 }
 
 type ControllerConfigStruct struct {

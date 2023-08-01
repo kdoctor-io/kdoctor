@@ -23,9 +23,11 @@ import (
 const (
 	kdoctor = "kdoctor"
 
-	containerArgTaskKind = "--task-kind"
-	containerArgTaskName = "--task-name"
-	UniqueMatchLabelKey  = "app.kubernetes.io/name"
+	containerArgTaskKind  = "--task-kind"
+	containerArgTaskName  = "--task-name"
+	containerArgServiceV4 = "--service-ipv4-name"
+	containerArgServiceV6 = "--service-ipv6-name"
+	UniqueMatchLabelKey   = "app.kubernetes.io/name"
 )
 
 type Scheduler struct {
@@ -67,17 +69,23 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 	}
 
 	var runtime client.Object
-	switch agentSpec.Kind {
-	case types.KindDeployment:
-		runtime = &appsv1.Deployment{}
-		resource.RuntimeType = types.KindDeployment
-
-	case types.KindDaemonSet:
+	if agentSpec.Kind == nil {
 		runtime = &appsv1.DaemonSet{}
 		resource.RuntimeType = types.KindDaemonSet
+		s.log.Sugar().Debugf("set task %s/%s corresponding runtime as DaemonSet", s.taskKind, s.taskName)
+	} else {
+		switch *agentSpec.Kind {
+		case types.KindDeployment:
+			runtime = &appsv1.Deployment{}
+			resource.RuntimeType = types.KindDeployment
 
-	default:
-		return v1beta1.TaskResource{}, fmt.Errorf("")
+		case types.KindDaemonSet:
+			runtime = &appsv1.DaemonSet{}
+			resource.RuntimeType = types.KindDaemonSet
+
+		default:
+			return v1beta1.TaskResource{}, fmt.Errorf("unrecognized agent runtime kind '%s'", *agentSpec.Kind)
+		}
 	}
 
 	var needCreate bool
@@ -99,10 +107,15 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 	}
 
 	if needCreate {
-		if agentSpec.Kind == types.KindDeployment {
-			runtime = s.generateDeployment(agentSpec)
-		} else {
+		if agentSpec.Kind == nil {
 			runtime = s.generateDaemonSet(agentSpec)
+		} else {
+			// create task Runtime
+			if *agentSpec.Kind == types.KindDeployment {
+				runtime = s.generateDeployment(agentSpec)
+			} else if *agentSpec.Kind == types.KindDaemonSet {
+				runtime = s.generateDaemonSet(agentSpec)
+			}
 		}
 
 		runtime.SetName(taskRuntimeName)
@@ -113,7 +126,7 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 			return v1beta1.TaskResource{}, fmt.Errorf("failed to set task %s/%s corresponding runtime %s controllerReference, error: %v", s.taskKind, s.taskName, taskRuntimeName, err)
 		}
 
-		s.log.Sugar().Infof("try to create task  %s/%s cooresponding runtime %s", s.taskKind, s.taskName, runtime)
+		s.log.Sugar().Infof("try to create task %s/%s corresponding runtime %v", s.taskKind, s.taskName, runtime)
 		err = s.client.Create(ctx, runtime)
 		if nil != err {
 			return v1beta1.TaskResource{}, err
@@ -151,6 +164,7 @@ func (s *Scheduler) createService(ctx context.Context, taskRuntimeName string, a
 		Namespace: types.ControllerConfig.PodNamespace,
 		Name:      svcName,
 	}
+	s.log.Sugar().Debugf("try to get task '%s/%s' corresponding runtime service '%s'", s.taskKind, s.taskName, svcName)
 	err = s.apiReader.Get(ctx, objectKey, &service)
 	if nil != err {
 		if errors.IsNotFound(err) {
@@ -172,7 +186,7 @@ func (s *Scheduler) createService(ctx context.Context, taskRuntimeName string, a
 				types.ControllerConfig.PodNamespace, taskRuntimeName, ownerRuntime.GetName(), err)
 		}
 
-		s.log.Sugar().Infof("try to create task  %s/%s cooresponding runtime service '%s/%s'", s.taskKind, s.taskName, types.ControllerConfig.PodNamespace, svcName)
+		s.log.Sugar().Infof("try to create task  %s/%s corresponding runtime service '%v'", s.taskKind, s.taskName, service)
 		err = s.client.Create(ctx, svc)
 		if nil != err {
 			return "", err
@@ -243,7 +257,15 @@ func (s *Scheduler) generatePodTemplateSpec(uniqueLabelVal string, agentSpec v1b
 		tmpArgs := pod.Spec.Containers[index].Args
 		tmpArgs = append(tmpArgs,
 			fmt.Sprintf("%s=%s", containerArgTaskKind, s.taskKind),
-			fmt.Sprintf("%s=%s", containerArgTaskName, s.taskName))
+			fmt.Sprintf("%s=%s", containerArgTaskName, s.taskName),
+		)
+		if types.ControllerConfig.Configmap.EnableIPv4 {
+			tmpArgs = append(tmpArgs, fmt.Sprintf("%s=%s", containerArgServiceV4, TaskRuntimeServiceName(TaskRuntimeName(s.taskKind, s.taskName), corev1.IPv4Protocol)))
+		}
+		if types.ControllerConfig.Configmap.EnableIPv6 {
+			tmpArgs = append(tmpArgs, fmt.Sprintf("%s=%s", containerArgServiceV6, TaskRuntimeServiceName(TaskRuntimeName(s.taskKind, s.taskName), corev1.IPv6Protocol)))
+		}
+
 		pod.Spec.Containers[index].Args = tmpArgs
 	}
 

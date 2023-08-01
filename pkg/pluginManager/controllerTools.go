@@ -21,27 +21,9 @@ import (
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	plugintypes "github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"github.com/kdoctor-io/kdoctor/pkg/reportManager"
+	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 )
-
-type item interface {
-	~int | ~string
-}
-
-func removeDuplicates[T item](arr []T) []T {
-	var newArr []T
-	dic := make(map[T]struct{})
-
-	for _, tmpItem := range arr {
-		dic[tmpItem] = struct{}{}
-	}
-
-	for tmpItem := range dic {
-		newArr = append(newArr, tmpItem)
-	}
-
-	return newArr
-}
 
 func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, podMatchLabel client.MatchingLabels) ([]string, error) {
 	var allNodeList, failNodeList []string
@@ -64,53 +46,16 @@ func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.C
 	}
 
 	// if the runtime is deployment, we may get duplicated node
-	allNodeList = removeDuplicates(allNodeList)
+	allNodeList = RemoveDuplicates(allNodeList)
 	s.logger.Sugar().Debugf("all agent nodes: %v", allNodeList)
 
 	// gather the failure Node list
 	slices.Filter(failNodeList, allNodeList, func(s string) bool {
-		if !slices.Contains(succeedNodeList, s) {
-			return true
-		}
-		return false
+		return !slices.Contains(succeedNodeList, s)
 	})
 
 	return failNodeList, nil
 }
-
-/*func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, agentNodeSelector *metav1.LabelSelector) (failNodelist []string, err error) {
-	var allNodeList []string
-	var e error
-	if agentNodeSelector == nil {
-		allNodeList, e = k8sObjManager.GetK8sObjManager().ListDaemonsetPodNodes(ctx, types.ControllerConfig.Configmap.AgentDaemonsetName, types.ControllerConfig.PodNamespace)
-		if e != nil {
-			return nil, e
-		}
-		s.logger.Sugar().Debugf("all agent nodes: %+v", allNodeList)
-		if len(allNodeList) == 0 {
-			return nil, fmt.Errorf("failed to find agent node ")
-		}
-	} else {
-		allNodeList, e = k8sObjManager.GetK8sObjManager().ListSelectedNodes(ctx, agentNodeSelector)
-		if e != nil {
-			return nil, e
-		}
-		s.logger.Sugar().Debugf("selected agent nodes: %+v", allNodeList)
-		if len(allNodeList) == 0 {
-			return nil, fmt.Errorf("failed to find agent node ")
-		}
-	}
-
-	// gather the failure Node list
-	slices.Filter(failNodelist, allNodeList, func(s string) bool {
-		if !slices.Contains(succeedNodeList, s) {
-			return true
-		}
-		return false
-	})
-
-	return failNodelist, nil
-}*/
 
 func (s *pluginControllerReconciler) UpdateRoundFinalStatus(logger *zap.Logger, ctx context.Context, newStatus *crd.TaskStatus, runtimePodSelector client.MatchingLabels, deadline bool) (roundDone bool, err error) {
 	latestRecord := &(newStatus.History[0])
@@ -272,7 +217,6 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 
 		} else if latestRecord.Status == crd.StatusHistoryRecordStatusOngoing {
 			logger.Debug("try to poll the status of task " + taskName)
-			// TODO: sourceAgent is a LabelSelector, we hope to find the Task Runtime Nodes
 			roundDone, e := s.UpdateRoundFinalStatus(logger, ctx, newStatus, runtimePodMatchLabels, false)
 			if e != nil {
 				return nil, nil, e
@@ -392,4 +336,41 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 
 	return result, newStatus, nil
 
+}
+
+func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, taskKind string, ownerTask metav1.Object, agentSpec crd.AgentSpec, taskStatus *crd.TaskStatus, logger *zap.Logger) (*crd.TaskStatus, error) {
+	var resource crd.TaskResource
+	var err error
+	var deletionTime *metav1.Time
+
+	if taskStatus.Resource == nil {
+		logger.Sugar().Debugf("task '%s/%s' just created, try to initial its corresponding runtime resource", taskKind, ownerTask.GetName())
+		newScheduler := scheduler.NewScheduler(s.client, s.apiReader, taskKind, ownerTask.GetName(), s.runtimeUniqueMatchLabelKey, logger)
+		// create the task corresponding resources(runtime,service) and record them to the task CR object subresource with 'Creating' status
+		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec)
+		if nil != err {
+			return nil, err
+		}
+		taskStatus.Resource = &resource
+	} else {
+		// we need to track it again, in order to avoid controller restart
+		resource = *taskStatus.Resource
+		if taskStatus.FinishTime != nil {
+			deletionTime = taskStatus.FinishTime.DeepCopy()
+			if agentSpec.TerminationGracePeriodMinutes != nil {
+				newTime := metav1.NewTime(deletionTime.Add(time.Duration(*agentSpec.TerminationGracePeriodMinutes) * time.Minute))
+				deletionTime = newTime.DeepCopy()
+			}
+			logger.Sugar().Debugf("task '%s/%s' finish time '%s' and runtime deletion time '%s'",
+				taskKind, ownerTask.GetName(), taskStatus.FinishTime, deletionTime)
+		}
+	}
+
+	// record the task resource to the tracker DB, and the tracker will update the task subresource resource status or delete corresponding runtime asynchronously
+	err = s.tracker.DB.Apply(scheduler.BuildItem(resource, taskKind, ownerTask.GetName(), deletionTime))
+	if nil != err {
+		return nil, err
+	}
+
+	return taskStatus, nil
 }

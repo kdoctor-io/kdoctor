@@ -24,8 +24,8 @@ type TrackerConfig struct {
 	MaxDatabaseCap    int
 	ExecutorWorkers   int
 
-	SignalTimeOutDuration time.Duration
-	TraceGapDuration      time.Duration
+	SignalTimeOutDuration time.Duration // default: 5s
+	TraceGapDuration      time.Duration // default: 10s
 }
 
 type Tracker struct {
@@ -156,6 +156,8 @@ func (t *Tracker) updateRuntimeStatus(ctx context.Context, item Item, status str
 	resource := &crd.TaskResource{
 		RuntimeName:   item.RuntimeName,
 		RuntimeType:   item.RuntimeKind,
+		ServiceNameV4: item.ServiceNameV4,
+		ServiceNameV6: item.ServiceNameV6,
 		RuntimeStatus: status,
 	}
 

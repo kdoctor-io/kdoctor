@@ -146,13 +146,13 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		var agentV4Url, agentV6Url *k8sObjManager.ServiceAccessUrl
 		serviceAccessPortName := "http"
 		if config.AgentConfig.Configmap.EnableIPv4 {
-			agentV4Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.Configmap.AgentSerivceIpv4Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
+			agentV4Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV4Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
 			if e != nil {
 				logger.Sugar().Errorf("failed to get agent ipv4 service url , error=%v", e)
 			}
 		}
 		if config.AgentConfig.Configmap.EnableIPv6 {
-			agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.Configmap.AgentSerivceIpv6Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
+			agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV6Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
 			if e != nil {
 				logger.Sugar().Errorf("failed to get agent ipv6 service url , error=%v", e)
 			}

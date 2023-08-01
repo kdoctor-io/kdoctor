@@ -156,9 +156,10 @@ type AgentSpec struct {
 	// +kubebuilder:validation:Optional
 	Annotation map[string]string `json:"annotation,omitempty"`
 
-	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:default=DaemonSet
 	// +kubebuilder:validation:Enum=Deployment;DaemonSet
-	Kind string `json:"kind"`
+	Kind *string `json:"kind,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	DeploymentReplicas *int32 `json:"deploymentReplicas,omitempty"`
@@ -176,6 +177,7 @@ type AgentSpec struct {
 	// +kubebuilder:validation:Optional
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 
+	// +kubebuilder:default=60
 	// +kubebuilder:validation:Optional
-	TerminationGracePeriodSeconds *int64 `json:"terminationGracePeriodSeconds,omitempty"`
+	TerminationGracePeriodMinutes *int64 `json:"terminationGracePeriodMinutes,omitempty"`
 }
