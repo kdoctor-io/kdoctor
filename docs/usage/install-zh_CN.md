@@ -1,5 +1,7 @@
 # 安装文档
 
+[**English**](./install.md) | **简体中文**
+
 ## 介绍
 
 安装 kdoctor 对集群内外的网络及性能进行检查
@@ -29,7 +31,7 @@ kdoctor 可以根据不同的需求进行安装，以下为几个场景的推荐
 以下方法 kdoctor agent 只将报告打印到标准输出
 ```shell 
 helm install kdoctor kdoctor/kdoctor \
-    -n kdoctor --wait --debug --create-namespace 
+    -n kdoctor --debug --create-namespace 
 ```
 #### 2.高可用安装
 
@@ -38,7 +40,7 @@ helm install kdoctor kdoctor/kdoctor \
 ```shell 
 
 helm  install kdoctor kdoctor/kdoctor \
-    -n kdoctor --wait --debug --create-namespace \
+    -n kdoctor --debug --create-namespace \
     --set kdoctorController.replicas=2 \
     --set feature.aggregateReport.controller.pvc.enabled=true \
     --set feature.aggregateReport.controller.pvc.storageClass=local-path  \
