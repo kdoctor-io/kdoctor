@@ -10,6 +10,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -34,7 +35,9 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 	if e := crd.AddToScheme(scheme); e != nil {
 		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
 	}
-
+	if e := networkingv1.AddToScheme(scheme); e != nil {
+		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
+	}
 	n := ctrl.Options{
 		Scheme:             scheme,
 		MetricsBindAddress: "0",

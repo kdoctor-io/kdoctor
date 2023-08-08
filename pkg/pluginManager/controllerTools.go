@@ -347,7 +347,7 @@ func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, 
 		logger.Sugar().Debugf("task '%s/%s' just created, try to initial its corresponding runtime resource", taskKind, ownerTask.GetName())
 		newScheduler := scheduler.NewScheduler(s.client, s.apiReader, taskKind, ownerTask.GetName(), s.runtimeUniqueMatchLabelKey, logger)
 		// create the task corresponding resources(runtime,service) and record them to the task CR object subresource with 'Creating' status
-		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec)
+		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec, taskKind)
 		if nil != err {
 			return nil, err
 		}

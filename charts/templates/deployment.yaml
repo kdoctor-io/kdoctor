@@ -77,6 +77,7 @@ spec:
             - --configmap-daemonset-template=/tmp/configmap-app-template/daemonset.yml
             - --configmap-pod-template=/tmp/configmap-app-template/pod.yml
             - --configmap-service-template=/tmp/configmap-app-template/service.yml
+            - --configmap-ingress-template=/tmp/configmap-app-template/ingress.yml
             - --tls-ca-cert=/etc/tls/ca.crt
             - --tls-server-cert=/etc/tls/tls.crt
             - --tls-server-key=/etc/tls/tls.key
