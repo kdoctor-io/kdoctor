@@ -5,6 +5,7 @@ package reportManager
 
 import (
 	"context"
+	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/util/workqueue"
@@ -20,11 +21,12 @@ type reportManager struct {
 	reportDir       string
 	collectInterval time.Duration
 	queue           workqueue.RateLimitingInterface
+	runtimeDB       []scheduler.DB
 }
 
 var globalReportManager *reportManager
 
-func InitReportManager(logger *zap.Logger, reportDir string, collectInterval time.Duration) {
+func InitReportManager(logger *zap.Logger, reportDir string, collectInterval time.Duration, db []scheduler.DB) {
 	if globalReportManager != nil {
 		return
 	}
@@ -34,6 +36,7 @@ func InitReportManager(logger *zap.Logger, reportDir string, collectInterval tim
 		reportDir:       reportDir,
 		collectInterval: collectInterval,
 		queue:           workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "reportManager"),
+		runtimeDB:       db,
 	}
 	go globalReportManager.runWorker()
 }

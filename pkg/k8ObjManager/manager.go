@@ -28,6 +28,11 @@ type K8sObjManager interface {
 	ListDaemonsetPodIPs(ctx context.Context, daemonsetName, daemonsetNameSpace string) (PodIps, error)
 	ListDaemonsetPodMultusIPs(ctx context.Context, daemonsetName, daemonsetNameSpace string) (PodIps, error)
 
+	// deployment
+	GetDeployment(ctx context.Context, name, namespace string) (*appsv1.Deployment, error)
+	ListDeploymentPodIPs(ctx context.Context, deploymentName, deploymentNameSpace string) (PodIps, error)
+	ListDeployPodMultusIPs(ctx context.Context, deploymentName, deploymentNameSpace string) (PodIps, error)
+
 	// pod
 	GetPodList(ctx context.Context, opts ...client.ListOption) ([]corev1.Pod, error)
 	ListSelectedPodMultusIPs(ctx context.Context, labelSelector *metav1.LabelSelector) (PodIps, error)

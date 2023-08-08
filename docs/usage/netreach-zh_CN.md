@@ -4,7 +4,7 @@
 
 ## 介绍 
 
-对于这种任务，每个kdoctor agent都会以一定的压力相互发送http请求，请求地址为每一个 agent 的 pod ip 、service ip、ingress ip 等等，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
+对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 agent 、service、ingress 等资源，每一个 agent pod 都会以一定的压力相互发送http请求，请求地址为每一个 agent 的 pod ip 、service ip、ingress ip 等等，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
 1.应用场景：
 * 每1min心跳，监控集群内每个角落的连通性

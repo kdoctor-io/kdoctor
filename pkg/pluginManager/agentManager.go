@@ -6,6 +6,7 @@ package pluginManager
 import (
 	"context"
 	"fmt"
+	networkingv1 "k8s.io/api/networking/v1"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -36,7 +37,9 @@ func (s *pluginManager) RunAgentController() {
 	if e := crd.AddToScheme(scheme); e != nil {
 		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
 	}
-
+	if e := networkingv1.AddToScheme(scheme); e != nil {
+		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
+	}
 	var fm fileManager.FileManager
 	var e error
 	if types.AgentConfig.EnableAggregateAgentReport {

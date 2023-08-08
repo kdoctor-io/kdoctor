@@ -15,6 +15,7 @@ import (
 )
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
+	var termMin = int64(3)
 
 	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006"), func() {
 		var e error
@@ -25,6 +26,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agent
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -63,8 +69,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 	})
 
 	It("failed http testing appHttpHealth due to status code", Label("A00002"), func() {
@@ -77,6 +83,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -116,8 +127,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
 	})
 
@@ -130,6 +141,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -168,8 +184,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
 	})
 
@@ -181,6 +197,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -221,8 +242,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -235,6 +256,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -276,8 +302,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, []string{}, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
 	})
 
@@ -290,6 +316,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -328,8 +359,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -342,6 +373,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -383,8 +419,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 	})
 
 	It("Successfully http testing appHttpHealth method HEAD", Label("A00008"), func() {
@@ -396,6 +432,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -434,8 +475,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -448,6 +489,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -486,8 +532,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -500,6 +546,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -538,8 +589,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -552,6 +603,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -590,8 +646,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 
@@ -604,6 +660,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -645,8 +706,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 })

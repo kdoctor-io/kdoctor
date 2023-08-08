@@ -296,7 +296,6 @@ data:
           targetPort: metrics
           protocol: TCP
         {{- end }}
-        {{- if .Values.feature.enableIPv4 }}
         - name: http
           port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
           targetPort: http
@@ -305,9 +304,24 @@ data:
           port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
           targetPort: https
           protocol: TCP
-        {{- end }}
       ipFamilyPolicy: SingleStack
       ipFamilies:
         - IPv4
       selector:
         {{- include "project.kdoctorAgent.selectorLabels" . | nindent 8 }}
+  ingress.yml: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      namespace: {{ .Release.Namespace | quote }}
+    spec:
+      rules:
+        - http:
+            paths:
+              - path: {{ .Values.kdoctorAgent.ingress.route | quote }}
+                pathType: Exact
+                backend:
+                  service:
+                    name: kdoctor
+                    port:
+                      number: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}

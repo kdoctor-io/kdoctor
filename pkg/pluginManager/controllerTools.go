@@ -26,7 +26,8 @@ import (
 )
 
 func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, podMatchLabel client.MatchingLabels) ([]string, error) {
-	var allNodeList, failNodeList []string
+	allNodeList, failNodeList := []string{}, []string{}
+
 	podList := corev1.PodList{}
 
 	err := s.client.List(ctx, &podList,
@@ -46,11 +47,11 @@ func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.C
 	}
 
 	// if the runtime is deployment, we may get duplicated node
-	allNodeList = RemoveDuplicates(allNodeList)
+	allNodeList = RemoveDuplicates[string](allNodeList)
 	s.logger.Sugar().Debugf("all agent nodes: %v", allNodeList)
 
 	// gather the failure Node list
-	slices.Filter(failNodeList, allNodeList, func(s string) bool {
+	failNodeList = slices.Filter(failNodeList, allNodeList, func(s string) bool {
 		return !slices.Contains(succeedNodeList, s)
 	})
 

@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
-	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
 
@@ -20,6 +19,7 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	config "github.com/kdoctor-io/kdoctor/pkg/types"
+	runtimetype "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.HttpMetrics) (failureReason string, err error) {
@@ -93,35 +93,23 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	target := instance.Spec.Target
 	request := instance.Spec.Request
 	successCondition := instance.Spec.SuccessCondition
+	runtimeResource := instance.Status.Resource
 	testTargetList := []*TestTarget{}
 
 	// test kdoctor agent
 	logger.Sugar().Infof("load test kdoctor Agent pod: qps=%v, PerRequestTimeout=%vs, Duration=%vs", request.QPS, request.PerRequestTimeoutInMS, request.DurationInSecond)
 	finalfailureReason = ""
 
-	// ----------------------- test pod ip
 	if target.Endpoint {
-		var PodIps k8sObjManager.PodIps
-
-		if target.MultusInterface {
-			PodIps, e = k8sObjManager.GetK8sObjManager().ListDaemonsetPodMultusIPs(ctx, config.AgentConfig.Configmap.AgentDaemonsetName, config.AgentConfig.PodNamespace)
-			logger.Sugar().Debugf("test agent multus pod ip: %v", PodIps)
+		podIPs, e := getTargetPodIP(ctx, runtimeResource.RuntimeName, runtimeResource.RuntimeType, target.MultusInterface)
+		if e != nil {
+			logger.Sugar().Debugf("test agent pod ip: %v", podIPs)
 			if e != nil {
 				logger.Sugar().Errorf("failed to ListDaemonsetPodMultusIPs, error=%v", e)
 				finalfailureReason = fmt.Sprintf("failed to ListDaemonsetPodMultusIPs, error=%v", e)
 			}
-
 		} else {
-			PodIps, e = k8sObjManager.GetK8sObjManager().ListDaemonsetPodIPs(ctx, config.AgentConfig.Configmap.AgentDaemonsetName, config.AgentConfig.PodNamespace)
-			logger.Sugar().Debugf("test agent single pod ip: %v", PodIps)
-			if e != nil {
-				logger.Sugar().Errorf("failed to ListDaemonsetPodIPs, error=%v", e)
-				finalfailureReason = fmt.Sprintf("failed to ListDaemonsetPodIPs, error=%v", e)
-			}
-		}
-
-		if len(PodIps) > 0 {
-			for podname, ips := range PodIps {
+			for podname, ips := range podIPs {
 				for _, podips := range ips {
 					if len(podips.IPv4) > 0 && (target.IPv4 == nil || (target.IPv4 != nil && *target.IPv4)) {
 						testTargetList = append(testTargetList, &TestTarget{
@@ -133,50 +121,33 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 					if len(podips.IPv6) > 0 && (target.IPv6 == nil || (target.IPv6 != nil && *target.IPv6)) {
 						testTargetList = append(testTargetList, &TestTarget{
 							Name:   "AgentPodV6IP_" + podname + "_" + podips.IPv6,
-							Url:    fmt.Sprintf("http://%s:%d", podips.IPv6, config.AgentConfig.AppHttpPort),
+							Url:    fmt.Sprintf("http://[%s]:%d", podips.IPv6, config.AgentConfig.AppHttpPort),
 							Method: loadHttp.HttpMethodGet,
 						})
 					}
 				}
 			}
-		} else {
-			logger.Sugar().Debugf("ignore test agent pod ip")
 		}
-		// ----------------------- get service
-		var agentV4Url, agentV6Url *k8sObjManager.ServiceAccessUrl
-		serviceAccessPortName := "http"
-		if config.AgentConfig.Configmap.EnableIPv4 {
-			agentV4Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV4Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
-			if e != nil {
-				logger.Sugar().Errorf("failed to get agent ipv4 service url , error=%v", e)
-			}
-		}
-		if config.AgentConfig.Configmap.EnableIPv6 {
-			agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV6Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
-			if e != nil {
-				logger.Sugar().Errorf("failed to get agent ipv6 service url , error=%v", e)
-			}
-		}
+	}
 
-		var localNodeIpv4, localNodeIpv6 string
-		if true {
-			localNodeIpv4, localNodeIpv6, e = k8sObjManager.GetK8sObjManager().GetNodeIP(ctx, config.AgentConfig.LocalNodeName)
-			if e != nil {
-				logger.Sugar().Errorf("failed to get local node %v ip, error=%v", config.AgentConfig.LocalNodeName, e)
-			} else {
-				logger.Sugar().Debugf("local node %v ip: ipv4=%v, ipv6=%v", config.AgentConfig.LocalNodeName, localNodeIpv4, localNodeIpv6)
-			}
-		}
-
-		// ----------------------- get ingress
-		var agentIngress *networkingv1.Ingress
-		agentIngress, e = k8sObjManager.GetK8sObjManager().GetIngress(ctx, config.AgentConfig.Configmap.AgentIngressName, config.AgentConfig.PodNamespace)
+	// get service
+	var agentV4Url, agentV6Url *k8sObjManager.ServiceAccessUrl
+	serviceAccessPortName := "http"
+	if config.AgentConfig.Configmap.EnableIPv4 {
+		agentV4Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV4Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
 		if e != nil {
-			logger.Sugar().Errorf("failed to get ingress , error=%v", e)
+			logger.Sugar().Errorf("failed to get agent ipv4 service url , error=%v", e)
 		}
-
+	}
+	if config.AgentConfig.Configmap.EnableIPv6 {
+		agentV6Url, e = k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(ctx, config.AgentConfig.ServiceV6Name, config.AgentConfig.PodNamespace, serviceAccessPortName)
+		if e != nil {
+			logger.Sugar().Errorf("failed to get agent ipv6 service url , error=%v", e)
+		}
+	}
+	if target.ClusterIP {
 		// ----------------------- test clusterIP ipv4
-		if target.ClusterIP && target.IPv4 != nil && *(target.IPv4) {
+		if target.IPv4 != nil && *(target.IPv4) {
 			if agentV4Url != nil && len(agentV4Url.ClusterIPUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentClusterV4IP_" + agentV4Url.ClusterIPUrl[0],
@@ -204,9 +175,19 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		} else {
 			logger.Sugar().Debugf("ignore test agent cluster ipv6 ip")
 		}
+	}
+
+	if target.NodePort {
+		// get node ip
+		localNodeIpv4, localNodeIpv6, e := k8sObjManager.GetK8sObjManager().GetNodeIP(ctx, config.AgentConfig.LocalNodeName)
+		if e != nil {
+			logger.Sugar().Errorf("failed to get local node %v ip, error=%v", config.AgentConfig.LocalNodeName, e)
+		} else {
+			logger.Sugar().Debugf("local node %v ip: ipv4=%v, ipv6=%v", config.AgentConfig.LocalNodeName, localNodeIpv4, localNodeIpv6)
+		}
 
 		// ----------------------- test node port
-		if target.NodePort && target.IPv4 != nil && *(target.IPv4) {
+		if target.IPv4 != nil && *(target.IPv4) {
 			if agentV4Url != nil && agentV4Url.NodePort != 0 && len(localNodeIpv4) != 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentNodePortV4IP_" + localNodeIpv4 + "_" + fmt.Sprintf("%v", agentV4Url.NodePort),
@@ -220,11 +201,11 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			logger.Sugar().Debugf("ignore test agent nodePort ipv4")
 		}
 
-		if target.NodePort && target.IPv6 != nil && *(target.IPv6) {
+		if target.IPv6 != nil && *(target.IPv6) {
 			if agentV6Url != nil && agentV6Url.NodePort != 0 && len(localNodeIpv6) != 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentNodePortV6IP_" + localNodeIpv6 + "_" + fmt.Sprintf("%v", agentV6Url.NodePort),
-					Url:    fmt.Sprintf("http://%s:%d", localNodeIpv6, agentV6Url.NodePort),
+					Url:    fmt.Sprintf("http://[%s]:%d", localNodeIpv6, agentV6Url.NodePort),
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
@@ -233,9 +214,10 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		} else {
 			logger.Sugar().Debugf("ignore test agent nodePort ipv6")
 		}
+	}
 
-		// ----------------------- test loadbalancer IP
-		if target.LoadBalancer && target.IPv4 != nil && *(target.IPv4) {
+	if target.LoadBalancer {
+		if target.IPv4 != nil && *(target.IPv4) {
 			if agentV4Url != nil && len(agentV4Url.LoadBalancerUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentLoadbalancerV4IP_" + agentV4Url.LoadBalancerUrl[0],
@@ -249,7 +231,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			logger.Sugar().Debugf("ignore test agent loadbalancer ipv4")
 		}
 
-		if target.LoadBalancer && target.IPv6 != nil && *(target.IPv6) {
+		if target.IPv6 != nil && *(target.IPv6) {
 			if agentV6Url != nil && len(agentV6Url.LoadBalancerUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentLoadbalancerV6IP_" + agentV6Url.LoadBalancerUrl[0],
@@ -262,9 +244,14 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		} else {
 			logger.Sugar().Debugf("ignore test agent loadbalancer ipv6")
 		}
+	}
 
-		// ----------------------- test ingress
-		if target.Ingress {
+	if target.Ingress {
+		if runtimeResource.ServiceNameV4 != nil {
+			agentIngress, e := k8sObjManager.GetK8sObjManager().GetIngress(ctx, *runtimeResource.ServiceNameV4, config.AgentConfig.PodNamespace)
+			if e != nil {
+				logger.Sugar().Errorf("failed to get v4 ingress , error=%v", e)
+			}
 			if agentIngress != nil && len(agentIngress.Status.LoadBalancer.Ingress) > 0 {
 				http := "http"
 				if len(agentIngress.Spec.TLS) > 0 {
@@ -272,12 +259,12 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				}
 				url := fmt.Sprintf("%s://%s%s", http, agentIngress.Status.LoadBalancer.Ingress[0].IP, agentIngress.Spec.Rules[0].HTTP.Paths[0].Path)
 				testTargetList = append(testTargetList, &TestTarget{
-					Name:   "AgentIngress_" + url,
+					Name:   "AgentIngress_v4_" + url,
 					Url:    url,
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
-				finalfailureReason = "failed to get agent ingress address"
+				finalfailureReason = "failed to get agent v4 ingress address"
 			}
 		} else {
 			logger.Sugar().Debugf("ignore test agent ingress ipv6")
@@ -346,4 +333,27 @@ func (s *PluginNetReach) SetReportWithTask(report *v1beta1.Report, crdSpec inter
 	report.NetReachTaskSpec = NetReachSpec
 	report.NetReachTask = NetReachTask
 	return nil
+}
+
+func getTargetPodIP(ctx context.Context, runtimeName, runtimeKind string, multus bool) (k8sObjManager.PodIps, error) {
+	var podIPs k8sObjManager.PodIps
+	var err error
+	switch runtimeKind {
+	case runtimetype.KindDaemonSet:
+		if multus {
+			podIPs, err = k8sObjManager.GetK8sObjManager().ListDaemonsetPodMultusIPs(ctx, runtimeName, runtimetype.AgentConfig.PodNamespace)
+		} else {
+			podIPs, err = k8sObjManager.GetK8sObjManager().ListDaemonsetPodIPs(ctx, runtimeName, runtimetype.AgentConfig.PodNamespace)
+		}
+	case runtimetype.KindDeployment:
+		if multus {
+			podIPs, err = k8sObjManager.GetK8sObjManager().ListDeployPodMultusIPs(ctx, runtimeName, runtimetype.AgentConfig.PodNamespace)
+		} else {
+			podIPs, err = k8sObjManager.GetK8sObjManager().ListDeploymentPodIPs(ctx, runtimeName, runtimetype.AgentConfig.PodNamespace)
+		}
+	default:
+		return podIPs, fmt.Errorf("runtime kind %s not support ", runtimeKind)
+	}
+
+	return podIPs, err
 }

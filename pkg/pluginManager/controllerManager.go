@@ -10,6 +10,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -34,7 +35,9 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 	if e := crd.AddToScheme(scheme); e != nil {
 		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
 	}
-
+	if e := networkingv1.AddToScheme(scheme); e != nil {
+		logger.Sugar().Fatalf("failed to add scheme for plugins, reason=%v", e)
+	}
 	n := ctrl.Options{
 		Scheme:             scheme,
 		MetricsBindAddress: "0",
@@ -89,8 +92,7 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 	var e error
 
 	// TODO: runControllerAggregateReportOnce need agents' IPs
-	//if types.ControllerConfig.EnableAggregateAgentReport {
-	if false {
+	if types.ControllerConfig.EnableAggregateAgentReport {
 		// fileManager takes charge of writing and removing local report
 		gcInterval := time.Duration(types.ControllerConfig.CleanAgedReportInMinute) * time.Minute
 		logger.Sugar().Infof("save report to %v, clean interval %v", types.ControllerConfig.DirPathControllerReport, gcInterval.String())
@@ -98,13 +100,9 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 		if e != nil {
 			logger.Sugar().Fatalf("failed to new fileManager , reason=%v", e)
 		}
-
-		// reportManager takes charge of sync reports from remote agents
-		interval := time.Duration(types.ControllerConfig.CollectAgentReportIntervalInSecond) * time.Second
-		logger.Sugar().Infof("run report Sync manager, save to %v, collectInterval %v ", types.ControllerConfig.DirPathControllerReport, interval)
-		reportManager.InitReportManager(logger.Named("reportSyncManager"), types.ControllerConfig.DirPathControllerReport, interval)
 	}
 
+	runtimeDB := make([]scheduler.DB, 0, len(s.chainingPlugins))
 	ctx, cancelFunc := context.WithCancel(context.TODO())
 	for name, plugin := range s.chainingPlugins {
 		// setup reconcile
@@ -115,6 +113,14 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 			logger.Sugar().Debugf("there's no uniqueMatchLabelKey in the configmap, try to use the default '%s'", scheduler.UniqueMatchLabelKey)
 			uniqueMatchLabelKey = scheduler.UniqueMatchLabelKey
 		}
+		tracker := scheduler.NewTracker(mgr.GetClient(), mgr.GetAPIReader(), scheduler.TrackerConfig{
+			ItemChannelBuffer:     int(types.ControllerConfig.ResourceTrackerChannelBuffer),
+			MaxDatabaseCap:        int(types.ControllerConfig.ResourceTrackerMaxDatabaseCap),
+			ExecutorWorkers:       int(types.ControllerConfig.ResourceTrackerExecutorWorkers),
+			SignalTimeOutDuration: time.Duration(types.ControllerConfig.ResourceTrackerSignalTimeoutSeconds) * time.Second,
+			TraceGapDuration:      time.Duration(types.ControllerConfig.ResourceTrackerTraceGapSeconds) * time.Second,
+		}, logger.Named(name+"Tracker"))
+		runtimeDB = append(runtimeDB, tracker.DB)
 		k := &pluginControllerReconciler{
 			logger:                     logger.Named(name + "Reconciler"),
 			plugin:                     plugin,
@@ -124,13 +130,7 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 			fm:                         fm,
 			crdKindName:                name,
 			runtimeUniqueMatchLabelKey: uniqueMatchLabelKey,
-			tracker: scheduler.NewTracker(mgr.GetClient(), mgr.GetAPIReader(), scheduler.TrackerConfig{
-				ItemChannelBuffer:     int(types.ControllerConfig.ResourceTrackerChannelBuffer),
-				MaxDatabaseCap:        int(types.ControllerConfig.ResourceTrackerMaxDatabaseCap),
-				ExecutorWorkers:       int(types.ControllerConfig.ResourceTrackerExecutorWorkers),
-				SignalTimeOutDuration: time.Duration(types.ControllerConfig.ResourceTrackerSignalTimeoutSeconds) * time.Second,
-				TraceGapDuration:      time.Duration(types.ControllerConfig.ResourceTrackerTraceGapSeconds) * time.Second,
-			}, logger.Named(name+"Tracker")),
+			tracker:                    tracker,
 		}
 		k.tracker.Start(ctx)
 		if e := k.SetupWithManager(mgr); e != nil {
@@ -146,6 +146,13 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 		if e := t.SetupWebhook(mgr); e != nil {
 			s.logger.Sugar().Fatalf("failed to builder webhook for plugin %v, error=%v", name, e)
 		}
+	}
+
+	if types.ControllerConfig.EnableAggregateAgentReport {
+		// reportManager takes charge of sync reports from remote agents
+		interval := time.Duration(types.ControllerConfig.CollectAgentReportIntervalInSecond) * time.Second
+		logger.Sugar().Infof("run report Sync manager, save to %v, collectInterval %v ", types.ControllerConfig.DirPathControllerReport, interval)
+		reportManager.InitReportManager(logger.Named("reportSyncManager"), types.ControllerConfig.DirPathControllerReport, interval, runtimeDB)
 	}
 
 	go func() {

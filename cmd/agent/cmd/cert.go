@@ -68,7 +68,7 @@ func GenServerCert(logger *zap.Logger) {
 	if types.AgentConfig.Configmap.EnableIPv6 {
 		serviceIPv6, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace, servicePortName)
 		if err != nil {
-			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
+			logger.Sugar().Fatalf("failed to get kdoctor ipv6 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
 		}
 		// ipv6 ip
 		logger.Sugar().Debugf("get ipv6 serviceAccessurl %v", serviceIPv6)
@@ -129,7 +129,7 @@ func checkServiceReady(logger *zap.Logger) {
 
 	if types.AgentConfig.Configmap.EnableIPv6 {
 		for {
-			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
+			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace)
 			if nil != err {
 				if errors.IsNotFound(err) {
 					logger.Sugar().Errorf("agent runtime IPv6 service %s/%s not exists, wait for controller to create it", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name)

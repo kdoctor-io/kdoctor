@@ -6,10 +6,10 @@ package scheduler
 import (
 	"context"
 	"fmt"
-
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
@@ -131,6 +131,16 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 			return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 service for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
 		}
 		resource.ServiceNameV4 = pointer.String(serviceNameV4)
+
+		if s.taskKind == types.KindNameNetReach {
+			nr := ownerTask.(*v1beta1.NetReach)
+			if nr.Spec.Target.Ingress {
+				err = s.createIngress(ctx, serviceNameV4, runtime)
+				if nil != err {
+					return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 ingress for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
+				}
+			}
+		}
 	}
 	if types.ControllerConfig.Configmap.EnableIPv6 {
 		serviceNameV6, err := s.createService(ctx, taskRuntimeName, agentSpec, runtime, corev1.IPv6Protocol)
@@ -138,6 +148,7 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 			return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv6 service for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
 		}
 		resource.ServiceNameV6 = pointer.String(serviceNameV6)
+
 	}
 
 	return resource, nil
@@ -185,6 +196,45 @@ func (s *Scheduler) createService(ctx context.Context, taskRuntimeName string, a
 	}
 
 	return svcName, nil
+}
+
+func (s *Scheduler) createIngress(ctx context.Context, serviceName string, ownerRuntime client.Object) error {
+	needCreate := false
+	var ingressName = serviceName
+	var ingress networkingv1.Ingress
+	objectKey := client.ObjectKey{
+		// reuse kdoctor-controller namespace
+		Namespace: types.ControllerConfig.PodNamespace,
+		Name:      ingressName,
+	}
+	s.log.Sugar().Debugf("try to get task '%s/%s' corresponding runtime ingress '%s'", s.taskKind, s.taskName, ingressName)
+	err := s.apiReader.Get(ctx, objectKey, &ingress)
+	if nil != err {
+		if errors.IsNotFound(err) {
+			s.log.Sugar().Debugf("task '%s/%s' corresponding runtime ingress '%s' not found, try to create one", s.taskKind, s.taskName, ingressName)
+			needCreate = true
+		} else {
+			return err
+		}
+	}
+
+	if needCreate {
+		ingressTmp := s.generateIngress(ingressName)
+		ingressTmp.SetNamespace(types.ControllerConfig.PodNamespace)
+
+		err := controllerruntime.SetControllerReference(ownerRuntime, ingressTmp, s.client.Scheme())
+		if nil != err {
+			return fmt.Errorf("failed to set ingress %s/%s controllerReference with runtime service %s, error: %v",
+				types.ControllerConfig.PodNamespace, ingressName, ownerRuntime.GetName(), err)
+		}
+
+		s.log.Sugar().Infof("try to create task  %s/%s corresponding runtime service '%v'", s.taskKind, s.taskName, ingressTmp)
+		err = s.client.Create(ctx, ingressTmp)
+		if nil != err {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *Scheduler) generateDaemonSet(agentSpec v1beta1.AgentSpec) *appsv1.DaemonSet {
@@ -329,4 +379,11 @@ func (s *Scheduler) generateService(agentSpec v1beta1.AgentSpec, ipFamily corev1
 	service.Spec.IPFamilies = []corev1.IPFamily{ipFamily}
 
 	return service
+}
+
+func (s *Scheduler) generateIngress(serviceName string) *networkingv1.Ingress {
+	ingress := types.IngressTempl.DeepCopy()
+	ingress.SetName(serviceName)
+	ingress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Name = serviceName
+	return ingress
 }

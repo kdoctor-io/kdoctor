@@ -78,6 +78,7 @@ func init() {
 	globalFlag.StringVar(&types.ControllerConfig.ConfigMapDaemonsetPath, "configmap-daemonset-template", "", "configmap daemonset template file path")
 	globalFlag.StringVar(&types.ControllerConfig.ConfigMapPodPath, "configmap-pod-template", "", "configmap pod template file path")
 	globalFlag.StringVar(&types.ControllerConfig.ConfigMapServicePath, "configmap-service-template", "", "configmap service template file path")
+	globalFlag.StringVar(&types.ControllerConfig.ConfigMapIngressPath, "configmap-ingress-template", "", "configmap ingress template file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsCaCertPath, "tls-ca-cert", "R", "", "ca file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsServerCertPath, "tls-server-cert", "T", "", "server cert file path")
 	globalFlag.StringVarP(&types.ControllerConfig.TlsServerKeyPath, "tls-server-key", "Y", "", "server key file path")
@@ -90,6 +91,7 @@ func init() {
 		logger.Info("configmap-daemonset-template = " + types.ControllerConfig.ConfigMapDaemonsetPath)
 		logger.Info("configmap-pod-template = " + types.ControllerConfig.ConfigMapPodPath)
 		logger.Info("configmap-service-template = " + types.ControllerConfig.ConfigMapServicePath)
+		logger.Info("configmap-ingress-template = " + types.ControllerConfig.ConfigMapIngressPath)
 		logger.Info("tls-ca-cert = " + types.ControllerConfig.TlsCaCertPath)
 		logger.Info("tls-server-cert = " + types.ControllerConfig.TlsServerCertPath)
 		logger.Info("tls-server-key = " + types.ControllerConfig.TlsServerKeyPath)
@@ -122,6 +124,7 @@ func init() {
 		fn(types.ControllerConfig.ConfigMapDaemonsetPath, types.DaemonsetTempl)
 		fn(types.ControllerConfig.ConfigMapPodPath, types.PodTempl)
 		fn(types.ControllerConfig.ConfigMapServicePath, types.ServiceTempl)
+		fn(types.ControllerConfig.ConfigMapIngressPath, types.IngressTempl)
 	}
 	cobra.OnInitialize(printFlag)
 

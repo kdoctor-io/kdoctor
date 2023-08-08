@@ -16,7 +16,7 @@ import (
 var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 	var targetDomain = "%s.kubernetes.default.svc.cluster.local"
-
+	var termMin = int64(3)
 	It("Successfully testing Cluster Dns Server case", Label("D00001", "C00005"), func() {
 		var e error
 		successRate := float64(1)
@@ -26,6 +26,11 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		netDns := new(v1beta1.Netdns)
 		netDns.Name = netDnsName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		netDns.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -85,6 +90,11 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		netDns := new(v1beta1.Netdns)
 		netDns.Name = netDnsName
 
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		netDns.Spec.AgentSpec = *agentSpec
+
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
 		successCondition.SuccessRate = &successRate
@@ -127,8 +137,8 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait netDns task finish")
 
 		success, e := common.CompareResult(frame, netDnsName, pluginManager.KindNameNetdns, testPodIPs, reportNum)
-		Expect(success).NotTo(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 })

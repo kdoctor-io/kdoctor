@@ -5,13 +5,11 @@ package netreach_test
 
 import (
 	kdoctor_v1beta1 "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	"github.com/kdoctor-io/kdoctor/test/e2e/common"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	e2e "github.com/spidernet-io/e2eframework/framework"
 	"k8s.io/apimachinery/pkg/runtime"
 	"testing"
-	// "k8s.io/apimachinery/pkg/runtime"
 )
 
 func TestNetReach(t *testing.T) {
@@ -26,9 +24,9 @@ var _ = BeforeSuite(func() {
 	var e error
 	frame, e = e2e.NewFramework(GinkgoT(), []func(*runtime.Scheme) error{kdoctor_v1beta1.AddToScheme})
 	Expect(e).NotTo(HaveOccurred())
-	ds, e := frame.GetDaemonSet(common.KDoctorAgentDSName, common.TestNameSpace)
-	Expect(e).NotTo(HaveOccurred(), "get kdoctor-agent daemonset")
-	reportNum = int(ds.Status.NumberReady)
+	nodeLIst, e := frame.GetNodeList()
+	Expect(e).NotTo(HaveOccurred(), "get node list")
+	reportNum = len(nodeLIst.Items)
 	// TODO (ii2day): add agent multus network
 
 })
