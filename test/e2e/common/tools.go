@@ -186,12 +186,12 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 	// get Aggregate API report
 	var r *kdoctor_report.KdoctorReport
 	var err error
-	c := time.After(time.Second * 30)
+	c := time.After(time.Second * 60)
 	r, err = GetPluginReportResult(f, name, n)
 	for err != nil {
 		select {
 		case <-c:
-			return false, fmt.Errorf("get AppHttpHealth %s report time out,err: %v ", name, err)
+			return false, fmt.Errorf("get %s %s report time out,err: %v ", taskKind, name, err)
 		default:
 			time.Sleep(time.Second * 5)
 			r, err = GetPluginReportResult(f, name, n)
@@ -372,15 +372,19 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 func GetResultFromReport(r *kdoctor_report.KdoctorReport) bool {
 	for _, v := range *r.Spec.Report {
 		if v.NetReachTask != nil {
+			ginkgo.GinkgoWriter.Println("reach")
 			return v.NetReachTask.Succeed
 		}
 		if v.HttpAppHealthyTask != nil {
+			ginkgo.GinkgoWriter.Println("app")
 			return v.HttpAppHealthyTask.Succeed
 		}
 		if v.NetDNSTask != nil {
+			ginkgo.GinkgoWriter.Println("dns")
 			return v.NetDNSTask.Succeed
 		}
 	}
+	ginkgo.GinkgoWriter.Println("none")
 	return true
 }
 

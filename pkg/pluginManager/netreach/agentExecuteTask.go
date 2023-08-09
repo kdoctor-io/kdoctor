@@ -166,7 +166,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			if agentV6Url != nil && len(agentV6Url.ClusterIPUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentClusterV6IP_" + agentV6Url.ClusterIPUrl[0],
-					Url:    fmt.Sprintf("http://[%s]", agentV6Url.ClusterIPUrl[0]),
+					Url:    fmt.Sprintf("http://%s", agentV6Url.ClusterIPUrl[0]),
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
@@ -235,7 +235,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			if agentV6Url != nil && len(agentV6Url.LoadBalancerUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentLoadbalancerV6IP_" + agentV6Url.LoadBalancerUrl[0],
-					Url:    fmt.Sprintf("http://[%s]", agentV6Url.LoadBalancerUrl[0]),
+					Url:    fmt.Sprintf("http://%s", agentV6Url.LoadBalancerUrl[0]),
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
@@ -266,28 +266,10 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			} else {
 				finalfailureReason = "failed to get agent v4 ingress address"
 			}
+		} else {
+			logger.Sugar().Debugf("ignore test agent ingress ipv6")
 		}
 
-		if runtimeResource.ServiceNameV6 != nil {
-			agentIngress, e := k8sObjManager.GetK8sObjManager().GetIngress(ctx, *runtimeResource.ServiceNameV6, config.AgentConfig.PodNamespace)
-			if e != nil {
-				logger.Sugar().Errorf("failed to get v6 ingress , error=%v", e)
-			}
-			if agentIngress != nil && len(agentIngress.Status.LoadBalancer.Ingress) > 0 {
-				http := "http"
-				if len(agentIngress.Spec.TLS) > 0 {
-					http = "https"
-				}
-				url := fmt.Sprintf("%s://%s%s", http, agentIngress.Status.LoadBalancer.Ingress[0].IP, agentIngress.Spec.Rules[0].HTTP.Paths[0].Path)
-				testTargetList = append(testTargetList, &TestTarget{
-					Name:   "AgentIngress_v6_" + url,
-					Url:    url,
-					Method: loadHttp.HttpMethodGet,
-				})
-			} else {
-				finalfailureReason = "failed to get agent v6 ingress address"
-			}
-		}
 	}
 
 	// ------------------------ implement for agent case and selected-pod case

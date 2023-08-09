@@ -74,12 +74,6 @@ func init() {
 	globalFlag.StringVar(&types.AgentConfig.TaskName, "task-name", "", "task name")
 	globalFlag.StringVar(&types.AgentConfig.ServiceV4Name, "service-ipv4-name", "", "agent IPv4 service name")
 	globalFlag.StringVar(&types.AgentConfig.ServiceV6Name, "service-ipv6-name", "", "agent IPv6 service name")
-	if err := rootCmd.MarkPersistentFlagRequired("task-kind"); nil != err {
-		logger.Sugar().Fatalf("failed to mark persistentFlag 'task-kind' as required, error: %v", err)
-	}
-	if err := rootCmd.MarkPersistentFlagRequired("task-name"); nil != err {
-		logger.Sugar().Fatalf("failed to mark persistentFlag 'task-name' as required, error: %v", err)
-	}
 
 	globalFlag.BoolVarP(&types.AgentConfig.AppMode, "app-mode", "A", false, "app mode")
 	globalFlag.BoolVarP(&types.AgentConfig.TlsInsecure, "tls-insecure", "K", true, "skip verify tls")

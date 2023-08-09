@@ -63,9 +63,9 @@ var _ = BeforeSuite(func() {
 	e = frame.KClient.Get(context.Background(), key, caSecret)
 	Expect(e).NotTo(HaveOccurred(), "get kdoctor ca secret")
 
-	ds, e := frame.GetDaemonSet(common.KDoctorAgentDSName, common.TestNameSpace)
-	Expect(e).NotTo(HaveOccurred(), "get kdoctor-agent daemonset")
-	reportNum = int(ds.Status.NumberReady)
+	nodeLIst, e := frame.GetNodeList()
+	Expect(e).NotTo(HaveOccurred(), "get node list")
+	reportNum = len(nodeLIst.Items)
 
 	testAppName = "app-" + tools.RandomName()
 	testAppNamespace = "ns-" + tools.RandomName()

@@ -296,7 +296,6 @@ data:
           targetPort: metrics
           protocol: TCP
         {{- end }}
-        {{- if .Values.feature.enableIPv4 }}
         - name: http
           port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
           targetPort: http
@@ -305,7 +304,6 @@ data:
           port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
           targetPort: https
           protocol: TCP
-        {{- end }}
       ipFamilyPolicy: SingleStack
       ipFamilies:
         - IPv4

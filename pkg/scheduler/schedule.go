@@ -58,7 +58,7 @@ func NewScheduler(client client.Client, apiReader client.Reader, taskKind, taskN
 	return s
 }
 
-func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask metav1.Object, agentSpec v1beta1.AgentSpec, taskKind string) (v1beta1.TaskResource, error) {
+func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask metav1.Object, agentSpec v1beta1.AgentSpec) (v1beta1.TaskResource, error) {
 	taskRuntimeName := TaskRuntimeName(s.taskKind, s.taskName)
 	resource := v1beta1.TaskResource{
 		RuntimeName:   taskRuntimeName,
@@ -132,10 +132,13 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 		}
 		resource.ServiceNameV4 = pointer.String(serviceNameV4)
 
-		if taskKind == types.KindNameNetReach {
-			err = s.createIngress(ctx, serviceNameV4, runtime)
-			if nil != err {
-				return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 ingress for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
+		if s.taskKind == types.KindNameNetReach {
+			nr := ownerTask.(*v1beta1.NetReach)
+			if nr.Spec.Target.Ingress {
+				err = s.createIngress(ctx, serviceNameV4, runtime)
+				if nil != err {
+					return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 ingress for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
+				}
 			}
 		}
 	}
@@ -146,12 +149,6 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 		}
 		resource.ServiceNameV6 = pointer.String(serviceNameV6)
 
-		if taskKind == types.KindNameNetReach {
-			err = s.createIngress(ctx, serviceNameV6, runtime)
-			if nil != err {
-				return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 ingress for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
-			}
-		}
 	}
 
 	return resource, nil

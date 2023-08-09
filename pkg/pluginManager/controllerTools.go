@@ -26,7 +26,8 @@ import (
 )
 
 func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.Context, succeedNodeList []string, podMatchLabel client.MatchingLabels) ([]string, error) {
-	var allNodeList, failNodeList []string
+	allNodeList, failNodeList := []string{}, []string{}
+
 	podList := corev1.PodList{}
 
 	err := s.client.List(ctx, &podList,
@@ -50,7 +51,7 @@ func (s *pluginControllerReconciler) GetSpiderAgentNodeNotInRecord(ctx context.C
 	s.logger.Sugar().Debugf("all agent nodes: %v", allNodeList)
 
 	// gather the failure Node list
-	slices.Filter(failNodeList, allNodeList, func(s string) bool {
+	failNodeList = slices.Filter(failNodeList, allNodeList, func(s string) bool {
 		return !slices.Contains(succeedNodeList, s)
 	})
 
@@ -347,7 +348,7 @@ func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, 
 		logger.Sugar().Debugf("task '%s/%s' just created, try to initial its corresponding runtime resource", taskKind, ownerTask.GetName())
 		newScheduler := scheduler.NewScheduler(s.client, s.apiReader, taskKind, ownerTask.GetName(), s.runtimeUniqueMatchLabelKey, logger)
 		// create the task corresponding resources(runtime,service) and record them to the task CR object subresource with 'Creating' status
-		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec, taskKind)
+		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec)
 		if nil != err {
 			return nil, err
 		}

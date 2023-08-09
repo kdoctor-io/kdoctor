@@ -66,6 +66,11 @@ func (s *reportManager) syncReportFromOneAgent(ctx context.Context, logger *zap.
 		// --
 		v := strings.Split(remoteFileName, "_")
 		timeSuffix := v[len(v)-1]
+		taskName := v[1]
+		if !strings.Contains(podName, taskName) {
+			logger.Sugar().Debugf("task %s not task of pod %s ,skip sync report %s", taskName, podName, remoteFileName)
+			continue
+		}
 		remoteFilePre := strings.TrimSuffix(remoteFileName, "_"+timeSuffix)
 		// file name format: fmt.Sprintf("%s_%s_round%d_%s_%s", kindName, taskName, roundNumber, nodeName, suffix)
 		t := time.Duration(types.ControllerConfig.ReportAgeInDay*24) * time.Hour

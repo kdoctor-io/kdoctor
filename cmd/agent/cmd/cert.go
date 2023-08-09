@@ -129,7 +129,7 @@ func checkServiceReady(logger *zap.Logger) {
 
 	if types.AgentConfig.Configmap.EnableIPv6 {
 		for {
-			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
+			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace)
 			if nil != err {
 				if errors.IsNotFound(err) {
 					logger.Sugar().Errorf("agent runtime IPv6 service %s/%s not exists, wait for controller to create it", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name)
