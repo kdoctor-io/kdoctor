@@ -7,13 +7,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentGrpc"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
+	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"io"
+	"strings"
 	"time"
-
-	"github.com/kdoctor-io/kdoctor/pkg/utils"
 )
 
 // ------ implement
@@ -31,6 +32,13 @@ func (s *myGrpcServer) ExecRemoteCmd(stream agentGrpc.CmdService_ExecRemoteCmdSe
 			logger.Error("grpc server ExecRemoteCmd: got empty command \n")
 			return nil, status.Error(codes.InvalidArgument, "request command is empty")
 		}
+
+		if strings.Contains(r.Command, "cat") {
+			if !strings.Contains(r.Command, types.AgentConfig.TaskName) {
+				return nil, status.Errorf(codes.InvalidArgument, "%s Not the current task %s report,skip", r.Command, types.AgentConfig.TaskName)
+			}
+		}
+
 		if r.Timeoutsecond == 0 {
 			logger.Error("grpc server ExecRemoteCmd: got empty timeout \n")
 			return nil, status.Error(codes.InvalidArgument, "request command is empty")

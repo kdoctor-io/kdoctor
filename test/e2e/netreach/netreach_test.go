@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
-
+	var termMin = int64(3)
 	It("success testing netReach", Label("B00001", "C00004"), func() {
 		var e error
 		successRate := float64(1)
@@ -23,6 +23,11 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 
 		netReach := new(v1beta1.NetReach)
 		netReach.Name = netReachName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		netReach.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -67,8 +72,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait netReach task finish")
 
 		success, e := common.CompareResult(frame, netReachName, pluginManager.KindNameNetReach, []string{}, reportNum)
-		Expect(success).NotTo(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
 	})
 })

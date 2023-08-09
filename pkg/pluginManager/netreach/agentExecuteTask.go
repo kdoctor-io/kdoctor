@@ -166,7 +166,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			if agentV6Url != nil && len(agentV6Url.ClusterIPUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentClusterV6IP_" + agentV6Url.ClusterIPUrl[0],
-					Url:    fmt.Sprintf("http://[%s]", agentV6Url.ClusterIPUrl[0]),
+					Url:    fmt.Sprintf("http://%s", agentV6Url.ClusterIPUrl[0]),
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
@@ -235,7 +235,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			if agentV6Url != nil && len(agentV6Url.LoadBalancerUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentLoadbalancerV6IP_" + agentV6Url.LoadBalancerUrl[0],
-					Url:    fmt.Sprintf("http://[%s]", agentV6Url.LoadBalancerUrl[0]),
+					Url:    fmt.Sprintf("http://%s", agentV6Url.LoadBalancerUrl[0]),
 					Method: loadHttp.HttpMethodGet,
 				})
 			} else {
