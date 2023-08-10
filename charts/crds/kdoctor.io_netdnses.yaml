@@ -57,6 +57,10 @@ spec:
           spec:
             properties:
               agentSpec:
+                default:
+                  hostNetwork: false
+                  kind: DaemonSet
+                  terminationGracePeriodMinutes: 60
                 properties:
                   affinity:
                     description: Affinity is a group of affinity scheduling rules.

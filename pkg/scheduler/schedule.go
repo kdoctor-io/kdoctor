@@ -69,23 +69,18 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 	}
 
 	var runtime client.Object
-	if agentSpec.Kind == nil {
+
+	switch agentSpec.Kind {
+	case types.KindDeployment:
+		runtime = &appsv1.Deployment{}
+		resource.RuntimeType = types.KindDeployment
+
+	case types.KindDaemonSet:
 		runtime = &appsv1.DaemonSet{}
 		resource.RuntimeType = types.KindDaemonSet
-		s.log.Sugar().Debugf("set task %s/%s corresponding runtime as DaemonSet", s.taskKind, s.taskName)
-	} else {
-		switch *agentSpec.Kind {
-		case types.KindDeployment:
-			runtime = &appsv1.Deployment{}
-			resource.RuntimeType = types.KindDeployment
 
-		case types.KindDaemonSet:
-			runtime = &appsv1.DaemonSet{}
-			resource.RuntimeType = types.KindDaemonSet
-
-		default:
-			return v1beta1.TaskResource{}, fmt.Errorf("unrecognized agent runtime kind '%s'", *agentSpec.Kind)
-		}
+	default:
+		return v1beta1.TaskResource{}, fmt.Errorf("unrecognized agent runtime kind '%s'", agentSpec.Kind)
 	}
 
 	var needCreate bool
@@ -107,15 +102,11 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 	}
 
 	if needCreate {
-		if agentSpec.Kind == nil {
+		// create task Runtime
+		if agentSpec.Kind == types.KindDeployment {
+			runtime = s.generateDeployment(agentSpec)
+		} else if agentSpec.Kind == types.KindDaemonSet {
 			runtime = s.generateDaemonSet(agentSpec)
-		} else {
-			// create task Runtime
-			if *agentSpec.Kind == types.KindDeployment {
-				runtime = s.generateDeployment(agentSpec)
-			} else if *agentSpec.Kind == types.KindDaemonSet {
-				runtime = s.generateDaemonSet(agentSpec)
-			}
 		}
 
 		runtime.SetName(taskRuntimeName)

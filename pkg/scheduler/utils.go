@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
+	k8svalidation "k8s.io/apimachinery/pkg/util/validation"
 )
 
 var UniqueMatchLabelValue = TaskRuntimeName
@@ -16,8 +17,8 @@ var UniqueMatchLabelValue = TaskRuntimeName
 // notice: different kind tasks could use the same CR object name, so we need add their kind to generate name.
 func TaskRuntimeName(taskKind, taskName string) string {
 	taskRuntimeName := fmt.Sprintf("%s-%s-%s", kdoctor, strings.ToLower(taskKind), taskName)
-	if len(taskRuntimeName) > 63 {
-		taskRuntimeName = taskRuntimeName[:63]
+	if len(taskRuntimeName) > k8svalidation.DNS1123SubdomainMaxLength {
+		taskRuntimeName = taskRuntimeName[:k8svalidation.DNS1123SubdomainMaxLength]
 	}
 
 	return taskRuntimeName
@@ -26,7 +27,7 @@ func TaskRuntimeName(taskKind, taskName string) string {
 // TaskRuntimeServiceName generates a service name for the corresponding task runtime.
 func TaskRuntimeServiceName(taskRuntimeName string, ipFamily corev1.IPFamily) string {
 	// "*-ipv4" or "*-ipv6"
-	prefixLen := 63 - 5
+	prefixLen := k8svalidation.DNS1123SubdomainMaxLength - 5
 
 	if len(taskRuntimeName) >= prefixLen {
 		taskRuntimeName = taskRuntimeName[:prefixLen]
