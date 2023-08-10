@@ -21,11 +21,6 @@ func (in *AgentSpec) DeepCopyInto(out *AgentSpec) {
 			(*out)[key] = val
 		}
 	}
-	if in.Kind != nil {
-		in, out := &in.Kind, &out.Kind
-		*out = new(string)
-		**out = **in
-	}
 	if in.DeploymentReplicas != nil {
 		in, out := &in.DeploymentReplicas, &out.DeploymentReplicas
 		*out = new(int32)

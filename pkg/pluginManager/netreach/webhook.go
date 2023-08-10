@@ -183,8 +183,8 @@ func (s *PluginNetReach) WebhookValidateCreate(logger *zap.Logger, ctx context.C
 
 	// validate AgentSpec
 	if true {
-		if r.Spec.AgentSpec.Kind != nil && !slices.Contains(types.TaskRuntimes, *r.Spec.AgentSpec.Kind) {
-			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", *r.Spec.AgentSpec.Kind))
+		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
 		}
 	}
 

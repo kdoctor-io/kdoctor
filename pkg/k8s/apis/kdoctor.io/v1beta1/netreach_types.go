@@ -8,7 +8,10 @@ import (
 )
 
 type NetReachSpec struct {
+	// for the nested field, you should add the kubebuilder default tag even if the nested field properties own the default value.
+
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:default={kind: DaemonSet, hostNetwork: false, terminationGracePeriodMinutes: 60}
 	AgentSpec AgentSpec `json:"agentSpec,omitempty"`
 
 	// +kubebuilder:validation:Optional

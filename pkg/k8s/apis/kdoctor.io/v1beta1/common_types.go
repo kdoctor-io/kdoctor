@@ -159,7 +159,7 @@ type AgentSpec struct {
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:default=DaemonSet
 	// +kubebuilder:validation:Enum=Deployment;DaemonSet
-	Kind *string `json:"kind,omitempty"`
+	Kind string `json:"kind,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	DeploymentReplicas *int32 `json:"deploymentReplicas,omitempty"`
