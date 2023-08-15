@@ -18,7 +18,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 
 	It("test udp ", func() {
 
-		dnsServer := "223.5.5.5:53"
+		dnsServer := "8.8.8.8:53"
 		req := &loadDns.DnsRequestData{
 			Protocol:              loadDns.RequestMethodUdp,
 			DnsType:               dns.TypeA,
@@ -48,7 +48,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 
 	It("test latency ", func() {
 
-		dnsServer := "223.5.5.5:53"
+		dnsServer := "8.8.8.8:53"
 		req := &loadDns.DnsRequestData{
 			Protocol:              loadDns.RequestMethodUdp,
 			DnsType:               dns.TypeA,
@@ -108,7 +108,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 
 	It("test bad domain ", func() {
 
-		dnsServer := "223.5.5.5:53"
+		dnsServer := "8.8.8.8:53"
 		req := &loadDns.DnsRequestData{
 			Protocol:              loadDns.RequestMethodUdp,
 			DnsType:               dns.TypeA,
@@ -137,7 +137,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 	})
 
 	It("test aaaa ", Label("aaaa"), func() {
-		dnsServer := "223.5.5.5:53"
+		dnsServer := "8.8.8.8:53"
 		req := &loadDns.DnsRequestData{
 			Protocol:              loadDns.RequestMethodUdp,
 			DnsType:               dns.TypeAAAA,
