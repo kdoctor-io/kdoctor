@@ -9,25 +9,30 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
-	"github.com/onsi/ginkgo/v2"
 	"io"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"math"
 	"net"
 	"net/http"
 	"os/exec"
+	"reflect"
 	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	docker_client "github.com/docker/docker/client"
+	"github.com/onsi/ginkgo/v2"
+	frame "github.com/spidernet-io/e2eframework/framework"
+	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	kdoctor_report "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager"
-	frame "github.com/spidernet-io/e2eframework/framework"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	kdoctor_types "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func WaitKdoctorTaskDone(f *frame.Framework, task client.Object, taskKind string, timeout int) error {
@@ -480,6 +485,438 @@ func CreateTestApp(name, namespace string, o []string) error {
 		ginkgo.GinkgoWriter.Println(stderr.String())
 		ginkgo.GinkgoWriter.Println(stdout.String())
 		return fmt.Errorf("run cmd [%s] failed,err: %v ", cmd.String(), err)
+	}
+
+	return nil
+}
+
+func CheckRuntime(f *frame.Framework, task client.Object, taskKind string, timeout int) error {
+	interval := time.Duration(10)
+	switch taskKind {
+	case pluginManager.KindNameNetReach:
+		fake := &v1beta1.NetReach{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: task.GetName(),
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.NetReach{}
+		after := time.After(time.Duration(timeout) * time.Second)
+		create := false
+		for !create {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime create", pluginManager.KindNameNetReach, task.GetName())
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameNetReach, task.GetName(), err)
+				}
+				if rs.Status.Resource == nil {
+					continue
+				}
+				if rs.Status.Resource.RuntimeStatus == v1beta1.RuntimeCreated {
+					create = true
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+		if err := checkAgentSpec(f, rs, rs.Spec.AgentSpec, rs.Status, pluginManager.KindNameNetReach); err != nil {
+			return fmt.Errorf("check AgentSpce err,reason= %v ", err)
+		}
+	case pluginManager.KindNameAppHttpHealthy:
+		fake := &v1beta1.AppHttpHealthy{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: task.GetName(),
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.AppHttpHealthy{}
+		after := time.After(time.Duration(timeout) * time.Second)
+		create := false
+		for !create {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime create", pluginManager.KindNameAppHttpHealthy, task.GetName())
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameAppHttpHealthy, task.GetName(), err)
+				}
+				if rs.Status.Resource == nil {
+					continue
+				}
+				if rs.Status.Resource.RuntimeStatus == v1beta1.RuntimeCreated {
+					create = true
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+		if err := checkAgentSpec(f, rs, rs.Spec.AgentSpec, rs.Status, pluginManager.KindNameAppHttpHealthy); err != nil {
+			return fmt.Errorf("check AgentSpce err,reason= %v ", err)
+		}
+	case pluginManager.KindNameNetdns:
+		fake := &v1beta1.Netdns{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: task.GetName(),
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.Netdns{}
+		after := time.After(time.Duration(timeout) * time.Second)
+		create := false
+		for !create {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime create", pluginManager.KindNameNetdns, task.GetName())
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameNetdns, task.GetName(), err)
+				}
+				if rs.Status.Resource == nil {
+					continue
+				}
+				if rs.Status.Resource.RuntimeStatus == v1beta1.RuntimeCreated {
+					create = true
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+		if err := checkAgentSpec(f, rs, rs.Spec.AgentSpec, rs.Status, pluginManager.KindNameNetdns); err != nil {
+			return fmt.Errorf("check AgentSpce err,reason= %v ", err)
+		}
+	default:
+		return fmt.Errorf("unknown task type: %s", task.GetObjectKind().GroupVersionKind().Kind)
+	}
+	return nil
+}
+
+// checkAgentSpec check agentSpec generate deployment or daemonSet is right
+func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec v1beta1.AgentSpec, taskStatus v1beta1.TaskStatus, taskKind string) error {
+
+	switch agentSpec.Kind {
+	case kdoctor_types.KindDaemonSet:
+		if taskStatus.Resource.RuntimeType != kdoctor_types.KindDaemonSet {
+			return fmt.Errorf("agent spec is %s,but status reource runtimeType is %s ", kdoctor_types.KindDaemonSet, taskStatus.Resource.RuntimeType)
+		}
+		runtime, err := f.GetDaemonSet(taskStatus.Resource.RuntimeName, TestNameSpace)
+		if err != nil {
+			return fmt.Errorf("failed get runtime daemonset %s ,reason=%v ", taskStatus.Resource.RuntimeName, err)
+		}
+		// compare annotation
+		if !reflect.DeepEqual(runtime.Spec.Template.Annotations, agentSpec.Annotation) {
+			return fmt.Errorf("create runtime daemonset annotation not equal,spec: %v real: %v", agentSpec.Annotation, runtime.Spec.Template.Annotations)
+		}
+
+		// TODO(ii2day): compare env resource affinity
+
+		// compare HostNetwork
+		if !reflect.DeepEqual(runtime.Spec.Template.Spec.HostNetwork, agentSpec.HostNetwork) {
+			return fmt.Errorf("create runtime daemonset HostNetwork not equal,spec: %v real: %v", agentSpec.HostNetwork, runtime.Spec.Template.Spec.HostNetwork)
+		}
+
+	case kdoctor_types.KindDeployment:
+		runtime, err := f.GetDeployment(taskStatus.Resource.RuntimeName, TestNameSpace)
+		if err != nil {
+			return fmt.Errorf("failed get runtime deployment %s ,reason=%v ", taskStatus.Resource.RuntimeName, err)
+		}
+		// compare annotation
+		if !reflect.DeepEqual(runtime.Spec.Template.Annotations, agentSpec.Annotation) {
+			return fmt.Errorf("create runtime deployment annotation not equal,spec: %v real: %v", agentSpec.Annotation, runtime.Spec.Template.Annotations)
+		}
+		// TODO(ii2day): compare env resource affinity
+
+		// compare HostNetwork
+		if !reflect.DeepEqual(runtime.Spec.Template.Spec.HostNetwork, agentSpec.HostNetwork) {
+			return fmt.Errorf("create runtime deployment HostNetwork not equal,spec: %v real: %v", agentSpec.HostNetwork, runtime.Spec.Template.Spec.HostNetwork)
+		}
+
+		// compare replicas
+		if *agentSpec.DeploymentReplicas != runtime.Status.Replicas {
+			return fmt.Errorf("create runtime deployment Replicas not equal,spec: %d real: %d", *agentSpec.DeploymentReplicas, runtime.Status.Replicas)
+		}
+	default:
+		return fmt.Errorf("unknown agent kind %s ", agentSpec.Kind)
+	}
+
+	if TestIPv4 {
+		_, err := f.GetService(*taskStatus.Resource.ServiceNameV4, TestNameSpace)
+		if err != nil {
+			return fmt.Errorf("failed get service %s ,reason=%v ", *taskStatus.Resource.ServiceNameV4, err)
+		}
+	}
+
+	if TestIPv6 {
+		_, err := f.GetService(*taskStatus.Resource.ServiceNameV6, TestNameSpace)
+		if err != nil {
+			return fmt.Errorf("failed get service %s ,reason=%v ", *taskStatus.Resource.ServiceNameV6, err)
+		}
+	}
+	if taskKind == kdoctor_types.KindNameNetReach {
+		taskNr := task.(*v1beta1.NetReach)
+		if taskNr.Spec.Target.Ingress {
+			ig := &networkingv1.Ingress{}
+			fake := &networkingv1.Ingress{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      *taskStatus.Resource.ServiceNameV4,
+					Namespace: TestNameSpace,
+				},
+			}
+			key := client.ObjectKeyFromObject(fake)
+			if err := f.GetResource(key, ig); err != nil {
+				return fmt.Errorf("task %s enable ingress test,but not found %s ingress err=%v", task.GetName(), *taskStatus.Resource.ServiceNameV4, err)
+			}
+		}
+	}
+	return nil
+}
+
+// CheckRuntimeDeadLine check terminationGracePeriodMinutes delete deployment or daemonSet service ingress.
+func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout int) error {
+	interval := time.Duration(10)
+	var runtimeResource *v1beta1.TaskResource
+	var terminationGracePeriodMinutes int64
+	var testIngress = false
+	switch taskKind {
+	case kdoctor_types.KindNameNetReach:
+		fake := &v1beta1.NetReach{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: taskName,
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.NetReach{}
+		after := time.After(time.Duration(timeout) * time.Second)
+		done := false
+		for !done {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime deadline", pluginManager.KindNameNetReach, taskName)
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameNetReach, taskName, err)
+				}
+				if rs.Status.FinishTime != nil {
+					done = true
+					runtimeResource = rs.Status.Resource
+					terminationGracePeriodMinutes = *rs.Spec.AgentSpec.TerminationGracePeriodMinutes
+					testIngress = rs.Spec.Target.Ingress
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+	case kdoctor_types.KindNameNetdns:
+		fake := &v1beta1.Netdns{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: taskName,
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.Netdns{}
+		after := time.After(time.Duration(timeout) * time.Minute)
+		done := false
+		for !done {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime deadline", pluginManager.KindNameNetdns, taskName)
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameNetdns, taskName, err)
+				}
+				if rs.Status.FinishTime != nil {
+					done = true
+					runtimeResource = rs.Status.Resource
+					terminationGracePeriodMinutes = *rs.Spec.AgentSpec.TerminationGracePeriodMinutes
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+	case kdoctor_types.KindNameAppHttpHealthy:
+		fake := &v1beta1.AppHttpHealthy{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: taskName,
+			},
+		}
+		key := client.ObjectKeyFromObject(fake)
+		rs := &v1beta1.AppHttpHealthy{}
+		after := time.After(time.Duration(timeout) * time.Minute)
+		done := false
+		for !done {
+			select {
+			case <-after:
+				return fmt.Errorf("timeout wait task %s %s runtime deadline", pluginManager.KindNameAppHttpHealthy, taskName)
+			default:
+				if err := f.GetResource(key, rs); err != nil {
+					return fmt.Errorf("failed get resource %s %s, err: %v", pluginManager.KindNameAppHttpHealthy, taskName, err)
+				}
+				if rs.Status.FinishTime != nil {
+					done = true
+					runtimeResource = rs.Status.Resource
+					terminationGracePeriodMinutes = *rs.Spec.AgentSpec.TerminationGracePeriodMinutes
+					break
+				}
+				time.Sleep(time.Second * interval)
+			}
+		}
+	default:
+		return fmt.Errorf("unknown task %s type: %s", taskName, taskKind)
+	}
+
+	c := time.After(time.Duration(terminationGracePeriodMinutes) * time.Minute)
+	// wait delete time
+	<-c
+
+	c2 := time.After(time.Minute)
+
+	// check runtime delete
+	runtimeDeleted := false
+	for !runtimeDeleted {
+		select {
+		case <-c2:
+			return fmt.Errorf("timeout delete %s task %s runtime", taskKind, taskName)
+		default:
+			if runtimeResource.RuntimeType == kdoctor_types.KindDaemonSet {
+				_, err := f.GetDaemonSet(runtimeResource.RuntimeName, TestNameSpace)
+				if err != nil {
+					if errors.IsNotFound(err) {
+						ginkgo.GinkgoWriter.Printf("task runtime daemonSet %s deleted \n", runtimeResource.RuntimeName)
+						runtimeDeleted = true
+						break
+					}
+					return fmt.Errorf("failed get task %s deamonSet reason=%v", taskName, err)
+				}
+
+			} else {
+				_, err := f.GetDeployment(runtimeResource.RuntimeName, TestNameSpace)
+				if err != nil {
+					if errors.IsNotFound(err) {
+						ginkgo.GinkgoWriter.Printf("task runtime deployment %s deleted \n", runtimeResource.RuntimeName)
+						runtimeDeleted = true
+						break
+					}
+					return fmt.Errorf("failed get task %s deamonSet reason=%v", taskName, err)
+				}
+			}
+			time.Sleep(time.Second * interval)
+		}
+	}
+
+	// check runtime service ingress delete
+	c3 := time.After(time.Minute)
+	serviceV4Deleted := false
+	serviceV6Deleted := false
+	ingressDeleted := false
+	for !serviceV4Deleted || !serviceV6Deleted {
+		select {
+		case <-c3:
+			return fmt.Errorf("timeout delete %s task %s runtime service", taskKind, taskName)
+		default:
+			if TestIPv4 {
+				_, err := f.GetService(*runtimeResource.ServiceNameV4, TestNameSpace)
+				if err != nil {
+					if errors.IsNotFound(err) {
+						ginkgo.GinkgoWriter.Printf("task runtime service v4 %s deleted \n", *runtimeResource.ServiceNameV4)
+						serviceV4Deleted = true
+					} else {
+						return fmt.Errorf("failed get task %s service %s reason=%v", taskName, *runtimeResource.ServiceNameV4, err)
+					}
+				}
+				if testIngress && !ingressDeleted {
+					ig := &networkingv1.Ingress{}
+					fake := &networkingv1.Ingress{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      *runtimeResource.ServiceNameV4,
+							Namespace: TestNameSpace,
+						},
+					}
+					key := client.ObjectKeyFromObject(fake)
+					err = f.GetResource(key, ig)
+					if err != nil {
+						if errors.IsNotFound(err) {
+							ginkgo.GinkgoWriter.Printf("task runtime ingress %s deleted \n", *runtimeResource.ServiceNameV4)
+							ingressDeleted = true
+						} else {
+							return fmt.Errorf("task %s enable ingress test,but not found %s ingress err=%v", taskName, *runtimeResource.ServiceNameV4, err)
+						}
+					}
+				} else {
+					ingressDeleted = true
+				}
+			} else {
+				serviceV4Deleted = true
+			}
+			if TestIPv6 {
+				_, err := f.GetService(*runtimeResource.ServiceNameV6, TestNameSpace)
+				if err != nil {
+					if errors.IsNotFound(err) {
+						ginkgo.GinkgoWriter.Printf("task runtime service v6 %s deleted \n", *runtimeResource.ServiceNameV6)
+						serviceV6Deleted = true
+						break
+					}
+					return fmt.Errorf("failed get task %s service %s reason=%v", taskName, *runtimeResource.ServiceNameV6, err)
+				}
+			} else {
+				serviceV6Deleted = true
+			}
+			time.Sleep(time.Second * interval)
+		}
+	}
+
+	return nil
+
+}
+
+func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingress bool) error {
+	if resource == nil {
+		return fmt.Errorf("runtime resource is nil")
+	}
+
+	c := time.After(time.Minute)
+	<-c
+
+	switch resource.RuntimeType {
+	case kdoctor_types.KindDaemonSet:
+		_, err := f.GetDaemonSet(resource.RuntimeName, TestNameSpace)
+		if !errors.IsNotFound(err) {
+			return fmt.Errorf("after 1 min runtime daemonset %s not delete", resource.RuntimeName)
+		}
+	case kdoctor_types.KindDeployment:
+		_, err := f.GetDeployment(resource.RuntimeName, TestNameSpace)
+		if !errors.IsNotFound(err) {
+			return fmt.Errorf("after 1 min runtime deployment %s not delete", resource.RuntimeName)
+		}
+	}
+
+	if resource.ServiceNameV4 != nil {
+		_, err := f.GetService(*resource.ServiceNameV4, TestNameSpace)
+		if !errors.IsNotFound(err) {
+			return fmt.Errorf("after 1 min runtime service %s not delete", *resource.ServiceNameV4)
+		}
+
+		if ingress {
+			ig := &networkingv1.Ingress{}
+			fake := &networkingv1.Ingress{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      *resource.ServiceNameV4,
+					Namespace: TestNameSpace,
+				},
+			}
+			key := client.ObjectKeyFromObject(fake)
+			err := f.GetResource(key, ig)
+			if !errors.IsNotFound(err) {
+				return fmt.Errorf("after 1 min runtime ingress %s not delete", *resource.ServiceNameV4)
+			}
+		}
+	}
+
+	if resource.ServiceNameV6 != nil {
+		_, err := f.GetService(*resource.ServiceNameV6, TestNameSpace)
+		if !errors.IsNotFound(err) {
+			return fmt.Errorf("after 1 min runtime service %s not delete", *resource.ServiceNameV6)
+		}
 	}
 
 	return nil

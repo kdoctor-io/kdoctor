@@ -16,8 +16,8 @@ import (
 var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 	var targetDomain = "%s.kubernetes.default.svc.cluster.local"
-	var termMin = int64(3)
-	It("Successfully testing Cluster Dns Server case", Label("D00001", "C00005"), func() {
+	var termMin = int64(1)
+	It("Successfully testing Cluster Dns Server case", Label("D00001", "C00005", "E00003"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -71,12 +71,18 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		e = frame.CreateResource(netDns)
 		Expect(e).NotTo(HaveOccurred(), "create netDns resource")
 
+		e = common.CheckRuntime(frame, netDns, pluginManager.KindNameNetdns, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, netDns, pluginManager.KindNameNetdns, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait netDns task finish")
 
 		success, e := common.CompareResult(frame, netDnsName, pluginManager.KindNameNetdns, []string{}, reportNum)
-		Expect(success).NotTo(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).NotTo(BeFalse(), "compare report and task result")
+
+		e = common.CheckRuntimeDeadLine(frame, netDnsName, pluginManager.KindNameNetdns, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 
 	})
 
@@ -133,6 +139,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		e = frame.CreateResource(netDns)
 		Expect(e).NotTo(HaveOccurred(), "create netDns resource")
 
+		e = common.CheckRuntime(frame, netDns, pluginManager.KindNameNetdns, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, netDns, pluginManager.KindNameNetdns, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait netDns task finish")
 
@@ -140,5 +149,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, netDnsName, pluginManager.KindNameNetdns, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 })

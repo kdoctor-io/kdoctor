@@ -75,16 +75,16 @@ status:
 
 #### AgentSpec
 
-| 字段                            | 描述                     | 结构                                                                                                                                     | 验证  | 取值                   | 默认值       |
-|-------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|-----|----------------------|-----------|
-| annotation                    | agent 工作负载的 annotation | map[string]string                                                                                                                      | 可选  |                      |           |
-| kind                          | agent 工作负载的类型          | string                                                                                                                                 | 可选  | Deployment、DaemonSet | DaemonSet |
-| deploymentReplicas            | agent 工作负载类型为 deployment 时的期望副本数 | int                                                                                                                                    | 可选  | 大于等于 0               | 0         |
-| affinity                      | agent 工作负载亲和性          | [labelSelector](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/types.go#L1195) | 可选  |                      |           |
-| env                           | agent 工作负载环境变量         | [env](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/api/core/v1/types.go#L2012)                             | 可选  |                      |           |
-| hostNetwork                   | agent 工作负载是否使用宿主机网络    | bool                                                                                                                                   | 可选  | true、false           | false     |
-| resources                     | agent 工作负载资源使用配置       | [resources](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/api/core/v1/types.go#L2333)             | 可选  |                      |         |
-| terminationGracePeriodMinutes | agent 工作负载完成任务后多少分钟之后终止 | int                                                                                                                                    | 可选  | 大于等于 0               | 60        |
+| 字段                            | 描述                     | 结构                                                                                                                                     | 验证  | 取值                   | 默认值                |
+|-------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|-----|----------------------|--------------------|
+| annotation                    | agent 工作负载的 annotation | map[string]string                                                                                                                      | 可选  |                      |                    |
+| kind                          | agent 工作负载的类型          | string                                                                                                                                 | 可选  | Deployment、DaemonSet | DaemonSet          |
+| deploymentReplicas            | agent 工作负载类型为 deployment 时的期望副本数 | int                                                                                                                                    | 可选  | 大于等于 0               | 0                  |
+| affinity                      | agent 工作负载亲和性          | [labelSelector](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/types.go#L1195) | 可选  |                      |                    |
+| env                           | agent 工作负载环境变量         | [env](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/api/core/v1/types.go#L2012)                             | 可选  |                      |                    |
+| hostNetwork                   | agent 工作负载是否使用宿主机网络    | bool                                                                                                                                   | 可选  | true、false           | false              |
+| resources                     | agent 工作负载资源使用配置       | [resources](https://github.com/kubernetes/kubernetes/blob/v1.27.0/staging/src/k8s.io/api/core/v1/types.go#L2333)             | 可选  |                      | cpu:100m,memory:128Mi |
+| terminationGracePeriodMinutes | agent 工作负载完成任务后多少分钟之后终止 | int                                                                                                                                    | 可选  | 大于等于 0               | 60                 |
 
 
 #### Schedule

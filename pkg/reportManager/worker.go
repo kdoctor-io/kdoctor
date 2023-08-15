@@ -87,7 +87,7 @@ func (s *reportManager) syncReportFromOneAgent(ctx context.Context, logger *zap.
 
 }
 
-func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger) error {
+func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger, taskName string) error {
 
 	// grpc client
 	grpcClient := grpcManager.NewGrpcClient(s.logger.Named("grpc"), true)
@@ -106,6 +106,10 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 			// only collect created runtime report
 			if m.RuntimeStatus != crd.RuntimeCreated {
 				logger.Sugar().Debugf("task %s runtime %s status %s not created finish", m.TaskName, m.RuntimeName, m.RuntimeStatus)
+				continue
+			}
+			if m.TaskName != taskName {
+				logger.Sugar().Debugf("this agent %s is not ccurrent sync task %s ,skip ", m.RuntimeName, taskName)
 				continue
 			}
 			var podIP k8sObjManager.PodIps
@@ -161,5 +165,12 @@ func (s *reportManager) syncHandler(ctx context.Context, triggerName string) err
 	logger := s.logger.With(
 		zap.String("triggerSource", triggerName),
 	)
-	return s.runControllerAggregateReportOnce(ctx, logger)
+	var taskName string
+	if triggerName == "periodicallyTrigger" {
+		taskName = triggerName
+	} else {
+		taskName = strings.Split(triggerName, ".")[1]
+	}
+
+	return s.runControllerAggregateReportOnce(ctx, logger, taskName)
 }
