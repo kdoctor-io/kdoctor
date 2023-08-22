@@ -177,7 +177,6 @@ type AgentSpec struct {
 	// +kubebuilder:validation:Optional
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 
-	// +kubebuilder:default=60
 	// +kubebuilder:validation:Optional
 	TerminationGracePeriodMinutes *int64 `json:"terminationGracePeriodMinutes,omitempty"`
 }

@@ -26,6 +26,7 @@ global:
   ## @param global.configName the configmap name
   configName: "kdoctor"
 
+  ## @param global.configAppTemplate the configmap name of agent
   configAppTemplate: "kdoctor-app-config-template"
 
 
@@ -61,6 +62,9 @@ feature:
   ## @param feature.netdns_defaultConcurrency concurrency  for kind netdns
   netdns_defaultConcurrency: 50
 
+  ## @param feature.agentDefaultTerminationGracePeriodMinutes agent termination after minutes
+  agentDefaultTerminationGracePeriodMinutes: 60
+
   ## @param feature.taskPollIntervalInSecond the interval to poll the task in controller and agent pod
   taskPollIntervalInSecond: 5
 
@@ -77,7 +81,7 @@ feature:
 
     ## @param feature.aggregateReport.cleanAgedReportIntervalInMinute the interval in minute for removing aged report
     cleanAgedReportIntervalInMinute: "10"
-
+    ## aggregate report from agent
     agent:
       ## @param feature.aggregateReport.agent.reportPath the path where the agent pod temporarily store task report.
       reportPath: "/report"
@@ -182,6 +186,7 @@ kdoctorAgent:
   ## @param kdoctorAgent.priorityClassName the priority Class Name for kdoctorAgent
   priorityClassName: "system-node-critical"
 
+  ## @param kdoctorAgent.reportHostPath storage path when pvc is disabled
   reportHostPath: "/var/run/kdoctor/agent"
 
   ## @param kdoctorAgent.affinity the affinity of kdoctorAgent
@@ -208,14 +213,12 @@ kdoctorAgent:
   resources:
     ## @param kdoctorAgent.resources.limits.cpu the cpu limit of kdoctorAgent pod
     ## @param kdoctorAgent.resources.limits.memory the memory limit of kdoctorAgent pod
-    ## @param kdoctorAgent.resources.requests.cpu the cpu requests of kdoctorAgent pod
-    ## @param kdoctorAgent.resources.requests.memory the memory requests of kdoctorAgent pod
     limits:
       cpu: 1000m
       memory: 1024Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+#    requests:
+#      cpu: 100m
+#      memory: 128Mi
 
   ## @param kdoctorAgent.securityContext the security Context of kdoctorAgent pod
   securityContext: {}
@@ -228,9 +231,9 @@ kdoctorAgent:
   httpServer:
     ## @param kdoctorAgent.httpServer.healthPort the http Port for kdoctorAgent, for health checking
     healthPort: 5710
-    ## @param kdoctorAgent.httpServer.appPort the http Port for kdoctorAgent, testing connect
+    ## @param kdoctorAgent.httpServer.appHttpPort the http Port for kdoctorAgent, testing connect
     appHttpPort: 80
-    ## @param kdoctorAgent.httpServer.appPort the https Port for kdoctorAgent, testing connect
+    ## @param kdoctorAgent.httpServer.appHttpsPort the https Port for kdoctorAgent, testing connect
     appHttpsPort: 443
 
     startupProbe:
@@ -310,7 +313,7 @@ kdoctorController:
   ## @param kdoctorController.replicas the replicas number of kdoctorController pod
   replicas: 1
 
-  ## @param kdoctorController.binName the binName name of kdoctorController
+  ## @param kdoctorController.cmdBinName the binName name of kdoctorController
   cmdBinName: "/usr/bin/controller"
 
   ## @param kdoctorController.hostnetwork enable hostnetwork mode of kdoctorController pod. Notice, if no CNI available before template installation, must enable this
@@ -409,7 +412,7 @@ kdoctorController:
     minAvailable: 1
 
   httpServer:
-    ## @param kdoctorController.port the http Port for kdoctorController, for health checking and http service
+    ## @param kdoctorController.httpServer.port the http Port for kdoctorController, for health checking and http service
     port: 80
 
     startupProbe:
@@ -490,18 +493,19 @@ kdoctorController:
     gopsPort: 5724
 
   apiserver:
-    ## @param kdoctorApiserver.name the kdoctorApiserver name
+    ## @param kdoctorController.apiserver.name the kdoctorApiserver name
     name: "kdoctor-apiserver"
 
 ## TLS configuration for kdoctor
 tls:
+  ## ## TLS ca for kdoctor
   ca:
     ## @param tls.ca.secretName the secret name for storing TLS certificates
     secretName: "kdoctor-ca"
 
   ## TLS configuration for kdoctor client
   client:
-    ## @param tls.ca.client.secretName the secret name for storing TLS certificates
+    ## @param tls.client.secretName the secret name for storing TLS certificates
     secretName: "kdoctor-client-cert"
 
   ## TLS configuration for webhook

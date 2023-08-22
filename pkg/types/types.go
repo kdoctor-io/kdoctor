@@ -21,7 +21,8 @@ type ConfigmapConfig struct {
 	AgentIngressName     string `yaml:"agentIngressName"`
 	AgentDaemonsetName   string `yaml:"agentDaemonsetName"`
 
-	KdoctorAgent KdoctorAgentConfig `yaml:"kdoctorAgent"`
+	AgentDefaultTerminationGracePeriodMinutes int64              `yaml:"agentDefaultTerminationGracePeriodMinutes"`
+	KdoctorAgent                              KdoctorAgentConfig `yaml:"kdoctorAgent"`
 }
 
 type KdoctorAgentConfig struct {

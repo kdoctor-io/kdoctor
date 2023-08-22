@@ -27,6 +27,12 @@ func (s *PluginNetDns) WebhookMutating(logger *zap.Logger, ctx context.Context, 
 	}
 	logger.Sugar().Infof("obj: %+v", r)
 
+	// agentSpec
+	if true {
+		if r.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
+			r.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+		}
+	}
 	// TODO: mutating default value
 
 	return nil

@@ -63,6 +63,13 @@ func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.C
 		}
 	}
 
+	// agentSpec
+	if true {
+		if req.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
+			req.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+		}
+	}
+
 	return nil
 }
 

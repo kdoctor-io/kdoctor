@@ -46,6 +46,7 @@ nav:
       - NetDns: usage/netdns.md
   - Concepts:
       - Architecture: reference/arch.md
+      - Runtime: concepts/runtime.md
   - Reference:
       - AppHttpHealthy: reference/apphttphealthy.md
       - NetReach: reference/netreach.md

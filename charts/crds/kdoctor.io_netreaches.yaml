@@ -1111,7 +1111,6 @@ spec:
                         type: object
                     type: object
                   terminationGracePeriodMinutes:
-                    default: 60
                     format: int64
                     type: integer
                 type: object

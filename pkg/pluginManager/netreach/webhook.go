@@ -105,6 +105,12 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 		logger.Sugar().Debugf("set default SuccessCondition for NetReach %v", req.Name)
 	}
 
+	// agentSpec
+	if true {
+		if req.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
+			req.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+		}
+	}
 	return nil
 }
 

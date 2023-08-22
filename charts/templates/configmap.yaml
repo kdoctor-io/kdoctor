@@ -24,6 +24,7 @@ data:
     nethttp_defaultRequest_PerRequestTimeoutInMS: {{ .Values.feature.nethttp_defaultRequest_PerRequestTimeoutInMS }}
     netdns_defaultConcurrency: {{ .Values.feature.netdns_defaultConcurrency }}
     multusPodAnnotationKey: {{ .Values.feature.multusPodAnnotationKey }}
+    agentDefaultTerminationGracePeriodMinutes: {{ .Values.feature.agentDefaultTerminationGracePeriodMinutes }}
     crdMaxHistory: {{ .Values.feature.crdMaxHistory }}
     {{- if .Values.feature.enableIPv4 }}
     agentSerivceIpv4Name: {{ include "project.kdoctorAgent.serviceIpv4Name" . }}
