@@ -61,7 +61,7 @@ jobs:
         id: prepare
         run: |
           if ${{ inputs.tagoverride != '' }} ; then
-               echo ::set-output name=imagetag::${{ inputs.tagoverride }}
+               echo "RUN_IMAGE_TAG=${{ inputs.tagoverride }}" >> $GITHUB_ENV
                exit 0
           fi
           if ${{ inputs.ref != '' }} ; then
