@@ -509,6 +509,40 @@ install_nginx:
 			  --set controller.ingressClassResource.default=true \
 			  $${HELM_OPTION}
 
+.PHONY: clean_kdoctor_crd
+clean_kdoctor_crd: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+clean_kdoctor_crd:
+	@echo -e "\033[35m [clean kdoctor crd] \033[0m"
+	@kubectl delete crd netdnses.kdoctor.io --kubeconfig $(KIND_KUBECONFIG)
+	@kubectl delete crd apphttphealthies.kdoctor.io --kubeconfig $(KIND_KUBECONFIG)
+	@kubectl delete crd netreaches.kdoctor.io --kubeconfig $(KIND_KUBECONFIG)
+	@ALL_CRD=`kubectl get crd -n $(E2E_INSTALL_NAMESPACE) --kubeconfig $(KIND_KUBECONFIG)  | awk '{print $$1 } ' ` ; FAIL="false" ; FOUND="false"; \
+	for CRD in $$ALL_CRD ; do \
+		echo $${CRD} | grep -q 'kdoctor.io' && FOUND="true" && echo "error, failed to clean kdoctor crd: $${CRD}" ; \
+	    if [ "$$FOUND" == "true" ] ; then \
+           echo -e "\033[35m [===== describe crd: $${CRD} =====] \033[0m" ; \
+		   kubectl describe crd $${CRD} --kubeconfig $(KIND_KUBECONFIG) ; \
+		   echo -e "\033[35m [===== get crd: $${CRD} -ojson =====] \033[0m" ; \
+           kubectl get crd $${CRD} -ojson --kubeconfig $(KIND_KUBECONFIG) ; \
+           FAIL="true" ; \
+           FOUND="false" ; \
+		fi ; \
+	done ; \
+	[ "$$FAIL" == "true" ] && echo "kdoctor crd cleanup failed" && exit 1 ; \
+	echo -e "\033[35m [done] all kdoctor crd cleaned up !!! \033[0m"
+
+.PHONY: helm_uninstall_kdoctor
+helm_uninstall_kdoctor: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+helm_uninstall_kdoctor:
+	@echo -e "\033[35m [helm uninstall kdoctor] \033[0m"
+	helm uninstall project --wait --debug -n $(E2E_INSTALL_NAMESPACE) \
+	     --kubeconfig $(KIND_KUBECONFIG)  || { KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail"   ; exit 1 ; } ; \
+
+.PHONY: uninstall_kdoctor
+uninstall_kdoctor:
+	@echo -e "\033[35m [uninstall kdoctor] \033[0m"
+	@ make helm_uninstall_kdoctor
+	@ make clean_kdoctor_crd
 
 
 #==========================
