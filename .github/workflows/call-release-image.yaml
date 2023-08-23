@@ -23,6 +23,9 @@ on:
       suffix:
         required: false
         type: string
+      tagoverride:
+        required: false
+        type: string
       race:
         required: true
         type: string
@@ -57,6 +60,10 @@ jobs:
       - name: Getting Image Ref
         id: prepare
         run: |
+          if ${{ inputs.tagoverride != '' }} ; then
+               echo "RUN_IMAGE_TAG=${{ inputs.tagoverride }}" >> $GITHUB_ENV
+               exit 0
+          fi
           if ${{ inputs.ref != '' }} ; then
               echo "call by workflow_call"
               image_ref=${{ inputs.ref }}
