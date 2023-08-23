@@ -1,4 +1,4 @@
-name: 'Helm'
+name: Check Chart Readme
 
 on:
   pull_request_target:
