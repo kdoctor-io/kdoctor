@@ -16,7 +16,7 @@ jobs:
   call-workflow:
     uses: ./.github/workflows/call-release-image.yaml
     with:
-      ref: ${{ github.event.inputs.ref }}
+      ref: 'main'
       tagoverride: 'latest'
       push: "true"
       upload: "false"
