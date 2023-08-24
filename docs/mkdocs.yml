@@ -51,6 +51,8 @@ nav:
       - AppHttpHealthy: reference/apphttphealthy.md
       - NetReach: reference/netreach.md
       - NetDns: reference/netdns.md
+      - kdoctor-controller: reference/kdoctor-controller.md
+      - kdoctor-agent: reference/kdoctor-agent.md
       - Report: reference/report.md
       - Performance: usage/performance.md
   - Development:
