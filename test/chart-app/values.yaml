@@ -1,5 +1,5 @@
 #aap name
-appName: http-server-test
+appName: server
 
 # Deployment or DaemonSet
 appKind: Deployment

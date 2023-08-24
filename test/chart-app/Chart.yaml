@@ -1,5 +1,5 @@
 apiVersion: v2
-name: http-server-test
+name: server
 home: "https://kdoctor-io.github.io/kdoctor"
 # application or library
 type: application
@@ -10,7 +10,7 @@ version: 0.1.0
 # no need to modify this version , CI will auto update it with /VERSION
 appVersion: "0.1.0"
 kubeVersion: ">= 1.16.0-0"
-description: http-server-test for kdoctor
+description: server for kdoctor test
 sources:
   - "https://github.com/kdoctor-io/kdoctor"
 keywords:

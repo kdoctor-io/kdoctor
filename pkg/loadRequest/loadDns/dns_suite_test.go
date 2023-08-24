@@ -18,5 +18,5 @@ func TestIppoolCR(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	// nothing to do
-	config.AgentConfig.Configmap.NetdnsDefaultConcurrency = 50
+	config.AgentConfig.Configmap.NetdnsDefaultConcurrency = 10
 })
