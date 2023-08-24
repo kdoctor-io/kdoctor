@@ -4,7 +4,7 @@
 
 ## 基本描述 
 
-对于这种任务，每个 kdoctor agent都会向指定的目标发送http请求，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
+对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent pod 都会向指定的目标发送http请求，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
 ## AppHttpHealthy 示例
 
@@ -14,6 +14,10 @@ kind: AppHttpHealthy
 metadata:
   name: apphttphealth
 spec:
+  agentSpec:
+    hostNetwork: false
+    kind: DaemonSet
+    terminationGracePeriodMinutes: 60
   expect:
     meanAccessDelayInMs: 1500
     successRate: 1
@@ -60,13 +64,27 @@ status:
 
 ### Spec
 
-| 字段       | 描述               | 结构                                       | 验证      | 取值    | 默认值  |
-|-----------|------------------|------------------------------------------|---------|-------|------|
-| schedule  | 调度任务执行           | [schedule](./apphttphealthy-zh_CN.md#Schedule) | 可选      |       |      |
-| request   | 对目标地址请求配置        | [request](./apphttphealthy-zh_CN.md#Request)   | 可选      |       |      |
-| target    | 请求目标设置           | [target](./apphttphealthy-zh_CN.md#Target)     | 可选      |       |      |
-| expect    | 任务成功条件判断         | [expect](./apphttphealthy-zh_CN.md#Expect)     | 可选      |       |      |
+| 字段       | 描述          | 结构                                         | 验证      | 取值    | 默认值  |
+|-----------|-------------|--------------------------------------------|---------|-------|------|
+| agentSpec  | 任务执行agent配置 | [agentSpec](./apphttphealthy-zh_CN.md#AgentSpec) | 可选      |       |      |
+| schedule  | 调度任务执行      | [schedule](./apphttphealthy-zh_CN.md#Schedule)   | 可选      |       |      |
+| request   | 对目标地址请求配置   | [request](./apphttphealthy-zh_CN.md#Request)     | 可选      |       |      |
+| target    | 请求目标设置      | [target](./apphttphealthy-zh_CN.md#Target)       | 可选      |       |      |
+| expect    | 任务成功条件判断    | [expect](./apphttphealthy-zh_CN.md#Expect)       | 可选      |       |      |
 
+
+#### AgentSpec
+
+| 字段                            | 描述                     | 结构                                                                                                                               | 验证  | 取值                   | 默认值                           |
+|-------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----|----------------------|-------------------------------|
+| annotation                    | agent 工作负载的 annotation | map[string]string                                                                                                                | 可选  |                      |                               |
+| kind                          | agent 工作负载的类型          | string                                                                                                                           | 可选  | Deployment、DaemonSet | DaemonSet                     |
+| deploymentReplicas            | agent 工作负载类型为 deployment 时的期望副本数 | int                                                                                                                              | 可选  | 大于等于 0               | 0                             |
+| affinity                      | agent 工作负载亲和性          | labelSelector | 可选  |                      |                               |
+| env                           | agent 工作负载环境变量         | env                      | 可选  |                      |                               |
+| hostNetwork                   | agent 工作负载是否使用宿主机网络    | bool                                                                                                                             | 可选  | true、false           | false                         |
+| resources                     | agent 工作负载资源使用配置       | resources       | 可选  |                      | limit cpu:1000m,memory:1024Mi |
+| terminationGracePeriodMinutes | agent 工作负载完成任务后多少分钟之后终止 | int                                                                                                                              | 可选  | 大于等于 0               | 60                            |
 
 #### Schedule
 

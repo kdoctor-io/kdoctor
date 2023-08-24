@@ -4,7 +4,7 @@
 
 ## 介绍 
 
-对于这种任务，每个 kdoctor agent 都会向指定的目标发送 http 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kodcotr 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
+对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent pod 都会向指定的目标发送 http 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kodcotr 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
 1.应用场景：
     

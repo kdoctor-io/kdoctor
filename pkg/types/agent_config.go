@@ -61,6 +61,11 @@ type AgentConfigStruct struct {
 	AppMode        bool
 	AppDnsUpstream bool
 
+	TaskKind      string
+	TaskName      string
+	ServiceV4Name string
+	ServiceV6Name string
+
 	// from configmap
 	Configmap ConfigmapConfig
 }

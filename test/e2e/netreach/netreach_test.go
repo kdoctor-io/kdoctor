@@ -13,8 +13,8 @@ import (
 )
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
-
-	It("success testing netReach", Label("B00001", "C00004"), func() {
+	var termMin = int64(1)
+	It("success testing netReach", Label("B00001", "C00004", "E00001"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -23,6 +23,11 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 
 		netReach := new(v1beta1.NetReach)
 		netReach.Name = netReachName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		netReach.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -63,12 +68,18 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		e = frame.CreateResource(netReach)
 		Expect(e).NotTo(HaveOccurred(), "create netReach resource")
 
+		e = common.CheckRuntime(frame, netReach, pluginManager.KindNameNetReach, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, netReach, pluginManager.KindNameNetReach, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait netReach task finish")
 
 		success, e := common.CompareResult(frame, netReachName, pluginManager.KindNameNetReach, []string{}, reportNum)
-		Expect(success).NotTo(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, netReachName, pluginManager.KindNameNetReach, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
+
 })

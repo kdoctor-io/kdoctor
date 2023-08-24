@@ -53,8 +53,6 @@ helm  install kdoctor kdoctor/kdoctor \
 ```shell
 kubectl get pod -n kdoctor
 NAME                                  READY   STATUS    RESTARTS   AGE
-kdoctor-agent-gp5mh                   1/1     Running   0          137m
-kdoctor-agent-xkjn4                   1/1     Running   0          137m
 kdoctor-controller-686b75d6d7-k4dcq   1/1     Running   0          137m
 ```
 

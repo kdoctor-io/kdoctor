@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/grpcManager"
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
@@ -65,6 +66,11 @@ func (s *reportManager) syncReportFromOneAgent(ctx context.Context, logger *zap.
 		// --
 		v := strings.Split(remoteFileName, "_")
 		timeSuffix := v[len(v)-1]
+		taskName := v[1]
+		if !strings.Contains(podName, taskName) {
+			logger.Sugar().Debugf("task %s not task of pod %s ,skip sync report %s", taskName, podName, remoteFileName)
+			continue
+		}
 		remoteFilePre := strings.TrimSuffix(remoteFileName, "_"+timeSuffix)
 		// file name format: fmt.Sprintf("%s_%s_round%d_%s_%s", kindName, taskName, roundNumber, nodeName, suffix)
 		t := time.Duration(types.ControllerConfig.ReportAgeInDay*24) * time.Hour
@@ -81,7 +87,7 @@ func (s *reportManager) syncReportFromOneAgent(ctx context.Context, logger *zap.
 
 }
 
-func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger) error {
+func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger, taskName string) error {
 
 	// grpc client
 	grpcClient := grpcManager.NewGrpcClient(s.logger.Named("grpc"), true)
@@ -93,48 +99,62 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 		return nil
 	}
 	logger.Sugar().Debugf("before sync, local report files: %v", localFileList)
+	// get all runtime obj
+	for _, v := range s.runtimeDB {
 
-	// get all agent ip
-	allPodIp, e := k8sObjManager.GetK8sObjManager().ListDaemonsetPodIPs(context.Background(), types.ControllerConfig.Configmap.AgentDaemonsetName, types.ControllerConfig.PodNamespace)
-	if e != nil {
-		m := fmt.Sprintf("failed to get agent ip, error=%v", e)
-		logger.Error(m)
-		// retry
-		return fmt.Errorf(m)
-	}
-	if len(allPodIp) == 0 {
-		m := "get empty agent ip"
-		logger.Error(m)
-		// retry
-		return fmt.Errorf(m)
-	}
+		for _, m := range v.List() {
+			// only collect created runtime report
+			if m.RuntimeStatus != crd.RuntimeCreated {
+				logger.Sugar().Debugf("task %s runtime %s status %s not created finish", m.TaskName, m.RuntimeName, m.RuntimeStatus)
+				continue
+			}
+			if m.TaskName != taskName {
+				logger.Sugar().Debugf("this agent %s is not ccurrent sync task %s ,skip ", m.RuntimeName, taskName)
+				continue
+			}
+			var podIP k8sObjManager.PodIps
+			var err error
+			if m.RuntimeKind == types.KindDaemonSet {
+				podIP, err = k8sObjManager.GetK8sObjManager().ListDaemonsetPodIPs(context.Background(), m.RuntimeName, types.ControllerConfig.PodNamespace)
+			}
+			if m.RuntimeKind == types.KindDeployment {
+				podIP, err = k8sObjManager.GetK8sObjManager().ListDeploymentPodIPs(context.Background(), m.RuntimeName, types.ControllerConfig.PodNamespace)
+			}
+			logger.Sugar().Debugf("podIP : %v", podIP)
+			if err != nil {
+				m := fmt.Sprintf("failed to get kind %s name %s agent ip, error=%v", m.RuntimeKind, m.RuntimeName, err)
+				logger.Error(m)
+				// retry
+				return fmt.Errorf(m)
+			}
 
-	for podName, podIpInfo := range allPodIp {
-		// get pod ip
-		if len(podIpInfo) == 0 {
-			logger.Sugar().Errorf("failed to get agent %s ip ", podName)
-			continue
-		}
-		var podip string
-		if types.ControllerConfig.Configmap.EnableIPv4 {
-			podip = podIpInfo[0].IPv4
-		} else {
-			podip = podIpInfo[0].IPv6
-		}
-		if len(podip) == 0 {
-			logger.Sugar().Errorf("failed to get agent %s ip ", podName)
-			continue
-		}
+			for podName, podIpInfo := range podIP {
+				// get pod ip
+				if len(podIpInfo) == 0 {
+					logger.Sugar().Errorf("failed to get agent %s ip ", podName)
+					continue
+				}
+				var podip string
+				if types.ControllerConfig.Configmap.EnableIPv4 {
+					podip = podIpInfo[0].IPv4
+				} else {
+					podip = podIpInfo[0].IPv6
+				}
+				if len(podip) == 0 {
+					logger.Sugar().Errorf("failed to get agent %s ip ", podName)
+					continue
+				}
 
-		ip := net.ParseIP(podip)
-		var address string
-		if ip.To4() == nil {
-			address = fmt.Sprintf("[%s]:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
-		} else {
-			address = fmt.Sprintf("%s:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+				ip := net.ParseIP(podip)
+				var address string
+				if ip.To4() == nil {
+					address = fmt.Sprintf("[%s]:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+				} else {
+					address = fmt.Sprintf("%s:%d", podip, types.ControllerConfig.AgentGrpcListenPort)
+				}
+				s.syncReportFromOneAgent(ctx, logger, grpcClient, localFileList, podName, address)
+			}
 		}
-		s.syncReportFromOneAgent(ctx, logger, grpcClient, localFileList, podName, address)
-
 	}
 
 	return nil
@@ -145,5 +165,12 @@ func (s *reportManager) syncHandler(ctx context.Context, triggerName string) err
 	logger := s.logger.With(
 		zap.String("triggerSource", triggerName),
 	)
-	return s.runControllerAggregateReportOnce(ctx, logger)
+	var taskName string
+	if triggerName == "periodicallyTrigger" {
+		taskName = triggerName
+	} else {
+		taskName = strings.Split(triggerName, ".")[1]
+	}
+
+	return s.runControllerAggregateReportOnce(ctx, logger, taskName)
 }

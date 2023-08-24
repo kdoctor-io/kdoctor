@@ -15,8 +15,9 @@ import (
 )
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
+	var termMin = int64(1)
 
-	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006"), func() {
+	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006", "E00002"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -25,6 +26,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agent
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -59,12 +65,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
+
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("failed http testing appHttpHealth due to status code", Label("A00002"), func() {
@@ -77,6 +89,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -112,13 +129,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Failed http testing appHttpHealth due to delay ", Label("A00003"), func() {
@@ -130,6 +152,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -164,13 +191,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("success https testing appHttpHealth method GET", Label("A00004"), func() {
@@ -181,6 +213,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -217,13 +254,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("failed https testing appHttpHealth due to tls", Label("A00005"), func() {
@@ -235,6 +277,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -272,13 +319,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, []string{}, reportNum)
-		Expect(success).To(BeFalse(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeFalse(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully http testing appHttpHealth method PUT ", Label("A00006"), func() {
@@ -290,6 +342,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -324,12 +381,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
+
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 
 	})
 
@@ -342,6 +405,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -379,12 +447,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
+
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully http testing appHttpHealth method HEAD", Label("A00008"), func() {
@@ -396,6 +470,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -430,13 +509,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully http testing appHttpHealth method PATCH", Label("A00009"), func() {
@@ -448,6 +532,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -482,13 +571,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully http testing appHttpHealth method OPTIONS", Label("A00010"), func() {
@@ -500,6 +594,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -534,13 +633,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully http testing appHttpHealth due to success rate", Label("A00012"), func() {
@@ -552,6 +656,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -586,13 +695,18 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 
 	It("Successfully https testing appHttpHealth method GET Protocol Http2", Label("A00013"), func() {
@@ -604,6 +718,11 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
 		appHttpHealth.Name = appHttpHealthName
+
+		// agentSpec
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
+		appHttpHealth.Spec.AgentSpec = *agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -641,12 +760,17 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = frame.CreateResource(appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
 
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
-		Expect(success).To(BeTrue(), "compare report and task result")
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
 
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
 	})
 })

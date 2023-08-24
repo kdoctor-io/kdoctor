@@ -40,9 +40,9 @@ var _ = BeforeSuite(func() {
 	var e error
 	frame, e = e2e.NewFramework(GinkgoT(), []func(*runtime.Scheme) error{kdoctor_v1beta1.AddToScheme})
 	Expect(e).NotTo(HaveOccurred())
-	ds, e := frame.GetDaemonSet(common.KDoctorAgentDSName, common.TestNameSpace)
-	Expect(e).NotTo(HaveOccurred(), "get kdoctor-agent daemonset")
-	reportNum = int(ds.Status.NumberReady)
+	nodeLIst, e := frame.GetNodeList()
+	Expect(e).NotTo(HaveOccurred(), "get node list")
+	reportNum = len(nodeLIst.Items)
 
 	KubeServiceList := &v1.ServiceList{}
 	ops := []client.ListOption{

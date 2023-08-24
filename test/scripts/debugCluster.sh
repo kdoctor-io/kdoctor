@@ -21,13 +21,11 @@ echo "$CURRENT_FILENAME : E2E_KUBECONFIG $E2E_KUBECONFIG "
 COMPONENT_GOROUTINE_MAX=400
 COMPONENT_PS_PROCESS_MAX=50
 CONTROLLER_LABEL="app.kubernetes.io/component=kdoctor-controller"
-AGENT_LABEL="app.kubernetes.io/component=kdoctor-agent"
 
 
 CONTROLLER_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector ${CONTROLLER_LABEL} --output jsonpath={.items[*].metadata.name} )
-AGENT_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector ${AGENT_LABEL} --output jsonpath={.items[*].metadata.name} )
 [ -z "$CONTROLLER_POD_LIST" ] && echo "error, failed to find any kdoctor controller pod" && exit 1
-[ -z "$AGENT_POD_LIST" ] && echo "error! failed to find any kdoctor agent pod" && exit 1
+
 
 
 if [ -n "$E2E_LOG_FILE_NAME" ] ; then

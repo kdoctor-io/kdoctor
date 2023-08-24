@@ -54,8 +54,6 @@ Kind 是一个使用 Docker 容器节点运行本地 Kubernetes 集群的工具�
    
    ~# kubectll get po -n kdoctor
    NAME                                  READY   STATUS    RESTARTS   AGE
-   kdoctor-agent-8mcs7                   1/1     Running   0          2m33s
-   kdoctor-agent-lrwgt                   1/1     Running   0          2m33s
    kdoctor-controller-686b75d6d7-ktctx   1/1     Running   0          2m33s
    ```
 
