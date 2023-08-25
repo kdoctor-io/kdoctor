@@ -377,7 +377,9 @@ e2e_run:
 e2e_clean:
 	make -C test clean
 
-
+.PHONY: clean_e2e_kdoctor
+clean_e2e_kdoctor:
+	make -C test uninstall_kdoctor
 #============ doc
 
 .PHONY: preview_doc
