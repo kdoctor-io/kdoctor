@@ -163,7 +163,7 @@ jobs:
         id: clean
         run: |
           RESULT=0
-          make clean_e2e_kdoctor || RESULT=1
+          make clean_e2e_kdoctor -e E2E_KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }} || RESULT=1
           if ((RESULT==0)) ; then
               echo "CLEAN_E2E_PASS=true" >> $GITHUB_ENV
           else

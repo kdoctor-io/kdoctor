@@ -23,7 +23,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		successMean := int64(1500)
 		crontab := "0 1"
 		netDnsName := "netdns-e2e-" + tools.RandomName()
-
+		// netdns
 		netDns := new(v1beta1.Netdns)
 		netDns.Name = netDnsName
 
