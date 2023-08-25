@@ -8,9 +8,7 @@ import (
 )
 
 const (
-	PluginReportPath = "/apis/system.kdoctor.io/v1beta1/namespaces/default/kdoctorreports/"
-
-	KDoctorAgentDSName         = "kdoctor-agent"
+	PluginReportPath           = "/apis/system.kdoctor.io/v1beta1/namespaces/default/kdoctorreports/"
 	KDoctorCaName              = "kdoctor-ca"
 	KdoctorTestTokenSecretName = "apiserver-token"
 )
