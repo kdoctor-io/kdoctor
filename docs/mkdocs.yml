@@ -40,6 +40,7 @@ nav:
   - README.md
   - Installation:
       - Installation: usage/install.md
+      - Quickly Started: usage/get-started-kind.md
   - Usage:
       - AppHttpHealthy: usage/apphttphealthy.md
       - NetReach: usage/netreach.md
