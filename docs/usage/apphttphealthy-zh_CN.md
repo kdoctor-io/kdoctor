@@ -30,34 +30,34 @@
 
 ### 安装测试 server (选做)
 
-kdoctor 官方仓库中包含了一个名为 http-server-test 的应用，内包含 http server，https server, dns server 可用来测试 kdoctor 功能，若存在其他测试的 server 可跳过安装。
+kdoctor 官方仓库中包含了一个名为 server 的应用，内包含 http server，https server, dns server 可用来测试 kdoctor 功能，若存在其他测试的 server 可跳过安装。
 
 ```shell
 helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
 helm repo update kdoctor
-helm install server-test kdoctor/http-server-test -n kdoctor --wait --debug --create-namespace 
+helm install server kdoctor/server -n kdoctor --wait --debug --create-namespace 
 ```
 
 查看测试 server 状态
 ```shell
 kubectl get pod -n kdoctor -owide
 NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
-http-server-test-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          <none>           <none>
-http-server-test-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   <none>           <none>
+server-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          <none>           <none>
+server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   <none>           <none>
 ```
 
 获取测试 server 的 service 地址
 ```shell
 kubectl get service -n kdoctor
 NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
-http-server-test   ClusterIP   172.41.71.0   <none>        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
+server   ClusterIP   172.41.71.0   <none>        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
 ```
 
 ### 创建 AppHttpHealthy 
 
 创建 http `AppHttpHealthy` ，该任务将执行一轮持续 10s 的任务，任务会向指定的 server 以 qps 为 10 的速度发送 Get 请求，并且立即执行。
 
-这里使用 http-server-test 的 service 地址，若有其他 server 地址 可使用其他 server 地址。
+这里使用 server 的 service 地址，若有其他 server 地址 可使用其他 server 地址。
 
 ```shell
 SERVER="172.41.71.0"
@@ -206,7 +206,7 @@ spec:
 
 1.创建带有 body 的 http `AppHttpHealthy`，该任务将执行一轮持续 10s 的任务，任务会向指定的 server 以 qps 为 10 的速度携带body 进行 Post 请求，并且立即执行。
 
-这里使用 http-server-test 的 service 地址，若有其他 server 地址 可使用其他 server 地址。
+这里使用 server 的 service 地址，若有其他 server 地址 可使用其他 server 地址。
 
 创建测试 body 数据
 
@@ -258,7 +258,7 @@ EOF
 
 2.创建 https `AppHttpHealthy` ，该任务将执行一轮持续 10s 的任务，任务会向指定的 server 以 qps 为 10 的速度使用 https 协议携带证书发送 Get 请求，并且立即执行
 
-此 tls 证书由 http-server-test 生成，证书只对 pod 的 ip 进行了签名，因此我们 http-server-test 的 pod ip 进行访问，若使用其他 server 请自行创建证书 secret。
+此 tls 证书由 server 生成，证书只对 pod 的 ip 进行了签名，因此我们 server 的 pod ip 进行访问，若使用其他 server 请自行创建证书 secret。
 
 ```shell
 SERVER="172.40.0.35"
