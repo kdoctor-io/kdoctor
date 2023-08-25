@@ -140,7 +140,7 @@ jobs:
           fi
           chart_path=$( ls chart-package/kdoctor-*.tgz )
           echo "RUN_CHART_PATH=${chart_path}" >> $GITHUB_ENV
-          chart_app_path=$( ls chart-package/http-server-test-*.tgz )
+          chart_app_path=$( ls chart-package/server-*.tgz )
           echo "RUN_CHART_APP_PATH=${chart_app_path}" >> $GITHUB_ENV
           # ========== changelog
           if ! ls changelog-result/*.md &>/dev/null ; then
