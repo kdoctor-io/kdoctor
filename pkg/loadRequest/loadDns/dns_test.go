@@ -24,7 +24,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			DnsType:               dns.TypeA,
 			TargetDomain:          "www.baidu.com",
 			DnsServerAddr:         dnsServer,
-			PerRequestTimeoutInMs: 1000,
+			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      1,
 			Qps:                   10,
 		}
@@ -54,7 +54,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			DnsType:               dns.TypeA,
 			TargetDomain:          "www.baidu.com",
 			DnsServerAddr:         dnsServer,
-			PerRequestTimeoutInMs: 1000,
+			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      1,
 			Qps:                   10,
 			EnableLatencyMetric:   true,
@@ -85,7 +85,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			DnsType:               dns.TypeA,
 			TargetDomain:          "www.baidu.com",
 			DnsServerAddr:         dnsServer,
-			PerRequestTimeoutInMs: 1000,
+			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      1,
 			Qps:                   10,
 		}
@@ -114,7 +114,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			DnsType:               dns.TypeA,
 			TargetDomain:          "www.no-existed.com",
 			DnsServerAddr:         dnsServer,
-			PerRequestTimeoutInMs: 1000,
+			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      1,
 			Qps:                   10,
 		}
@@ -143,7 +143,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			DnsType:               dns.TypeAAAA,
 			TargetDomain:          "wikipedia.org",
 			DnsServerAddr:         dnsServer,
-			PerRequestTimeoutInMs: 1000,
+			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      1,
 			Qps:                   10,
 		}
