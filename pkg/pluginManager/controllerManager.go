@@ -49,7 +49,7 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 		// lease
 		LeaderElection:          true,
 		LeaderElectionNamespace: types.ControllerConfig.PodNamespace,
-		LeaderElectionID:        types.ControllerConfig.PodName,
+		LeaderElectionID:        types.KdoctorControllerElectorLockName,
 		// for this not watched obj, get directly from api-server
 		ClientDisableCacheFor: []client.Object{
 			&corev1.Node{},
