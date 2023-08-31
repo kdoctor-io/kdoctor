@@ -3,7 +3,7 @@ entries:
   http-server-test:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-08-25T08:37:28.015423961Z"
+    created: "2023-08-31T10:21:37.235261282Z"
     description: http-server-test for kdoctor
     digest: a882420f4c74803fa0a09cfe41a25ecb4235c5188d235395b14138b83d609084
     home: https://kdoctor-io.github.io/kdoctor
@@ -24,9 +24,9 @@ entries:
   kdoctor:
   - apiVersion: v2
     appVersion: 0.2.0-rc0
-    created: "2023-08-25T08:37:28.023681692Z"
+    created: "2023-08-31T10:21:37.24406374Z"
     description: kdoctor
-    digest: 9b981644b2bf468b3dcb9aa78d52488dfaaf0671f500c370ced444807287bfc7
+    digest: 286039a44925b158fdb30513ae36dcd335b26d3ae61872fd7898cc01f3bbfdde
     home: https://kdoctor-io.github.io/kdoctor
     keywords:
     - kdoctor
@@ -44,7 +44,7 @@ entries:
     version: 0.2.0-rc0
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-08-25T08:37:28.019191275Z"
+    created: "2023-08-31T10:21:37.240174505Z"
     description: kdoctor
     digest: 462b2f47cbe1425fd4b35bb641b7e29eae9461ea8ad84650876efcd21c99419e
     home: https://kdoctor-io.github.io/kdoctor
@@ -64,7 +64,7 @@ entries:
     version: 0.1.0
   - apiVersion: v2
     appVersion: 0.1.0-rc0
-    created: "2023-08-25T08:37:28.017279168Z"
+    created: "2023-08-31T10:21:37.237306558Z"
     description: kdoctor
     digest: d0fe119482e77a22355a98507d5d2f9385b59a874e4f7c45eb5e15dec3fd3bb2
     home: https://kdoctor-io.github.io/kdoctor
@@ -85,9 +85,9 @@ entries:
   server:
   - apiVersion: v2
     appVersion: 0.2.0-rc0
-    created: "2023-08-25T08:37:28.024505395Z"
+    created: "2023-08-31T10:21:37.244892611Z"
     description: server for kdoctor test
-    digest: caaa49c16ac723eb736f344684afc3497da6f747e8c411cc236da831902d6e9a
+    digest: c7f2b1356e822a71a4c7c3d1b8fdb7c940786307030c91f238be6395c90723c1
     home: https://kdoctor-io.github.io/kdoctor
     keywords:
     - kdoctor
@@ -103,4 +103,4 @@ entries:
     urls:
     - https://kdoctor-io.github.io/kdoctor/charts/server-0.2.0-rc0.tgz
     version: 0.2.0-rc0
-generated: "2023-08-25T08:37:28.014417457Z"
+generated: "2023-08-31T10:21:37.234097882Z"
