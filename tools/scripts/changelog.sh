@@ -5,7 +5,7 @@
 
 # usage:
 #  GH_TOKEN=${{ github.token }} LABEL_FEATURE="release/feature-new" LABEL_CHANGED="release/feature-changed" LABEL_BUG="release/bug" PROJECT_REPO="xxx/xxx" changelog.sh  ./ v0.3.6
-#  GH_TOKEN=${{ github.token }} LABEL_FEATURE="release/feature" LABEL_CHANGED="release/feature-changed" LABEL_BUG="release/bug" PROJECT_REPO="xxx/xxx" changelog.sh  ./ v0.3.6 v0.3.5
+#  GH_TOKEN=${{ github.token }} LABEL_FEATURE="release/feature-new" LABEL_CHANGED="release/feature-changed" LABEL_BUG="release/bug" PROJECT_REPO="xxx/xxx" changelog.sh  ./ v0.3.6 v0.3.5
 
 
 CURRENT_DIR_PATH=$(cd `dirname $0`; pwd)
