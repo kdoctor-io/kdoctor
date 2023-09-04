@@ -89,7 +89,7 @@ jobs:
       - name: create an issue
         uses: dacbd/create-issue-action@v1.2.1
         with:
-          token: ${{ secrets.WELAN_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           #owner: kdoctor-io
           #repo: rocktemplae
           title: "Night CI ${{ ENV.TIMESTAMP }}: Failed"

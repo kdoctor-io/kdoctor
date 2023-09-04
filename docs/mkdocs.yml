@@ -7,6 +7,7 @@ repo_url: https://github.com/kdoctor-io/kdoctor
 remote_branch: github_pages
 theme:
   name: material
+  custom_dir: docs/overrides
   # The maximum depth of the navigation tree in the sidebar
   navigation_depth: 2
   palette:
@@ -27,6 +28,10 @@ theme:
 plugins:
   - tags
   - search
+
+extra:
+  version:
+    provider: mike
 
 markdown_extensions:
   - meta
