@@ -234,7 +234,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 			target.Host = fmt.Sprintf("https://%s/?task=%s", testPodIPs[0], appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
-		target.TlsSecretNamespace = &testAppNamespace
+		target.TlsSecretNamespace = &common.TestNameSpace
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -299,7 +299,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 			target.Host = fmt.Sprintf("https://%s:%d/?task=%s", testSvcIP, httpsPort, appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
-		target.TlsSecretNamespace = &testAppNamespace
+		target.TlsSecretNamespace = &common.TestNameSpace
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -739,7 +739,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 			target.Host = fmt.Sprintf("https://%s/?task=%s", testPodIPs[0], appHttpHealthName)
 		}
 		target.TlsSecretName = &common.TlsClientName
-		target.TlsSecretNamespace = &testAppNamespace
+		target.TlsSecretNamespace = &common.TestNameSpace
 		target.Http2 = true
 		appHttpHealth.Spec.Target = target
 

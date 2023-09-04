@@ -4,7 +4,6 @@
 package common
 
 import (
-	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -14,7 +13,6 @@ import (
 	"math"
 	"net"
 	"net/http"
-	"os/exec"
 	"reflect"
 	"strings"
 	"time"
@@ -457,37 +455,6 @@ func GetRealRequestCount(name string, ip string) (int64, error) {
 		return 0, fmt.Errorf("unmarshal docker server response failed : %v", err)
 	}
 	return echoRes.RequestCount - 1, nil
-}
-
-func CreateTestApp(name, namespace string, o []string) error {
-
-	var stdout, stderr bytes.Buffer
-	cmd := exec.Command(
-		"helm",
-		"install",
-		name,
-		AppChartDir,
-		fmt.Sprintf("--namespace=%s", namespace),
-		"--create-namespace=true",
-		"--wait=true",
-		fmt.Sprintf("--kubeconfig=%s", KubeConfigPath),
-	)
-	cmd.Args = append(cmd.Args, o...)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	if err := cmd.Start(); err != nil {
-		ginkgo.GinkgoWriter.Println(stderr.String())
-		ginkgo.GinkgoWriter.Println(stdout.String())
-		return fmt.Errorf("start cmd [%s] failed,err: %v ", cmd.String(), err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		ginkgo.GinkgoWriter.Println(stderr.String())
-		ginkgo.GinkgoWriter.Println(stdout.String())
-		return fmt.Errorf("run cmd [%s] failed,err: %v ", cmd.String(), err)
-	}
-
-	return nil
 }
 
 func CheckRuntime(f *frame.Framework, task client.Object, taskKind string, timeout int) error {

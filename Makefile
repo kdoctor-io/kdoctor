@@ -364,6 +364,7 @@ e2e_init:
 	make -C test deploy_metallb
 	make -C test deploy_contour
 	make -C test deploy_project
+	make -C test deploy_test_server
 	make -C test install_apiserver_token
 
 
