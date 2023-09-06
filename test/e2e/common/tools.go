@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"math"
 	"net"
 	"net/http"
@@ -18,6 +17,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/docker/docker/api/types"
 	docker_client "github.com/docker/docker/client"
