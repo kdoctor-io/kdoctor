@@ -9,8 +9,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
-	"github.com/onsi/ginkgo/v2"
 	"io"
 	"math"
 	"net"
@@ -18,6 +16,9 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
+	"github.com/onsi/ginkgo/v2"
 
 	"github.com/docker/docker/api/types"
 	docker_client "github.com/docker/docker/client"
