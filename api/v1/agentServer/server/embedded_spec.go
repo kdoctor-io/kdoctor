@@ -48,6 +48,12 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
@@ -71,14 +77,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -102,14 +114,17 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
           },
           "500": {
             "description": "Failed"
@@ -122,6 +137,14 @@ func init() {
           "echo"
         ],
         "summary": "clean http request counts",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -143,14 +166,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -166,14 +195,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -189,14 +224,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       }
@@ -265,6 +306,12 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
@@ -288,14 +335,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -319,14 +372,17 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
           },
           "500": {
             "description": "Failed"
@@ -339,6 +395,14 @@ func init() {
           "echo"
         ],
         "summary": "clean http request counts",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -360,14 +424,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -383,14 +453,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -406,14 +482,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       }
@@ -436,6 +518,10 @@ func init() {
       "description": "echo request",
       "type": "object",
       "properties": {
+        "TaskName": {
+          "description": "task name",
+          "type": "string"
+        },
         "clientIp": {
           "description": "client source ip",
           "type": "string"
@@ -520,6 +606,12 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
@@ -543,14 +635,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -574,14 +672,17 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
           },
           "500": {
             "description": "Failed"
@@ -594,6 +695,14 @@ func init() {
           "echo"
         ],
         "summary": "clean http request counts",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -615,14 +724,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -638,14 +753,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -661,14 +782,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       }
@@ -737,6 +864,12 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
@@ -760,14 +893,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -791,14 +930,17 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
           },
           "500": {
             "description": "Failed"
@@ -811,6 +953,14 @@ func init() {
           "echo"
         ],
         "summary": "clean http request counts",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -832,14 +982,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -855,14 +1011,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       },
@@ -878,14 +1040,20 @@ func init() {
             "description": "delay some second return response",
             "name": "delay",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "task name",
+            "name": "task",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/EchoRes"
-            }
+            "description": "Success"
+          },
+          "500": {
+            "description": "Failed"
           }
         }
       }
@@ -908,6 +1076,10 @@ func init() {
       "description": "echo request",
       "type": "object",
       "properties": {
+        "TaskName": {
+          "description": "task name",
+          "type": "string"
+        },
         "clientIp": {
           "description": "client source ip",
           "type": "string"

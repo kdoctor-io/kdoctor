@@ -81,19 +81,19 @@ spec:
           {{- end }}
           ports:
           {{- if .Values.kdoctorController.prometheus.enabled }}
-          - name: metrics
-            containerPort: {{ .Values.kdoctorController.prometheus.port }}
-            protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.kdoctorController.prometheus.port }}
+              protocol: TCP
           {{- end }}
-          - name: http
-            containerPort: {{ .Values.kdoctorController.httpServer.port }}
-            protocol: TCP
-          - name: webhook
-            containerPort: {{ .Values.kdoctorController.webhookPort }}
-            protocol: TCP
-          - name: apiserver
-            containerPort: 443
-            protocol: TCP
+            - name: http
+              containerPort: {{ .Values.kdoctorController.httpServer.port }}
+              protocol: TCP
+            - name: webhook
+              containerPort: {{ .Values.kdoctorController.webhookPort }}
+              protocol: TCP
+            - name: apiserver
+              containerPort: 443
+              protocol: TCP
           {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
           startupProbe:
             httpGet:
@@ -210,7 +210,7 @@ spec:
             defaultMode: 0400
             sources:
               - secret:
-                  name: {{ .Values.kdoctorController.tls.secretName | trunc 63 | trimSuffix "-" }}
+                  name: {{ .Values.tls.server.secretName | trunc 63 | trimSuffix "-" }}
                   items:
                     - key: tls.crt
                       path: tls.crt

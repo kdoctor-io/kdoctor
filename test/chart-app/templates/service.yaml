@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+      {{- include "tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+  {{- if .Values.commonLabels }}
+  labels:
+      {{- include "tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.http.appHttpPort }}
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.http.appHttpsPort }}
+      targetPort: https
+      protocol: TCP
+    - name: dns-udp
+      port: {{ .Values.dns.appDnsUdpPort }}
+      targetPort: dns-udp
+      protocol: UDP
+    - name: dns-tcp
+      port: {{ .Values.dns.appDnsTcpPort }}
+      targetPort: dns-tcp
+      protocol: TCP
+    - name: dns-tcp-tls
+      port: {{ .Values.dns.appDnsTcpTlsPort }}
+      targetPort: dns-tcp-tls
+      protocol: TCP
+  selector:
+    {{- include "project.selectorLabels" . | nindent 4 }}

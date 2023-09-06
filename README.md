@@ -41,5 +41,4 @@ kdoctor is a cloud native project of data plane test, which is derived from prac
 
 ## License
 
-Spiderpool is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
-
+kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.

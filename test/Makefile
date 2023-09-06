@@ -159,6 +159,8 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
+		HELM_OPTION+=" --set feature.nethttp_defaultConcurrency=10 " ; \
+		HELM_OPTION+=" --set feature.netdns_defaultConcurrency=10 " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
 		HELM_OPTION+=" --set kdoctorAgent.debug.logLevel=debug --set kdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set kdoctorAgent.prometheus.enabled=true --set kdoctorController.prometheus.enabled=true  " ; \
@@ -190,7 +192,8 @@ install_multus: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 install_multus:
 	@echo "beign to install multus"
 	- helm repo remove $(MULTUS_REPO_NAME)
-	helm repo add $(MULTUS_REPO_NAME) $(MULTUS_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(MULTUS_REPO_NAME) $(MULTUS_CHART_REPO) ; \
 		helm repo update $(MULTUS_REPO_NAME) ; \
 		echo "try to load local image for multus $(MULTUS_CHART_VERSION) " ; \
 		IMAGE_LIST=` helm template --version=$(MULTUS_CHART_VERSION)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME) | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
@@ -209,7 +212,8 @@ install_multus:
 			done ; \
 		fi
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system multus || true
-	helm install $(MULTUS_CHART_NAME)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME)  \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+			helm install $(MULTUS_CHART_NAME)  $(MULTUS_REPO_NAME)/$(MULTUS_CHART_NAME)  \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG)  \
 			--version=$(MULTUS_CHART_VERSION) --wait \
 			--set sriov.manifests.enable=false \
@@ -301,11 +305,12 @@ install_metallb:
 	@echo "beign to install metallb"
 	- helm repo remove $(METALLB_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(METALLB_CHART_NAME) || true
-	helm repo add $(METALLB_REPO_NAME) $(METALLB_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(METALLB_REPO_NAME) $(METALLB_CHART_REPO) ; \
 		helm repo update $(METALLB_REPO_NAME) ; \
 		HELM_OPTIONS="	--set controller.image.repository=quay.$(E2E_PROXY_REGISTER)io/metallb/controller \
                       	--set speaker.image.repository=quay.$(E2E_PROXY_REGISTER)io/metallb/speaker \
-                      	--set speaker.frr.image.repository=docker.$(E2E_PROXY_REGISTER)io/frrouting/frr  --set speaker.frr.enabled=true " ; \
+                      	--set speaker.frr.image.repository=quay.$(E2E_PROXY_REGISTER)io/frrouting/frr  --set speaker.frr.enabled=true " ; \
 		IMAGE_LIST=` helm template --version=$(METALLB_CHART_VERSION)  $(METALLB_REPO_NAME)/$(METALLB_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
@@ -418,9 +423,11 @@ install_contour:
 	@echo "beign to install contour"
 	- helm repo remove $(CONTOUR_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(CONTOUR_CHART_NAME) || true
-	helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
 		helm repo update $(CONTOUR_REPO_NAME) ; \
-		IMAGE_LIST=` helm template --version=$(CONTOUR_CHART_VERSION)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+		HELM_OPTIONS=" --set global.imageRegistry=docker.$(E2E_PROXY_REGISTER)io  "  ; \
+		IMAGE_LIST=` helm template --version=$(CONTOUR_CHART_VERSION)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
 		else \
@@ -434,11 +441,10 @@ install_contour:
 				echo "load local image $${IMAGE} " ; \
 				kind load docker-image $${IMAGE}  --name $(KIND_CLUSTER_NAME)  ; \
 			done ; \
-		fi
-	helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
+		fi ; \
+		helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG) \
-			--version=$(CONTOUR_CHART_VERSION) --wait  --timeout 5m \
-			  --set global.imageRegistry="docker.$(E2E_PROXY_REGISTER)io" \
+			--version=$(CONTOUR_CHART_VERSION) --wait  --timeout 5m  $${HELM_OPTIONS} \
 			  --set envoy.kind=daemonset \
 			  --set envoy.service.type=LoadBalancer \
 			  --set envoy.service.externalTrafficPolicy=Local \
@@ -468,7 +474,8 @@ install_nginx:
 	@echo "beign to install nginx"
 	- helm repo remove $(NGINX_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(NGINX_CHART_NAME) || true
-	helm repo add $(NGINX_REPO_NAME) $(NGINX_CHART_REPO) ; \
+	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
+		helm repo add $(NGINX_REPO_NAME) $(NGINX_CHART_REPO) ; \
 		helm repo update $(NGINX_REPO_NAME) ; \
 		HELM_OPTION="  --set controller.image.registry=k8s.$(E2E_PROXY_REGISTER)io \
                        --set defaultBackend.image.registry=k8s.$(E2E_PROXY_REGISTER)io \
@@ -506,26 +513,12 @@ install_nginx:
 
 #==========================
 
-# test kind is ok
-.PHONY: install_example_app
-install_example_app: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
-install_example_app: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
-install_example_app: IMAGE_TAG ?= $(GIT_COMMIT_VERSION)
-install_example_app:
-	@echo "---------- install example app"
-	sed 's?<<EXAMPLE_APP_IMAGE>>?ghcr.io/kdoctor-io/kdoctor-agent:'$(IMAGE_TAG)'?' yaml/testpod.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
-	@ if ! kubectl rollout status  daemonset/kdoctor-test -n kube-system --kubeconfig $(KIND_KUBECONFIG) -w --timeout=120s ; then \
-            kubectl get pod -A ; \
-			echo "error, failed to create a test pod" ; \
-			exit 1 ; \
-		fi ; \
-		echo "succeeded to deploy test deployment "
-	@echo "========================================================"
-	@echo "   deploy kind cluster $(KIND_CLUSTER_NAME)             "
-	@echo "   export KUBECONFIG=$(KIND_KUBECONFIG)                 "
-	@echo "   kubectl get pod -o wide -A                           "
-	@echo "========================================================"
-	@ KUBECONFIG=$(KIND_KUBECONFIG)  kubectl get pod -o wide -A
+.PHONY: install_apiserver_token
+install_apiserver_token: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+install_apiserver_token: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
+install_apiserver_token:
+	@echo "---------- install apiserver token"
+	sed 's?<<TEST_NAMESPACE>>?$(E2E_INSTALL_NAMESPACE)?' yaml/kdoctortoken.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
 
 
 .PHONY: clean
@@ -551,6 +544,12 @@ e2e_test:
 		echo "find cluster node: $${NODE_LIST}" ; \
 		export E2E_KIND_CLUSTER_NODE_LIST="$${NODE_LIST}" ; \
 		export E2E_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ; \
+		export APISERVER=`kubectl config view  --kubeconfig $(KIND_KUBECONFIG) |grep server | awk '{print $$2}'` ;\
+		export E2E_INSTALL_NAMESPACE=$(E2E_INSTALL_NAMESPACE) ;\
+		export GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) ;\
+		export APP_CHART_DIR=$(APP_CHART_DIR) ;\
+		export E2E_KIND_KUBECONFIG_PATH=$(E2E_KIND_KUBECONFIG_PATH) ;\
+		export AGENT_REGISTER=$(REGISTER)/$(GIT_REPO)-agent ; \
 		if [ "$(E2E_IP_FAMILY)" == "ipv4" ] ; then \
 			export E2E_IPV4_ENABLED=true ; export E2E_IPV6_ENABLED=false ; \
 		elif [ "$(E2E_IP_FAMILY)" == "ipv6" ] ; then \

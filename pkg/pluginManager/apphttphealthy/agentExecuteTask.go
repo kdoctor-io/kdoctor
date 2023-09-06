@@ -54,11 +54,12 @@ func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.H
 	// generate report
 	// notice , upper case for first character of key, or else fail to parse json
 	report.Metrics = *result
-	report.FailureReason = pointer.String(failureReason)
-	if report.FailureReason == nil {
+	if len(failureReason) == 0 {
+		report.FailureReason = nil
 		report.Succeed = true
 		logger.Sugar().Infof("succeed to test %v", req.Url)
 	} else {
+		report.FailureReason = pointer.String(failureReason)
 		report.Succeed = false
 		logger.Sugar().Warnf("failed to test %v", req.Url)
 	}
@@ -101,6 +102,7 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
 		ExpectStatusCode:    instance.Spec.SuccessCondition.StatusCode,
+		EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 	}
 
 	// https cert

@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PutOKCode is the HTTP code returned for type PutOK
@@ -25,11 +23,6 @@ PutOK Success
 swagger:response putOK
 */
 type PutOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPutOK creates PutOK with default headers values
@@ -38,25 +31,35 @@ func NewPutOK() *PutOK {
 	return &PutOK{}
 }
 
-// WithPayload adds the payload to the put o k response
-func (o *PutOK) WithPayload(payload *models.EchoRes) *PutOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the put o k response
-func (o *PutOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PutOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// PutInternalServerErrorCode is the HTTP code returned for type PutInternalServerError
+const PutInternalServerErrorCode int = 500
+
+/*
+PutInternalServerError Failed
+
+swagger:response putInternalServerError
+*/
+type PutInternalServerError struct {
+}
+
+// NewPutInternalServerError creates PutInternalServerError with default headers values
+func NewPutInternalServerError() *PutInternalServerError {
+
+	return &PutInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *PutInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

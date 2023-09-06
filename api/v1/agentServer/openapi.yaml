@@ -56,6 +56,10 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
@@ -76,11 +80,13 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
         "500":
           description: Failed
     delete:
@@ -88,6 +94,11 @@ paths:
       description: clean http request counts
       tags:
         - echo
+      parameters:
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
@@ -103,11 +114,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     head:
       summary: echo http request
       description: echo http request
@@ -118,11 +133,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     patch:
       summary: echo http request
       description: echo http request
@@ -133,11 +152,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     options:
       summary: echo http request
       description: echo http request
@@ -148,11 +171,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
   "/kdoctoragent":
     get:
       summary: echo http request
@@ -164,6 +191,10 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
@@ -184,11 +215,13 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
         "500":
           description: Failed
     delete:
@@ -196,6 +229,11 @@ paths:
       description: clean http request counts
       tags:
         - echo
+      parameters:
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
@@ -211,11 +249,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     head:
       summary: echo http request
       description: echo http request
@@ -226,11 +268,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     patch:
       summary: echo http request
       description: echo http request
@@ -241,11 +287,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
     options:
       summary: echo http request
       description: echo http request
@@ -256,11 +306,15 @@ paths:
           name: delay
           type: integer
           description: delay some second return response
+        - in: query
+          name: task
+          type: string
+          description: task name
       responses:
         "200":
           description: Success
-          schema:
-            "$ref": "#/definitions/EchoRes"
+        "500":
+          description: Failed
 definitions:
   EchoRes:
     description: echo request
@@ -286,6 +340,9 @@ definitions:
       requestCount:
         description: request count
         type: integer
+      TaskName:
+        description: task name
+        type: string
       requestParam:
         description: request param
         type: string

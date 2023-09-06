@@ -89,8 +89,8 @@ jobs:
       - name: Prepare
         run: |
           # prepare directory
-          mv docs/charts charts
-          rm -rf docs
+          [ ! -d "docs/charts" ] || mv docs/charts charts
+          rm -rf docs || true
           mkdir docs
 
       - name: Download Artifact
@@ -139,4 +139,3 @@ jobs:
           signoff: true
           token: ${{ secrets.WELAN_PAT }}
           labels: ${{ env.PR_LABEL }}
-          reviewers: ${{ env.PR_REVIWER }}

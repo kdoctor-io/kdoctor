@@ -19,6 +19,7 @@ import (
 // PutURL generates an URL for the put operation
 type PutURL struct {
 	Delay *int64
+	Task  *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -60,6 +61,14 @@ func (o *PutURL) Build() (*url.URL, error) {
 	}
 	if delayQ != "" {
 		qs.Set("delay", delayQ)
+	}
+
+	var taskQ string
+	if o.Task != nil {
+		taskQ = *o.Task
+	}
+	if taskQ != "" {
+		qs.Set("task", taskQ)
 	}
 
 	_result.RawQuery = qs.Encode()

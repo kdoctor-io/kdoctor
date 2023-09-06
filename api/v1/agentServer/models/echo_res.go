@@ -20,6 +20,9 @@ import (
 // swagger:model EchoRes
 type EchoRes struct {
 
+	// task name
+	TaskName string `json:"TaskName,omitempty"`
+
 	// client source ip
 	ClientIP string `json:"clientIp,omitempty"`
 

@@ -1,0 +1,128 @@
+#aap name
+appName: http-server-test
+
+# Deployment or DaemonSet
+appKind: Deployment
+
+deploymentReplicas: 2
+
+commonLabels: {}
+#  label1: v1
+#  labele: v2
+
+podLabels: {}
+
+commonAnnotations: {}
+
+podAnnotations: {}
+
+image:
+  ## @param kdoctorAgent.image.registry the image registry of kdoctorAgent
+  registry: ghcr.io
+
+  ## @param kdoctorAgent.image.repository the image repository of kdoctorAgent
+  repository: kdoctor-io/kdoctor-agent
+
+  ## @param kdoctorAgent.image.pullPolicy the image pullPolicy of kdoctorAgent
+  pullPolicy: IfNotPresent
+
+  ## @param kdoctorAgent.image.digest the image digest of kdoctorAgent, which takes preference over tag
+  digest: ""
+
+  ## @param kdoctorAgent.image.tag the image tag of kdoctorAgent, overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+  ## @param kdoctorAgent.image.imagePullSecrets the image imagePullSecrets of kdoctorAgent
+  imagePullSecrets: []
+  # - name: "image-pull-secret"
+
+hostNetwork: false
+
+tolerations: {}
+
+affinity: {}
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+updateStrategy:
+  rollingUpdate:
+    maxUnavailable: 2
+  type: RollingUpdate
+
+http:
+  ## @param kdoctorAgent.httpServer.healthPort the http Port for kdoctorAgent, for health checking
+  healthPort: 5710
+  ## @param kdoctorAgent.httpServer.appPort the http Port for kdoctorAgent, testing connect
+  appHttpPort: 80
+  ## @param kdoctorAgent.httpServer.appPort the https Port for kdoctorAgent, testing connect
+  appHttpsPort: 443
+
+  tlsIgnoreClientCert: true
+
+  startupProbe:
+    ## @param kdoctorAgent.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    failureThreshold: 60
+    ## @param kdoctorAgent.httpServer.startupProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    periodSeconds: 2
+
+  livenessProbe:
+    ## @param kdoctorAgent.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    failureThreshold: 6
+    ## @param kdoctorAgent.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    periodSeconds: 10
+
+  readinessProbe:
+    ## @param kdoctorAgent.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    failureThreshold: 3
+    ## @param kdoctorAgent.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    periodSeconds: 10
+
+dns:
+  ## @param kdoctorAgent.DnsServer.appDnsUdpPort the dns udp Port for kdoctorAgent, testing connect
+  appDnsUdpPort: 53
+  ## @param kdoctorAgent.DnsServer.appDnsTcpPort the dns tcp Port for kdoctorAgent, testing connect
+  appDnsTcpPort: 53
+  ## @param kdoctorAgent.DnsServer.appDnsTcpTlsPort the dns tcp-tls Port for kdoctorAgent, testing connect
+  appDnsTcpTlsPort: 853
+
+grpcServer:
+  ## @param kdoctorAgent.grpcServer.port the Port for grpc server
+  port: 3000
+
+resources:
+  #limits:
+  #  cpu: 500m
+  #  memory: 1024Mi
+  #requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+extraEnv: []
+
+securityContext: {}
+
+tls:
+  ## - provided:     provide all certificates by helm options
+  ## - auto:         Auto generate cert.
+  method: auto
+
+  ## for provided method
+  provided:
+    tlsCert: ""
+    tlsKey: ""
+
+  ## TLS configuration for kdoctor client
+  client:
+    ## @param tls.client.secretName the secret name for storing TLS certificates
+    secretName: "https-client-cert"
+service:
+  ## @param kdoctorAgent.service.type the type for kdoctorAgent service
+  type: ClusterIP
+  #type: LoadBalancer
+
+ingress:
+  enable: true
+  host: "kdoctor.io"
+  ingressClass:
+  targetPath: "/"

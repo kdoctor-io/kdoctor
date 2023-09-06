@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // OptionsReader is a Reader for the Options structure.
@@ -32,6 +29,12 @@ func (o *OptionsReader) ReadResponse(response runtime.ClientResponse, consumer r
 			return nil, err
 		}
 		return result, nil
+	case 500:
+		result := NewOptionsInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -48,7 +51,6 @@ OptionsOK describes a response with status code 200, with default header values.
 Success
 */
 type OptionsOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this options o k response has a 2xx status code
@@ -82,25 +84,70 @@ func (o *OptionsOK) Code() int {
 }
 
 func (o *OptionsOK) Error() string {
-	return fmt.Sprintf("[OPTIONS /][%d] optionsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[OPTIONS /][%d] optionsOK ", 200)
 }
 
 func (o *OptionsOK) String() string {
-	return fmt.Sprintf("[OPTIONS /][%d] optionsOK  %+v", 200, o.Payload)
-}
-
-func (o *OptionsOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[OPTIONS /][%d] optionsOK ", 200)
 }
 
 func (o *OptionsOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.EchoRes)
+	return nil
+}
 
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+// NewOptionsInternalServerError creates a OptionsInternalServerError with default headers values
+func NewOptionsInternalServerError() *OptionsInternalServerError {
+	return &OptionsInternalServerError{}
+}
+
+/*
+OptionsInternalServerError describes a response with status code 500, with default header values.
+
+Failed
+*/
+type OptionsInternalServerError struct {
+}
+
+// IsSuccess returns true when this options internal server error response has a 2xx status code
+func (o *OptionsInternalServerError) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this options internal server error response has a 3xx status code
+func (o *OptionsInternalServerError) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this options internal server error response has a 4xx status code
+func (o *OptionsInternalServerError) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this options internal server error response has a 5xx status code
+func (o *OptionsInternalServerError) IsServerError() bool {
+	return true
+}
+
+// IsCode returns true when this options internal server error response a status code equal to that given
+func (o *OptionsInternalServerError) IsCode(code int) bool {
+	return code == 500
+}
+
+// Code gets the status code for the options internal server error response
+func (o *OptionsInternalServerError) Code() int {
+	return 500
+}
+
+func (o *OptionsInternalServerError) Error() string {
+	return fmt.Sprintf("[OPTIONS /][%d] optionsInternalServerError ", 500)
+}
+
+func (o *OptionsInternalServerError) String() string {
+	return fmt.Sprintf("[OPTIONS /][%d] optionsInternalServerError ", 500)
+}
+
+func (o *OptionsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

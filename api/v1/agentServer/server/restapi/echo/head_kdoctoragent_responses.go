@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // HeadKdoctoragentOKCode is the HTTP code returned for type HeadKdoctoragentOK
@@ -25,11 +23,6 @@ HeadKdoctoragentOK Success
 swagger:response headKdoctoragentOK
 */
 type HeadKdoctoragentOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewHeadKdoctoragentOK creates HeadKdoctoragentOK with default headers values
@@ -38,25 +31,35 @@ func NewHeadKdoctoragentOK() *HeadKdoctoragentOK {
 	return &HeadKdoctoragentOK{}
 }
 
-// WithPayload adds the payload to the head kdoctoragent o k response
-func (o *HeadKdoctoragentOK) WithPayload(payload *models.EchoRes) *HeadKdoctoragentOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the head kdoctoragent o k response
-func (o *HeadKdoctoragentOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *HeadKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+}
+
+// HeadKdoctoragentInternalServerErrorCode is the HTTP code returned for type HeadKdoctoragentInternalServerError
+const HeadKdoctoragentInternalServerErrorCode int = 500
+
+/*
+HeadKdoctoragentInternalServerError Failed
+
+swagger:response headKdoctoragentInternalServerError
+*/
+type HeadKdoctoragentInternalServerError struct {
+}
+
+// NewHeadKdoctoragentInternalServerError creates HeadKdoctoragentInternalServerError with default headers values
+func NewHeadKdoctoragentInternalServerError() *HeadKdoctoragentInternalServerError {
+
+	return &HeadKdoctoragentInternalServerError{}
+}
+
+// WriteResponse to the client
+func (o *HeadKdoctoragentInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(500)
 }

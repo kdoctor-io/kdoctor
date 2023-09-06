@@ -87,7 +87,6 @@ spec:
                     type: integer
                   qps:
                     default: 5
-                    maximum: 100
                     minimum: 1
                     type: integer
                 type: object
@@ -115,6 +114,9 @@ spec:
                     type: string
                   bodyConfigmapNamespace:
                     type: string
+                  enableLatencyMetric:
+                    default: false
+                    type: boolean
                   header:
                     items:
                       type: string

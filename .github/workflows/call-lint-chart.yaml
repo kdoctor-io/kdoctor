@@ -65,7 +65,7 @@ jobs:
       # https://github.com/actions/setup-python
       - name: Set up Python
         if: ${{ env.RUN_JUST_LINT_CHART == 'false' }}
-        uses: actions/setup-python@v4.6.1
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: 3.8
           architecture: x64
@@ -96,7 +96,7 @@ jobs:
       # https://github.com/helm/kind-action
       - name: Create Kind cluster
         if: ${{ env.RUN_CHANGED == 'true' && env.RUN_JUST_LINT_CHART == 'false' }}
-        uses: helm/kind-action@v1.7.0
+        uses: helm/kind-action@v1.8.0
         with:
           wait: 120s
           #kubectl_version: ${{ env.K8S_VERSION }}

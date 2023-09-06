@@ -52,6 +52,10 @@ type AppHttpHealthyTarget struct {
 
 	// +kubebuilder:validation:Optional
 	Header []string `json:"header,omitempty"`
+
+	// +kubebuilder:default=false
+	// +kubebuilder:validation:Optional
+	EnableLatencyMetric bool `json:"enableLatencyMetric,omitempty"`
 }
 
 // scope(Namespaced or Cluster)

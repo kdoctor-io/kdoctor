@@ -72,6 +72,7 @@ func init() {
 	globalFlag.StringVarP(&types.AgentConfig.ConfigMapPath, "config-path", "C", "", "configmap file path")
 	globalFlag.BoolVarP(&types.AgentConfig.AppMode, "app-mode", "A", false, "app mode")
 	globalFlag.BoolVarP(&types.AgentConfig.TlsInsecure, "tls-insecure", "K", true, "skip verify tls")
+	globalFlag.BoolVarP(&types.AgentConfig.AppDnsUpstream, "dns-upstream", "D", true, "core dns upstream")
 	globalFlag.StringVarP(&types.AgentConfig.TlsCaCertPath, "tls-ca-cert", "R", "/etc/tls/ca.crt", "ca file path")
 	globalFlag.StringVarP(&types.AgentConfig.TlsCaKeyPath, "tls-ca-key", "Y", "/etc/tls/ca.key", "ca key file path")
 	if e := viper.BindPFlags(globalFlag); e != nil {

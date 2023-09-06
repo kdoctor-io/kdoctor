@@ -12,8 +12,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PostKdoctoragentOKCode is the HTTP code returned for type PostKdoctoragentOK
@@ -25,11 +23,6 @@ PostKdoctoragentOK Success
 swagger:response postKdoctoragentOK
 */
 type PostKdoctoragentOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.EchoRes `json:"body,omitempty"`
 }
 
 // NewPostKdoctoragentOK creates PostKdoctoragentOK with default headers values
@@ -38,27 +31,12 @@ func NewPostKdoctoragentOK() *PostKdoctoragentOK {
 	return &PostKdoctoragentOK{}
 }
 
-// WithPayload adds the payload to the post kdoctoragent o k response
-func (o *PostKdoctoragentOK) WithPayload(payload *models.EchoRes) *PostKdoctoragentOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the post kdoctoragent o k response
-func (o *PostKdoctoragentOK) SetPayload(payload *models.EchoRes) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PostKdoctoragentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
 }
 
 // PostKdoctoragentInternalServerErrorCode is the HTTP code returned for type PostKdoctoragentInternalServerError

@@ -1,7 +1,7 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
-package agenthttpserver
+package agentHttpServer
 
 import (
 	"fmt"
@@ -12,10 +12,10 @@ import (
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi/echo"
+	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"os"
-	"sync/atomic"
 	"time"
 )
 
@@ -23,12 +23,40 @@ var (
 	ParamInformation = map[string]string{
 		"delay": "in query, delay some second return response",
 	}
-	SupportedMethod       = []string{"GET", "PUT", "POST", "DELETE", "HEAD", "PATCH", "OPTIONS"}
-	requestCounts   int64 = 0
+	SupportedMethod = []string{"GET", "PUT", "POST", "DELETE", "HEAD", "PATCH", "OPTIONS"}
 
-	HttpsCertPath = "/etc/app-tls/tls.crt"
-	HttpsKeyPath  = "/etc/app-tls/tls.key"
+	RequestCounts = newRequestCount()
 )
+
+type requestCounts struct {
+	counts map[string]int64
+	l      lock.Mutex
+}
+
+func newRequestCount() *requestCounts {
+	return &requestCounts{
+		counts: make(map[string]int64),
+		l:      lock.Mutex{},
+	}
+}
+func (rc *requestCounts) AddOneCount(task string) {
+	rc.l.Lock()
+	rc.counts[task]++
+	rc.l.Unlock()
+}
+
+func (rc *requestCounts) ZeroCount(task string) {
+	rc.l.Lock()
+	rc.counts[task] = 0
+	rc.l.Unlock()
+}
+
+func (rc *requestCounts) GetCount(task string) int64 {
+	rc.l.Lock()
+	r := rc.counts[task]
+	rc.l.Unlock()
+	return r
+}
 
 // route /
 // ---------- get
@@ -55,7 +83,14 @@ func (s *echoGetHandler) Handle(r echo.GetParams) middleware.Responder {
 		}
 		head[k] = t
 	}
-	atomic.AddInt64(&requestCounts, 1)
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+
 	t := echo.NewGetOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -63,9 +98,10 @@ func (s *echoGetHandler) Handle(r echo.GetParams) middleware.Responder {
 		RequestURL:      r.HTTPRequest.RequestURI,
 		RequestMethod:   r.HTTPRequest.Method,
 		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
+		RequestCount:    RequestCounts.GetCount(task),
 		ParamDetail:     ParamInformation,
 		SupportedMethod: SupportedMethod,
+		TaskName:        task,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -80,7 +116,13 @@ type echoDeleteHandler struct {
 }
 
 func (s *echoDeleteHandler) Handle(r echo.DeleteParams) middleware.Responder {
-	atomic.StoreInt64(&requestCounts, 0)
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.ZeroCount(task)
 	return echo.NewDeleteOK()
 }
 
@@ -95,35 +137,17 @@ func (s *echoPutHandler) Handle(r echo.PutParams) middleware.Responder {
 	} else {
 		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
 	}
-	hostname := types.AgentConfig.PodName
-	if len(hostname) == 0 {
-		hostname, _ = os.Hostname()
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
 	}
-	head := map[string]string{}
-	for k, v := range r.HTTPRequest.Header {
-		t := ""
-		for _, m := range v {
-			t += " " + m + " "
-		}
-		head[k] = t
-	}
-	t := echo.NewPutOK()
-	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
-	}
+	RequestCounts.AddOneCount(task)
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
-		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
 	}
-
-	return t
+	return echo.NewPutOK()
 }
 
 // ----------- post
@@ -137,40 +161,21 @@ func (s *echoPostHandler) Handle(r echo.PostParams) middleware.Responder {
 	} else {
 		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
 	}
-	hostname := types.AgentConfig.PodName
-	if len(hostname) == 0 {
-		hostname, _ = os.Hostname()
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
 	}
-	head := map[string]string{}
-	for k, v := range r.HTTPRequest.Header {
-		t := ""
-		for _, m := range v {
-			t += " " + m + " "
-		}
-		head[k] = t
-	}
-	t := echo.NewPostOK()
-	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
-	}
-
-	body, _ := r.TestArgs.MarshalBinary()
-	t.Payload.RequestBody = string(body)
-
+	RequestCounts.AddOneCount(task)
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
-		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
-	} else {
-		t.Payload.RequestParam = "delay=0"
 	}
-	return t
+	_, err := r.TestArgs.MarshalBinary()
+	if err != nil {
+		return echo.NewPostInternalServerError()
+	}
+	return echo.NewPostOK()
 }
 
 // ----------- head
@@ -179,7 +184,21 @@ type echoHeadHandler struct {
 }
 
 func (s *echoHeadHandler) Handle(r echo.HeadParams) middleware.Responder {
-
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
 	return echo.NewHeadOK()
 }
 
@@ -189,10 +208,22 @@ type echoOptionsHandler struct {
 }
 
 func (s *echoOptionsHandler) Handle(r echo.OptionsParams) middleware.Responder {
-	p := echo.NewPutParams()
-	p.HTTPRequest = r.HTTPRequest
-	p.Delay = r.Delay
-	return (&echoPutHandler{logger: s.logger}).Handle(p)
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
+	return echo.NewOptionsOK()
 }
 
 // ----------- patch
@@ -201,10 +232,22 @@ type echoPatchHandler struct {
 }
 
 func (s *echoPatchHandler) Handle(r echo.PatchParams) middleware.Responder {
-	p := echo.NewPutParams()
-	p.HTTPRequest = r.HTTPRequest
-	p.Delay = r.Delay
-	return (&echoPutHandler{logger: s.logger}).Handle(p)
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
+	return echo.NewPatchOK()
 }
 
 // route /kdoctoragent
@@ -232,7 +275,13 @@ func (s *echoKdoctorGetHandler) Handle(r echo.GetKdoctoragentParams) middleware.
 		}
 		head[k] = t
 	}
-	atomic.AddInt64(&requestCounts, 1)
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
 	t := echo.NewGetKdoctoragentOK()
 	t.Payload = &models.EchoRes{
 		ClientIP:        r.HTTPRequest.RemoteAddr,
@@ -240,9 +289,10 @@ func (s *echoKdoctorGetHandler) Handle(r echo.GetKdoctoragentParams) middleware.
 		RequestURL:      r.HTTPRequest.RequestURI,
 		RequestMethod:   r.HTTPRequest.Method,
 		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
+		RequestCount:    RequestCounts.GetCount(task),
 		ParamDetail:     ParamInformation,
 		SupportedMethod: SupportedMethod,
+		TaskName:        task,
 	}
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
@@ -257,7 +307,13 @@ type echoKdoctorDeleteHandler struct {
 }
 
 func (s *echoKdoctorDeleteHandler) Handle(r echo.DeleteKdoctoragentParams) middleware.Responder {
-	atomic.StoreInt64(&requestCounts, 0)
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.ZeroCount(task)
 	return echo.NewDeleteKdoctoragentOK()
 }
 
@@ -272,35 +328,17 @@ func (s *echoKdoctorPutHandler) Handle(r echo.PutKdoctoragentParams) middleware.
 	} else {
 		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
 	}
-	hostname := types.AgentConfig.PodName
-	if len(hostname) == 0 {
-		hostname, _ = os.Hostname()
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
 	}
-	head := map[string]string{}
-	for k, v := range r.HTTPRequest.Header {
-		t := ""
-		for _, m := range v {
-			t += " " + m + " "
-		}
-		head[k] = t
-	}
-	t := echo.NewPutKdoctoragentOK()
-	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
-	}
+	RequestCounts.AddOneCount(task)
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
-		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
 	}
-
-	return t
+	return echo.NewPutKdoctoragentOK()
 }
 
 // ----------- post
@@ -314,40 +352,21 @@ func (s *echoKdoctorPostHandler) Handle(r echo.PostKdoctoragentParams) middlewar
 	} else {
 		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
 	}
-	hostname := types.AgentConfig.PodName
-	if len(hostname) == 0 {
-		hostname, _ = os.Hostname()
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
 	}
-	head := map[string]string{}
-	for k, v := range r.HTTPRequest.Header {
-		t := ""
-		for _, m := range v {
-			t += " " + m + " "
-		}
-		head[k] = t
-	}
-	t := echo.NewPostKdoctoragentOK()
-	t.Payload = &models.EchoRes{
-		ClientIP:        r.HTTPRequest.RemoteAddr,
-		RequestHeader:   head,
-		RequestURL:      r.HTTPRequest.RequestURI,
-		RequestMethod:   r.HTTPRequest.Method,
-		ServerName:      hostname,
-		RequestCount:    atomic.LoadInt64(&requestCounts),
-		ParamDetail:     ParamInformation,
-		SupportedMethod: SupportedMethod,
-	}
-
-	body, _ := r.TestArgs.MarshalBinary()
-	t.Payload.RequestBody = string(body)
-
+	RequestCounts.AddOneCount(task)
 	if r.Delay != nil {
 		time.Sleep(time.Duration(*r.Delay) * time.Second)
-		t.Payload.RequestParam = fmt.Sprintf("delay=%d", *r.Delay)
-	} else {
-		t.Payload.RequestParam = "delay=0"
 	}
-	return t
+	_, err := r.TestArgs.MarshalBinary()
+	if err != nil {
+		return echo.NewPostKdoctoragentInternalServerError()
+	}
+	return echo.NewPostKdoctoragentOK()
 }
 
 // ----------- head
@@ -356,7 +375,21 @@ type echoKdoctorHeadHandler struct {
 }
 
 func (s *echoKdoctorHeadHandler) Handle(r echo.HeadKdoctoragentParams) middleware.Responder {
-
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
 	return echo.NewHeadKdoctoragentOK()
 }
 
@@ -366,10 +399,22 @@ type echoKdoctorOptionsHandler struct {
 }
 
 func (s *echoKdoctorOptionsHandler) Handle(r echo.OptionsKdoctoragentParams) middleware.Responder {
-	p := echo.NewPutKdoctoragentParams()
-	p.HTTPRequest = r.HTTPRequest
-	p.Delay = r.Delay
-	return (&echoKdoctorPutHandler{logger: s.logger}).Handle(p)
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
+	return echo.NewOptionsKdoctoragentOK()
 }
 
 // ----------- patch
@@ -378,10 +423,22 @@ type echoKdoctorPatchHandler struct {
 }
 
 func (s *echoKdoctorPatchHandler) Handle(r echo.PatchKdoctoragentParams) middleware.Responder {
-	p := echo.NewPutKdoctoragentParams()
-	p.HTTPRequest = r.HTTPRequest
-	p.Delay = r.Delay
-	return (&echoKdoctorPutHandler{logger: s.logger}).Handle(p)
+	if r.Delay != nil {
+		s.logger.Sugar().Debugf("%s method  %s delay %d request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, *r.Delay, r.HTTPRequest.RemoteAddr)
+	} else {
+		s.logger.Sugar().Debugf("%s method  %s delay 0 request from %s", r.HTTPRequest.Proto, r.HTTPRequest.Method, r.HTTPRequest.RemoteAddr)
+	}
+	var task string
+	if r.Task == nil {
+		task = "default"
+	} else {
+		task = *r.Task
+	}
+	RequestCounts.AddOneCount(task)
+	if r.Delay != nil {
+		time.Sleep(time.Duration(*r.Delay) * time.Second)
+	}
+	return echo.NewPatchKdoctoragentOK()
 }
 
 func SetupAppHttpServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {

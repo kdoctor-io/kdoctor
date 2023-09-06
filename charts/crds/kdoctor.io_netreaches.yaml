@@ -87,7 +87,6 @@ spec:
                     type: integer
                   qps:
                     default: 5
-                    maximum: 100
                     minimum: 1
                     type: integer
                 type: object
@@ -113,6 +112,9 @@ spec:
                 properties:
                   clusterIP:
                     default: true
+                    type: boolean
+                  enableLatencyMetric:
+                    default: false
                     type: boolean
                   endpoint:
                     default: true

@@ -1,9 +1,31 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
 
+// this is copied from Google project, and make some code modification
+// Copyright 2014 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Based on https://github.com/rakyll/hey/blob/master/requester/requester.go
+//
+// Changes:
+// - add more metric
+// - add more concurrency request
+
 package loadDns
 
 import (
+	"crypto/tls"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"github.com/miekg/dns"
@@ -37,6 +59,8 @@ type Work struct {
 	// Qps is the rate limit in queries per second.
 	QPS int
 
+	EnableLatencyMetric bool
+
 	initOnce  sync.Once
 	results   chan *result
 	stopCh    chan struct{}
@@ -57,7 +81,7 @@ func (b *Work) Init() {
 func (b *Work) Run() {
 	b.Init()
 	b.startTime = metav1.Now()
-	b.report = newReport(b.results)
+	b.report = newReport(b.results, b.EnableLatencyMetric)
 	// Run the reporter first, it polls the result channel until it is closed.
 	go func() {
 		runReporter(b.report)
@@ -102,6 +126,12 @@ func (b *Work) runWorker() {
 	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
 	conn, _ := client.Dial(b.ServerAddr)
 	client.SingleInflight = true
+	if b.Protocol == "tcp-tls" {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true,
+		}
+		client.TLSConfig = tlsConfig
+	}
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
@@ -141,26 +171,30 @@ func (b *Work) runWorkers() {
 func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 	latency := v1beta1.LatencyDistribution{}
 
-	t, _ := stats.Mean(b.report.lats)
-	latency.Mean = t
+	if b.EnableLatencyMetric {
+		t, _ := stats.Mean(b.report.lats)
+		latency.Mean = t
 
-	t, _ = stats.Max(b.report.lats)
-	latency.Max = t
+		t, _ = stats.Max(b.report.lats)
+		latency.Max = t
 
-	t, _ = stats.Min(b.report.lats)
-	latency.Min = t
+		t, _ = stats.Min(b.report.lats)
+		latency.Min = t
 
-	t, _ = stats.Percentile(b.report.lats, 50)
-	latency.P50 = t
+		t, _ = stats.Percentile(b.report.lats, 50)
+		latency.P50 = t
 
-	t, _ = stats.Percentile(b.report.lats, 90)
-	latency.P90 = t
+		t, _ = stats.Percentile(b.report.lats, 90)
+		latency.P90 = t
 
-	t, _ = stats.Percentile(b.report.lats, 95)
-	latency.P95 = t
+		t, _ = stats.Percentile(b.report.lats, 95)
+		latency.P95 = t
 
-	t, _ = stats.Percentile(b.report.lats, 99)
-	latency.P99 = t
+		t, _ = stats.Percentile(b.report.lats, 99)
+		latency.P99 = t
+	} else {
+		latency.Mean = b.report.totalLatencies / float32(b.report.totalCount)
+	}
 
 	metric := &v1beta1.DNSMetrics{
 		StartTime:     b.startTime,

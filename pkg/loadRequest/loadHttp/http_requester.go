@@ -15,6 +15,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// Based on https://github.com/rakyll/hey/blob/master/requester/requester.go
+//
+// Changes:
+// - add more metric
+// - add more concurrency request
 
 package loadHttp
 
@@ -30,7 +36,6 @@ import (
 	"golang.org/x/net/http2"
 	"io"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"math"
 	"net/http"
 	"net/http/httptrace"
 	"net/url"
@@ -133,6 +138,10 @@ type Work struct {
 	// Optional.
 	ExpectStatusCode *int
 
+	// EnableLatencyMetric is collect latency metric . default false
+	// Optional.
+	EnableLatencyMetric bool
+
 	initOnce  sync.Once
 	results   chan *result
 	stopCh    chan struct{}
@@ -155,7 +164,7 @@ func (b *Work) Run() {
 	b.Init()
 	b.startTime = metav1.Now()
 	b.start = time.Since(b.startTime.Time)
-	b.report = newReport(b.results, math.MaxInt32)
+	b.report = newReport(b.results, b.EnableLatencyMetric)
 	// Run the reporter first, it polls the result channel until it is closed.
 	go func() {
 		runReporter(b.report)
@@ -319,26 +328,30 @@ func (b *Work) now() time.Duration { return time.Since(b.startTime.Time) }
 func (b *Work) AggregateMetric() *v1beta1.HttpMetrics {
 	latency := v1beta1.LatencyDistribution{}
 
-	t, _ := stats.Mean(b.report.latencies)
-	latency.Mean = t
+	if b.EnableLatencyMetric {
+		t, _ := stats.Mean(b.report.latencies)
+		latency.Mean = t
 
-	t, _ = stats.Max(b.report.latencies)
-	latency.Max = t
+		t, _ = stats.Max(b.report.latencies)
+		latency.Max = t
 
-	t, _ = stats.Min(b.report.latencies)
-	latency.Min = t
+		t, _ = stats.Min(b.report.latencies)
+		latency.Min = t
 
-	t, _ = stats.Percentile(b.report.latencies, 50)
-	latency.P50 = t
+		t, _ = stats.Percentile(b.report.latencies, 50)
+		latency.P50 = t
 
-	t, _ = stats.Percentile(b.report.latencies, 90)
-	latency.P90 = t
+		t, _ = stats.Percentile(b.report.latencies, 90)
+		latency.P90 = t
 
-	t, _ = stats.Percentile(b.report.latencies, 95)
-	latency.P95 = t
+		t, _ = stats.Percentile(b.report.latencies, 95)
+		latency.P95 = t
 
-	t, _ = stats.Percentile(b.report.latencies, 99)
-	latency.P99 = t
+		t, _ = stats.Percentile(b.report.latencies, 99)
+		latency.P99 = t
+	} else {
+		latency.Mean = b.report.totalLatencies / float32(b.report.totalCount)
+	}
 
 	var errNum int64
 	for _, v := range b.report.errorDist {

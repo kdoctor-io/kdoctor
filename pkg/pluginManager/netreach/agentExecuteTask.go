@@ -56,11 +56,12 @@ func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.H
 	// generate report
 	// notice , upper case for first character of key, or else fail to parse json
 	report.Metrics = *result
-	report.FailureReason = pointer.String(failureReason)
-	if report.FailureReason == nil {
+	if len(failureReason) == 0 {
+		report.FailureReason = nil
 		report.Succeed = true
 		logger.Sugar().Infof("succeed to test %v", req.Url)
 	} else {
+		report.FailureReason = pointer.String(failureReason)
 		report.Succeed = false
 		logger.Sugar().Warnf("failed to test %v", req.Url)
 	}
@@ -298,6 +299,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				Qps:                 request.QPS,
 				PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 				RequestTimeSecond:   request.DurationInSecond,
+				EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 			}
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *d)
 			failureReason, itemReport := SendRequestAndReport(logger, t.Name, d, successCondition)

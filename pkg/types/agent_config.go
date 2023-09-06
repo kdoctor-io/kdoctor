@@ -16,6 +16,9 @@ var AgentEnvMapping = []EnvMapping{
 	{"ENV_AGENT_GRPC_LISTEN_PORT", "3000", &AgentConfig.AgentGrpcListenPort},
 	{"ENV_AGENT_APP_HTTP_PORT", "80", &AgentConfig.AppHttpPort},
 	{"ENV_AGENT_APP_HTTPS_PORT", "443", &AgentConfig.AppHttpsPort},
+	{"ENV_AGENT_APP_DNS_UDP_PORT", "53", &AgentConfig.AppDnsUdpPort},
+	{"ENV_AGENT_APP_DNS_TCP_PORT", "53", &AgentConfig.AppDnsTcpPort},
+	{"ENV_AGENT_APP_DNS_TCP_TLS_PORT", "853", &AgentConfig.AppDnsTcpTlsPort},
 	{"ENV_ENABLE_AGGREGATE_AGENT_REPORT", "false", &AgentConfig.EnableAggregateAgentReport},
 	{"ENV_AGENT_REPORT_STORAGE_PATH", "", &AgentConfig.DirPathAgentReport},
 	{"ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE", "10", &AgentConfig.CleanAgedReportInMinute},
@@ -33,6 +36,9 @@ type AgentConfigStruct struct {
 	AgentGrpcListenPort    int32
 	AppHttpPort            int32
 	AppHttpsPort           int32
+	AppDnsUdpPort          int32
+	AppDnsTcpPort          int32
+	AppDnsTcpTlsPort       int32
 	AgentHealthPort        int32
 	PyroscopeServerAddress string
 	GolangMaxProcs         int32
@@ -48,11 +54,12 @@ type AgentConfigStruct struct {
 	CleanAgedReportInMinute    int32
 
 	// ------- from flags
-	ConfigMapPath string
-	TlsCaCertPath string
-	TlsCaKeyPath  string
-	TlsInsecure   bool
-	AppMode       bool
+	ConfigMapPath  string
+	TlsCaCertPath  string
+	TlsCaKeyPath   string
+	TlsInsecure    bool
+	AppMode        bool
+	AppDnsUpstream bool
 
 	// from configmap
 	Configmap ConfigmapConfig

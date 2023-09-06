@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PutKdoctoragentReader is a Reader for the PutKdoctoragent structure.
@@ -32,6 +29,12 @@ func (o *PutKdoctoragentReader) ReadResponse(response runtime.ClientResponse, co
 			return nil, err
 		}
 		return result, nil
+	case 500:
+		result := NewPutKdoctoragentInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -48,7 +51,6 @@ PutKdoctoragentOK describes a response with status code 200, with default header
 Success
 */
 type PutKdoctoragentOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this put kdoctoragent o k response has a 2xx status code
@@ -82,25 +84,70 @@ func (o *PutKdoctoragentOK) Code() int {
 }
 
 func (o *PutKdoctoragentOK) Error() string {
-	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentOK ", 200)
 }
 
 func (o *PutKdoctoragentOK) String() string {
-	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentOK  %+v", 200, o.Payload)
-}
-
-func (o *PutKdoctoragentOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentOK ", 200)
 }
 
 func (o *PutKdoctoragentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.EchoRes)
+	return nil
+}
 
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+// NewPutKdoctoragentInternalServerError creates a PutKdoctoragentInternalServerError with default headers values
+func NewPutKdoctoragentInternalServerError() *PutKdoctoragentInternalServerError {
+	return &PutKdoctoragentInternalServerError{}
+}
+
+/*
+PutKdoctoragentInternalServerError describes a response with status code 500, with default header values.
+
+Failed
+*/
+type PutKdoctoragentInternalServerError struct {
+}
+
+// IsSuccess returns true when this put kdoctoragent internal server error response has a 2xx status code
+func (o *PutKdoctoragentInternalServerError) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this put kdoctoragent internal server error response has a 3xx status code
+func (o *PutKdoctoragentInternalServerError) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this put kdoctoragent internal server error response has a 4xx status code
+func (o *PutKdoctoragentInternalServerError) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this put kdoctoragent internal server error response has a 5xx status code
+func (o *PutKdoctoragentInternalServerError) IsServerError() bool {
+	return true
+}
+
+// IsCode returns true when this put kdoctoragent internal server error response a status code equal to that given
+func (o *PutKdoctoragentInternalServerError) IsCode(code int) bool {
+	return code == 500
+}
+
+// Code gets the status code for the put kdoctoragent internal server error response
+func (o *PutKdoctoragentInternalServerError) Code() int {
+	return 500
+}
+
+func (o *PutKdoctoragentInternalServerError) Error() string {
+	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentInternalServerError ", 500)
+}
+
+func (o *PutKdoctoragentInternalServerError) String() string {
+	return fmt.Sprintf("[PUT /kdoctoragent][%d] putKdoctoragentInternalServerError ", 500)
+}
+
+func (o *PutKdoctoragentInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

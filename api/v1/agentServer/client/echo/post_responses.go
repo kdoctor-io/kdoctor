@@ -10,12 +10,9 @@ package echo
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 )
 
 // PostReader is a Reader for the Post structure.
@@ -54,7 +51,6 @@ PostOK describes a response with status code 200, with default header values.
 Success
 */
 type PostOK struct {
-	Payload *models.EchoRes
 }
 
 // IsSuccess returns true when this post o k response has a 2xx status code
@@ -88,25 +84,14 @@ func (o *PostOK) Code() int {
 }
 
 func (o *PostOK) Error() string {
-	return fmt.Sprintf("[POST /][%d] postOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /][%d] postOK ", 200)
 }
 
 func (o *PostOK) String() string {
-	return fmt.Sprintf("[POST /][%d] postOK  %+v", 200, o.Payload)
-}
-
-func (o *PostOK) GetPayload() *models.EchoRes {
-	return o.Payload
+	return fmt.Sprintf("[POST /][%d] postOK ", 200)
 }
 
 func (o *PostOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.EchoRes)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

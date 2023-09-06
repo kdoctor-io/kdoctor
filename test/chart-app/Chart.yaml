@@ -1,0 +1,21 @@
+apiVersion: v2
+name: http-server-test
+home: "https://kdoctor-io.github.io/kdoctor"
+# application or library
+type: application
+# no need to modify this version , CI will auto update it with /VERSION
+version: 0.1.0
+# This field is informational, and has no impact on chart version calculations .
+# Leaving it unquoted can lead to parsing issues in some cases
+# no need to modify this version , CI will auto update it with /VERSION
+appVersion: "0.1.0"
+kubeVersion: ">= 1.16.0-0"
+description: http-server-test for kdoctor
+sources:
+  - "https://github.com/kdoctor-io/kdoctor"
+keywords:
+  - kdoctor
+  - operation
+maintainers:
+  - name: kdoctor-io
+    url: https://github.com/kdoctor-io

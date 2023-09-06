@@ -1,5 +1,14 @@
 // Copyright 2023 Authors of kdoctor-io
 // SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+//
+// function ValidataAppHttpHealthyHost base on https://github.com/golang/go/blob/master/src/net/ip.go  ParseIP function
+//
+// Changes:
+// - add domain check
 
 package tools
 
@@ -7,9 +16,15 @@ import (
 	"fmt"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/robfig/cron"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"net"
+	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 )
+
+var DomainRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,}$`)
 
 func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 
@@ -57,8 +72,55 @@ func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 	return nil
 }
 
+// ValidataAppHttpHealthyHost check host protocol,ipv4 and ipv6 addr
+func ValidataAppHttpHealthyHost(r *crd.AppHttpHealthy) error {
+	var ip string
+	u, err := url.Parse(r.Spec.Target.Host)
+	if err != nil {
+		s := fmt.Sprintf("HttpAppHealthy %v, The IP address of the host is incorrect,err: %v ", r.Name, err)
+		return apierrors.NewBadRequest(s)
+	}
+	ip = u.Hostname()
+	for i := 0; i < len(ip); i++ {
+		// ipv4 or domain
+		if ip[i] == '.' {
+			ipAddr := ip
+			// if host contains port remove port
+			if strings.Contains(ip, ":") {
+				ipAddr = ip[:strings.Index(ip, ":")]
+			}
+			if DomainRegex.MatchString(ipAddr) {
+				break
+			}
+			if net.ParseIP(ipAddr).To4() == nil {
+				s := fmt.Sprintf("HttpAppHealthy %v, The IP address of the host is incorrect", r.Name)
+				return apierrors.NewBadRequest(s)
+			}
+			break
+
+			// ipv6
+		} else if ip[i] == ':' {
+			if r.Spec.Target.Host[strings.Index(r.Spec.Target.Host, ip)-1] != '[' {
+				s := fmt.Sprintf("HttpAppHealthy %v, using bad/illegal format or missing URL,example: http://[ipv6]:port", r.Name)
+				return apierrors.NewBadRequest(s)
+			}
+			if r.Spec.Target.Host[strings.Index(r.Spec.Target.Host, ip)+len(ip)] != ']' {
+				s := fmt.Sprintf("HttpAppHealthy %v, using bad/illegal format or missing URL,example: http://[ipv6]:port", r.Name)
+				return apierrors.NewBadRequest(s)
+			}
+			if net.ParseIP(ip).To16() == nil {
+				s := fmt.Sprintf("HttpAppHealthy %v, The IP address of the host is incorrect", r.Name)
+				return apierrors.NewBadRequest(s)
+			}
+			break
+		}
+	}
+
+	return nil
+}
+
 func GetDefaultSchedule() (plan *crd.SchedulePlan) {
-	s := "0 60"
+	s := "0 1"
 	return &crd.SchedulePlan{
 		RoundTimeoutMinute: 60,
 		Schedule:           &s,
