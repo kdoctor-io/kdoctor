@@ -14,6 +14,8 @@ type NetDNSTask struct {
 	TargetNumber  int64              `json:"targetNumber"`
 	FailureReason *string            `json:"failureReason,omitempty"`
 	Succeed       bool               `json:"succeed"`
+	MaxCPU        string             `json:"MaxCPU"`
+	MaxMemory     string             `json:"MaxMemory"`
 	Detail        []NetDNSTaskDetail `json:"detail"`
 }
 

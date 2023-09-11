@@ -171,6 +171,8 @@ spec:
       succeed: true
       targetNumber: 1
       targetType: kdoctor agent
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
     netDNSTaskSpec:
       ...
   - NodeName: kdoctor-worker
@@ -197,6 +199,8 @@ spec:
       succeed: true
       targetNumber: 1
       targetType: kdoctor agent
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
     netDNSTaskSpec:
       ...
   ReportRoundNumber: 1
@@ -205,6 +209,8 @@ spec:
   TaskName: netdns-cluster
   TaskType: Netdns
 ```
+
+> 注：若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。
 
 ## 集群外 dns server 测试
 

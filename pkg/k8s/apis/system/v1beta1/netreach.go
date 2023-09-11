@@ -10,6 +10,8 @@ type NetReachTask struct {
 	TargetNumber  int64                `json:"TargetNumber"`
 	FailureReason *string              `json:"FailureReason,omitempty"`
 	Succeed       bool                 `json:"Succeed"`
+	MaxCPU        string               `json:"MaxCPU"`
+	MaxMemory     string               `json:"MaxMemory"`
 	Detail        []NetReachTaskDetail `json:"Detail"`
 }
 

@@ -157,6 +157,8 @@ spec:
       Succeed: true
       TargetNumber: 1
       TargetType: HttpAppHealthy
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
     HttpAppHealthyTaskSpec:
     ...
     PodName: kdoctor-agent-fmr9m
@@ -199,6 +201,8 @@ spec:
   TaskName: http
   TaskType: AppHttpHealthy
 ```
+
+> 注：若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。
 
 ## 其他常用示例 
 
