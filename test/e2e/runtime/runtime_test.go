@@ -42,16 +42,18 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// target
 		target := new(v1beta1.NetReachTarget)
+		enable := true
+		disable := false
 		if !common.TestIPv4 && common.TestIPv6 {
-			target.Ingress = false
+			target.Ingress = &disable
 		} else {
-			target.Ingress = true
+			target.Ingress = &enable
 		}
-		target.LoadBalancer = true
-		target.ClusterIP = true
-		target.Endpoint = true
-		target.NodePort = true
-		target.MultusInterface = false
+		target.LoadBalancer = &enable
+		target.ClusterIP = &enable
+		target.Endpoint = &enable
+		target.NodePort = &enable
+		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
 		netReach.Spec.Target = target
@@ -260,18 +262,20 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		successCondition.MeanAccessDelayInMs = &successMean
 		netReach.Spec.SuccessCondition = successCondition
 
+		enable := true
+		disable := false
 		// target
 		target := new(v1beta1.NetReachTarget)
 		if !common.TestIPv4 && common.TestIPv6 {
-			target.Ingress = false
+			target.Ingress = &disable
 		} else {
-			target.Ingress = true
+			target.Ingress = &enable
 		}
-		target.LoadBalancer = true
-		target.ClusterIP = true
-		target.Endpoint = true
-		target.NodePort = true
-		target.MultusInterface = false
+		target.LoadBalancer = &enable
+		target.ClusterIP = &enable
+		target.Endpoint = &enable
+		target.NodePort = &enable
+		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
 		netReach.Spec.Target = target
