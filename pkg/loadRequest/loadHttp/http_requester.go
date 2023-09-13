@@ -120,7 +120,7 @@ type Work struct {
 	// DisableCompression is an option to disable compression in response
 	DisableCompression bool
 
-	// DisableKeepAlives is an option to prevents re-use of TCP connections between different HTTP requests
+	// DisableKeepAlives is an option to prevents reuse of TCP connections between different HTTP requests
 	DisableKeepAlives bool
 
 	// DisableRedirects is an option to prevent the following of HTTP redirects

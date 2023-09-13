@@ -34,19 +34,20 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		successCondition.SuccessRate = &successRate
 		successCondition.MeanAccessDelayInMs = &successMean
 		netReach.Spec.SuccessCondition = successCondition
-
+		enable := true
+		disable := false
 		// target
 		target := new(v1beta1.NetReachTarget)
 		if !common.TestIPv4 && common.TestIPv6 {
-			target.Ingress = false
+			target.Ingress = &disable
 		} else {
-			target.Ingress = true
+			target.Ingress = &enable
 		}
-		target.LoadBalancer = true
-		target.ClusterIP = true
-		target.Endpoint = true
-		target.NodePort = true
-		target.MultusInterface = false
+		target.LoadBalancer = &enable
+		target.ClusterIP = &enable
+		target.Endpoint = &enable
+		target.NodePort = &enable
+		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
 		netReach.Spec.Target = target
@@ -74,7 +75,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		e = common.WaitKdoctorTaskDone(frame, netReach, pluginManager.KindNameNetReach, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait netReach task finish")
 
-		success, e := common.CompareResult(frame, netReachName, pluginManager.KindNameNetReach, []string{}, reportNum)
+		success, e := common.CompareResult(frame, netReachName, pluginManager.KindNameNetReach, []string{}, reportNum, netReach)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 

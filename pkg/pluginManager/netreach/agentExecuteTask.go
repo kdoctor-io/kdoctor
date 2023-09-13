@@ -100,8 +100,8 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	logger.Sugar().Infof("load test kdoctor Agent pod: qps=%v, PerRequestTimeout=%vs, Duration=%vs", request.QPS, request.PerRequestTimeoutInMS, request.DurationInSecond)
 	finalfailureReason = ""
 
-	if target.Endpoint {
-		podIPs, e := getTargetPodIP(ctx, runtimeResource.RuntimeName, runtimeResource.RuntimeType, target.MultusInterface)
+	if *target.Endpoint {
+		podIPs, e := getTargetPodIP(ctx, runtimeResource.RuntimeName, runtimeResource.RuntimeType, *target.MultusInterface)
 		if e != nil {
 			logger.Sugar().Debugf("test agent pod ip: %v", podIPs)
 			if e != nil {
@@ -145,7 +145,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 			logger.Sugar().Errorf("failed to get agent ipv6 service url , error=%v", e)
 		}
 	}
-	if target.ClusterIP {
+	if *target.ClusterIP {
 		// ----------------------- test clusterIP ipv4
 		if target.IPv4 != nil && *(target.IPv4) {
 			if agentV4Url != nil && len(agentV4Url.ClusterIPUrl) > 0 {
@@ -162,7 +162,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		}
 
 		// ----------------------- test clusterIP ipv6
-		if target.ClusterIP && target.IPv6 != nil && *(target.IPv6) {
+		if *target.ClusterIP && target.IPv6 != nil && *(target.IPv6) {
 			if agentV6Url != nil && len(agentV6Url.ClusterIPUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
 					Name:   "AgentClusterV6IP_" + agentV6Url.ClusterIPUrl[0],
@@ -177,7 +177,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		}
 	}
 
-	if target.NodePort {
+	if *target.NodePort {
 		// get node ip
 		localNodeIpv4, localNodeIpv6, e := k8sObjManager.GetK8sObjManager().GetNodeIP(ctx, config.AgentConfig.LocalNodeName)
 		if e != nil {
@@ -216,7 +216,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		}
 	}
 
-	if target.LoadBalancer {
+	if *target.LoadBalancer {
 		if target.IPv4 != nil && *(target.IPv4) {
 			if agentV4Url != nil && len(agentV4Url.LoadBalancerUrl) > 0 {
 				testTargetList = append(testTargetList, &TestTarget{
@@ -246,7 +246,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		}
 	}
 
-	if target.Ingress {
+	if *target.Ingress {
 		if runtimeResource.ServiceNameV4 != nil {
 			agentIngress, e := k8sObjManager.GetK8sObjManager().GetIngress(ctx, *runtimeResource.ServiceNameV4, config.AgentConfig.PodNamespace)
 			if e != nil {

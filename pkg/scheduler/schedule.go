@@ -134,7 +134,7 @@ func (s *Scheduler) CreateTaskRuntimeIfNotExist(ctx context.Context, ownerTask m
 
 		if s.taskKind == types.KindNameNetReach {
 			nr := ownerTask.(*v1beta1.NetReach)
-			if nr.Spec.Target.Ingress {
+			if *nr.Spec.Target.Ingress {
 				err = s.createIngress(ctx, serviceNameV4, runtime)
 				if nil != err {
 					return v1beta1.TaskResource{}, fmt.Errorf("failed to create runtime IPv4 ingress for task '%s/%s', error: %w", s.taskKind, s.taskName, err)
