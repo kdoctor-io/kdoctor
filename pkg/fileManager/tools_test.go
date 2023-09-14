@@ -8,11 +8,12 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("test ippool CR", Label("ippoolCR"), func() {
+var _ = Describe("test fileManager tool", Label("fileManager"), func() {
 
 	It("test basic", func() {
 		filePath := "/tmp/_loggertest/a.txt"
 
+		fileManager.DefaultFileWriter(100, 0, 0)
 		wr := fileManager.NewFileWriter(filePath)
 		GinkgoWriter.Printf("succeed to new write for %v", filePath)
 		defer wr.Close()
