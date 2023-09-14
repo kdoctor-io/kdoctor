@@ -296,6 +296,7 @@ func (b *Work) runWorker() {
 		select {
 		case <-b.stopCh:
 			wg.Wait()
+			client.CloseIdleConnections()
 			return
 		default:
 			if b.QPS > 0 {
