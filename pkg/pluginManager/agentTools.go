@@ -46,6 +46,7 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 			ReportType:     plugintypes.ReportTypeAgent,
 		}
 		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj)
+
 		if e != nil {
 			logger.Sugar().Errorf("plugin failed to implement the round task, error=%v", e)
 			taskSucceed <- false

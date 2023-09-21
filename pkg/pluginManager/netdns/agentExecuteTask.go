@@ -6,6 +6,7 @@ package netdns
 import (
 	"context"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"net"
 	"strconv"
 	"sync"
@@ -230,7 +231,11 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	} else {
 		task.Succeed = true
 	}
-
+	mem, cpu := resource.UsedResource.Stats()
+	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
+	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
+	// every round done clean cpu mem stats
+	resource.UsedResource.CleanStats()
 	return finalfailureReason, task, err
 }
 

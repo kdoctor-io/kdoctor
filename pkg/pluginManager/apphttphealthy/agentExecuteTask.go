@@ -14,6 +14,7 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadHttp"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
@@ -177,6 +178,11 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	} else {
 		task.Succeed = true
 	}
+	mem, cpu := resource.UsedResource.Stats()
+	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
+	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
+	// every round done clean cpu mem stats
+	resource.UsedResource.CleanStats()
 
 	return finalfailureReason, task, err
 

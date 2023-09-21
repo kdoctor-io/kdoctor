@@ -19,6 +19,7 @@ var AgentEnvMapping = []EnvMapping{
 	{"ENV_AGENT_APP_DNS_UDP_PORT", "53", &AgentConfig.AppDnsUdpPort},
 	{"ENV_AGENT_APP_DNS_TCP_PORT", "53", &AgentConfig.AppDnsTcpPort},
 	{"ENV_AGENT_APP_DNS_TCP_TLS_PORT", "853", &AgentConfig.AppDnsTcpTlsPort},
+	{"ENV_AGENT_RESOURCE_COLLECT_INTERVAL_IN_SECOND", "1", &AgentConfig.CollectResourceInSecond},
 	{"ENV_ENABLE_AGGREGATE_AGENT_REPORT", "false", &AgentConfig.EnableAggregateAgentReport},
 	{"ENV_AGENT_REPORT_STORAGE_PATH", "", &AgentConfig.DirPathAgentReport},
 	{"ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE", "10", &AgentConfig.CleanAgedReportInMinute},
@@ -29,19 +30,20 @@ var AgentEnvMapping = []EnvMapping{
 
 type AgentConfigStruct struct {
 	// ------- from env
-	EnableMetric           bool
-	MetricPort             int32
-	GopsPort               int32
-	WebhookPort            int32
-	AgentGrpcListenPort    int32
-	AppHttpPort            int32
-	AppHttpsPort           int32
-	AppDnsUdpPort          int32
-	AppDnsTcpPort          int32
-	AppDnsTcpTlsPort       int32
-	AgentHealthPort        int32
-	PyroscopeServerAddress string
-	GolangMaxProcs         int32
+	EnableMetric            bool
+	MetricPort              int32
+	GopsPort                int32
+	WebhookPort             int32
+	AgentGrpcListenPort     int32
+	AppHttpPort             int32
+	AppHttpsPort            int32
+	AppDnsUdpPort           int32
+	AppDnsTcpPort           int32
+	AppDnsTcpTlsPort        int32
+	AgentHealthPort         int32
+	CollectResourceInSecond int32
+	PyroscopeServerAddress  string
+	GolangMaxProcs          int32
 
 	PodName          string
 	PodNamespace     string
