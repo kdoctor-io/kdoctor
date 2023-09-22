@@ -47,6 +47,8 @@ type report struct {
 	successCount   int64
 	failedCount    int64
 	ReplyCode      map[string]int
+
+	existsNotSendRequests bool
 }
 
 func newReport(results chan *result, enableLatencyMetric bool) *report {

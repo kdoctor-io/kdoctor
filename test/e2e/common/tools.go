@@ -246,8 +246,8 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// qps
 				expectRequestCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realRequestCount := float64(m.Metrics.RequestCounts)
-				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
+				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -298,8 +298,8 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -363,8 +363,8 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")

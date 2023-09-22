@@ -77,6 +77,7 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 
 	w := &Work{
 		Request:             req,
+		RequestTimeSecond:   reqData.RequestTimeSecond,
 		Concurrency:         config.AgentConfig.Configmap.NethttpDefaultConcurrency,
 		QPS:                 reqData.Qps,
 		Timeout:             reqData.PerRequestTimeoutMS,
@@ -88,16 +89,10 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 		ExpectStatusCode:    reqData.ExpectStatusCode,
 		RequestBody:         reqData.Body,
 		EnableLatencyMetric: reqData.EnableLatencyMetric,
+		Logger:              logger.Named("http-client"),
 	}
 	logger.Sugar().Infof("do http requests work=%v", w)
 	w.Init()
-
-	// The monitoring task timed out
-	go func() {
-		time.Sleep(duration)
-		w.Stop()
-	}()
-
 	logger.Sugar().Infof("begin to request %v for duration %v ", w.Request.URL, duration.String())
 	w.Run()
 	logger.Sugar().Infof("finish all request %v for %s ", w.report.totalCount, w.Request.URL)
