@@ -6,7 +6,6 @@ package netdns
 import (
 	"context"
 	"fmt"
-	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"net"
 	"strconv"
 	"sync"
@@ -22,6 +21,7 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadDns"
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/resource"
 )
 
 func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.DNSMetrics) (failureReason string, err error) {
@@ -81,7 +81,7 @@ type testTarget struct {
 	Request *loadDns.DnsRequestData
 }
 
-func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
 	finalfailureReason = ""
 
 	instance, ok := obj.(*crd.Netdns)
@@ -231,11 +231,11 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	} else {
 		task.Succeed = true
 	}
-	mem, cpu := resource.UsedResource.Stats()
+	mem, cpu := r.Stats()
 	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
 	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
 	// every round done clean cpu mem stats
-	resource.UsedResource.CleanStats()
+	r.CleanStats()
 	return finalfailureReason, task, err
 }
 

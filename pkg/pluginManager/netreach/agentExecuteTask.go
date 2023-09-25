@@ -76,7 +76,7 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
 	finalfailureReason = ""
 	err = nil
 	var e error
@@ -317,11 +317,11 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		task.Succeed = true
 	}
 
-	mem, cpu := resource.UsedResource.Stats()
+	mem, cpu := r.Stats()
 	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
 	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
 	// every round done clean cpu mem stats
-	resource.UsedResource.CleanStats()
+	r.CleanStats()
 	return finalfailureReason, task, err
 
 }

@@ -4,7 +4,6 @@
 package cmd
 
 import (
-	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -34,9 +33,6 @@ func SetupUtility() {
 
 func DaemonMain() {
 	rootLogger.Sugar().Infof("config: %+v", types.AgentConfig)
-	// process mem cpu stats
-	r := resource.InitResource()
-	r.RunResourceCollector()
 
 	// TODO: udp server, tcp server, websocket server
 	if types.AgentConfig.AppMode {
