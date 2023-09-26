@@ -4,6 +4,7 @@
 package resource
 
 import (
+	"context"
 	"runtime"
 	"time"
 
@@ -13,25 +14,26 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 )
 
-type usedResource struct {
+type UsedResource struct {
 	mem uint64  // byte
 	cpu float64 // percent
 	l   lock.RWMutex
+	ctx context.Context
 }
 
-var UsedResource *usedResource
-
-func InitResource() *usedResource {
-	if UsedResource == nil {
-		UsedResource = new(usedResource)
+func InitResource(ctx context.Context) *UsedResource {
+	return &UsedResource{
+		ctx: ctx,
 	}
-	return UsedResource
 }
 
-func (r *usedResource) RunResourceCollector() {
+func (r *UsedResource) RunResourceCollector() {
 	interval := time.Duration(types.AgentConfig.CollectResourceInSecond) * time.Second
 	go func() {
 		for {
+			if r.ctx.Err() != nil {
+				return
+			}
 			cpuStats, err := cpu.Percent(interval, false)
 			if err == nil {
 				if r.cpu < cpuStats[0] {
@@ -47,7 +49,7 @@ func (r *usedResource) RunResourceCollector() {
 	}()
 }
 
-func (r *usedResource) Stats() (uint64, float64) {
+func (r *UsedResource) Stats() (uint64, float64) {
 	r.l.RLock()
 	defer r.l.RUnlock()
 	m := r.mem
@@ -55,7 +57,7 @@ func (r *usedResource) Stats() (uint64, float64) {
 	return m, c
 }
 
-func (r *usedResource) CleanStats() {
+func (r *UsedResource) CleanStats() {
 	r.l.Lock()
 	defer r.l.Unlock()
 	r.mem = 0

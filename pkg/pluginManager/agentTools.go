@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -35,6 +36,9 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 	logger.Sugar().Infof("plugin begins to implement, expect deadline %v, ", roundDuration.String())
 
 	go func() {
+		// process mem cpu stats
+		resourceStats := resource.InitResource(ctx)
+		resourceStats.RunResourceCollector()
 		startTime := metav1.Now()
 		msg := &systemv1beta1.Report{
 			TaskName:       strings.ToLower(taskName),
@@ -45,7 +49,7 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 			StartTimeStamp: startTime,
 			ReportType:     plugintypes.ReportTypeAgent,
 		}
-		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj)
+		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj, resourceStats)
 
 		if e != nil {
 			logger.Sugar().Errorf("plugin failed to implement the round task, error=%v", e)
