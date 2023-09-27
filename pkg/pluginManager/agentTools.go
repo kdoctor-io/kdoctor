@@ -55,7 +55,6 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 			select {
 			case <-ctx.Done():
 				logger.Sugar().Errorf("plugin finished the round task, timeout, it takes %v , logger than expected %s", time.Since(startTime.Time).String(), roundDuration.String())
-				taskSucceed <- false
 				msg.RoundResult = string(plugintypes.RoundResultFail)
 				msg.FailedReason = pointer.String("implementing timeout")
 			default:
