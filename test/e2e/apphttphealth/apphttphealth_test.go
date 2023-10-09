@@ -71,7 +71,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -135,7 +135,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeFalse(), "compare report and task result")
 
@@ -197,7 +197,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeFalse(), "compare report and task result")
 
@@ -260,7 +260,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -325,7 +325,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, []string{}, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, []string{}, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeFalse(), "compare report and task result")
 
@@ -387,7 +387,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -453,7 +453,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -515,7 +515,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -577,7 +577,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -639,7 +639,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -701,7 +701,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -766,7 +766,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -828,7 +828,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
-		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum)
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeFalse(), "compare report and task result")
 

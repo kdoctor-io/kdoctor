@@ -71,13 +71,15 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 
 		enableIpv4 := types.ControllerConfig.Configmap.EnableIPv4
 		enableIpv6 := types.ControllerConfig.Configmap.EnableIPv6
+		enable := true
+		disable := false
 		m := &crd.NetReachTarget{
-			Endpoint:        true,
-			MultusInterface: false,
-			ClusterIP:       true,
-			NodePort:        true,
-			LoadBalancer:    testLoadBalancer,
-			Ingress:         testIngress,
+			Endpoint:        &enable,
+			MultusInterface: &disable,
+			ClusterIP:       &enable,
+			NodePort:        &enable,
+			LoadBalancer:    &testLoadBalancer,
+			Ingress:         &testIngress,
 			IPv6:            &enableIpv6,
 			IPv4:            &enableIpv4,
 		}
