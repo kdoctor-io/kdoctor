@@ -61,7 +61,7 @@ require (
 )
 
 require (
-	github.com/docker/docker v24.0.5+incompatible
+	github.com/docker/docker v24.0.6+incompatible
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	k8s.io/apiserver v0.26.3
 	sigs.k8s.io/yaml v1.3.0
