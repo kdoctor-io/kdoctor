@@ -148,8 +148,6 @@ spec:
               value: {{ .Values.kdoctorController.httpServer.port | quote }}
             - name: ENV_AGENT_GRPC_LISTEN_PORT
               value: {{ .Values.kdoctorAgent.grpcServer.port | quote }}
-            - name: ENV_AGENT_DAEMONSET_NAME
-              value: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
             - name: ENV_ENABLE_AGGREGATE_AGENT_REPORT
               value: {{ .Values.feature.aggregateReport.enabled | quote }}
             {{- if .Values.feature.aggregateReport.enabled }}
@@ -163,6 +161,18 @@ spec:
               value: {{ .Values.feature.aggregateReport.cleanAgedReportIntervalInMinute | quote }}
             - name: ENV_COLLECT_AGENT_REPORT_INTERVAL_IN_SECOND
               value: {{ .Values.feature.aggregateReport.controller.collectAgentReportIntervalInSecond | quote }}
+            - name: ENV_DEFAULT_AGENT_NAME
+              value: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+            - name: ENV_DEFAULT_AGENT_TYPE
+              value: DaemonSet
+            {{- if .Values.feature.enableIPv4 }}
+            - name: ENV_DEFAULT_AGENT_SERVICE_V4_NAME
+              value: {{ include "project.kdoctorAgent.serviceIpv4Name" . }}
+            {{- end }}
+            {{- if .Values.feature.enableIPv6 }}
+            - name: ENV_DEFAULT_AGENT_SERVICE_V6_NAME
+              value: {{ include "project.kdoctorAgent.serviceIpv6Name" . }}
+            {{- end }}
             {{- end }}
             - name: ENV_POD_NAME
               valueFrom:

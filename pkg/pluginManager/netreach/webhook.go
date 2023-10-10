@@ -109,8 +109,10 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 
 	// agentSpec
 	if true {
-		if req.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
-			req.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+		if req.Spec.AgentSpec != nil {
+			if req.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
+				req.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+			}
 		}
 	}
 	return nil
@@ -191,8 +193,10 @@ func (s *PluginNetReach) WebhookValidateCreate(logger *zap.Logger, ctx context.C
 
 	// validate AgentSpec
 	if true {
-		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
-			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+		if r.Spec.AgentSpec != nil {
+			if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+				return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+			}
 		}
 	}
 

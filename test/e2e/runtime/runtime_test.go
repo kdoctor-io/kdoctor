@@ -32,7 +32,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agentSpec
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		netReach.Spec.AgentSpec = *agentSpec
+		netReach.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -109,7 +109,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agent
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		appHttpHealth.Spec.AgentSpec = *agentSpec
+		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -174,7 +174,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agentSpec
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		netDns.Spec.AgentSpec = *agentSpec
+		netDns.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -254,7 +254,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		netReach.Spec.AgentSpec = *agentSpec
+		netReach.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -333,7 +333,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		appHttpHealth.Spec.AgentSpec = *agentSpec
+		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -400,7 +400,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		netDns.Spec.AgentSpec = *agentSpec
+		netDns.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)

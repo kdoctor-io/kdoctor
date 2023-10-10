@@ -76,6 +76,7 @@ func init() {
 	globalFlag.StringVar(&types.AgentConfig.ServiceV6Name, "service-ipv6-name", "", "agent IPv6 service name")
 
 	globalFlag.BoolVarP(&types.AgentConfig.AppMode, "app-mode", "A", false, "app mode")
+	globalFlag.BoolVarP(&types.AgentConfig.DefaultAgent, "default-agent", "G", false, "general agent")
 	globalFlag.BoolVarP(&types.AgentConfig.TlsInsecure, "tls-insecure", "K", true, "skip verify tls")
 	globalFlag.BoolVarP(&types.AgentConfig.AppDnsUpstream, "dns-upstream", "D", true, "core dns upstream")
 	globalFlag.StringVarP(&types.AgentConfig.TlsCaCertPath, "tls-ca-cert", "R", "/etc/tls/ca.crt", "ca file path")

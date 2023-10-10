@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
+	networkingv1 "k8s.io/api/networking/v1"
 	"sync"
 
 	"go.uber.org/zap"
@@ -249,10 +250,19 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 
 	if *target.Ingress {
 		if runtimeResource.ServiceNameV4 != nil {
-			agentIngress, e := k8sObjManager.GetK8sObjManager().GetIngress(ctx, *runtimeResource.ServiceNameV4, config.AgentConfig.PodNamespace)
-			if e != nil {
-				logger.Sugar().Errorf("failed to get v4 ingress , error=%v", e)
+			var agentIngress *networkingv1.Ingress
+			if runtimetype.AgentConfig.DefaultAgent {
+				agentIngress, e = k8sObjManager.GetK8sObjManager().GetIngress(ctx, runtimetype.AgentConfig.Configmap.AgentIngressName, config.AgentConfig.PodNamespace)
+				if e != nil {
+					logger.Sugar().Errorf("failed to get v4 ingress , error=%v", e)
+				}
+			} else {
+				agentIngress, e = k8sObjManager.GetK8sObjManager().GetIngress(ctx, *runtimeResource.ServiceNameV4, config.AgentConfig.PodNamespace)
+				if e != nil {
+					logger.Sugar().Errorf("failed to get v4 ingress , error=%v", e)
+				}
 			}
+
 			if agentIngress != nil && len(agentIngress.Status.LoadBalancer.Ingress) > 0 {
 				http := "http"
 				if len(agentIngress.Spec.TLS) > 0 {

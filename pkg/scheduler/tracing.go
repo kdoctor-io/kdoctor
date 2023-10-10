@@ -84,7 +84,7 @@ func (t *Tracker) trace(ctx context.Context) {
 func (t *Tracker) signaling(item Item) {
 	select {
 	case t.itemSignal <- item:
-		t.log.Sugar().Debugf("sending signal to handle Task %s/%s", item.TaskKind, item.TaskName)
+		t.log.Sugar().Debugf("sending signal to handle Task %s", item.Task)
 
 	case <-time.After(t.SignalTimeOutDuration):
 		t.log.Sugar().Warnf("failed to send signal, itemSignal length %d, item %v will be dropped", len(t.itemSignal), item)
@@ -116,7 +116,7 @@ func (t *Tracker) executor(ctx context.Context, workerIndex int) {
 					}
 
 					// 2. update status
-					innerLog.Sugar().Infof("try to update task %s/%s resource status from %s to %s", item.TaskKind, item.TaskName, item.RuntimeStatus, crd.RuntimeDeleted)
+					innerLog.Sugar().Infof("try to update task %s resource status from %s to %s", item.Task, item.RuntimeStatus, crd.RuntimeDeleted)
 					err = t.updateRuntimeStatus(ctx, item, crd.RuntimeDeleted)
 					if client.IgnoreNotFound(err) != nil {
 						innerLog.Error(err.Error())
@@ -133,7 +133,7 @@ func (t *Tracker) executor(ctx context.Context, workerIndex int) {
 
 			// update created
 			if item.RuntimeStatus == crd.RuntimeCreating && runtime.IsReady(ctx) {
-				innerLog.Sugar().Infof("try to update task %s/%s resource status from %s to %s", item.TaskKind, item.TaskName, item.RuntimeStatus, crd.RuntimeCreated)
+				innerLog.Sugar().Infof("try to update task %s resource status from %s to %s", item.Task, item.RuntimeStatus, crd.RuntimeCreated)
 				err := t.updateRuntimeStatus(ctx, item, crd.RuntimeCreated)
 				if nil != err {
 					innerLog.Error(err.Error())
@@ -161,69 +161,71 @@ func (t *Tracker) updateRuntimeStatus(ctx context.Context, item Item, status str
 		RuntimeStatus: status,
 	}
 
-	switch item.TaskKind {
-	case types.KindNameNetReach:
-		instance := crd.NetReach{}
-		err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: item.TaskName}, &instance)
-		if nil != err {
-			return err
-		}
+	for taskName, taskKind := range item.Task {
+		switch taskKind {
+		case types.KindNameNetReach:
+			instance := crd.NetReach{}
+			err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: taskName}, &instance)
+			if nil != err {
+				return err
+			}
 
-		// check the resource whether is already equal
-		if reflect.DeepEqual(instance.Status.Resource, resource) {
-			t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
-			return nil
-		}
+			// check the resource whether is already equal
+			if reflect.DeepEqual(instance.Status.Resource, resource) {
+				t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
+				return nil
+			}
 
-		t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
-		instance.Status.Resource = resource
-		err = t.client.Status().Update(ctx, &instance)
-		if nil != err {
-			return err
-		}
+			t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
+			instance.Status.Resource = resource
+			err = t.client.Status().Update(ctx, &instance)
+			if nil != err {
+				return err
+			}
 
-	case types.KindNameAppHttpHealthy:
-		instance := crd.AppHttpHealthy{}
-		err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: item.TaskName}, &instance)
-		if nil != err {
-			return err
-		}
+		case types.KindNameAppHttpHealthy:
+			instance := crd.AppHttpHealthy{}
+			err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: taskName}, &instance)
+			if nil != err {
+				return err
+			}
 
-		// check the resource whether is already equal
-		if reflect.DeepEqual(instance.Status.Resource, resource) {
-			t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
-			return nil
-		}
+			// check the resource whether is already equal
+			if reflect.DeepEqual(instance.Status.Resource, resource) {
+				t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
+				return nil
+			}
 
-		t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
-		instance.Status.Resource = resource
-		err = t.client.Status().Update(ctx, &instance)
-		if nil != err {
-			return err
-		}
+			t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
+			instance.Status.Resource = resource
+			err = t.client.Status().Update(ctx, &instance)
+			if nil != err {
+				return err
+			}
 
-	case types.KindNameNetdns:
-		instance := crd.Netdns{}
-		err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: item.TaskName}, &instance)
-		if nil != err {
-			return err
-		}
+		case types.KindNameNetdns:
+			instance := crd.Netdns{}
+			err := t.apiReader.Get(ctx, k8types.NamespacedName{Name: taskName}, &instance)
+			if nil != err {
+				return err
+			}
 
-		// check the resource whether is already equal
-		if reflect.DeepEqual(instance.Status.Resource, resource) {
-			t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
-			return nil
-		}
+			// check the resource whether is already equal
+			if reflect.DeepEqual(instance.Status.Resource, resource) {
+				t.log.Sugar().Debugf("task %v resource already updatede, skip it", item.RuntimeKey)
+				return nil
+			}
 
-		t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
-		instance.Status.Resource = resource
-		err = t.client.Status().Update(ctx, &instance)
-		if nil != err {
-			return err
-		}
+			t.log.Sugar().Debugf("task %v old resource is %v, the new resource is %v", item.RuntimeKey, *instance.Status.Resource, *resource)
+			instance.Status.Resource = resource
+			err = t.client.Status().Update(ctx, &instance)
+			if nil != err {
+				return err
+			}
 
-	default:
-		return fmt.Errorf("unsupported task '%s/%s'", item.TaskKind, item.TaskName)
+		default:
+			return fmt.Errorf("unsupported task '%s/%s'", taskKind, taskName)
+		}
 	}
 
 	return nil

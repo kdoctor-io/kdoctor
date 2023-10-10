@@ -1,3 +1,95 @@
+{{- if .Values.feature.enableIPv4 }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "project.kdoctorAgent.serviceIpv4Name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if or .Values.global.commonAnnotations .Values.kdoctorAgent.service.annotations }}
+  annotations:
+    {{- if .Values.global.commonAnnotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.kdoctorAgent.service.annotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.service.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- if .Values.global.commonLabels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- include "project.kdoctorAgent.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.kdoctorAgent.service.type }}
+  ports:
+    {{- if .Values.kdoctorAgent.prometheus.enabled }}
+    - name: metrics
+      port: {{ .Values.kdoctorAgent.prometheus.port }}
+      targetPort: metrics
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.feature.enableIPv4 }}
+    - name: http
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
+      targetPort: https
+      protocol: TCP
+    {{- end }}
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - IPv4
+  selector:
+    {{- include "project.kdoctorAgent.selectorLabels" . | nindent 4 }}
+{{- end }}
+---
+{{- if .Values.feature.enableIPv6 }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "project.kdoctorAgent.serviceIpv6Name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if or .Values.global.commonAnnotations .Values.kdoctorAgent.service.annotations }}
+  annotations:
+    {{- if .Values.global.commonAnnotations }}
+      {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+      {{- end }}
+      {{- if .Values.kdoctorAgent.service.annotations }}
+      {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.service.annotations "context" $ ) | nindent 4 }}
+      {{- end }}
+  {{- end }}
+  labels:
+    {{- if .Values.global.commonLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+      {{- end }}
+      {{- include "project.kdoctorAgent.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.kdoctorAgent.service.type }}
+  ports:
+    {{- if .Values.kdoctorAgent.prometheus.enabled }}
+    - name: metrics
+      port: {{ .Values.kdoctorAgent.prometheus.port }}
+      targetPort: metrics
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.feature.enableIPv6 }}
+    - name: http
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
+      targetPort: https
+      protocol: TCP
+    {{- end }}
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - IPv6
+  selector:
+    {{- include "project.kdoctorAgent.selectorLabels" . | nindent 4 }}
+  {{- end }}
+---
 apiVersion: v1
 kind: Service
 metadata:
