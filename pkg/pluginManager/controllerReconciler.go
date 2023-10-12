@@ -34,8 +34,8 @@ type pluginControllerReconciler struct {
 	tracker                    *scheduler.Tracker
 }
 
-// contorller reconcile
-// (1) chedule all task time
+// controller reconcile
+// (1) schedule all task time
 // (2) update stauts result
 // (3) collect report from agent
 func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {

@@ -25,8 +25,8 @@ import (
 
 func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.DNSMetrics) (failureReason string, err error) {
 	switch {
-	case successCondition.SuccessRate != nil && float64(metricResult.SuccessCounts)/float64(metricResult.SuccessCounts) < *(successCondition.SuccessRate):
-		failureReason = fmt.Sprintf("Success Rate %v is lower than request %v", float64(metricResult.SuccessCounts)/float64(metricResult.SuccessCounts), *(successCondition.SuccessRate))
+	case successCondition.SuccessRate != nil && float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts) < *(successCondition.SuccessRate):
+		failureReason = fmt.Sprintf("Success Rate %v is lower than request %v", float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts), *(successCondition.SuccessRate))
 	case successCondition.MeanAccessDelayInMs != nil && int64(metricResult.Latencies.Mean) > *(successCondition.MeanAccessDelayInMs):
 		failureReason = fmt.Sprintf("mean delay %v ms is bigger than request %v ms", metricResult.Latencies.Mean, *(successCondition.MeanAccessDelayInMs))
 	default:

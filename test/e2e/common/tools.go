@@ -186,7 +186,7 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 	return report, nil
 }
 
-func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n int) (bool, error) {
+func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n int, object client.Object) (bool, error) {
 
 	// get Aggregate API report
 	var r *kdoctor_report.KdoctorReport
@@ -205,6 +205,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 	}
 	switch taskKind {
 	case pluginManager.KindNameNetReach:
+		obj := object.(*v1beta1.NetReach)
 		fake := &v1beta1.NetReach{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: name,
@@ -216,6 +217,31 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 			return GetResultFromReport(r), fmt.Errorf("failed get resource AppHttpHealthy %s", name)
 		}
 
+		if *obj.Spec.Target.Ingress != *rs.Spec.Target.Ingress {
+			return GetResultFromReport(r), fmt.Errorf("spec target ingress not equal input %v,output %v", *obj.Spec.Target.Ingress, *rs.Spec.Target.Ingress)
+		}
+		if obj.Spec.Target.EnableLatencyMetric != rs.Spec.Target.EnableLatencyMetric {
+			return GetResultFromReport(r), fmt.Errorf("spec target EnableLatencyMetric not equal input %v,output %v", obj.Spec.Target.EnableLatencyMetric, rs.Spec.Target.EnableLatencyMetric)
+		}
+		if *obj.Spec.Target.Endpoint != *rs.Spec.Target.Endpoint {
+			return GetResultFromReport(r), fmt.Errorf("spec target Endpoint not equal input %v,output %v", *obj.Spec.Target.Endpoint, *rs.Spec.Target.Endpoint)
+		}
+		if *obj.Spec.Target.ClusterIP != *rs.Spec.Target.ClusterIP {
+			return GetResultFromReport(r), fmt.Errorf("spec target ClusterIP not equal input %v,output %v", *obj.Spec.Target.ClusterIP, *rs.Spec.Target.ClusterIP)
+		}
+		if *obj.Spec.Target.LoadBalancer != *rs.Spec.Target.LoadBalancer {
+			return GetResultFromReport(r), fmt.Errorf("spec target LoadBalancer not equal input %v,output %v", *obj.Spec.Target.LoadBalancer, *rs.Spec.Target.LoadBalancer)
+		}
+		if *obj.Spec.Target.MultusInterface != *rs.Spec.Target.MultusInterface {
+			return GetResultFromReport(r), fmt.Errorf("spec target MultusInterface not equal input %v,output %v", *obj.Spec.Target.MultusInterface, *rs.Spec.Target.MultusInterface)
+		}
+		if *obj.Spec.Target.IPv4 != *rs.Spec.Target.IPv4 {
+			return GetResultFromReport(r), fmt.Errorf("spec target IPv4 not equal input %v,output %v", *obj.Spec.Target.IPv4, *rs.Spec.Target.IPv4)
+		}
+		if *obj.Spec.Target.IPv6 != *rs.Spec.Target.IPv6 {
+			return GetResultFromReport(r), fmt.Errorf("spec target IPv6 not equal input %v,output %v", *obj.Spec.Target.IPv6, *rs.Spec.Target.IPv6)
+		}
+
 		for _, v := range *r.Spec.Report {
 			for _, m := range v.NetReachTask.Detail {
 				// qps
@@ -223,6 +249,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realRequestCount := float64(m.Metrics.RequestCounts)
 				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.1 {
 					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 			}
 			// startTime
@@ -272,6 +301,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
 					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 			}
 			// startTime
@@ -334,6 +366,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
 					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 			}
 			// startTime
@@ -655,7 +690,7 @@ func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec v1beta1.Ag
 	}
 	if taskKind == kdoctor_types.KindNameNetReach {
 		taskNr := task.(*v1beta1.NetReach)
-		if taskNr.Spec.Target.Ingress {
+		if *taskNr.Spec.Target.Ingress {
 			ig := &networkingv1.Ingress{}
 			fake := &networkingv1.Ingress{
 				ObjectMeta: metav1.ObjectMeta{
@@ -701,7 +736,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 					done = true
 					runtimeResource = rs.Status.Resource
 					terminationGracePeriodMinutes = *rs.Spec.AgentSpec.TerminationGracePeriodMinutes
-					testIngress = rs.Spec.Target.Ingress
+					testIngress = *rs.Spec.Target.Ingress
 					break
 				}
 				time.Sleep(time.Second * interval)
