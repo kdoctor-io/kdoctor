@@ -16,7 +16,12 @@ import (
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	var termMin = int64(1)
-
+	// 2000ms is not stable on GitHub ci, so increased to 3000ms
+	// issue : https://github.com/kdoctor-io/kdoctor/issues/222
+	// issue : https://github.com/kdoctor-io/kdoctor/issues/223
+	// issue : https://github.com/kdoctor-io/kdoctor/issues/165
+	// issue : https://github.com/kdoctor-io/kdoctor/issues/96
+	var requestTimeout = 3000
 	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006", "E00002", "A00014"), func() {
 		var e error
 		successRate := float64(1)
@@ -50,7 +55,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -114,7 +119,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -176,7 +181,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -239,7 +244,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -304,7 +309,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -366,7 +371,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -432,7 +437,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -494,7 +499,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -556,7 +561,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -618,7 +623,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -680,7 +685,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -745,7 +750,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -807,7 +812,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 60
 		appHttpHealth.Spec.Request = request
