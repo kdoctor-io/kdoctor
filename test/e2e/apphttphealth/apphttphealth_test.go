@@ -670,6 +670,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
+
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -691,7 +692,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
 
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
-<<<<<<< HEAD
+
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -852,6 +853,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
+
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -913,7 +915,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 60
 		appHttpHealth.Spec.Request = request
