@@ -596,7 +596,11 @@ func CheckRuntime(f *frame.Framework, task client.Object, taskKind string, timeo
 }
 
 // checkAgentSpec check agentSpec generate deployment or daemonSet is right
-func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec v1beta1.AgentSpec, taskStatus v1beta1.TaskStatus, taskKind string) error {
+func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec *v1beta1.AgentSpec, taskStatus v1beta1.TaskStatus, taskKind string) error {
+
+	if agentSpec == nil {
+		return nil
+	}
 
 	switch agentSpec.Kind {
 	case kdoctor_types.KindDaemonSet:

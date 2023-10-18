@@ -339,24 +339,35 @@ func (s *pluginControllerReconciler) UpdateStatus(logger *zap.Logger, ctx contex
 
 }
 
-func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, taskKind string, ownerTask metav1.Object, agentSpec crd.AgentSpec, taskStatus *crd.TaskStatus, logger *zap.Logger) (*crd.TaskStatus, error) {
+func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, taskKind string, ownerTask metav1.Object, agentSpec *crd.AgentSpec, taskStatus *crd.TaskStatus, logger *zap.Logger) (*crd.TaskStatus, error) {
 	var resource crd.TaskResource
 	var err error
 	var deletionTime *metav1.Time
 
 	if taskStatus.Resource == nil {
-		logger.Sugar().Debugf("task '%s/%s' just created, try to initial its corresponding runtime resource", taskKind, ownerTask.GetName())
-		newScheduler := scheduler.NewScheduler(s.client, s.apiReader, taskKind, ownerTask.GetName(), s.runtimeUniqueMatchLabelKey, logger)
-		// create the task corresponding resources(runtime,service) and record them to the task CR object subresource with 'Creating' status
-		resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, agentSpec)
-		if nil != err {
-			return nil, err
+		if agentSpec == nil {
+			resource.RuntimeName = types.ControllerConfig.DefaultAgentName
+			resource.RuntimeType = types.ControllerConfig.DefaultAgentType
+			if types.ControllerConfig.DefaultAgentServiceV4Name != "" {
+				resource.ServiceNameV4 = &types.ControllerConfig.DefaultAgentServiceV4Name
+			}
+			if types.ControllerConfig.DefaultAgentServiceV6Name != "" {
+				resource.ServiceNameV6 = &types.ControllerConfig.DefaultAgentServiceV6Name
+			}
+			resource.RuntimeStatus = crd.RuntimeCreated
+		} else {
+			logger.Sugar().Debugf("task '%s/%s' just created, try to initial its corresponding runtime resource", taskKind, ownerTask.GetName())
+			newScheduler := scheduler.NewScheduler(s.client, s.apiReader, taskKind, ownerTask.GetName(), s.runtimeUniqueMatchLabelKey, logger)
+			// create the task corresponding resources(runtime,service) and record them to the task CR object subresource with 'Creating' status
+			resource, err = newScheduler.CreateTaskRuntimeIfNotExist(ctx, ownerTask, *agentSpec)
+			if nil != err {
+				return nil, err
+			}
 		}
-		taskStatus.Resource = &resource
 	} else {
 		// we need to track it again, in order to avoid controller restart
 		resource = *taskStatus.Resource
-		if taskStatus.FinishTime != nil {
+		if taskStatus.FinishTime != nil && agentSpec != nil {
 			deletionTime = taskStatus.FinishTime.DeepCopy()
 			if agentSpec.TerminationGracePeriodMinutes != nil {
 				newTime := metav1.NewTime(deletionTime.Add(time.Duration(*agentSpec.TerminationGracePeriodMinutes) * time.Minute))
@@ -366,6 +377,8 @@ func (s *pluginControllerReconciler) TaskResourceReconcile(ctx context.Context, 
 				taskKind, ownerTask.GetName(), taskStatus.FinishTime, deletionTime)
 		}
 	}
+
+	taskStatus.Resource = &resource
 
 	// record the task resource to the tracker DB, and the tracker will update the task subresource resource status or delete corresponding runtime asynchronously
 	err = s.tracker.DB.Apply(scheduler.BuildItem(resource, taskKind, ownerTask.GetName(), deletionTime))

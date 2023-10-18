@@ -67,6 +67,7 @@ type AgentConfigStruct struct {
 	TaskName      string
 	ServiceV4Name string
 	ServiceV6Name string
+	DefaultAgent  bool
 
 	// from configmap
 	Configmap ConfigmapConfig

@@ -40,7 +40,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 kdoctorAgent Selector labels
 */}}
 {{- define "project.kdoctorAgent.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "project.name" . }}
+app.kubernetes.io/name: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
 {{- end }}
@@ -49,7 +49,7 @@ app.kubernetes.io/component: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffi
 kdoctorController Selector labels
 */}}
 {{- define "project.kdoctorController.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "project.name" . }}
+app.kubernetes.io/name: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: {{ .Values.kdoctorController.name | trunc 63 | trimSuffix "-" }}
 {{- end }}

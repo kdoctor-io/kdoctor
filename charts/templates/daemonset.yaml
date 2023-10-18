@@ -1,62 +1,26 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
-  name: {{ .Values.global.configAppTemplate }}
+  name:  {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
   namespace: {{ .Release.Namespace }}
-  {{- if .Values.global.commonLabels }}
   labels:
+    {{- include "project.kdoctorAgent.labels" . | nindent 4 }}
+    {{- if .Values.global.commonLabels }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
-  {{- end }}
+    {{- end }}
   {{- if .Values.global.commonAnnotations }}
   annotations:
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
-data:
-  daemonset.yml: |
-    apiVersion: apps/v1
-    kind: DaemonSet
-    metadata:
-      name: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
-      namespace: {{ .Release.Namespace }}
-      {{- if .Values.global.commonLabels }}
-      labels:
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.global.commonAnnotations }}
-      annotations:
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
-      {{- end }}
-    spec:
-      selector:
-        matchLabels:
-          {{- include "project.kdoctorAgent.selectorLabels" . | nindent 10 }}
-      {{- with .Values.kdoctorAgent.updateStrategy }}
-      updateStrategy:
-        {{- toYaml . | trim | nindent 8 }}
-      {{- end }}
-  deployment.yml: |
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
-      namespace: {{ .Release.Namespace }}
-      {{- if .Values.global.commonLabels }}
-      labels:
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.global.commonAnnotations }}
-      annotations:
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
-      {{- end }}
-    spec:
-      replicas: 0
-      selector:
-        matchLabels:
-          {{- include "project.kdoctorAgent.selectorLabels" . | nindent 10 }}
-  # template for performing tasks
-  pod.yml: |
-    apiVersion: v1
-    kind: Pod
+spec:
+  selector:
+    matchLabels:
+      {{- include "project.kdoctorAgent.selectorLabels" . | nindent 6 }}
+  {{- with .Values.kdoctorAgent.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | trim | nindent 4 }}
+  {{- end }}
+  template:
     metadata:
       {{- if or .Values.kdoctorAgent.podAnnotations .Values.global.commonAnnotations }}
       annotations:
@@ -77,9 +41,9 @@ data:
         {{- end }}
     spec:
       {{- if .Values.kdoctorAgent.image.imagePullSecrets }}
-      {{- with .Values.kdoctorAgent.image.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | trim | nindent 8 }}
+      {{- with .Values.kdoctorAgent.image.imagePullSecrets }}
+      {{- toYaml . | trim | nindent 6 }}
       {{- end }}
       {{- end }}
       serviceAccountName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
@@ -94,15 +58,15 @@ data:
       restartPolicy: Always
       {{- with .Values.kdoctorAgent.tolerations }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.kdoctorAgent.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.kdoctorAgent.affinity }}
       affinity:
-        {{- include "tplvalues.render" (dict "value" .Values.kdoctorAgent.affinity "context" $) | nindent 8 }}
+      {{- include "tplvalues.render" (dict "value" .Values.kdoctorAgent.affinity "context" $) | nindent 6 }}
       {{- else }}
       affinity:
         nodeAffinity:
@@ -130,8 +94,15 @@ data:
             - --config-path=/tmp/config-map/conf.yml
             - --tls-ca-cert=/etc/tls/ca.crt
             - --tls-ca-key=/etc/tls/ca.key
+            - --default-agent=true
+            {{- if .Values.feature.enableIPv4 }}
+            - --service-ipv4-name={{ include "project.kdoctorAgent.serviceIpv4Name" . }}
+            {{- end }}
+            {{- if .Values.feature.enableIPv6 }}
+            - --service-ipv6-name={{ include "project.kdoctorAgent.serviceIpv6Name" . }}
+            {{- end }}
           {{- with .Values.kdoctorAgent.extraArgs }}
-            {{- toYaml . | trim | nindent 12 }}
+          {{- toYaml . | trim | nindent 8 }}
           {{- end }}
           ports:
             {{- if .Values.kdoctorAgent.prometheus.enabled }}
@@ -182,7 +153,7 @@ data:
             timeoutSeconds: 5
           {{- with .Values.kdoctorAgent.resources }}
           resources:
-            {{- toYaml . | trim | nindent 12 }}
+          {{- toYaml . | trim | nindent 12 }}
           {{- end }}
           env:
             - name: ENV_LOG_LEVEL
@@ -228,11 +199,11 @@ data:
                 fieldRef:
                   fieldPath: metadata.namespace
             {{- with .Values.kdoctorAgent.extraEnv }}
-              {{- toYaml . | nindent 14 }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- with .Values.kdoctorAgent.securityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
           {{- end }}
           volumeMounts:
             - name: config-path
@@ -243,7 +214,7 @@ data:
             - name: tls
               mountPath: /etc/tls
             {{- if .Values.kdoctorAgent.extraVolumes }}
-              {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 14 }}
+            {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
             {{- end }}
       volumes:
         # To read the configuration from the config map
@@ -267,62 +238,5 @@ data:
                       path: ca.crt
                   name: {{ .Values.tls.ca.secretName }}
       {{- if .Values.kdoctorAgent.extraVolumeMounts }}
-          {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 10 }}
+      {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 6 }}
       {{- end }}
-  service.yml: |
-    apiVersion: v1
-    kind: Service
-    metadata:
-      namespace: {{ .Release.Namespace | quote }}
-      {{- if or .Values.global.commonAnnotations .Values.kdoctorAgent.service.annotations }}
-      annotations:
-        {{- if .Values.global.commonAnnotations }}
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
-        {{- end }}
-        {{- if .Values.kdoctorAgent.service.annotations }}
-        {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.service.annotations "context" $ ) | nindent 8 }}
-        {{- end }}
-      {{- end }}
-      labels:
-        {{- if .Values.global.commonLabels }}
-        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
-        {{- end }}
-        {{- include "project.kdoctorAgent.labels" . | nindent 8 }}
-    spec:
-      type: {{ .Values.kdoctorAgent.service.type }}
-      ports:
-        {{- if .Values.kdoctorAgent.prometheus.enabled }}
-        - name: metrics
-          port: {{ .Values.kdoctorAgent.prometheus.port }}
-          targetPort: metrics
-          protocol: TCP
-        {{- end }}
-        - name: http
-          port: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
-          targetPort: http
-          protocol: TCP
-        - name: https
-          port: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
-          targetPort: https
-          protocol: TCP
-      ipFamilyPolicy: SingleStack
-      ipFamilies:
-        - IPv4
-      selector:
-        {{- include "project.kdoctorAgent.selectorLabels" . | nindent 8 }}
-  ingress.yml: |
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      namespace: {{ .Release.Namespace | quote }}
-    spec:
-      rules:
-        - http:
-            paths:
-              - path: {{ .Values.kdoctorAgent.ingress.route | quote }}
-                pathType: Exact
-                backend:
-                  service:
-                    name: kdoctor
-                    port:
-                      number: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}

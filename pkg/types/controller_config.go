@@ -20,6 +20,10 @@ var ControllerEnvMapping = []EnvMapping{
 	{"ENV_POD_NAMESPACE", "", &ControllerConfig.PodNamespace},
 	{"ENV_GOLANG_MAXPROCS", "8", &ControllerConfig.GolangMaxProcs},
 	{"ENV_AGENT_GRPC_LISTEN_PORT", "3000", &ControllerConfig.AgentGrpcListenPort},
+	{"ENV_DEFAULT_AGENT_NAME", "kdoctor-agent", &ControllerConfig.DefaultAgentName},
+	{"ENV_DEFAULT_AGENT_TYPE", "Daemonset", &ControllerConfig.DefaultAgentType},
+	{"ENV_DEFAULT_AGENT_SERVICE_V4_NAME", "", &ControllerConfig.DefaultAgentServiceV4Name},
+	{"ENV_DEFAULT_AGENT_SERVICE_V6_NAME", "", &ControllerConfig.DefaultAgentServiceV6Name},
 	{"ENV_ENABLE_AGGREGATE_AGENT_REPORT", "false", &ControllerConfig.EnableAggregateAgentReport},
 	{"ENV_CONTROLLER_REPORT_STORAGE_PATH", "/report", &ControllerConfig.DirPathControllerReport},
 	{"ENV_AGENT_REPORT_STORAGE_PATH", "", &ControllerConfig.DirPathAgentReport},
@@ -44,8 +48,12 @@ type ControllerConfigStruct struct {
 	PyroscopeServerAddress string
 	GolangMaxProcs         int32
 
-	PodName      string
-	PodNamespace string
+	PodName                   string
+	PodNamespace              string
+	DefaultAgentName          string
+	DefaultAgentType          string
+	DefaultAgentServiceV4Name string
+	DefaultAgentServiceV6Name string
 
 	EnableAggregateAgentReport         bool
 	CleanAgedReportInMinute            int32

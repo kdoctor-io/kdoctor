@@ -42,12 +42,13 @@ func (s *pluginAgentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // or else, c.Queue.Forget(obj)
 func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	// filter other tasks
-	if req.NamespacedName.Name != types.AgentConfig.TaskName {
-		s.logger.With(zap.String(types.AgentConfig.TaskKind, types.AgentConfig.TaskName)).
-			Sugar().Debugf("ignore Task %s", req.NamespacedName.Name)
-		return ctrl.Result{}, nil
+	if !types.AgentConfig.DefaultAgent {
+		if req.NamespacedName.Name != types.AgentConfig.TaskName {
+			s.logger.With(zap.String(types.AgentConfig.TaskKind, types.AgentConfig.TaskName)).
+				Sugar().Debugf("ignore Task %s", req.NamespacedName.Name)
+			return ctrl.Result{}, nil
+		}
 	}
-
 	// ------ add crd ------
 	switch s.crdKind {
 	case KindNameNetReach:
@@ -59,6 +60,13 @@ func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
+
+		// filter work agent
+		if instance.Spec.AgentSpec != nil && types.AgentConfig.DefaultAgent {
+			s.logger.Sugar().Debugf("general agent ignore custom agent task %v", req)
+			return ctrl.Result{}, nil
+		}
+
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
@@ -96,6 +104,13 @@ func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
+
+		// filter work agent
+		if instance.Spec.AgentSpec != nil && types.AgentConfig.DefaultAgent {
+			s.logger.Sugar().Debugf("general agent ignore custom agent task %v", req)
+			return ctrl.Result{}, nil
+		}
+
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil
@@ -132,6 +147,13 @@ func (s *pluginAgentReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 		logger := s.logger.With(zap.String(instance.Kind, instance.Name))
 		logger.Sugar().Debugf("reconcile handle %v", instance)
+
+		// filter work agent
+		if instance.Spec.AgentSpec != nil && types.AgentConfig.DefaultAgent {
+			s.logger.Sugar().Debugf("general agent ignore custom agent task %v", req)
+			return ctrl.Result{}, nil
+		}
+
 		if instance.DeletionTimestamp != nil {
 			s.logger.Sugar().Debugf("ignore deleting task %v", req)
 			return ctrl.Result{}, nil

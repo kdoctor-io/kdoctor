@@ -1,0 +1,25 @@
+{{- if .Values.kdoctorAgent.ingress.enable }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "project.kdoctorAgent.ingressName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  {{- if .Values.kdoctorAgent.ingress.ingressClass }}
+  ingressClassName: {{ .Values.kdoctorAgent.ingress.ingressClass | quote }}
+  {{- end }}
+  rules:
+    - http:
+        paths:
+          - path: {{ .Values.kdoctorAgent.ingress.route | quote }}
+            pathType: Exact
+            backend:
+              service:
+                {{- if .Values.feature.enableIPv4 }}
+                name: {{ include "project.kdoctorAgent.serviceIpv4Name" . }}
+                {{- else }}
+                name: {{ include "project.kdoctorAgent.serviceIpv6Name" . }}
+                {{- end }}
+                port:
+                  number: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
+{{- end }}

@@ -20,6 +20,7 @@ type DB interface {
 	Apply(item Item) error
 	List() []Item
 	Delete(item Item)
+	Get(taskName string) (Item, error)
 }
 
 func NewDB(maxCap int, log *zap.Logger) DB {
@@ -46,6 +47,14 @@ type RuntimeKey struct {
 	RuntimeName string
 }
 
+type task map[string]string
+
+func (t task) Join(new task) {
+	for k, v := range new {
+		t[k] = v
+	}
+}
+
 type Item struct {
 	RuntimeKey
 
@@ -54,8 +63,7 @@ type Item struct {
 	ServiceNameV4       *string
 	ServiceNameV6       *string
 
-	TaskKind string
-	TaskName string
+	Task task
 }
 
 func BuildItem(resource crd.TaskResource, taskKind, taskName string, deletionTime *metav1.Time) Item {
@@ -68,8 +76,7 @@ func BuildItem(resource crd.TaskResource, taskKind, taskName string, deletionTim
 		RuntimeDeletionTime: deletionTime,
 		ServiceNameV4:       resource.ServiceNameV4,
 		ServiceNameV6:       resource.ServiceNameV6,
-		TaskKind:            taskKind,
-		TaskName:            taskName,
+		Task:                task{taskName: taskKind},
 	}
 
 	return item
@@ -91,6 +98,7 @@ func (d *Database) Apply(item Item) error {
 		return nil
 	} else {
 		if !reflect.DeepEqual(old, item) {
+			item.Task.Join(old.Task)
 			d.cache[item.RuntimeKey] = item
 			d.Unlock()
 			d.log.Sugar().Debugf("item %v has changed, the old one is %v, and the new one is %v",
@@ -127,4 +135,19 @@ func (d *Database) Delete(item Item) {
 	delete(d.cache, item.RuntimeKey)
 	d.Unlock()
 	d.log.Sugar().Debugf("delete item %v successfully", item.RuntimeKey)
+}
+
+func (d *Database) Get(taskName string) (Item, error) {
+	d.Lock()
+	defer d.Unlock()
+	var tmp Item
+	for _, v := range d.cache {
+		_, ok := v.Task[taskName]
+		if ok {
+			tmp = v
+			d.log.Sugar().Debugf("successfully get task %s item %v ", taskName, tmp)
+			return tmp, nil
+		}
+	}
+	return tmp, fmt.Errorf("failed get task %s,the task not exists", taskName)
 }
