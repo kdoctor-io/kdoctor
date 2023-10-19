@@ -31,14 +31,15 @@ type AppHttpHealthyTaskDetail struct {
 }
 
 type HttpMetrics struct {
-	StartTime     metav1.Time         `json:"StartTime"`
-	EndTime       metav1.Time         `json:"EndTime"`
-	Duration      string              `json:"Duration"`
-	RequestCounts int64               `json:"RequestCounts"`
-	SuccessCounts int64               `json:"SuccessCounts"`
-	TPS           float64             `json:"TPS"`
-	Errors        map[string]int      `json:"Errors"`
-	Latencies     LatencyDistribution `json:"Latencies"`
+	StartTime             metav1.Time         `json:"StartTime"`
+	EndTime               metav1.Time         `json:"EndTime"`
+	Duration              string              `json:"Duration"`
+	RequestCounts         int64               `json:"RequestCounts"`
+	SuccessCounts         int64               `json:"SuccessCounts"`
+	TPS                   float64             `json:"TPS"`
+	Errors                map[string]int      `json:"Errors"`
+	Latencies             LatencyDistribution `json:"Latencies"`
+	ExistsNotSendRequests bool                `json:"ExistsNotSendRequests"`
 
 	// request data size
 	TotalDataSize string      `json:"TotalDataSize"`

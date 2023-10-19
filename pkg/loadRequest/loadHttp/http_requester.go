@@ -30,18 +30,21 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
-	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
-	"golang.org/x/net/http2"
 	"io"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"net/http/httptrace"
 	"net/url"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
+	config "github.com/kdoctor-io/kdoctor/pkg/types"
+	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
+	"go.uber.org/zap"
+
+	"golang.org/x/net/http2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Max size of the buffer of result channel.
@@ -114,6 +117,9 @@ type Work struct {
 	// Timeout in seconds.
 	Timeout int
 
+	/// RequestTimeSecond request in second
+	RequestTimeSecond int
+
 	// Qps is the rate limit in queries per second.
 	QPS int
 
@@ -142,12 +148,15 @@ type Work struct {
 	// Optional.
 	EnableLatencyMetric bool
 
-	initOnce  sync.Once
-	results   chan *result
-	stopCh    chan struct{}
-	start     time.Duration
-	startTime metav1.Time
-	report    *report
+	Logger *zap.Logger
+
+	initOnce       sync.Once
+	results        chan *result
+	stopCh         chan struct{}
+	qosTokenBucket chan struct{}
+	start          time.Duration
+	startTime      metav1.Time
+	report         *report
 }
 
 // Init initializes internal data-structures
@@ -155,6 +164,7 @@ func (b *Work) Init() {
 	b.initOnce.Do(func() {
 		b.results = make(chan *result, MaxResultChannelSize)
 		b.stopCh = make(chan struct{}, b.Concurrency)
+		b.qosTokenBucket = make(chan struct{}, b.QPS)
 	})
 }
 
@@ -170,6 +180,33 @@ func (b *Work) Run() {
 		runReporter(b.report)
 	}()
 
+	// Send qps number of tokens to the channel qosTokenBucket every second to the coroutine for execution
+	go func() {
+		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
+		ticker := time.NewTicker(time.Second)
+		// The request should be sent immediately at 0 seconds
+		for i := 0; i < b.QPS; i++ {
+			b.qosTokenBucket <- struct{}{}
+		}
+		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
+		for {
+			select {
+			case <-c:
+				// Reach request duration stop request
+				if len(b.qosTokenBucket) > 0 {
+					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
+					b.report.existsNotSendRequests = true
+				}
+				b.Stop()
+				return
+			case <-ticker.C:
+				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
+				for i := 0; i < b.QPS; i++ {
+					b.qosTokenBucket <- struct{}{}
+				}
+			}
+		}
+	}()
 	b.runWorkers()
 	b.Finish()
 }
@@ -183,6 +220,7 @@ func (b *Work) Stop() {
 
 func (b *Work) Finish() {
 	close(b.results)
+	close(b.qosTokenBucket)
 	total := b.now() - b.start
 	// Wait until the reporter is done.
 	<-b.report.done
@@ -253,11 +291,6 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 }
 
 func (b *Work) runWorker() {
-	var ticker *time.Ticker
-	if b.QPS > 0 {
-		ticker = time.NewTicker(time.Duration(1e6*b.Concurrency/(b.QPS)) * time.Microsecond)
-	}
-
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			Certificates:       []tls.Certificate{b.Cert},
@@ -297,14 +330,10 @@ func (b *Work) runWorker() {
 			wg.Wait()
 			client.CloseIdleConnections()
 			return
-		default:
-			if b.QPS > 0 {
-				<-ticker.C
-			}
+		case <-b.qosTokenBucket:
 			wg.Add(1)
 			go b.makeRequest(client, wg)
 		}
-
 	}
 }
 
@@ -359,16 +388,17 @@ func (b *Work) AggregateMetric() *v1beta1.HttpMetrics {
 	}
 
 	metric := &v1beta1.HttpMetrics{
-		StartTime:     b.startTime,
-		EndTime:       metav1.NewTime(b.startTime.Add(b.report.total)),
-		Duration:      b.report.total.String(),
-		RequestCounts: b.report.totalCount,
-		SuccessCounts: b.report.totalCount - errNum,
-		TPS:           b.report.tps,
-		Errors:        b.report.errorDist,
-		Latencies:     latency,
-		TotalDataSize: strconv.Itoa(int(b.report.sizeTotal)) + " byte",
-		StatusCodes:   b.report.statusCodes,
+		StartTime:             b.startTime,
+		EndTime:               metav1.NewTime(b.startTime.Add(b.report.total)),
+		Duration:              b.report.total.String(),
+		RequestCounts:         b.report.totalCount,
+		SuccessCounts:         b.report.totalCount - errNum,
+		TPS:                   b.report.tps,
+		Errors:                b.report.errorDist,
+		Latencies:             latency,
+		TotalDataSize:         strconv.Itoa(int(b.report.sizeTotal)) + " byte",
+		StatusCodes:           b.report.statusCodes,
+		ExistsNotSendRequests: b.report.existsNotSendRequests,
 	}
 
 	return metric

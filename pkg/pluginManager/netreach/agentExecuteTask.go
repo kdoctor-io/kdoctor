@@ -24,15 +24,16 @@ import (
 	runtimetype "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
-func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.HttpMetrics) (failureReason string, err error) {
+func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.HttpMetrics) (failureReason string) {
 	switch {
 	case successCondition.SuccessRate != nil && float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts) < *(successCondition.SuccessRate):
 		failureReason = fmt.Sprintf("Success Rate %v is lower than request %v", float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts), *(successCondition.SuccessRate))
 	case successCondition.MeanAccessDelayInMs != nil && int64(metricResult.Latencies.Mean) > *(successCondition.MeanAccessDelayInMs):
 		failureReason = fmt.Sprintf("mean delay %v ms is bigger than request %v ms", metricResult.Latencies.Mean, *(successCondition.MeanAccessDelayInMs))
+	case metricResult.ExistsNotSendRequests:
+		failureReason = "There are unsent requests after the execution time has been reached"
 	default:
 		failureReason = ""
-		err = nil
 	}
 	return
 }
@@ -46,14 +47,7 @@ func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadHttp.H
 	report.MeanDelay = result.Latencies.Mean
 	report.SucceedRate = float64(result.SuccessCounts) / float64(result.RequestCounts)
 
-	var err error
-	failureReason, err = ParseSuccessCondition(successCondition, result)
-	if err != nil {
-		failureReason = fmt.Sprintf("%v", err)
-		logger.Sugar().Errorf("internal error for target %v, error=%v", req.Url, err)
-		report.FailureReason = pointer.String(failureReason)
-		return
-	}
+	failureReason = ParseSuccessCondition(successCondition, result)
 
 	// generate report
 	// notice , upper case for first character of key, or else fail to parse json

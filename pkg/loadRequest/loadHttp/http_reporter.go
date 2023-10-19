@@ -44,6 +44,8 @@ type report struct {
 	totalLatencies float32
 	sizeTotal      int64
 	totalCount     int64
+
+	existsNotSendRequests bool
 }
 
 func newReport(results chan *result, enableLatencyMetric bool) *report {
