@@ -19,6 +19,7 @@ import (
 var _ = Describe("testing runtime ", Label("runtime"), func() {
 	var termMin = int64(5)
 	var replicas = int32(2)
+	var requestTimeout = 3000
 	It("Successfully testing cascading deletion with Task NetReach DaemonSet Service and Ingress ", Label("E00007"), func() {
 		var e error
 		successRate := float64(1)
@@ -60,7 +61,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -125,7 +126,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -282,7 +283,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -349,7 +350,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
