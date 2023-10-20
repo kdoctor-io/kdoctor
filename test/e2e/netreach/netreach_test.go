@@ -14,6 +14,8 @@ import (
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
 	var termMin = int64(1)
+	// 1000ms is not stable on GitHub ci, so increased to 3000ms
+	var requestTimeout = 3000
 	It("success testing netReach", Label("B00001", "C00004", "E00001"), func() {
 		var e error
 		successRate := float64(1)
@@ -54,7 +56,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -118,7 +120,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -180,7 +182,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
