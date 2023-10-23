@@ -871,7 +871,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 5
-		request.DurationInSecond = 10
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -926,7 +926,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 5
-		request.DurationInSecond = 10
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule

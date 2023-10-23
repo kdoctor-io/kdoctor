@@ -182,8 +182,8 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		// request
 		request := new(v1beta1.NetdnsRequest)
 		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
+		var qps = uint64(5)
+		var durationInSecond = uint64(5)
 		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
 		request.QPS = &qps
 		request.DurationInSecond = &durationInSecond
@@ -243,8 +243,8 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		// request
 		request := new(v1beta1.NetdnsRequest)
 		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
+		var qps = uint64(5)
+		var durationInSecond = uint64(5)
 		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
 		request.QPS = &qps
 		request.DurationInSecond = &durationInSecond
