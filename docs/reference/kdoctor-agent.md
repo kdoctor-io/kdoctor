@@ -8,17 +8,18 @@ Run the kdoctor agent daemon.
 
 ### Options
 
-| options             | type   | default                  | description                                                                                             |
-|---------------------|--------|--------------------------|---------------------------------------------------------------------------------------------------------|
-| --config-dir        | string | /tmp/config-map/conf.yml | config file path.                                                                                       |
-| --app-mode          | bool   | false                    | agent running mode ,when using app mode, the agent only provides an HTTP and HTTPS server for testing.  |
-| --tls-insecure      | bool   | true                     | The HTTPS server skips TLS authentication.                                                              |
-| --tls-ca-cert       | string | /etc/tls/ca.crt          | The CA certificate path, which is used by the agent to generate the signing certificate.                |
-| --tls-ca-key        | string | /etc/tls/ca.key          | The CA key path, which is used by the agent to generate the signing certificate.                        |
-| --task-kind         | string | ""                       | The kind of task. values AppHttpHealthy、NetReach and Netdns.                                            |
-| --task-name         | string | ""                       | The name of task.                                                                                       |
-| --service-ipv4-name | string | ""                       | The ipv4 service name of the task workload.                                                             |
-| --service-ipv6-name | string | ""                       | The ipv6 service name of the task workload.                                                             |
+| options             | type   | default                  | description                                                                                            |
+|---------------------|--------|--------------------------|--------------------------------------------------------------------------------------------------------|
+| --config-dir        | string | /tmp/config-map/conf.yml | config file path.                                                                                      |
+| --app-mode          | bool   | false                    | agent running mode ,when using app mode, the agent only provides an HTTP and HTTPS server for testing. |
+| --tls-insecure      | bool   | true                     | The HTTPS server skips TLS authentication.                                                             |
+| --default-agent     | bool   | false                    | The default agent performs tasks.                                                                      |
+| --tls-ca-cert       | string | /etc/tls/ca.crt          | The CA certificate path, which is used by the agent to generate the signing certificate.               |
+| --tls-ca-key        | string | /etc/tls/ca.key          | The CA key path, which is used by the agent to generate the signing certificate.                       |
+| --task-kind         | string | ""                       | The kind of task. values AppHttpHealthy、NetReach and Netdns.                                           |
+| --task-name         | string | ""                       | The name of task.                                                                                      |
+| --service-ipv4-name | string | ""                       | The ipv4 service name of the task workload.                                                            |
+| --service-ipv6-name | string | ""                       | The ipv6 service name of the task workload.                                                            |
 
 ### ENV
 
