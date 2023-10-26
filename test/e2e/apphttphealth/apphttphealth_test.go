@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/spidernet-io/e2eframework/tools"
 	"net"
+	"time"
 )
 
 var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
@@ -56,8 +57,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -120,8 +121,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -182,8 +183,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -245,8 +246,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -310,8 +311,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -372,8 +373,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -438,8 +439,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -500,8 +501,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -562,8 +563,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -624,8 +625,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -686,8 +687,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -751,8 +752,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		appHttpHealth.Spec.Request = request
 
 		// Schedule
@@ -813,7 +814,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
+		request.QPS = 5
 		request.DurationInSecond = 60
 		appHttpHealth.Spec.Request = request
 
@@ -842,6 +843,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	})
 
 	It("Successfully testing using default daemonSet  as workload with Task AppHttpHealthy ", Label("E00014"), func() {
+		// The machine performance of GitHub ci is too poor. Avoid the default agent executing multiple use cases at the same time.
+		time.Sleep(10 * time.Second)
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -897,6 +900,8 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	})
 
 	It("Successfully testing using default daemonSet  as workload with Task AppHttpHealthy ", Label("E00017"), func() {
+		// The machine performance of GitHub ci is too poor. Avoid the default agent executing multiple use cases at the same time.
+		time.Sleep(10 * time.Second)
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)

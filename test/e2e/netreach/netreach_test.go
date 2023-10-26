@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/spidernet-io/e2eframework/tools"
+	"time"
 )
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
@@ -57,8 +58,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 10
-		request.DurationInSecond = 10
+		request.QPS = 5
+		request.DurationInSecond = 5
 		netReach.Spec.Request = request
 
 		// Schedule
@@ -86,6 +87,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	})
 
 	It("Successfully testing using default daemonSet  as workload with Task NetReach", Label("E00013"), func() {
+		// The machine performance of GitHub ci is too poor. Avoid the default agent executing multiple use cases at the same time.
+		time.Sleep(20 * time.Second)
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
@@ -148,6 +151,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	})
 
 	It("Successfully testing using default daemonSet  as workload with more Task NetReach", Label("E00016"), func() {
+		// The machine performance of GitHub ci is too poor. Avoid the default agent executing multiple use cases at the same time.
+		time.Sleep(20 * time.Second)
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)
