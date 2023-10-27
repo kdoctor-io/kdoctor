@@ -159,6 +159,7 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
+		HELM_OPTION+=" --set feature.nethttp_defaultRequest_MaxQps=10000 " ; \
 		HELM_OPTION+=" --set kdoctorAgent.resources.requests.cpu=200m " ; \
 		HELM_OPTION+=" --set kdoctorAgent.resources.requests.memory=256Mi " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
@@ -631,6 +632,58 @@ e2e_test:
 			--json-report e2ereport.json --output-dir $(ROOT_DIR) --procs $(E2E_GINKGO_PROCS) \
 			--label-filter="$(E2E_GINKGO_LABELS)" -randomize-suites -randomize-all  -vv --fail-fast  $(E2E_GINKGO_OPTION) \
 			-r e2e/*  || RESULT=1  ; \
+		echo "=========== after test `date` ===========" >> $(E2E_LOG_FILE) ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "system" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) ; \
+		KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "error" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) || { echo "error, found error log, datarace/pacni/longlock !!!" ; RESULT=1 ; } ; \
+		if (($${RESULT} != 0)) ; then \
+		   echo "failed to run e2e test"  ; \
+		   exit 1 ; \
+		fi ; \
+		echo "" ; \
+		echo "============================================" ; \
+		echo "succeeded to run all test" ; \
+		echo "output report to e2ereport.json" ; \
+		echo "output env log to $(E2E_LOG_FILE) "
+
+
+.PHONY: ci_threshold
+ci_threshold: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
+ci_threshold: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+ci_threshold:
+	@echo -e "\033[35m Run ci threshold test on the cluster $(KIND_CLUSTER_NAME) \033[0m "
+	@ echo -e "\033[35m [E2E] Run ci threshold with ginkgo label=$(E2E_GINKGO_LABELS) , timeout=$(E2E_TIMEOUT) GINKGO_OPTION=$(E2E_GINKGO_OPTION) \033[0m"
+	@  NODE_LIST=` docker ps | egrep " kindest/node.* $(KIND_CLUSTER_NAME)-(control|worker)" | awk '{print $$NF }' ` ; \
+		[ -n "$$NODE_LIST" ] || { echo "error, failed to find any kind nodes, please setup kind cluster $(KIND_CLUSTER_NAME) first" ; exit 1 ; } ; \
+		NODE_LIST=` echo "$${NODE_LIST}" | tr -d ' ' | tr '\n' ',' ` ; \
+		NODE_LIST=$${NODE_LIST%%,} ; \
+		echo "find cluster node: $${NODE_LIST}" ; \
+		export E2E_KIND_CLUSTER_NODE_LIST="$${NODE_LIST}" ; \
+		export E2E_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ; \
+		export APISERVER=`kubectl config view  --kubeconfig $(KIND_KUBECONFIG) |grep server | awk '{print $$2}'` ;\
+		export E2E_INSTALL_NAMESPACE=$(E2E_INSTALL_NAMESPACE) ;\
+		export GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) ;\
+		export APP_CHART_DIR=$(APP_CHART_DIR) ;\
+		export E2E_TEST_SERVER_NAME=$(E2E_TEST_SERVER_NAME) ;\
+		export E2E_KIND_KUBECONFIG_PATH=$(E2E_KIND_KUBECONFIG_PATH) ;\
+		export AGENT_REGISTER=$(REGISTER)/$(GIT_REPO)-agent ; \
+		if [ "$(E2E_IP_FAMILY)" == "ipv4" ] ; then \
+			export E2E_IPV4_ENABLED=true ; export E2E_IPV6_ENABLED=false ; \
+		elif [ "$(E2E_IP_FAMILY)" == "ipv6" ] ; then \
+			export E2E_IPV4_ENABLED=false ; export E2E_IPV6_ENABLED=true ; \
+		else \
+			export E2E_IPV4_ENABLED=true ; export E2E_IPV6_ENABLED=true ; \
+		fi ; \
+		export E2E_KUBECONFIG_PATH=$(KIND_KUBECONFIG) ; [ -f "$(KIND_KUBECONFIG)" ] || { echo "error, does not exist KUBECONFIG $(E2E_KUBECONFIG)" ; exit 1 ; } ; \
+		rm -f $(E2E_LOG_FILE) || true ; \
+		echo "=========== before test `date` ===========" >> $(E2E_LOG_FILE) ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "system" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) ; \
+		RESULT=0 ; \
+		$(ROOT_DIR)/tools/golang/ginkgo.sh \
+			--race --timeout=$(E2E_TIMEOUT) --output-interceptor-mode=none  --slow-spec-threshold=15s \
+			--json-report ci_threshold_report.json --output-dir $(ROOT_DIR) --procs 1 \
+			--label-filter="$(E2E_GINKGO_LABELS)" -randomize-suites -randomize-all  -vv --fail-fast  $(E2E_GINKGO_OPTION) \
+			-r ci-threshold/*  || RESULT=1  ; \
 		echo "=========== after test `date` ===========" >> $(E2E_LOG_FILE) ; \
 		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "system" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) ; \
 		KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" "$(E2E_LOG_FILE)"  $(E2E_INSTALL_NAMESPACE) ; \

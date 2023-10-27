@@ -369,6 +369,9 @@ e2e_init:
 
 
 
+.PHONY: ci_threshold_run
+ci_threshold_run:
+	make -C test ci_threshold
 
 .PHONY: e2e_run
 e2e_run:

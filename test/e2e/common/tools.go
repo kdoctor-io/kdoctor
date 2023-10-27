@@ -158,27 +158,27 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 
 	resp, err := c.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("get plugin report failed,err : %v", err)
+		return nil, fmt.Errorf("get plugin report %s failed,err : %v", name, err)
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("plugin report not found ")
+		return nil, fmt.Errorf("plugin report %s not found ", name)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
-		return nil, fmt.Errorf("read plugin report body failed,err : %v", err)
+		return nil, fmt.Errorf("read plugin report %s body failed,err : %v", name, err)
 	}
 	report := new(kdoctor_report.KdoctorReport)
 
 	err = json.Unmarshal(body, report)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshal plugin report failed,err : %v", err)
+		return nil, fmt.Errorf("unmarshal plugin report %s failed,err : %v", name, err)
 	}
 
 	if len(*report.Spec.Report) != n {
-		return nil, fmt.Errorf("have agent not upload report")
+		return nil, fmt.Errorf("have agent not upload %s report", name)
 	}
 
 	return report, nil
