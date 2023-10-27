@@ -75,7 +75,7 @@ func DaemonMain() {
 
 		RunMetricsServer(types.AgentConfig.PodName)
 
-		s := pluginManager.InitPluginManager(rootLogger.Named("agentContorller"))
+		s := pluginManager.InitPluginManager(rootLogger.Named("agentController"))
 		s.RunAgentController()
 
 	}
