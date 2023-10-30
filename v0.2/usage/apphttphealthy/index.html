@@ -1,0 +1,1426 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../get-started-kind/">
+      
+      
+        <link rel="next" href="../netreach/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.8">
+    
+    
+      
+        <title>AppHttpHealthy - kdoctor</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nethttp" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="kdoctor" class="md-header__button md-logo" aria-label="kdoctor" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kdoctor
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AppHttpHealthy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kdoctor-io/kdoctor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kdoctor-io/kdoctor
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  kdoctor
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../install/" class="md-tabs__link">
+          
+  
+    
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+    
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/arch/" class="md-tabs__link">
+          
+  
+    
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/apphttphealthy/" class="md-tabs__link">
+          
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../develop/release/" class="md-tabs__link">
+          
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="kdoctor" class="md-nav__button md-logo" aria-label="kdoctor" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    kdoctor
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kdoctor-io/kdoctor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kdoctor-io/kdoctor
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get-started-kind/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickly Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    AppHttpHealthy
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    AppHttpHealthy
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concept" class="md-nav__link">
+    concept
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    example
+  </a>
+  
+    <nav class="md-nav" aria-label="example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-body" class="md-nav__link">
+    example body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-https-cert" class="md-nav__link">
+    example https cert
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    debug
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report" class="md-nav__link">
+    report
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../netreach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetReach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../netdns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runtime
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/apphttphealthy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AppHttpHealthy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/netreach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetReach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/netdns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/kdoctor-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor-controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/kdoctor-agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor-agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Performance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/release/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Release workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concept" class="md-nav__link">
+    concept
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    example
+  </a>
+  
+    <nav class="md-nav" aria-label="example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-body" class="md-nav__link">
+    example body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-https-cert" class="md-nav__link">
+    example https cert
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug" class="md-nav__link">
+    debug
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report" class="md-nav__link">
+    report
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="nethttp">Nethttp</h1>
+<p><a href="../apphttphealthy-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
+<h2 id="concept">concept</h2>
+<p>Fo this kind task, each kdoctor agent will send http request to specified target, and get success rate and mean delay. 
+It could specify success condition to tell the result succeed or fail. 
+And, more detailed report will print to kdoctor agent stdout, or save to disc by kdoctor controller.</p>
+<p>the following is the spec of nethttp</p>
+<pre><code class="language-shell">apiVersion: kdoctor.io/v1beta1
+kind: AppHttpHealthy
+metadata:
+  name: httphealthy
+spec:
+  request:
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    qps: 10
+  schedule:
+    roundNumber: 2
+    roundTimeoutMinute: 1
+    schedule: 1 1
+  expect:
+    meanAccessDelayInMs: 10000
+    successRate: 1
+    statusCode: 200
+  target:
+    bodyConfigmapName: http-body
+    bodyConfigmapNamespace: kube-system
+    header:
+    - Accept:text/html
+    host: https://10.6.172.20:9443
+    http2: false
+    method: PUT
+    tlsSecretName: https-cert
+    tlsSecretNamespace: kube-system
+status:
+  doneRound: 2
+  expectedRound: 2
+  finish: true
+  history:
+  - deadLineTimeStamp: &quot;2023-05-24T08:03:05Z&quot;
+    duration: 15.092667522s
+    endTimeStamp: &quot;2023-05-24T08:02:20Z&quot;
+    expectedActorNumber: 2
+    failedAgentNodeList: []
+    notReportAgentNodeList: []
+    roundNumber: 2
+    startTimeStamp: &quot;2023-05-24T08:02:05Z&quot;
+    status: succeed
+    succeedAgentNodeList:
+    - kdoctor-worker
+    - kdoctor-control-plane
+</code></pre>
+<ul>
+<li>
+<p>spec.schedule: set how to schedule the task.</p>
+<p>roundNumber: how many rounds it should be to run this task</p>
+<p>schedule: Support Linux crontab syntax for scheduling tasks, while also supporting simple writing. 
+            The first digit represents how long the task will start, and the second digit represents the interval time between each round of tasks,
+            separated by spaces. Example: "1 2" indicates that the task will start in 1 minute, and the interval time between each round of tasks.</p>
+<p>roundTimeoutMinute: the timeout in minute for each round, when the rask does not finish in time, it results to be failuire</p>
+<p>sourceAgentNodeSelector [optional]: set the node label selector, then, the kdoctor agent who locates on these nodes will implement the task. If not set this field, all kdoctor agent will execute the task</p>
+</li>
+<li>
+<p>spec.request: how each kdoctor agent should send the http request</p>
+<p>durationInSecond: for each round, the duration in second how long the http request lasts</p>
+<p>perRequestTimeoutInMS: timeout in ms for each http request </p>
+<p>qps: qps</p>
+</li>
+<li>
+<p>spec.target: set the target of http request.</p>
+<pre><code>host: the host for http, example service ip, pod ip, service domain, an user-defined UR
+
+method: http method, must be one of GET POST PUT DELETE CONNECT OPTIONS PATCH HEAD
+
+bodyConfigmapName: The body configmap name
+</code></pre>
+<ul>
+<li>
+<p>bodyConfigmapNamespace: The body configmap namespace </p>
+<p>tlsSecretName: The tls secret name
+* 
+tlsSecretNamespace: The tls secret namespace</p>
+<p>header:  HTTP request header</p>
+<p>http2: Requests are made using the http2 protocol</p>
+<blockquote>
+<p>notice: when test targetAgent case, it will send http request to all targets at the same time with spec.request.qps for each one. That meaning, the actually QPS may be bigger than spec.request.qps</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>spec.expect: define the success condition of the task result </p>
+<p>meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure</p>
+<p>successRate: the success rate of all http requests. Notice, when a http response code is &gt;=200 and &lt; 400, it's treated as success. if the actual whole success rate is smaller than successRate, the task results to be failure</p>
+<p>statusCode: Expect the HTTP status code returned by each request </p>
+</li>
+<li>
+<p>status: the status of the task</p>
+<p>doneRound: how many rounds have finished</p>
+<p>expectedRound: how many rounds the task expect</p>
+<p>finish: whether all rounds of this task have finished</p>
+<p>lastRoundStatus: the result of last round</p>
+<p>history:</p>
+<pre><code>roundNumber: the round number
+
+status: the status of this round
+
+startTimeStamp: when this round begins
+
+endTimeStamp: when this round finally finished
+
+duration: how long the round spent
+
+deadLineTimeStamp: the time deadline of a round
+
+failedAgentNodeList: the node list where failed kdoctor agent locate
+
+notReportAgentNodeList: the node list where uknown kdoctor agent locate. This means these agents have problems.
+
+succeedAgentNodeList: the node list where successful kdoctor agent locate
+</code></pre>
+</li>
+</ul>
+<h2 id="example">example</h2>
+<p>a quick task to test kdoctor agent, to verify the whole network is ok, each agent could reach specific host</p>
+<pre><code class="language-shell">
+cat &lt;&lt;EOF &gt; test-httpapphealthy.yaml
+apiVersion: kdoctor.io/v1beta1
+kind: AppHttpHealthy
+metadata:
+  name: httphealthy
+spec:
+  request:
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    qps: 10
+  schedule:
+    roundNumber: 2
+    roundTimeoutMinute: 1
+    schedule: 1 1
+  expect:
+    meanAccessDelayInMs: 10000
+    successRate: 1
+    statusCode: 200
+  target:
+    bodyConfigmapName: http-body
+    bodyConfigmapNamespace: kube-system
+    header:
+    - Accept:text/html
+    host: https://10.6.172.20:9443
+    http2: false
+    method: PUT
+    tlsSecretName: https-cert
+    tlsSecretNamespace: kube-system
+EOF
+kubectl apply -f test-httpapphealthy.yaml
+
+</code></pre>
+<h3 id="example-body">example body</h3>
+<pre><code class="language-shell">cat &lt;&lt;EOF &gt; http-body.yaml
+apiVersion: v1
+data:
+  body: |
+    {test:test}
+kind: ConfigMap
+metadata:
+  name: http-body
+  namespace: kube-system
+EOF
+kubectl apply -f http-body.yaml
+</code></pre>
+<h3 id="example-https-cert">example https cert</h3>
+<pre><code class="language-shell">cat &lt;&lt;EOF &gt; https-cert.yaml
+apiVersion: v1
+data:
+  ca.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWekNDQWorZ0F3SUJBZ0lKQU1vL3p5bGZZZzVSTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUl4Q3pBSkJnTlYKQkFZVEFsaFlNUlV3RXdZRFZRUUhEQXhFWldaaGRXeDBJRU5wZEhreEhEQWFCZ05WQkFvTUUwUmxabUYxYkhRZwpRMjl0Y0dGdWVTQk1kR1F3SGhjTk1qTXdOakE0TURrd05URTVXaGNOTWpRd05qQTNNRGt3TlRFNVdqQkNNUXN3CkNRWURWUVFHRXdKWVdERVZNQk1HQTFVRUJ3d01SR1ZtWVhWc2RDQkRhWFI1TVJ3d0dnWURWUVFLREJORVpXWmgKZFd4MElFTnZiWEJoYm5rZ1RIUmtNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQQpwWERBUGt1UzhvNW9lRTBBS0ZxL2Vjb1pjN2hFbXk1RlMvbWxlZCt2MFRFMlV5cGord1k0M0hvaEhpWjl3bVRECkpwTHZTKzgwTFpmMitrVkNBb05hTjdMdU1rdFJKaXlQUDc2TklSaUdPdzl6MmZpNHNIaUFnS0dvR1ZMb1c1YUMKa0RoK3dLKzh5NDVnVGZGR1VaWGpBa0pKSm1mWDd2TXllbkpyT2J5SUE0ajFuc294cDBNelFzNkYzREQ1TmdmZApQc1JtT3N6QlNLRTdNaFF4MEN5RlVQWjRTZ3U2N25MQytmRFBWVXBYY3pKQU1ZSTVrNWpyaElneDZnR2hKVFk0CmRLQ0VMWllwUmhCMWFFbVBIRjFlVUZ3MC9FcG5ldUdPd1ZqazZsSEp6QUxRUHBnR1dBZ0V1WFFVckxYb0dNclAKcWJrYU9WeitMelh0N1ZCaWJOZmdFUUlEQVFBQm8xQXdUakFkQmdOVkhRNEVGZ1FVTDlnL3FhZ2ptaGJ1K1pvQQpRVkFOdE1nd0cra3dId1lEVlIwakJCZ3dGb0FVTDlnL3FhZ2ptaGJ1K1pvQVFWQU50TWd3Rytrd0RBWURWUjBUCkJBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQW5Jd0Jyc3paY0pRRGFrZnNVVHp1eEtORmdUNUoKNVJOUWQ1S1NZM01HTWVkQjNIU2dMTEVWM3FTM1pLNHlrT3NFaXJ6c1lmdGV2Q1JGL2VsTkVIZDREQ2tiRzlSeQpwTzAwYTk1RkdFNktUWk1iSTRDaW1kMmF6eVhkazMyYUtzeFpjaDBRMzlneHgwSGFnVW5CcDk1VWxaQkcyOTh2CnhkQVRtSXZJNmVpd2FCeWc2NjBKRklRZ1VkVmhUM0VNTUI2dUlxaWdKZTJlMEcvV0t1My9BNGhvL3hDZUVNWmYKbFJlRXJIeFo0TzZsVTVEM0pnNURWcUM1MlBPK0V2aTJpdm5ZTmNvbTRibU9HbE41RmhzdG5La3M2ZlVsV012RQpXeXZCb01OU2VFNllueVFUUURBZ09BN0NlVzhKSUk4b3JRN00vM0JnWlNSOUZ4OGdhY01jeEUydTZRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURBRENDQWVnQ0NRRGljN284NjltaW16QU5CZ2txaGtpRzl3MEJBUXNGQURCQ01Rc3dDUVlEVlFRR0V3SlkKV0RFVk1CTUdBMVVFQnd3TVJHVm1ZWFZzZENCRGFYUjVNUnd3R2dZRFZRUUtEQk5FWldaaGRXeDBJRU52YlhCaApibmtnVEhSa01CNFhEVEl6TURZd09EQTVNak13TlZvWERUSTBNRFl3TnpBNU1qTXdOVm93UWpFTE1Ba0dBMVVFCkJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMGVURWNNQm9HQTFVRUNnd1RSR1ZtWVhWc2RDQkQKYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTm5RUnVVaApnbWhtdFV4aitJQXpIayswdU5Oa2ZnUWFVMHpYdG1ZMGI3T0g3VkZXd2tVWDNJYVU2Q2JJRzd2MVRPbllISmZhCloyZmRvNURudlpaSk5OWnZOWUdEbkU4d3JuNmVHSlFpMW5hbDlEbGdyaWJPSWJtOUU4N055VUFTRXpkSEFhN1oKOUp1bEVlRlE5VXJHV25KbXhEZjBTSGM4ckJGRnBsMVpORXpUbDFpUFFhaDRDVGcya1lWMWJtS0h2cmhUcDV6UQp4VE4wT0ZUa1JKWmprN284YTRxUXhBVWYvU1ZkQ3BkeXBHYzhPM3JWL0dPMTdneFlVK2lmRmY0OW84M2l5ZGluCm0zQ3NmOFRFVWlNTGZqcDgwQk5ZQTVScVJPSG15NTVNSG9TM2VnWEJWOG5va3hvVHkzSy8rdnd0L21BMmVLQWEKVHRXeEo1NVM2T0M5R0xrQ0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBalYrWWpKSkU1c2o5ODZqQgpzenY3cXhkdXRGSHdIM1NpRXhzaEt0S3VpaE1BYjBJR1V4MEIxbmdTZ1gvNUVqUzEwYTZtRmhJZGxWS29PSDJ1CkQ3aVZtRkdweHBWaUtCTFMwVnhweGphVmZ0OExCd2k1cHN5eDZyWmEwaFMvek1NMEFlL1FuQXpoSzZDMDl5T08KN1g1R2orMjNQQjBVNkorZnRteThMYVpwK0ZBbWFobi9OYThJbmJNY1hEQjVEeEhNUWkzdjFrQUh6bnBGNU02KwpuSEkyR3B0RzR4UzlDTitFK2FBa3NBZGMzY2VjZ3JCL04vUFZNMWhFdkZtakw5SVpTdEJkYzBGQ1pGMHJPVy96CllhWVhLa3FRTm9Wa2FaMENsRVEybWdIMFh0ZktzQ0VZVGx0OGJncDgveDdKTmlqN2UvYkoyU0E0M015NTF1ZHYKZ0N5M1pRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMmRCRzVTR0NhR2ExVEdQNGdETWVUN1M0MDJSK0JCcFRUTmUyWmpSdnM0ZnRVVmJDClJSZmNocFRvSnNnYnUvVk02ZGdjbDlwblo5MmprT2U5bGtrMDFtODFnWU9jVHpDdWZwNFlsQ0xXZHFYME9XQ3UKSnM0aHViMFR6czNKUUJJVE4wY0JydG4wbTZVUjRWRDFTc1phY21iRU4vUklkenlzRVVXbVhWazBUTk9YV0k5QgpxSGdKT0RhUmhYVnVZb2UrdUZPbm5OREZNM1E0Vk9SRWxtT1R1anhyaXBERUJSLzlKVjBLbDNLa1p6dzdldFg4Clk3WHVERmhUNko4Vi9qMmp6ZUxKMktlYmNLeC94TVJTSXd0K09uelFFMWdEbEdwRTRlYkxua3dlaExkNkJjRlgKeWVpVEdoUExjci82L0MzK1lEWjRvQnBPMWJFbm5sTG80TDBZdVFJREFRQUJBb0lCQUM4QVVLd1ZCUXorVE5VRgpKWlNVYzFBRDBYWmNVdzBUbVRJVndsaGZyRkx6Vy9TWFlpaUNzNldlOEZHZUVNNElhdVp6S2doaXFybXhEQ0N5CndTaHk5NkhtTVllWEhOM0J4WVd4RytDcmU5ZnlpN2J0OCthUHlKdEovOEk2aWRqM2pZbjZHcFRlbDNnV3NMc00KTzBJOWR6c0VqZ2I5QWI0cEs0QTJwV1d6WUNQTGh3cVVBTXBOS0tSc215NkQzWlozL2lHMmJ6TVRzdlpUUTQ1NQpZS1RCRkxzZGV2N1NLd3UxbWtUQzQrWkFPUjFqMFNSemVWdmFTSnczY2pWVm00SnRod3c1M1o4TVRzSFBIT3dLCmlGM1dlazdaK3BmZkpSTE91T2h3VnBzcTRlVnpCYXhXeW1QNkg0UmQxc1YwQWRGM3QwQlRmRnVudXBCa2RkM1kKUzY2UG5RRUNnWUVBNytCQXpjNDJxaDluQVgwekNhWGZlQU5GOG5OOFp4TTRUTXZEL0I3VWl2Ty9VNWR0Rm15Rgo4emhMbWpXZ3R4ZTdraFRma3R6czJ0TVc4UmhpRlZ0bGRtWForT0pqWFJtR1pwMkhLcmJ2R1pxTXdyLzFjdzJsClhkaTIwZHU0Slp1emxMM3ArSzhFMnRCdEFNK0tyZ09yUy9iTkVPRjg4NDFPUDhCRmIxNmtMakVDZ1lFQTZIUmcKbzNTaGpJcHU1NDNDOCtzbXNNRTFPZVVheEJ6YzdCNmg4a010SEhlRi8yOGVKQ3JJV0NnaDVtTWZCR3AxTmlmSgo2N0ZlT21NM0QyS0JzK3N5cVVQMVlKcVFCY0JKeUVuUzR5SnJpR2diQ1ZpUkpHdm95VGdEV21YbmpHKzI1N2ZHCnZaV0tSTGNKUHhWR0NrckdZc01BK3R1YzJJTE5LUkRPMlpRanlRa0NnWUE5YjVFSlpPUkpSQXVzclBVeVptSksKcVlQenFiSlY3KzArZGYyM0IrcGx3REhqWmVnUmt5L25jQ2FrMDFGYk0xL2Q5U3lodjZXR0VnUlJNVzZGaThmNwp2L0JJdHlxOXdIalV0VW5XSGM0MUg0a25vK1JvV0RsZlJNN21Cc0V1R0tldzA4Y2w0eVY2S1dHUmtKWXpKVXR0CkJFUFhLL2xGbzQ1RDg2bVU4WWRaTVFLQmdRRFN1UDBKOENhcWtxdXErUldyckpYc1VabUFuREhCYWpEVFU0bVgKWmxJMHBoMHd5M2hWYlBzay8yeUx2M3RVczNVQjNOdnM3Mkx1SnhhNHVhRytpZzNvNTVRL09KNHF1SCtxTTFJYgpXUTZHSDJteTlUak4vWXlQTEZuTnp1Y3lwZXIyNytBWDZNSHBQTXdEQmJQeWpJcCs2U3V3UFBsWVJHcmJPVU5xCmRpSmlrUUtCZ0Y0dWtWazFjRkFJazlOeThpNXlrNHR2QzY1SXk1dkQvYWFMeE0yWFo5dnN2TTc5TkNzbUp4VkwKYnlTeWxJbi9rWnFFT0tkRHkxZnRYWnY1aGsrUWhvUzNsT0xWTjlUZ2k0Unhqcnl6QmJDYXdQNjlBZmxxN3dsdwpJYzZFNlZncXJhOU52Q0Zxbm1PMzBaQ1NteENBUEJ3d2hqQmN1K1JEMFVxT0ZGMXZwckNlCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+kind: Secret
+metadata:
+  name: https-cert
+  namespace: kube-system
+type: kubernetes.io/tls
+EOF
+kubectl apply -f https-cert.yaml
+</code></pre>
+<blockquote>
+<p>notice: key body ca.crt tls.crt and tls.key are fixed field cannot be customized</p>
+</blockquote>
+<h2 id="debug">debug</h2>
+<p>when something wrong happen, see the log for your task with following command</p>
+<pre><code class="language-shell">#get log 
+CRD_KIND=&quot;apphttphealthy&quot;
+CRD_NAME=&quot;httphealthy&quot;
+kubectl logs -n kube-system  kdoctor-agent-v4vzx | grep -i &quot;${CRD_KIND}.${CRD_NAME}&quot;
+
+</code></pre>
+<h2 id="report">report</h2>
+<p>when the kdoctor is not enabled to aggerate reports, all reports will be printed in the stdout of kdoctor agent.
+Use the following command to get its report</p>
+<pre><code class="language-shell">kubectl logs -n kube-system  kdoctor-agent-v4vzx | jq 'select( .TaskName==&quot;apphttphealthy.httphealthy&quot; )'
+</code></pre>
+<p>when the kdoctor is enabled to aggregate reports, all reports will be collected in the PVC or hostPath of kdoctor controller.</p>
+<p>metric introduction</p>
+<pre><code class="language-shell">        &quot;FailureReason&quot;: &quot;&quot;,
+        &quot;MeanDelay&quot;: 34.36,
+        &quot;Metrics&quot;: {
+            &quot;start&quot;: &quot;2023-05-24T09:00:35.03987095Z&quot;,
+            &quot;end&quot;: &quot;2023-05-24T09:00:45.08774646Z&quot;,
+            &quot;duration&quot;: &quot;10.04787551s&quot;,
+            &quot;requestCount&quot;: 100,
+            &quot;successCount&quot;: 100,
+            &quot;tps&quot;: 9.952352604336754,
+            &quot;total_request_data&quot;: &quot;23247 byte&quot;,
+            &quot;latencies&quot;: {
+                &quot;P50_inMs&quot;: 35,
+                &quot;P90_inMs&quot;: 57,
+                &quot;P95_inMs&quot;: 58,
+                &quot;P99_inMs&quot;: 59,
+                &quot;Max_inMx&quot;: 62,
+                &quot;Min_inMs&quot;: 18,
+                &quot;Mean_inMs&quot;: 34.36
+            },
+            &quot;status_codes&quot;: {
+                &quot;200&quot;: 100
+            },
+            &quot;errors&quot;: {}
+        },
+        &quot;Succeed&quot;: &quot;true&quot;,
+        &quot;SucceedRate&quot;: &quot;1&quot;,
+        &quot;TargetMethod&quot;: &quot;GET&quot;,
+        &quot;TargetName&quot;: &quot;AppHttpHealthy target&quot;,
+        &quot;TargetNumber&quot;: &quot;1&quot;,
+        &quot;TargetType&quot;: &quot;AppHttpHealthy&quot;,
+        &quot;TargetUrl&quot;: &quot;http://kdoctor-agent-ipv4.kube-system.svc.cluster.local&quot;
+</code></pre>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.indexes", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "search.highlight", "search.suggest", "search.share"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      
+    
+  </body>
+</html>
