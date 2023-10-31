@@ -252,6 +252,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+				}
 			}
 			// startTime
 			shcedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
@@ -300,6 +303,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
 					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -365,6 +371,9 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
 					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
