@@ -768,6 +768,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 		agentSpec.TerminationGracePeriodMinutes = pointer.Int64(1)
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = pointer.Int32(2)
+		agentSpec.TerminationGracePeriodMinutes = &termMin
 		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
