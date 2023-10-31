@@ -792,7 +792,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		// agentSpec
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-    appHttpHealth.Spec.AgentSpec = *agentSpec
+		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
