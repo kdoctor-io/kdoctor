@@ -16,4 +16,3 @@
 | A00012  | Successfully http testing appHttpHealth due to success rate case            | p1       |       | done   |             |
 | A00013  | Successfully https testing appHttpHealth method GET Protocol Http2 case     | p1       |       | done   |             |
 | A00014  | Report request count equal real request count case                          | p1       |       | done   |             |
-| A00015  | Failed http every round testing appHttpHealth due to delay                  | p1       |       | done   |             |

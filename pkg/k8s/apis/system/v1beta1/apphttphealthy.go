@@ -10,13 +10,13 @@ import (
 const AppHttpHealthyTaskName = "AppHttpHealthy"
 
 type AppHttpHealthyTask struct {
-	TargetType    string                     `json:"TargetType"`
-	TargetNumber  int64                      `json:"TargetNumber"`
-	FailureReason *string                    `json:"FailureReason,omitempty"`
-	Succeed       bool                       `json:"Succeed"`
-	MaxCPU        string                     `json:"MaxCPU"`
-	MaxMemory     string                     `json:"MaxMemory"`
-	Detail        []AppHttpHealthyTaskDetail `json:"Detail"`
+	TargetType       string                     `json:"TargetType"`
+	TargetNumber     int64                      `json:"TargetNumber"`
+	FailureReason    *string                    `json:"FailureReason,omitempty"`
+	Succeed          bool                       `json:"Succeed"`
+	SystemResource   SystemResource             `json:"SystemResource"`
+	TotalRunningLoad TotalRunningLoad           `json:"TotalRunningLoad"`
+	Detail           []AppHttpHealthyTaskDetail `json:"Detail"`
 }
 
 type AppHttpHealthyTaskDetail struct {
