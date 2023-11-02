@@ -7,6 +7,8 @@ const (
 )
 
 const (
+	KdoctorControllerElectorLockName = "kdoctor-controller-lease"
+
 	KindNameAppHttpHealthy = "AppHttpHealthy"
 	KindNameNetReach       = "NetReach"
 	KindNameNetdns         = "Netdns"

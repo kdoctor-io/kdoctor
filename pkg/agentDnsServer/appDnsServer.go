@@ -64,7 +64,6 @@ func SetupAppDnsServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 				return
 			}
 		}
-
 		_ = w.WriteMsg(m)
 
 	})

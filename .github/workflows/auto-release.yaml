@@ -48,7 +48,7 @@ jobs:
           
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.RUN_TAG }}
 
@@ -113,15 +113,22 @@ jobs:
       ref: ${{ needs.get-tag.outputs.tag }}
     secrets: inherit
 
+  release-chart:
+    needs: [build-release-image, get-tag]
+    uses: ./.github/workflows/call-release-chart.yaml
+    with:
+      ref: ${{ needs.get-tag.outputs.tag }}
+    secrets: inherit
+
   create-release:
-    needs: [ release-changelog, get-tag, release-pages]
+    needs: [ release-changelog, get-tag, release-chart]
     name: create release
     runs-on: ubuntu-latest
     steps:
       - name: Download Chart Artifact
         uses: actions/download-artifact@v3.0.2
         with:
-          name: ${{ needs.release-pages.outputs.artifact }}
+          name: ${{ needs.release-chart.outputs.artifact }}
           path: chart-package/
 
       - name: Download Changelog Artifact
@@ -140,7 +147,7 @@ jobs:
           fi
           chart_path=$( ls chart-package/kdoctor-*.tgz )
           echo "RUN_CHART_PATH=${chart_path}" >> $GITHUB_ENV
-          chart_app_path=$( ls chart-package/http-server-test-*.tgz )
+          chart_app_path=$( ls chart-package/server-*.tgz )
           echo "RUN_CHART_APP_PATH=${chart_app_path}" >> $GITHUB_ENV
           # ========== changelog
           if ! ls changelog-result/*.md &>/dev/null ; then
@@ -157,7 +164,7 @@ jobs:
       - name: Create Release
         id: create_release
         continue-on-error: false
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.13.0
         with:
           artifacts: "chart-package/*"
           allowUpdates: true

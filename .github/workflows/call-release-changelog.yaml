@@ -2,7 +2,8 @@ name: Call Release Changelog
 
 env:
   SCRIPT_PATH: "./tools/scripts/changelog.sh"
-  LABEL_FEATURE: "release/feature"
+  LABEL_FEATURE: "release/feature-new"
+  LABEL_CHANGED: "release/feature-changed"
   LABEL_BUG: "release/bug"
   DEST_BRANCH: github_pages
   DEST_DIRECTORY: 'changelogs/'
@@ -40,7 +41,7 @@ jobs:
       begin_tag: ${{ env.begin_tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -82,6 +83,7 @@ jobs:
         run: |
           set -x
           export LABEL_FEATURE=${{ env.LABEL_FEATURE }}
+          export LABEL_CHANGED=${{ env.LABEL_CHANGED }}
           export LABEL_BUG=${{ env.LABEL_BUG }}
           export PROJECT_REPO=${{ github.repository }}
           export GH_TOKEN=${{ github.token }}
@@ -107,7 +109,7 @@ jobs:
           cat ${FILE_PATH}
 
       - name: Upload Changelog
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: changelog_artifact
           path: ${{ env.FILE_PATH }}
@@ -119,7 +121,7 @@ jobs:
     needs: [generate_changelog]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.DEST_BRANCH }}
 
@@ -140,5 +142,5 @@ jobs:
           delete-branch: true
           base: ${{ env.DEST_BRANCH }}
           signoff: true
-          token: ${{ secrets.WELAN_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ env.PR_LABEL }}

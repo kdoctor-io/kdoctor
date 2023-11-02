@@ -1,0 +1,242 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name:  {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "project.kdoctorAgent.labels" . | nindent 4 }}
+    {{- if .Values.global.commonLabels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations:
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "project.kdoctorAgent.selectorLabels" . | nindent 6 }}
+  {{- with .Values.kdoctorAgent.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | trim | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      {{- if or .Values.kdoctorAgent.podAnnotations .Values.global.commonAnnotations }}
+      annotations:
+        {{- if .Values.global.commonAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.kdoctorAgent.podAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- end }}
+      labels:
+        {{- include "project.kdoctorAgent.selectorLabels" . | nindent 8 }}
+        {{- if .Values.global.commonLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.kdoctorAgent.podLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.podLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.kdoctorAgent.image.imagePullSecrets }}
+      imagePullSecrets:
+      {{- with .Values.kdoctorAgent.image.imagePullSecrets }}
+      {{- toYaml . | trim | nindent 6 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+      priorityClassName: {{ default "system-node-critical" .Values.kdoctorAgent.priorityClassName }}
+      {{- if .Values.kdoctorAgent.hostnetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- else }}
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.kdoctorAgent.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.kdoctorAgent.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.kdoctorAgent.affinity }}
+      affinity:
+      {{- include "tplvalues.render" (dict "value" .Values.kdoctorAgent.affinity "context" $) | nindent 6 }}
+      {{- else }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+              # Compatible with Kubernetes 1.12.x and 1.13.x
+              - matchExpressions:
+                  - key: beta.kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+      {{- end }}
+      containers:
+        - name: {{ .Values.kdoctorAgent.name | trunc 63 | trimSuffix "-" }}
+          image: {{ include "project.kdoctorAgent.image" . | quote }}
+          imagePullPolicy: {{ .Values.kdoctorAgent.image.pullPolicy }}
+          command:
+            - {{ .Values.kdoctorAgent.cmdBinName }}
+          args:
+            - --config-path=/tmp/config-map/conf.yml
+            - --tls-ca-cert=/etc/tls/ca.crt
+            - --tls-ca-key=/etc/tls/ca.key
+            - --default-agent=true
+            {{- if .Values.feature.enableIPv4 }}
+            - --service-ipv4-name={{ include "project.kdoctorAgent.serviceIpv4Name" . }}
+            {{- end }}
+            {{- if .Values.feature.enableIPv6 }}
+            - --service-ipv6-name={{ include "project.kdoctorAgent.serviceIpv6Name" . }}
+            {{- end }}
+          {{- with .Values.kdoctorAgent.extraArgs }}
+          {{- toYaml . | trim | nindent 8 }}
+          {{- end }}
+          ports:
+            {{- if .Values.kdoctorAgent.prometheus.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.kdoctorAgent.prometheus.port }}
+              protocol: TCP
+            {{- end }}
+            {{- if or .Values.feature.enableIPv4 .Values.feature.enableIPv6 }}
+            - name: health
+              containerPort: {{ .Values.kdoctorAgent.httpServer.healthPort }}
+              protocol: TCP
+            - name: http
+              containerPort: {{ .Values.kdoctorAgent.httpServer.appHttpPort }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.kdoctorAgent.httpServer.appHttpsPort }}
+              protocol: TCP
+            {{- end }}
+          {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
+          startupProbe:
+            httpGet:
+              path: /healthy/startup
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
+              scheme: HTTP
+            failureThreshold: {{ .Values.kdoctorAgent.httpServer.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.kdoctorAgent.httpServer.startupProbe.periodSeconds }}
+            successThreshold: 1
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthy/liveness
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: {{ .Values.kdoctorAgent.httpServer.livenessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.kdoctorAgent.httpServer.livenessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthy/readiness
+              port: {{ .Values.kdoctorAgent.httpServer.healthPort }}
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: {{ .Values.kdoctorAgent.httpServer.readinessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.kdoctorAgent.httpServer.readinessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          {{- with .Values.kdoctorAgent.resources }}
+          resources:
+          {{- toYaml . | trim | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ENV_LOG_LEVEL
+              value: {{ .Values.kdoctorAgent.debug.logLevel | quote }}
+            - name: ENV_ENABLED_METRIC
+              value: {{ .Values.kdoctorAgent.prometheus.enabled | quote }}
+            - name: ENV_METRIC_HTTP_PORT
+              value: {{ .Values.kdoctorAgent.prometheus.port | quote }}
+            - name: ENV_AGENT_HEALTH_HTTP_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.healthPort | quote }}
+            - name: ENV_AGENT_APP_HTTP_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.appHttpPort | quote }}
+            - name: ENV_AGENT_APP_HTTPS_PORT
+              value: {{ .Values.kdoctorAgent.httpServer.appHttpsPort | quote }}
+            - name: ENV_GOPS_LISTEN_PORT
+              value: {{ .Values.kdoctorAgent.debug.gopsPort | quote }}
+            - name: ENV_AGENT_GRPC_LISTEN_PORT
+              value: {{ .Values.kdoctorAgent.grpcServer.port | quote }}
+            - name: ENV_CLUSTER_DNS_DOMAIN
+              value: {{ .Values.global.clusterDnsDomain | quote }}
+            - name: ENV_ENABLE_AGGREGATE_AGENT_REPORT
+              value: {{ .Values.feature.aggregateReport.enabled | quote }}
+            {{- if .Values.feature.aggregateReport.enabled }}
+            - name: ENV_AGENT_REPORT_STORAGE_PATH
+              value: {{ .Values.feature.aggregateReport.agent.reportPath | quote }}
+            - name: ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE
+              value: {{ .Values.feature.aggregateReport.cleanAgedReportIntervalInMinute | quote }}
+            {{- end }}
+            - name: ENV_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ENV_LOCAL_NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ENV_LOCAL_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: ENV_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- with .Values.kdoctorAgent.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.kdoctorAgent.securityContext }}
+          securityContext:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          volumeMounts:
+            - name: config-path
+              mountPath: /tmp/config-map
+              readOnly: true
+            - name: report-data
+              mountPath: /report
+            - name: tls
+              mountPath: /etc/tls
+            {{- if .Values.kdoctorAgent.extraVolumes }}
+            {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
+            {{- end }}
+      volumes:
+        # To read the configuration from the config map
+        - name: config-path
+          configMap:
+            defaultMode: 0400
+            name: {{ .Values.global.configName }}
+        - name: report-data
+          hostPath:
+            path: {{ .Values.kdoctorAgent.reportHostPath }}
+            type: DirectoryOrCreate
+        - name: tls
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  items:
+                    - key: tls.key
+                      path: ca.key
+                    - key: tls.crt
+                      path: ca.crt
+                  name: {{ .Values.tls.ca.secretName }}
+      {{- if .Values.kdoctorAgent.extraVolumeMounts }}
+      {{- include "tplvalues.render" ( dict "value" .Values.kdoctorAgent.extraVolumeMounts "context" $ ) | nindent 6 }}
+      {{- end }}

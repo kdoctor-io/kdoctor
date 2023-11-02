@@ -172,6 +172,8 @@ spec:
       Succeed: true
       TargetNumber: 6
       TargetType: NetReach
+      MaxCPU: 26.203%
+      MaxMemory: 101.00MB
     NetReachTaskSpec:
     ...
     PodName: kdoctor-agent-ntp9l
@@ -237,6 +239,8 @@ spec:
       Succeed: true
       TargetNumber: 6
       TargetType: NetReach
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
     NetReachTaskSpec:
     ...
     PodName: kdoctor-agent-krrnp
@@ -254,6 +258,8 @@ spec:
   TaskName: task
   TaskType: NetReach
 ```
+
+> 注：若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。
 
 ## 环境清理
 

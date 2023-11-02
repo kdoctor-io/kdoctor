@@ -53,6 +53,7 @@ data:
       selector:
         matchLabels:
           {{- include "project.kdoctorAgent.selectorLabels" . | nindent 10 }}
+  # template for performing tasks
   pod.yml: |
     apiVersion: v1
     kind: Pod

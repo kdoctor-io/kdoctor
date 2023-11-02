@@ -81,12 +81,12 @@ func (s *pluginManager) RunAgentController() {
 		logger.Sugar().Fatalf("failed to Initk8sObjManager, error=%v", e)
 	}
 
-	if !slices.Contains(types.TaskKinds, types.AgentConfig.TaskKind) {
+	if !slices.Contains(types.TaskKinds, types.AgentConfig.TaskKind) && !types.AgentConfig.DefaultAgent {
 		logger.Sugar().Fatalf("unsupported TaskKind %s in %v", types.AgentConfig.TaskKind, types.TaskKinds)
 	}
 
 	for name, plugin := range s.chainingPlugins {
-		if name != types.AgentConfig.TaskKind {
+		if name != types.AgentConfig.TaskKind && !types.AgentConfig.DefaultAgent {
 			continue
 		}
 
@@ -115,9 +115,12 @@ func (s *pluginManager) RunAgentController() {
 		time.Sleep(5 * time.Second)
 	}()
 
-	err = checkTaskExist(mgr)
-	if nil != err {
-		s.logger.Sugar().Fatalf("failed to get agent task '%s/%s', error: %v", types.AgentConfig.TaskKind, types.AgentConfig.TaskName, err)
+	// general agent skip check
+	if !types.AgentConfig.DefaultAgent {
+		err = checkTaskExist(mgr)
+		if nil != err {
+			s.logger.Sugar().Fatalf("failed to get agent task '%s/%s', error: %v", types.AgentConfig.TaskKind, types.AgentConfig.TaskName, err)
+		}
 	}
 }
 

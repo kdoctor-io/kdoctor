@@ -7,9 +7,9 @@
 对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent pod 都会向指定的目标发送 http 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kodcotr 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
 1.应用场景：
-    
-* 模拟生产需求，确认指定应用能够被集群的每一个角落访问到
-* 在应用部署阶段，用以配合调整应用的资源和副本数配置，以确认能够支撑期望的访问压力
+
+* 测试连通性，确认指定应用能够被集群的每一个角落访问到
+* 大规模集群测试，模拟更多的 client 数量，以能够产生更大的压力，测试应用的抗压能力，模拟更多的源 ip 来产生更多的应用会话，测试应用的资源限制。
 * 给指定应用注入压力，配合灰度发布、混沌测试、bug 复现等目的
 * 测试集群外部服务，确认集群 egress 工作正常
 
@@ -18,7 +18,7 @@
 
 3.功能列表:
     
-* 支持 HTTP、HTTPS、HTTP 2，能够定义 header、body
+* 支持 HTTP、HTTPS、HTTP2，能够定义 header、body
 
 ## 开始
 
@@ -157,6 +157,8 @@ spec:
       Succeed: true
       TargetNumber: 1
       TargetType: HttpAppHealthy
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
     HttpAppHealthyTaskSpec:
     ...
     PodName: kdoctor-agent-fmr9m
@@ -199,6 +201,8 @@ spec:
   TaskName: http
   TaskType: AppHttpHealthy
 ```
+
+> 注：若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。
 
 ## 其他常用示例 
 

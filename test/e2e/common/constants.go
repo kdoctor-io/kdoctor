@@ -27,6 +27,7 @@ var (
 	KindClusterName    = "kdoctor"
 	KubeConfigPath     = ""
 	AppChartDir        = ""
+	TestAppName        = ""
 )
 
 func init() {
@@ -39,4 +40,5 @@ func init() {
 	AppChartDir = os.Getenv("APP_CHART_DIR")
 	TestIPv4 = os.Getenv("E2E_IPV4_ENABLED") == "true"
 	TestIPv6 = os.Getenv("E2E_IPV6_ENABLED") == "true"
+	TestAppName = os.Getenv("E2E_TEST_SERVER_NAME")
 }

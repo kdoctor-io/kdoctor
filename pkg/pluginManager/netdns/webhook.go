@@ -28,9 +28,12 @@ func (s *PluginNetDns) WebhookMutating(logger *zap.Logger, ctx context.Context, 
 	logger.Sugar().Infof("obj: %+v", r)
 
 	// agentSpec
+	// agentSpec
 	if true {
-		if r.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
-			r.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+		if r.Spec.AgentSpec != nil {
+			if r.Spec.AgentSpec.TerminationGracePeriodMinutes == nil {
+				r.Spec.AgentSpec.TerminationGracePeriodMinutes = &types.ControllerConfig.Configmap.AgentDefaultTerminationGracePeriodMinutes
+			}
 		}
 	}
 	// TODO: mutating default value
@@ -106,11 +109,12 @@ func (s *PluginNetDns) WebhookValidateCreate(logger *zap.Logger, ctx context.Con
 
 	// validate AgentSpec
 	if true {
-		if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
-			return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+		if r.Spec.AgentSpec != nil {
+			if !slices.Contains(types.TaskRuntimes, r.Spec.AgentSpec.Kind) {
+				return apierrors.NewBadRequest(fmt.Sprintf("Invalid agent runtime kind %s", r.Spec.AgentSpec.Kind))
+			}
 		}
 	}
-
 	return nil
 }
 

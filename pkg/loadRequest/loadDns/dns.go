@@ -73,22 +73,16 @@ func DnsRequest(logger *zap.Logger, reqData *DnsRequestData) (result *v1beta1.DN
 
 	w := &Work{
 		Concurrency:         config.AgentConfig.Configmap.NetdnsDefaultConcurrency,
+		RequestTimeSecond:   reqData.DurationInSecond,
 		QPS:                 reqData.Qps,
 		Timeout:             reqData.PerRequestTimeoutInMs,
 		Msg:                 new(dns.Msg).SetQuestion(reqData.TargetDomain, reqData.DnsType),
 		Protocol:            string(reqData.Protocol),
 		ServerAddr:          reqData.DnsServerAddr,
 		EnableLatencyMetric: reqData.EnableLatencyMetric,
+		Logger:              logger.Named("dns-client"),
 	}
 	w.Init()
-
-	// The monitoring task timed out
-	if duration > 0 {
-		go func() {
-			time.Sleep(duration)
-			w.Stop()
-		}()
-	}
 	logger.Sugar().Infof("begin to request %v for duration %v ", w.ServerAddr, duration.String())
 	w.Run()
 	logger.Sugar().Infof("finish all request %v for %s ", w.report.totalCount, w.ServerAddr)

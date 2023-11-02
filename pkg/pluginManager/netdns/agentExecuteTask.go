@@ -21,17 +21,19 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadDns"
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
+	"github.com/kdoctor-io/kdoctor/pkg/resource"
 )
 
-func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.DNSMetrics) (failureReason string, err error) {
+func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.DNSMetrics) (failureReason string) {
 	switch {
 	case successCondition.SuccessRate != nil && float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts) < *(successCondition.SuccessRate):
 		failureReason = fmt.Sprintf("Success Rate %v is lower than request %v", float64(metricResult.SuccessCounts)/float64(metricResult.RequestCounts), *(successCondition.SuccessRate))
 	case successCondition.MeanAccessDelayInMs != nil && int64(metricResult.Latencies.Mean) > *(successCondition.MeanAccessDelayInMs):
 		failureReason = fmt.Sprintf("mean delay %v ms is bigger than request %v ms", metricResult.Latencies.Mean, *(successCondition.MeanAccessDelayInMs))
+	case metricResult.ExistsNotSendRequests:
+		failureReason = "There are unsent requests after the execution time has been reached"
 	default:
 		failureReason = ""
-		err = nil
 	}
 
 	return
@@ -52,12 +54,7 @@ func SendRequestAndReport(logger *zap.Logger, targetName string, req *loadDns.Dn
 	report.MeanDelay = result.Latencies.Mean
 	report.SucceedRate = float64(result.SuccessCounts) / float64(result.RequestCounts)
 
-	failureReason, err = ParseSuccessCondition(successCondition, result)
-	if err != nil {
-		logger.Sugar().Errorf("internal error for target %v, error=%v", req.DnsServerAddr, err)
-		report.FailureReason = pointer.String(err.Error())
-		return
-	}
+	failureReason = ParseSuccessCondition(successCondition, result)
 
 	// generate report
 	// notice , upper case for first character of key, or else fail to parse json
@@ -80,7 +77,7 @@ type testTarget struct {
 	Request *loadDns.DnsRequestData
 }
 
-func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
 	finalfailureReason = ""
 
 	instance, ok := obj.(*crd.Netdns)
@@ -230,7 +227,11 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	} else {
 		task.Succeed = true
 	}
-
+	mem, cpu := r.Stats()
+	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
+	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
+	// every round done clean cpu mem stats
+	r.CleanStats()
 	return finalfailureReason, task, err
 }
 

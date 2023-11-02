@@ -159,10 +159,8 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
-		HELM_OPTION+=" --set feature.nethttp_defaultConcurrency=10 " ; \
-		HELM_OPTION+=" --set feature.netdns_defaultConcurrency=10 " ; \
-		HELM_OPTION+=" --set kdoctorAgent.resources.requests.cpu=100m " ; \
-		HELM_OPTION+=" --set kdoctorAgent.resources.requests.memory=128Mi " ; \
+		HELM_OPTION+=" --set kdoctorAgent.resources.requests.cpu=200m " ; \
+		HELM_OPTION+=" --set kdoctorAgent.resources.requests.memory=256Mi " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
 		HELM_OPTION+=" --set kdoctorAgent.debug.logLevel=debug --set kdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set kdoctorAgent.prometheus.enabled=true --set kdoctorController.prometheus.enabled=true  " ; \
@@ -557,6 +555,35 @@ install_apiserver_token:
 	sed 's?<<TEST_NAMESPACE>>?$(E2E_INSTALL_NAMESPACE)?' yaml/kdoctortoken.yaml | kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f -
 
 
+# http and dns server for e2e test
+.PHONY: deploy_test_server
+deploy_test_server: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+deploy_test_server: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
+deploy_test_server:
+	echo "try to load local image tag $(PROJECT_IMAGE_VERSION) " ; \
+	IMAGE_LIST=` helm template test $(APP_CHART_DIR) --set image.tag=$(PROJECT_IMAGE_VERSION)  | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+	if [ -z "$${IMAGE_LIST}" ] ; then \
+		echo "warning, failed to find image from chart " ; \
+	else \
+		echo "found image from chart : $${IMAGE_LIST} " ; \
+		for IMAGE in $${IMAGE_LIST} ; do \
+			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` || true ; \
+			if [ -z "$${EXIST}" ] ; then \
+			  echo "docker pull $${IMAGE} to local" ; \
+			  docker pull $${IMAGE} ; \
+			fi ;\
+			echo "load local image $${IMAGE} " ; \
+			kind load docker-image $${IMAGE}  --name $(KIND_CLUSTER_NAME)  ; \
+		done ; \
+	fi
+	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n $(E2E_INSTALL_NAMESPACE) server || true
+		helm --kubeconfig=$(KIND_KUBECONFIG) install server $(APP_CHART_DIR) \
+				-n $(E2E_INSTALL_NAMESPACE) --create-namespace --wait --debug \
+				--set image.tag=$(PROJECT_IMAGE_VERSION) \
+				|| { KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" $(E2E_INSTALL_NAMESPACE)  ; exit 1 ; } ; \
+		exit 0
+
+
 .PHONY: clean
 clean:
 	-@ kind delete cluster --name $(E2E_KIND_CLUSTER_NAME)
@@ -584,6 +611,7 @@ e2e_test:
 		export E2E_INSTALL_NAMESPACE=$(E2E_INSTALL_NAMESPACE) ;\
 		export GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) ;\
 		export APP_CHART_DIR=$(APP_CHART_DIR) ;\
+		export E2E_TEST_SERVER_NAME=$(E2E_TEST_SERVER_NAME) ;\
 		export E2E_KIND_KUBECONFIG_PATH=$(E2E_KIND_KUBECONFIG_PATH) ;\
 		export AGENT_REGISTER=$(REGISTER)/$(GIT_REPO)-agent ; \
 		if [ "$(E2E_IP_FAMILY)" == "ipv4" ] ; then \

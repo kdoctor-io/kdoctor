@@ -2,25 +2,40 @@
 
 [**English**](./runtime.md) | **简体中文**
 
-当下发任务 CR 后，kdoctor-controller 会根据 CR 中的 AgentSpec 生成对应的任务载体（DaemonSet 或 Deployment）当所有 Pod 就绪后，开始按照 Spec 中的任务定义执行任务，每一个任务独立使用一个载体。
+部署 kdoctor 后，会创建一个默认任务载体（Daemonset），当下发任务 CR 后，kdoctor-controller 会根据 CR 中的是否定义 AgentSpec 字段选择生成对应的任务载体（DaemonSet 或 Deployment）或使用默认的载体资源，当所有 Pod 就绪后，开始按照 Spec 中的任务定义执行任务。
 
 ### 载体资源
 
-当任务 CR 下发后，kdocotr-controller 会创建如下资源进行任务。
+当任务 CR 下发后，kdocotr-controller 会创建或复用如下资源进行任务。
 
 ### 工作负载
 
-工作负载为 DaemonSet 或 Deployment，默认为 DaemonSet，负载中的每一个 Pod 根据任务配置进行的请求，并将执行结果落盘到 Pod 中，可通过 AgentSpec 中设置
-工作负载的销毁时间，默认任务执行完 60 分钟后，销毁工作负载，当删除 CR 任务时，工作负载会一并被删除。
+1. 默认工作负载
+    >默认工作负载（DaemonSet）在部署 kdoctor 后生成，在未定义 AgentSpec 时，使用此载体进行任务，此载体不会因为任务删除或结束而被删除。
+    
+    >因所有使用默认工作负载的任务都会在此负载中执行，因此适合请求量较少，资源使用较少的任务。  
+
+2. 新建工作负载
+    >工作负载为 DaemonSet 或 Deployment，默认为 DaemonSet，负载中的每一个 Pod 根据任务配置进行的请求，并将执行结果落盘到 Pod 中，可通过 AgentSpec 中设置
+    > 工作负载的销毁时间，默认任务执行完 60 分钟后，销毁工作负载，当删除 CR 任务时，工作负载会一并被删除。
+
+    >此工作负载单独执行一个任务，因此与其他任务的资源使用是隔离的，适合请求量较大，资源消耗较大的任务。 
 
 ### Service
 
-在创建工作负载时，kdoctor-controller 同时会根据 IP Family 的配置，创建对应的 service 并于工作负载的 pod 绑定。用于测试 service 网络连通性。与工作负载
-的销毁逻辑相同。
+1. 默认工作载体 Service
+    >与默认工作负载一样，在部署 kdoctor 后生成，与默认负载关联且不会因为任务删除或结束而被删除。
+2. 新建工作载体 Service
+    >在创建工作负载时，kdoctor-controller 同时会根据 IP Family 的配置，创建对应的 service 并于工作负载的 pod 绑定。用于测试 service 网络连通性。与工作负载
+    >的销毁逻辑相同。
 
 ### Ingress
 
-当任务为 NetReach 时，若测试目标包含 Ingress 时，会创建一个 Ingress，用于测试 Ingress 的网络联通性，与工作负载的销毁逻辑相同。
+1. 默认工作载体 Ingress
+   >与默认工作负载一样，在部署 kdoctor 后生成，与默认负载 service 关联且不会因为任务删除或结束而被删除。
+2. 新建工作载体 Ingress
+   >当任务为 NetReach 时，若测试目标包含 Ingress 时，会创建一个 Ingress，用于测试 Ingress 的网络联通性，与工作负载的销毁逻辑相同。
+   
 
 ### 报告收取
 

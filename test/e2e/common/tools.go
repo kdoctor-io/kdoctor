@@ -4,20 +4,19 @@
 package common
 
 import (
-	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"math"
 	"net"
 	"net/http"
-	"os/exec"
 	"reflect"
 	"strings"
 	"time"
+
+	"k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/docker/docker/api/types"
 	docker_client "github.com/docker/docker/client"
@@ -247,8 +246,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// qps
 				expectRequestCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realRequestCount := float64(m.Metrics.RequestCounts)
-				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
+				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -299,8 +301,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -364,8 +369,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.1 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.1, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -494,37 +502,6 @@ func GetRealRequestCount(name string, ip string) (int64, error) {
 	return echoRes.RequestCount - 1, nil
 }
 
-func CreateTestApp(name, namespace string, o []string) error {
-
-	var stdout, stderr bytes.Buffer
-	cmd := exec.Command(
-		"helm",
-		"install",
-		name,
-		AppChartDir,
-		fmt.Sprintf("--namespace=%s", namespace),
-		"--create-namespace=true",
-		"--wait=true",
-		fmt.Sprintf("--kubeconfig=%s", KubeConfigPath),
-	)
-	cmd.Args = append(cmd.Args, o...)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	if err := cmd.Start(); err != nil {
-		ginkgo.GinkgoWriter.Println(stderr.String())
-		ginkgo.GinkgoWriter.Println(stdout.String())
-		return fmt.Errorf("start cmd [%s] failed,err: %v ", cmd.String(), err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		ginkgo.GinkgoWriter.Println(stderr.String())
-		ginkgo.GinkgoWriter.Println(stdout.String())
-		return fmt.Errorf("run cmd [%s] failed,err: %v ", cmd.String(), err)
-	}
-
-	return nil
-}
-
 func CheckRuntime(f *frame.Framework, task client.Object, taskKind string, timeout int) error {
 	interval := time.Duration(10)
 	switch taskKind {
@@ -628,7 +605,11 @@ func CheckRuntime(f *frame.Framework, task client.Object, taskKind string, timeo
 }
 
 // checkAgentSpec check agentSpec generate deployment or daemonSet is right
-func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec v1beta1.AgentSpec, taskStatus v1beta1.TaskStatus, taskKind string) error {
+func checkAgentSpec(f *frame.Framework, task client.Object, agentSpec *v1beta1.AgentSpec, taskStatus v1beta1.TaskStatus, taskKind string) error {
+
+	if agentSpec == nil {
+		return nil
+	}
 
 	switch agentSpec.Kind {
 	case kdoctor_types.KindDaemonSet:

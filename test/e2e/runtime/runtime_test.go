@@ -19,6 +19,7 @@ import (
 var _ = Describe("testing runtime ", Label("runtime"), func() {
 	var termMin = int64(5)
 	var replicas = int32(2)
+	var requestTimeout = 3000
 	It("Successfully testing cascading deletion with Task NetReach DaemonSet Service and Ingress ", Label("E00007"), func() {
 		var e error
 		successRate := float64(1)
@@ -32,7 +33,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agentSpec
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		netReach.Spec.AgentSpec = *agentSpec
+		netReach.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -60,7 +61,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -109,7 +110,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agent
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		appHttpHealth.Spec.AgentSpec = *agentSpec
+		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -125,7 +126,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -174,7 +175,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		// agentSpec
 		agentSpec := new(v1beta1.AgentSpec)
 		agentSpec.TerminationGracePeriodMinutes = &termMin
-		netDns.Spec.AgentSpec = *agentSpec
+		netDns.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -254,7 +255,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		netReach.Spec.AgentSpec = *agentSpec
+		netReach.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -282,7 +283,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		netReach.Spec.Request = request
@@ -333,7 +334,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		appHttpHealth.Spec.AgentSpec = *agentSpec
+		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
@@ -349,7 +350,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
-		request.PerRequestTimeoutInMS = 2000
+		request.PerRequestTimeoutInMS = requestTimeout
 		request.QPS = 10
 		request.DurationInSecond = 10
 		appHttpHealth.Spec.Request = request
@@ -400,7 +401,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		agentSpec.TerminationGracePeriodMinutes = &termMin
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = &replicas
-		netDns.Spec.AgentSpec = *agentSpec
+		netDns.Spec.AgentSpec = agentSpec
 
 		// successCondition
 		successCondition := new(v1beta1.NetSuccessCondition)
