@@ -105,7 +105,7 @@ spec:
 |-----------|-------------|--------------------------------------------|---------|-------|------|
 | agentSpec | task execution agent configuration | [agentSpec](./apphttphealthy.md#agentspec) | optional | | |
 | schedule | Schedule Task Execution | [schedule](./apphttphealthy.md#schedule) | optional | | |
-| request | Request configuration for destination address | [request](./netdns-zh_CN.md#Request) | Optional | | |
+| request | Request configuration for destination address | [request](./netdns.md#request) | Optional | | |
 | target | Request target settings | [target](./apphttphealthy.md#target) | Optional | | |
 | expect | Task success condition judgment | [expect](./apphttphealthy.md#expect) | Optional | | |
 
