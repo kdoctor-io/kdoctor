@@ -8,10 +8,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	"strings"
 	"time"
 
-	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -34,11 +34,63 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 	defer cancel()
 	taskSucceed := make(chan bool)
 	logger.Sugar().Infof("plugin begins to implement, expect deadline %v, ", roundDuration.String())
+	// get task qps
+	var qps int
+	switch s.crdKind {
+	case KindNameAppHttpHealthy:
+		app := obj.(*crd.AppHttpHealthy)
+		qps = app.Spec.Request.QPS
+	case KindNameNetReach:
+		app := obj.(*crd.NetReach)
+		caseNum := 0
+		// Multiple use cases of netreach are executed simultaneously, so qps needs to be multiplied by the number of use cases
+		if *app.Spec.Target.ClusterIP {
+			if *app.Spec.Target.IPv4 {
+				caseNum += 1
+			}
+			if *app.Spec.Target.IPv6 {
+				caseNum += 1
+			}
+		}
+		if *app.Spec.Target.LoadBalancer {
+			if *app.Spec.Target.IPv4 {
+				caseNum += 1
+			}
+			if *app.Spec.Target.IPv6 {
+				caseNum += 1
+			}
+		}
+		if *app.Spec.Target.Endpoint {
+			if *app.Spec.Target.IPv4 {
+				caseNum += 1
+			}
+			if *app.Spec.Target.IPv6 {
+				caseNum += 1
+			}
+		}
+		if *app.Spec.Target.NodePort {
+			if *app.Spec.Target.IPv4 {
+				caseNum += 1
+			}
+			if *app.Spec.Target.IPv6 {
+				caseNum += 1
+			}
+		}
+		if *app.Spec.Target.Ingress {
+			if *app.Spec.Target.IPv4 {
+				caseNum += 1
+			}
+		}
+		qps = app.Spec.Request.QPS * caseNum
+	case KindNameNetdns:
+		app := obj.(*crd.Netdns)
+		qps = app.Spec.Request.QPS
+	}
+	beforeQPS := s.runningTaskManager.QpsStats()
+	logger.Sugar().Debugf("Before the current task starts, the total qps of the tasks being executed is AppHttpHealth=%d,NetReach=%d,NetDNS=%d", beforeQPS.AppHttpHealthyQPS, beforeQPS.NetReachQPS, beforeQPS.NetDnsQPS)
+	s.runningTaskManager.SetTask(runningTask.Task{Name: taskName, Kind: s.crdKind, Qps: qps})
 
 	go func() {
-		// process mem cpu stats
-		resourceStats := resource.InitResource(ctx)
-		resourceStats.RunResourceCollector()
 		startTime := metav1.Now()
 		msg := &systemv1beta1.Report{
 			TaskName:       strings.ToLower(taskName),
@@ -49,7 +101,7 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 			StartTimeStamp: startTime,
 			ReportType:     plugintypes.ReportTypeAgent,
 		}
-		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj, resourceStats)
+		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj, s.runningTaskManager)
 
 		if e != nil {
 			logger.Sugar().Errorf("plugin failed to implement the round task, error=%v", e)
@@ -129,6 +181,8 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 		}
 	}
 
+	s.runningTaskManager.DeleteTask(taskName)
+
 	// delete data
 	go func() {
 		time.Sleep(roundDuration)
@@ -179,7 +233,6 @@ func (s *pluginAgentReconciler) HandleAgentTaskRound(logger *zap.Logger, ctx con
 	if status, existed := s.taskRoundData.CheckTask(taskRoundName); !existed {
 		// mark to started it
 		s.taskRoundData.SetTask(taskRoundName, taskStatusManager.RoundStatusOngoing)
-
 		// we still have not reported the result for an ongoing round. do it
 		go s.CallPluginImplementRoundTask(logger.Named(taskRoundName), obj, schedulePlan, taskName, latestRecord.RoundNumber, crdObjSpec)
 		logger.Sugar().Infof("task %v , trigger to implement task round, and try to poll report after %v second", taskRoundName, types.AgentConfig.Configmap.TaskPollIntervalInSecond)

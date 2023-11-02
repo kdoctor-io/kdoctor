@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	networkingv1 "k8s.io/api/networking/v1"
 	"sync"
 
@@ -71,7 +72,11 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, rt *runningTask.RunningTask) (finalfailureReason string, finalReport types.Task, err error) {
+	// process mem cpu stats
+	resourceStats := resource.InitResource(ctx)
+	resourceStats.RunResourceCollector()
+
 	finalfailureReason = ""
 	err = nil
 	var e error
@@ -321,11 +326,9 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		task.Succeed = true
 	}
 
-	mem, cpu := r.Stats()
-	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
-	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
-	// every round done clean cpu mem stats
-	r.CleanStats()
+	task.SystemResource = resourceStats.Stats()
+	resourceStats.Stop()
+	task.TotalRunningLoad = rt.QpsStats()
 	return finalfailureReason, task, err
 
 }

@@ -5,6 +5,8 @@ package resource
 
 import (
 	"context"
+	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"runtime"
 	"time"
 
@@ -15,51 +17,65 @@ import (
 )
 
 type UsedResource struct {
-	mem uint64  // byte
-	cpu float64 // percent
-	l   lock.RWMutex
-	ctx context.Context
+	mem  uint64  // byte
+	cpu  float64 // percent
+	l    lock.RWMutex
+	ctx  context.Context
+	stop chan struct{}
 }
 
 func InitResource(ctx context.Context) *UsedResource {
 	return &UsedResource{
-		ctx: ctx,
+		ctx:  ctx,
+		l:    lock.RWMutex{},
+		stop: make(chan struct{}, 1),
 	}
 }
 
 func (r *UsedResource) RunResourceCollector() {
 	interval := time.Duration(types.AgentConfig.CollectResourceInSecond) * time.Second
 	go func() {
+
 		for {
-			if r.ctx.Err() != nil {
+			select {
+			case <-r.stop:
 				return
-			}
-			cpuStats, err := cpu.Percent(interval, false)
-			if err == nil {
-				if r.cpu < cpuStats[0] {
-					r.cpu = cpuStats[0]
+			default:
+				if r.ctx.Err() != nil {
+					return
 				}
-			}
-			m := &runtime.MemStats{}
-			runtime.ReadMemStats(m)
-			if r.mem < m.Sys {
-				r.mem = m.Sys
+				cpuStats, err := cpu.Percent(interval, false)
+				if err == nil {
+					r.l.Lock()
+					if r.cpu < cpuStats[0] {
+						r.cpu = cpuStats[0]
+					}
+					r.l.Unlock()
+				}
+				m := &runtime.MemStats{}
+				runtime.ReadMemStats(m)
+				r.l.Lock()
+				if r.mem < m.Sys {
+					r.mem = m.Sys
+				}
+				r.l.Unlock()
 			}
 		}
+
 	}()
 }
 
-func (r *UsedResource) Stats() (uint64, float64) {
-	r.l.RLock()
-	defer r.l.RUnlock()
-	m := r.mem
-	c := r.cpu
-	return m, c
-}
-
-func (r *UsedResource) CleanStats() {
+func (r *UsedResource) Stats() v1beta1.SystemResource {
 	r.l.Lock()
 	defer r.l.Unlock()
-	r.mem = 0
-	r.cpu = 0
+	resource := v1beta1.SystemResource{
+		MaxCPU:    fmt.Sprintf("%.3f%%", r.cpu),
+		MaxMemory: fmt.Sprintf("%.2fMB", float64(r.mem/(1024*1024))),
+	}
+
+	return resource
+}
+
+func (r *UsedResource) Stop() {
+	r.stop <- struct{}{}
 }

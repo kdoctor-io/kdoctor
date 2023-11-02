@@ -6,7 +6,7 @@ package types
 import (
 	"context"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
-	"github.com/kdoctor-io/kdoctor/pkg/resource"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -21,7 +21,7 @@ type Task interface {
 type ChainingPlugin interface {
 	GetApiType() client.Object
 
-	AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (failureReason string, task Task, err error)
+	AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, rt *runningTask.RunningTask) (failureReason string, task Task, err error)
 	SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task Task) error
 
 	// ControllerReconcile(*zap.Logger, client.Client, context.Context, reconcile.Request) (reconcile.Result, error)

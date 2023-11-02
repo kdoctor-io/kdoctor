@@ -197,12 +197,9 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = "www.baidu.com"
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -423,12 +420,9 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = "www.baidu.com"
 		protocol := "udp"
 		request.Protocol = &protocol

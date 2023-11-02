@@ -5,6 +5,7 @@ package pluginManager
 
 import (
 	"context"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	"reflect"
 
 	"go.uber.org/zap"
@@ -20,13 +21,14 @@ import (
 )
 
 type pluginAgentReconciler struct {
-	client        client.Client
-	plugin        plugintypes.ChainingPlugin
-	logger        *zap.Logger
-	crdKind       string
-	localNodeName string
-	taskRoundData taskStatusManager.TaskStatus
-	fm            fileManager.FileManager
+	client             client.Client
+	plugin             plugintypes.ChainingPlugin
+	logger             *zap.Logger
+	crdKind            string
+	localNodeName      string
+	taskRoundData      taskStatusManager.TaskStatus
+	fm                 fileManager.FileManager
+	runningTaskManager *runningTask.RunningTask
 }
 
 var _ reconcile.Reconciler = &pluginAgentReconciler{}

@@ -50,12 +50,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -118,12 +115,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -181,12 +175,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(5)
-		var durationInSecond = uint64(5)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 5
+		request.DurationInSecond = 5
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -242,12 +233,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(5)
-		var durationInSecond = uint64(5)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 5
+		request.DurationInSecond = 5
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -307,12 +295,9 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 1000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
 		protocol := "tcp"
 		request.Protocol = &protocol

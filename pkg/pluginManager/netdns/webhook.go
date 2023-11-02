@@ -62,17 +62,17 @@ func (s *PluginNetDns) WebhookValidateCreate(logger *zap.Logger, ctx context.Con
 	// validate request
 	if true {
 
-		if int(*r.Spec.Request.QPS) >= types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps {
+		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps {
 			s := fmt.Sprintf("netdns %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
 		}
-		if int(*r.Spec.Request.PerRequestTimeoutInMS) > int(r.Spec.Schedule.RoundTimeoutMinute*60*1000) {
+		if r.Spec.Request.PerRequestTimeoutInMS > int(r.Spec.Schedule.RoundTimeoutMinute*60*1000) {
 			s := fmt.Sprintf("netdns %v requires PerRequestTimeoutInMS %v ms smaller than Schedule.RoundTimeoutMinute %vm ", r.Name, r.Spec.Request.PerRequestTimeoutInMS, r.Spec.Schedule.RoundTimeoutMinute)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
 		}
-		if int(*r.Spec.Request.DurationInSecond) > int(r.Spec.Schedule.RoundTimeoutMinute*60) {
+		if r.Spec.Request.DurationInSecond > int(r.Spec.Schedule.RoundTimeoutMinute*60) {
 			s := fmt.Sprintf("netdns %v requires request.DurationInSecond %vs smaller than Schedule.RoundTimeoutMinute %vm ", r.Name, r.Spec.Request.DurationInSecond, r.Spec.Schedule.RoundTimeoutMinute)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)

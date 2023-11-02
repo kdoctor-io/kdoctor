@@ -1132,12 +1132,10 @@ spec:
                     type: string
                   durationInSecond:
                     default: 2
-                    format: int64
                     minimum: 1
                     type: integer
                   perRequestTimeoutInMS:
                     default: 5
-                    format: int64
                     minimum: 1
                     type: integer
                   protocol:
@@ -1149,7 +1147,6 @@ spec:
                     type: string
                   qps:
                     default: 5
-                    format: int64
                     minimum: 1
                     type: integer
                 type: object
