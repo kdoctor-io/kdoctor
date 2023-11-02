@@ -51,7 +51,6 @@ Kind 是一个使用 Docker 容器节点运行本地 Kubernetes 集群的工具�
    NAME                    STATUS   ROLES           AGE     VERSION
    kdoctor-control-plane   Ready    control-plane   7m3s    v1.27.1
    kdoctor-worker          Ready    <none>          6m42s   v1.27.1
-   
    ~# kubectll get po -n kdoctor
    NAME                                  READY   STATUS    RESTARTS   AGE
    kdoctor-controller-686b75d6d7-ktctx   1/1     Running   0          2m33s

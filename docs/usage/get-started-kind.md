@@ -38,6 +38,7 @@ Kind is a tool for running local Kubernetes clusters using Docker container node
     ```
 
 ## Verify the installation
+
 Configure KUBECONFIG for the Kind cluster for kubectl by executing the following command in the root directory of the kdoctor project.
 
    ```bash
@@ -50,8 +51,7 @@ You can see the following output:
    ~# kubectl get nodes 
    NAME STATUS ROLES AGE VERSION
    kdoctor-control-plane Ready control-plane 7m3s v1.27.1
-   kdoctor-worker Ready <none> 6m42s v1.27.1
-   
+   kdoctor-worker Ready <none> 6m42s v1.27.1 
    ~# kubectll get po -n kdoctor
    NAME READY STATUS RESTARTS AGE
    kdoctor-controller-686b75d6d7-ktctx 1/1 Running 0 2m33s
@@ -60,5 +60,6 @@ You can see the following output:
 Next you can set up tasks as you see fit [AppHttpHealthy](./apphttphealthy.md), [NetReach](./netreach.md), [NetDns](./netdns.md)
 
 ## Uninstalling
+
 * To uninstall the Kind cluster
     Execute `make e2e_clean` to uninstall the Kind cluster.
