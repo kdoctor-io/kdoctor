@@ -886,6 +886,5 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
-
 	})
 })

@@ -149,6 +149,10 @@ func (b *Work) makeRequest(conn *dns.Conn, wg *sync.WaitGroup) {
 	var msg *dns.Msg
 	var rtt time.Duration
 	var err error
+	// the msg have concurrency safety copy msg and create msg id
+	sMsg := new(dns.Msg)
+	*sMsg = *b.Msg
+	sMsg.Id = dns.Id()
 
 	client := new(dns.Client)
 	client.Net = b.Protocol
@@ -161,13 +165,17 @@ func (b *Work) makeRequest(conn *dns.Conn, wg *sync.WaitGroup) {
 	}
 
 	if b.Protocol == "tcp" || b.Protocol == "tcp-tls" {
-		msg, rtt, err = client.Exchange(b.Msg, b.ServerAddr)
+		msg, rtt, err = client.Exchange(sMsg, b.ServerAddr)
 
 	} else {
 		if conn == nil {
-			conn, _ = client.Dial(b.ServerAddr)
+			conn, err = b.makeConn()
+			if err != nil {
+				b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
+				return
+			}
 		}
-		msg, rtt, err = client.ExchangeWithConn(b.Msg, conn)
+		msg, rtt, err = client.ExchangeWithConn(sMsg, conn)
 	}
 
 	b.results <- &result{
@@ -178,11 +186,16 @@ func (b *Work) makeRequest(conn *dns.Conn, wg *sync.WaitGroup) {
 }
 
 func (b *Work) runWorker() {
-	conn, err := b.makeConn()
-	if err != nil {
-		b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
-		return
+	var conn *dns.Conn
+	var err error
+	if b.Protocol == "udp" {
+		conn, err = b.makeConn()
+		if err != nil {
+			b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
+			return
+		}
 	}
+
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
@@ -262,7 +275,7 @@ func (b *Work) makeConn() (*dns.Conn, error) {
 	var err error
 	d := net.Dialer{Timeout: time.Duration(b.Timeout) * time.Millisecond}
 	conn := new(dns.Conn)
-	conn.Conn, err = d.DialContext(context.Background(), "udp", b.ServerAddr)
+	conn.Conn, err = d.DialContext(context.Background(), b.Protocol, b.ServerAddr)
 
 	return conn, err
 }
