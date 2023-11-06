@@ -17,11 +17,13 @@ import (
 )
 
 type UsedResource struct {
-	mem  uint64  // byte
-	cpu  float64 // percent
-	l    lock.RWMutex
-	ctx  context.Context
-	stop chan struct{}
+	mem        uint64  // byte
+	cpu        float64 // percent
+	roundCount int     // Count the number of rounds of cpu mem
+	totalCPU   float64 //Total cpu usage statistics
+	l          lock.RWMutex
+	ctx        context.Context
+	stop       chan struct{}
 }
 
 func InitResource(ctx context.Context) *UsedResource {
@@ -35,7 +37,6 @@ func InitResource(ctx context.Context) *UsedResource {
 func (r *UsedResource) RunResourceCollector() {
 	interval := time.Duration(types.AgentConfig.CollectResourceInSecond) * time.Second
 	go func() {
-
 		for {
 			select {
 			case <-r.stop:
@@ -47,9 +48,11 @@ func (r *UsedResource) RunResourceCollector() {
 				cpuStats, err := cpu.Percent(interval, false)
 				if err == nil {
 					r.l.Lock()
+					r.roundCount++
 					if r.cpu < cpuStats[0] {
 						r.cpu = cpuStats[0]
 					}
+					r.totalCPU += cpuStats[0]
 					r.l.Unlock()
 				}
 				m := &runtime.MemStats{}
@@ -70,6 +73,7 @@ func (r *UsedResource) Stats() v1beta1.SystemResource {
 	defer r.l.Unlock()
 	resource := v1beta1.SystemResource{
 		MaxCPU:    fmt.Sprintf("%.3f%%", r.cpu),
+		MeanCPU:   fmt.Sprintf("%.3f%%", r.totalCPU/float64(r.roundCount)),
 		MaxMemory: fmt.Sprintf("%.2fMB", float64(r.mem/(1024*1024))),
 	}
 
