@@ -28,5 +28,6 @@ type TotalRunningLoad struct {
 
 type SystemResource struct {
 	MaxCPU    string `json:"MaxCPU"`
+	MeanCPU   string `json:"MeanCPU"`
 	MaxMemory string `json:"MaxMemory"`
 }
