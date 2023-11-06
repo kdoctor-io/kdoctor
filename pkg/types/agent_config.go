@@ -26,6 +26,8 @@ var AgentEnvMapping = []EnvMapping{
 	{"ENV_CLUSTER_DNS_DOMAIN", "cluster.local", &AgentConfig.ClusterDnsDomain},
 	{"ENV_LOCAL_NODE_IP", "", &AgentConfig.LocalNodeIP},
 	{"ENV_LOCAL_NODE_NAME", "", &AgentConfig.LocalNodeName},
+	{"ENV_DNS_SERVICE_SELECT_LABEL_KEY", "kubernetes.io/name", &AgentConfig.DnsServiceSelectLabelKey},
+	{"ENV_DNS_SERVICE_SELECT_LABEL_VALUE", "CoreDNS", &AgentConfig.DnsServiceSelectLabelValue},
 }
 
 type AgentConfigStruct struct {
@@ -50,6 +52,10 @@ type AgentConfigStruct struct {
 	ClusterDnsDomain string
 	LocalNodeIP      string
 	LocalNodeName    string
+
+	// dns selector label
+	DnsServiceSelectLabelKey   string
+	DnsServiceSelectLabelValue string
 
 	EnableAggregateAgentReport bool
 	DirPathAgentReport         string

@@ -36,6 +36,12 @@ func SetupAppDnsServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 		if err != nil {
 			logger.Sugar().Fatalf("failed get kube dns service,err: %v", err)
 		}
+
+		// If the ip address list is empty, the corresponding service does not exist or the selected label is incorrect
+		if len(dnsServiceIPs) == 0 {
+			logger.Sugar().Fatalf("failed get kube dns service: %v", "the corresponding service does not exist or the selected label is incorrect")
+		}
+
 		logger.Sugar().Infof("kube dns service %s ", dnsServiceIPs)
 		coreDnsAddr = fmt.Sprintf("%s:53", dnsServiceIPs[0])
 	}

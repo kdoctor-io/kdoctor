@@ -6,6 +6,7 @@ package k8sObjManager
 import (
 	"context"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -98,9 +99,11 @@ func (nm *k8sObjManager) ListServicesDnsIP(ctx context.Context) ([]string, error
 	serviceList := new(corev1.ServiceList)
 	var err error
 	var result []string
+
 	label := map[string]string{
-		"k8s-app": "kube-dns",
+		types.AgentConfig.DnsServiceSelectLabelKey: types.AgentConfig.DnsServiceSelectLabelValue,
 	}
+
 	ListOption := &client.ListOptions{
 		Namespace:     "kube-system",
 		LabelSelector: labels.SelectorFromSet(label),
