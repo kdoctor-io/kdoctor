@@ -12,27 +12,27 @@
 
 ## Introduction
 
-kdoctor is a cloud native project of data plane test. Through the pressure injection, it realizes the active inspection for the function and performance of the cluster.
+kdoctor is a cloud native project of data plane test. Through pressure injection, it realizes active cluster inspections for functionality and performance.
 
-For the traditional operation and maintenance , the status of clusters and applications is confirmed by collecting information such as metrics, logs, and application status, 
-which could be called passive inspection. However, in some special scenarios, this method may not meet the expected purpose, timeliness, or cluster range, 
-administrators need to manually inject some pressure into the cluster and checkout the cluster status, which could be called active inspection. 
-When the cluster scale is large, or the inspection frequency is high, or the inspection process is complicated, it is hard to implement  manually. These scenarios include:
+Traditional cluster inspections rely on collecting metrics, logs, and application status to passively assess the state of the cluster and applications.
+However, in certain situations, this approach may not achieve the desired inspection objectives in terms of timeliness, coverage, or effectiveness.
+To overcome these limitations, operators often resort to manually injecting stress into the cluster for active inspections.
+However, manual methods become cumbersome to sustain when dealing with large-scale clusters, frequent inspections, or complex processes. Some common scenarios include:
 
 * After deploying a large-scale cluster, administrators want to confirm the network connectivity between all nodes, to find out network failures on a certain 
-    node, or occasional packet loss. In addition, there are many communication ways including POD IP, clusterIP, nodePort, loadbalancerIP, ingress, or even POD multiple network interface, dual-stack IP.
+    node, or occasional packet loss. This involves considering various communication methods such as Pod IP, ClusterIP, NodePort, LoadBalancer IP, ingress IP, and even multiple NICs or dual-stack IPs.
 
-* It is desired to make sure that PODs on all nodes can access the coredns service, or the resource configuration and the replica number of the coredns are enough to support expected access pressure.
+* Active inspections are necessary to make sure that Pods on all nodes can access the CoreDNS service, and the resource configuration and the replica number of the CoreDNS are correct to support expected access pressure.
 
 * Disks are consumables and applications like etcd are sensitive to disk performance. In daily maintenance, administrators want to periodically confirm that local disks performance of all nodes are normal.
 
-* Actively inject pressure on a service like registry, mysql or api-server, to cooperate with BUG reproduce, or to confirm service performance
+* Actively inject pressure on a service like registry, mysql or api-server, to cooperate with bug reproduction, or to confirm service performance
 
-kdoctor is a cloud native project of data plane test, which is derived from practices of the production operation and maintenance. Through the pressure injection, it realizes the active inspection for the function and performance of the cluster. kdoctor can be applied to scenarios:
+kdoctor is a Kubernetes data plane testing project, which is derived from practices of the production operation and maintenance. Through the pressure injection, it realizes active cluster inspections for functionality and performance. kdoctor can be applied to the following scenarios:
 
-* inspection after creating new cluster, daily operation and maintenance. 
+* Support deployment checks and routine maintenance in production environments, significantly reducing manual inspection efforts.  
 
-* E2E testing, bug reproduction, chaos testing.
+* Support E2E tests, bug reproduction, chaos tests with  little need for extensive programming efforts.
 
 ## Architecture
 
@@ -42,4 +42,4 @@ kdoctor is a cloud native project of data plane test, which is derived from prac
 
 ## License
 
-kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the full license text.

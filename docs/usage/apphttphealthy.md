@@ -2,267 +2,297 @@
 
 [**简体中文**](./apphttphealthy-zh_CN.md) | **English**
 
-## concept 
+## Introduction
 
-Fo this kind task, each kdoctor agent will send http request to specified target, and get success rate and mean delay. 
-It could specify success condition to tell the result succeed or fail. 
-And, more detailed report will print to kdoctor agent stdout, or save to disc by kdoctor controller.
+kdoctor-controller creates the necessary resources, including [agent](../concepts/runtime.md), based on the agentSpec. Each agent Pod sends DNS requests to a specified DNS server. By default, the concurrency level is set to 50, which can handle scenarios with multiple replicas. The concurrency level can be configured in the kdoctor configmap. The success rate and average latency are measured, and the results are evaluated based on predefined success criteria. Detailed reports can be obtained using the aggregate API.
 
-the following is the spec of nethttp
+1. Use cases:
+
+    * Test connectivity to ensure that a specific application can be accessed from every corner of the cluster.
+    * Conduct large-scale cluster testing by simulating a higher number of clients to generate increased pressure and assess the application's resilience. Simulate more source IPs to create additional application sessions and test resource limitations.
+    * Inject pressure into a specific application for purposes such as gray release, chaos tests, bug reproduction, etc.
+    * Test external services of the cluster to verify the proper functioning of cluster egress.
+
+2. For a more detailed description of the AppHttpHealthy CRD, please refer to[AppHttpHealthy](../reference/apphttphealthy.md)
+
+3. Features
+
+    * Support HTTP, HTTPS, and HTTP2 protocols, allowing customization of headers and bodies.
+
+## Steps
+
+The following example demonstrates how to use `AppHttpHealthy`.
+
+### Install kdoctor 
+
+Follow the [installation guide](./install.md) to install kdoctor.
+
+### Install Test Server (Optional)
+
+The official kdoctor repository includes an application called "server" that contains an HTTP server, HTTPS server, and DNS server. This server can be employed to test the functionality of kdoctor. If you have other test servers available, you can skip this installation step.
+
 ```shell
+helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
+helm repo update kdoctor
+helm install server kdoctor/server -n kdoctor --wait --debug --create-namespace 
+```
+
+Check the status of test server
+```shell
+kubectl get pod -n kdoctor -owide
+NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
+server-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          <none>           <none>
+server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   <none>           <none>
+```
+
+Obtain the service address of the test server
+```shell
+kubectl get service -n kdoctor
+NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
+server   ClusterIP   172.41.71.0   <none>        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
+```
+
+### Create AppHttpHealthy 
+
+Create an `AppHttpHealthy` task for HTTP that will run continuously for 10 seconds. The task will send GET requests to the specified server at a rate of 10 QPS and be executed immediately.
+
+We are using the service address of the test server. If you have a different server address available, feel free to use it instead.
+
+```shell
+SERVER="172.41.71.0"
+cat <<EOF | kubectl apply -f -
 apiVersion: kdoctor.io/v1beta1
 kind: AppHttpHealthy
 metadata:
-  name: httphealthy
+  name: http1
 spec:
   request:
     durationInSecond: 10
     perRequestTimeoutInMS: 1000
     qps: 10
   schedule:
-    roundNumber: 2
+    roundNumber: 1
     roundTimeoutMinute: 1
-    schedule: 1 1
+    schedule: 0 1
   expect:
-    meanAccessDelayInMs: 10000
+    meanAccessDelayInMs: 1000
     successRate: 1
-    statusCode: 200
   target:
-    bodyConfigmapName: http-body
-    bodyConfigmapNamespace: kube-system
-    header:
-    - Accept:text/html
-    host: https://10.6.172.20:9443
-    http2: false
-    method: PUT
-    tlsSecretName: https-cert
-    tlsSecretNamespace: kube-system
-status:
-  doneRound: 2
-  expectedRound: 2
-  finish: true
-  history:
-  - deadLineTimeStamp: "2023-05-24T08:03:05Z"
-    duration: 15.092667522s
-    endTimeStamp: "2023-05-24T08:02:20Z"
-    expectedActorNumber: 2
-    failedAgentNodeList: []
-    notReportAgentNodeList: []
-    roundNumber: 2
-    startTimeStamp: "2023-05-24T08:02:05Z"
-    status: succeed
-    succeedAgentNodeList:
-    - kdoctor-worker
-    - kdoctor-control-plane
-```
-
-* spec.schedule: set how to schedule the task.
-
-      roundNumber: how many rounds it should be to run this task
-
-      schedule: Support Linux crontab syntax for scheduling tasks, while also supporting simple writing. 
-                The first digit represents how long the task will start, and the second digit represents the interval time between each round of tasks,
-                separated by spaces. Example: "1 2" indicates that the task will start in 1 minute, and the interval time between each round of tasks.
-
-      roundTimeoutMinute: the timeout in minute for each round, when the rask does not finish in time, it results to be failuire
-
-      sourceAgentNodeSelector [optional]: set the node label selector, then, the kdoctor agent who locates on these nodes will implement the task. If not set this field, all kdoctor agent will execute the task
-
-* spec.request: how each kdoctor agent should send the http request
-
-    durationInSecond: for each round, the duration in second how long the http request lasts
-
-    perRequestTimeoutInMS: timeout in ms for each http request 
-
-    qps: qps
-
-* spec.target: set the target of http request.
-
-        host: the host for http, example service ip, pod ip, service domain, an user-defined UR
-
-        method: http method, must be one of GET POST PUT DELETE CONNECT OPTIONS PATCH HEAD
-        
-        bodyConfigmapName: The body configmap name 
-* 
-        bodyConfigmapNamespace: The body configmap namespace 
-        
-        tlsSecretName: The tls secret name
-* 
-        tlsSecretNamespace: The tls secret namespace
-
-        header:  HTTP request header
-
-        http2: Requests are made using the http2 protocol
-
-        >notice: when test targetAgent case, it will send http request to all targets at the same time with spec.request.qps for each one. That meaning, the actually QPS may be bigger than spec.request.qps
-
-* spec.expect: define the success condition of the task result 
-
-      meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure
-
-      successRate: the success rate of all http requests. Notice, when a http response code is >=200 and < 400, it's treated as success. if the actual whole success rate is smaller than successRate, the task results to be failure
-      
-      statusCode: Expect the HTTP status code returned by each request 
-
-* status: the status of the task
-
-      doneRound: how many rounds have finished
-
-      expectedRound: how many rounds the task expect
-
-      finish: whether all rounds of this task have finished
-
-      lastRoundStatus: the result of last round
-
-    history:
-
-        roundNumber: the round number
-
-        status: the status of this round
-
-        startTimeStamp: when this round begins
-
-        endTimeStamp: when this round finally finished
-
-        duration: how long the round spent
-
-        deadLineTimeStamp: the time deadline of a round 
-
-        failedAgentNodeList: the node list where failed kdoctor agent locate
-
-        notReportAgentNodeList: the node list where uknown kdoctor agent locate. This means these agents have problems.
-
-        succeedAgentNodeList: the node list where successful kdoctor agent locate
-
-
-## example 
-
-a quick task to test kdoctor agent, to verify the whole network is ok, each agent could reach specific host
-
-```shell
-
-cat <<EOF > test-httpapphealthy.yaml
-apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: httphealthy
-spec:
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 2
-    roundTimeoutMinute: 1
-    schedule: 1 1
-  expect:
-    meanAccessDelayInMs: 10000
-    successRate: 1
-    statusCode: 200
-  target:
-    bodyConfigmapName: http-body
-    bodyConfigmapNamespace: kube-system
-    header:
-    - Accept:text/html
-    host: https://10.6.172.20:9443
-    http2: false
-    method: PUT
-    tlsSecretName: https-cert
-    tlsSecretNamespace: kube-system
+    host: http://${SERVER}
+    method: GET
 EOF
-kubectl apply -f test-httpapphealthy.yaml
-
 ```
 
+### Check Task Status
 
-### example body
+After completing a round of tasks, you can use the kdoctor aggregate API to view the report for the current round. When the FINISH field is set to true, it indicates that all tasks have been completed, and you can access the overall report.
+
 ```shell
-cat <<EOF > http-body.yaml
-apiVersion: v1
-data:
-  body: |
-    {test:test}
-kind: ConfigMap
-metadata:
-  name: http-body
-  namespace: kube-system
-EOF
-kubectl apply -f http-body.yaml
+kubectl get apphttphealthy
+NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
+http        true     1               1           succeed           0 1
 ```
 
-### example https cert
+* FINISH: indicate whether the task has been completed
+* EXPECTEDROUND: number of expected task rounds
+* DONEROUND: number of completed task rounds
+* LASTROUNDSTATUS: execution status of the last round of tasks
+* SCHEDULE: schedule rules for the task
+
+
+### View Task Reports
+
+1. View existed reports
+
+    ```shell
+    kubectl get kdoctorreport
+    NAME        CREATED AT
+    http        0001-01-01T00:00:00Z
+    ```
+
+2. View specific task reports
+
+    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.
+
+    ```shell
+    kubectl get kdoctorreport http -oyaml
+    apiVersion: system.kdoctor.io/v1beta1
+    kind: KdoctorReport
+    metadata:
+      creationTimestamp: null
+      name: http
+    spec:
+      FailedRoundNumber: null
+      FinishedRoundNumber: 1
+      Report:
+      - NodeName: kdoctor-control-plane
+        HttpAppHealthyTask:
+          Detail:
+          - MeanDelay: 10.317307
+            Metrics:
+              Duration: 11.022081662s
+              EndTime: "2023-07-31T07:25:23Z"
+              Errors: {}
+              Latencies:
+                Max_inMx: 0
+                Mean_inMs: 10.317307
+                Min_inMs: 0
+                P50_inMs: 0
+                P90_inMs: 0
+                P95_inMs: 0
+                P99_inMs: 0
+              RequestCounts: 104
+              StartTime: "2023-07-31T07:25:12Z"
+              StatusCodes:
+                "200": 104
+              SuccessCounts: 104
+              TPS: 9.435604197939574
+              TotalDataSize: 40040 byte
+            Succeed: true
+            SucceedRate: 1
+            TargetMethod: GET
+            TargetName: HttpAppHealthy target
+            TargetUrl: http://172.41.71.0
+          Succeed: true
+          TargetNumber: 1
+          TargetType: HttpAppHealthy
+          MaxCPU: 30.651%
+          MaxMemory: 97.00MB
+        HttpAppHealthyTaskSpec:
+        ...
+        PodName: kdoctor-agent-fmr9m
+        ReportType: agent test report
+        RoundDuration: 11.038965547s
+        RoundNumber: 1
+        RoundResult: succeed
+        StartTimeStamp: "2023-07-31T07:25:12Z"
+        EndTimeStamp: "2023-07-31T07:25:23Z"
+        TaskName: apphttphealthy.http
+        TaskType: AppHttpHealthy
+      - NodeName: kdoctor-worker
+        HttpAppHealthyTask:
+          Detail:
+          - MeanDelay: 10.548077
+            Metrics:
+              ...
+            Succeed: true
+            SucceedRate: 1
+            TargetMethod: GET
+            TargetName: HttpAppHealthy target
+            TargetUrl: http://172.41.71.0
+          Succeed: true
+          TargetNumber: 1
+          TargetType: HttpAppHealthy
+        HttpAppHealthyTaskSpec:
+        ...
+        PodName: kdoctor-agent-s468h
+        ReportType: agent test report
+        RoundDuration: 11.034140236s
+        RoundNumber: 1
+        RoundResult: succeed
+        StartTimeStamp: "2023-07-31T07:25:12Z"
+        EndTimeStamp: "2023-07-31T07:25:23Z"
+        TaskName: apphttphealthy.http
+        TaskType: AppHttpHealthy
+      ReportRoundNumber: 1
+      RoundNumber: 1
+      Status: Finished
+      TaskName: http
+      TaskType: AppHttpHealthy
+    ```
+
+> If the reports do not align with the expected results, check the MaxCPU and MaxMemory fields in the report to verify if there are available resources of the agents and adjust the resource limits for the agents accordingly.
+
+## Other Common Examples 
+
+Below are examples of HTTP requests with bodies and HTTPS requests:
+
+1. Create an `AppHttpHealthy` task for HTTP with a body. This task will run continuously for 10 seconds. It will send POST requests with the provided body to the specified server at a rate of 10 QPS and be executed immediately.
+
+    We are using the service address of the test server. If you have a different server address available, feel free to use it instead.
+
+    Creating test body data
+
+    ```shell
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: kdoctor-test-body
+      namespace: kdoctor-test-server
+    data:
+      test1: test1
+      test2: test2
+    EOF
+    kubectl apply -f http-body.yaml
+    ```
+
+    Create `AppHttpHealthy`
+
+    ```shell
+    SERVER="172.41.71.0"
+    cat <<EOF | kubectl apply -f -
+    apiVersion: kdoctor.io/v1beta1
+    kind: AppHttpHealthy
+    metadata:
+      name: http-body
+    spec:
+      request:
+        durationInSecond: 10
+        perRequestTimeoutInMS: 1000
+        qps: 10
+      schedule:
+        roundNumber: 1
+        roundTimeoutMinute: 1
+        schedule: 0 1
+      expect:
+        meanAccessDelayInMs: 1000
+        successRate: 1
+        statusCode: 200
+      target:
+        bodyConfigmapName: kdoctor-test-body
+        bodyConfigmapNamespace: kdoctor-test-server
+        header:
+         - "Content-Type: application/json"
+        host: http://${SERVER}
+        method: POST
+    EOF
+    ```
+
+2. Create an `AppHttpHealthy` task for HTTPS. This task will run continuously for 10 seconds. It will send GET requests using the HTTPS protocol with the provided certificate to the specified server at a rate of 10 QPS and be executed immediately.
+
+    The TLS certificate used in this example is generated by the server and is only valid for the Pod's IP. Hence, we are accessing the server using the Pod's IP. If you are using a different server, please create the certificate secret accordingly.
+
+    ```shell
+    SERVER="172.40.0.35"
+    cat <<EOF | kubectl apply -f -
+    apiVersion: kdoctor.io/v1beta1
+    kind: AppHttpHealthy
+    metadata:
+      name: https
+    spec:
+      request:
+        durationInSecond: 10
+        perRequestTimeoutInMS: 1000
+        qps: 10
+      schedule:
+        roundNumber: 1
+        roundTimeoutMinute: 1
+        schedule: 0 1
+      expect:
+        meanAccessDelayInMs: 1000
+        successRate: 1
+        statusCode: 200
+      target:
+        host: https://${SERVER}
+        method: GET
+        tlsSecretName: https-client-cert
+        tlsSecretNamespace: kdoctor-test-server
+    EOF
+    ```
+
+## Environment Cleanup
+
 ```shell
-cat <<EOF > https-cert.yaml
-apiVersion: v1
-data:
-  ca.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWekNDQWorZ0F3SUJBZ0lKQU1vL3p5bGZZZzVSTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUl4Q3pBSkJnTlYKQkFZVEFsaFlNUlV3RXdZRFZRUUhEQXhFWldaaGRXeDBJRU5wZEhreEhEQWFCZ05WQkFvTUUwUmxabUYxYkhRZwpRMjl0Y0dGdWVTQk1kR1F3SGhjTk1qTXdOakE0TURrd05URTVXaGNOTWpRd05qQTNNRGt3TlRFNVdqQkNNUXN3CkNRWURWUVFHRXdKWVdERVZNQk1HQTFVRUJ3d01SR1ZtWVhWc2RDQkRhWFI1TVJ3d0dnWURWUVFLREJORVpXWmgKZFd4MElFTnZiWEJoYm5rZ1RIUmtNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQQpwWERBUGt1UzhvNW9lRTBBS0ZxL2Vjb1pjN2hFbXk1RlMvbWxlZCt2MFRFMlV5cGord1k0M0hvaEhpWjl3bVRECkpwTHZTKzgwTFpmMitrVkNBb05hTjdMdU1rdFJKaXlQUDc2TklSaUdPdzl6MmZpNHNIaUFnS0dvR1ZMb1c1YUMKa0RoK3dLKzh5NDVnVGZGR1VaWGpBa0pKSm1mWDd2TXllbkpyT2J5SUE0ajFuc294cDBNelFzNkYzREQ1TmdmZApQc1JtT3N6QlNLRTdNaFF4MEN5RlVQWjRTZ3U2N25MQytmRFBWVXBYY3pKQU1ZSTVrNWpyaElneDZnR2hKVFk0CmRLQ0VMWllwUmhCMWFFbVBIRjFlVUZ3MC9FcG5ldUdPd1ZqazZsSEp6QUxRUHBnR1dBZ0V1WFFVckxYb0dNclAKcWJrYU9WeitMelh0N1ZCaWJOZmdFUUlEQVFBQm8xQXdUakFkQmdOVkhRNEVGZ1FVTDlnL3FhZ2ptaGJ1K1pvQQpRVkFOdE1nd0cra3dId1lEVlIwakJCZ3dGb0FVTDlnL3FhZ2ptaGJ1K1pvQVFWQU50TWd3Rytrd0RBWURWUjBUCkJBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQW5Jd0Jyc3paY0pRRGFrZnNVVHp1eEtORmdUNUoKNVJOUWQ1S1NZM01HTWVkQjNIU2dMTEVWM3FTM1pLNHlrT3NFaXJ6c1lmdGV2Q1JGL2VsTkVIZDREQ2tiRzlSeQpwTzAwYTk1RkdFNktUWk1iSTRDaW1kMmF6eVhkazMyYUtzeFpjaDBRMzlneHgwSGFnVW5CcDk1VWxaQkcyOTh2CnhkQVRtSXZJNmVpd2FCeWc2NjBKRklRZ1VkVmhUM0VNTUI2dUlxaWdKZTJlMEcvV0t1My9BNGhvL3hDZUVNWmYKbFJlRXJIeFo0TzZsVTVEM0pnNURWcUM1MlBPK0V2aTJpdm5ZTmNvbTRibU9HbE41RmhzdG5La3M2ZlVsV012RQpXeXZCb01OU2VFNllueVFUUURBZ09BN0NlVzhKSUk4b3JRN00vM0JnWlNSOUZ4OGdhY01jeEUydTZRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURBRENDQWVnQ0NRRGljN284NjltaW16QU5CZ2txaGtpRzl3MEJBUXNGQURCQ01Rc3dDUVlEVlFRR0V3SlkKV0RFVk1CTUdBMVVFQnd3TVJHVm1ZWFZzZENCRGFYUjVNUnd3R2dZRFZRUUtEQk5FWldaaGRXeDBJRU52YlhCaApibmtnVEhSa01CNFhEVEl6TURZd09EQTVNak13TlZvWERUSTBNRFl3TnpBNU1qTXdOVm93UWpFTE1Ba0dBMVVFCkJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMGVURWNNQm9HQTFVRUNnd1RSR1ZtWVhWc2RDQkQKYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTm5RUnVVaApnbWhtdFV4aitJQXpIayswdU5Oa2ZnUWFVMHpYdG1ZMGI3T0g3VkZXd2tVWDNJYVU2Q2JJRzd2MVRPbllISmZhCloyZmRvNURudlpaSk5OWnZOWUdEbkU4d3JuNmVHSlFpMW5hbDlEbGdyaWJPSWJtOUU4N055VUFTRXpkSEFhN1oKOUp1bEVlRlE5VXJHV25KbXhEZjBTSGM4ckJGRnBsMVpORXpUbDFpUFFhaDRDVGcya1lWMWJtS0h2cmhUcDV6UQp4VE4wT0ZUa1JKWmprN284YTRxUXhBVWYvU1ZkQ3BkeXBHYzhPM3JWL0dPMTdneFlVK2lmRmY0OW84M2l5ZGluCm0zQ3NmOFRFVWlNTGZqcDgwQk5ZQTVScVJPSG15NTVNSG9TM2VnWEJWOG5va3hvVHkzSy8rdnd0L21BMmVLQWEKVHRXeEo1NVM2T0M5R0xrQ0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBalYrWWpKSkU1c2o5ODZqQgpzenY3cXhkdXRGSHdIM1NpRXhzaEt0S3VpaE1BYjBJR1V4MEIxbmdTZ1gvNUVqUzEwYTZtRmhJZGxWS29PSDJ1CkQ3aVZtRkdweHBWaUtCTFMwVnhweGphVmZ0OExCd2k1cHN5eDZyWmEwaFMvek1NMEFlL1FuQXpoSzZDMDl5T08KN1g1R2orMjNQQjBVNkorZnRteThMYVpwK0ZBbWFobi9OYThJbmJNY1hEQjVEeEhNUWkzdjFrQUh6bnBGNU02KwpuSEkyR3B0RzR4UzlDTitFK2FBa3NBZGMzY2VjZ3JCL04vUFZNMWhFdkZtakw5SVpTdEJkYzBGQ1pGMHJPVy96CllhWVhLa3FRTm9Wa2FaMENsRVEybWdIMFh0ZktzQ0VZVGx0OGJncDgveDdKTmlqN2UvYkoyU0E0M015NTF1ZHYKZ0N5M1pRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
-  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMmRCRzVTR0NhR2ExVEdQNGdETWVUN1M0MDJSK0JCcFRUTmUyWmpSdnM0ZnRVVmJDClJSZmNocFRvSnNnYnUvVk02ZGdjbDlwblo5MmprT2U5bGtrMDFtODFnWU9jVHpDdWZwNFlsQ0xXZHFYME9XQ3UKSnM0aHViMFR6czNKUUJJVE4wY0JydG4wbTZVUjRWRDFTc1phY21iRU4vUklkenlzRVVXbVhWazBUTk9YV0k5QgpxSGdKT0RhUmhYVnVZb2UrdUZPbm5OREZNM1E0Vk9SRWxtT1R1anhyaXBERUJSLzlKVjBLbDNLa1p6dzdldFg4Clk3WHVERmhUNko4Vi9qMmp6ZUxKMktlYmNLeC94TVJTSXd0K09uelFFMWdEbEdwRTRlYkxua3dlaExkNkJjRlgKeWVpVEdoUExjci82L0MzK1lEWjRvQnBPMWJFbm5sTG80TDBZdVFJREFRQUJBb0lCQUM4QVVLd1ZCUXorVE5VRgpKWlNVYzFBRDBYWmNVdzBUbVRJVndsaGZyRkx6Vy9TWFlpaUNzNldlOEZHZUVNNElhdVp6S2doaXFybXhEQ0N5CndTaHk5NkhtTVllWEhOM0J4WVd4RytDcmU5ZnlpN2J0OCthUHlKdEovOEk2aWRqM2pZbjZHcFRlbDNnV3NMc00KTzBJOWR6c0VqZ2I5QWI0cEs0QTJwV1d6WUNQTGh3cVVBTXBOS0tSc215NkQzWlozL2lHMmJ6TVRzdlpUUTQ1NQpZS1RCRkxzZGV2N1NLd3UxbWtUQzQrWkFPUjFqMFNSemVWdmFTSnczY2pWVm00SnRod3c1M1o4TVRzSFBIT3dLCmlGM1dlazdaK3BmZkpSTE91T2h3VnBzcTRlVnpCYXhXeW1QNkg0UmQxc1YwQWRGM3QwQlRmRnVudXBCa2RkM1kKUzY2UG5RRUNnWUVBNytCQXpjNDJxaDluQVgwekNhWGZlQU5GOG5OOFp4TTRUTXZEL0I3VWl2Ty9VNWR0Rm15Rgo4emhMbWpXZ3R4ZTdraFRma3R6czJ0TVc4UmhpRlZ0bGRtWForT0pqWFJtR1pwMkhLcmJ2R1pxTXdyLzFjdzJsClhkaTIwZHU0Slp1emxMM3ArSzhFMnRCdEFNK0tyZ09yUy9iTkVPRjg4NDFPUDhCRmIxNmtMakVDZ1lFQTZIUmcKbzNTaGpJcHU1NDNDOCtzbXNNRTFPZVVheEJ6YzdCNmg4a010SEhlRi8yOGVKQ3JJV0NnaDVtTWZCR3AxTmlmSgo2N0ZlT21NM0QyS0JzK3N5cVVQMVlKcVFCY0JKeUVuUzR5SnJpR2diQ1ZpUkpHdm95VGdEV21YbmpHKzI1N2ZHCnZaV0tSTGNKUHhWR0NrckdZc01BK3R1YzJJTE5LUkRPMlpRanlRa0NnWUE5YjVFSlpPUkpSQXVzclBVeVptSksKcVlQenFiSlY3KzArZGYyM0IrcGx3REhqWmVnUmt5L25jQ2FrMDFGYk0xL2Q5U3lodjZXR0VnUlJNVzZGaThmNwp2L0JJdHlxOXdIalV0VW5XSGM0MUg0a25vK1JvV0RsZlJNN21Cc0V1R0tldzA4Y2w0eVY2S1dHUmtKWXpKVXR0CkJFUFhLL2xGbzQ1RDg2bVU4WWRaTVFLQmdRRFN1UDBKOENhcWtxdXErUldyckpYc1VabUFuREhCYWpEVFU0bVgKWmxJMHBoMHd5M2hWYlBzay8yeUx2M3RVczNVQjNOdnM3Mkx1SnhhNHVhRytpZzNvNTVRL09KNHF1SCtxTTFJYgpXUTZHSDJteTlUak4vWXlQTEZuTnp1Y3lwZXIyNytBWDZNSHBQTXdEQmJQeWpJcCs2U3V3UFBsWVJHcmJPVU5xCmRpSmlrUUtCZ0Y0dWtWazFjRkFJazlOeThpNXlrNHR2QzY1SXk1dkQvYWFMeE0yWFo5dnN2TTc5TkNzbUp4VkwKYnlTeWxJbi9rWnFFT0tkRHkxZnRYWnY1aGsrUWhvUzNsT0xWTjlUZ2k0Unhqcnl6QmJDYXdQNjlBZmxxN3dsdwpJYzZFNlZncXJhOU52Q0Zxbm1PMzBaQ1NteENBUEJ3d2hqQmN1K1JEMFVxT0ZGMXZwckNlCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
-kind: Secret
-metadata:
-  name: https-cert
-  namespace: kube-system
-type: kubernetes.io/tls
-EOF
-kubectl apply -f https-cert.yaml
-```
-
-> notice: key body ca.crt tls.crt and tls.key are fixed field cannot be customized
-
-## debug
-
-when something wrong happen, see the log for your task with following command
-```shell
-#get log 
-CRD_KIND="apphttphealthy"
-CRD_NAME="httphealthy"
-kubectl logs -n kube-system  kdoctor-agent-v4vzx | grep -i "${CRD_KIND}.${CRD_NAME}"
-
-```
-
-
-## report
-
-when the kdoctor is not enabled to aggerate reports, all reports will be printed in the stdout of kdoctor agent.
-Use the following command to get its report
-```shell
-kubectl logs -n kube-system  kdoctor-agent-v4vzx | jq 'select( .TaskName=="apphttphealthy.httphealthy" )'
-```
-
-when the kdoctor is enabled to aggregate reports, all reports will be collected in the PVC or hostPath of kdoctor controller.
-
-
-metric introduction
-```shell
-		"FailureReason": "",
-		"MeanDelay": 34.36,
-		"Metrics": {
-			"start": "2023-05-24T09:00:35.03987095Z",
-			"end": "2023-05-24T09:00:45.08774646Z",
-			"duration": "10.04787551s",
-			"requestCount": 100,
-			"successCount": 100,
-			"tps": 9.952352604336754,
-			"total_request_data": "23247 byte",
-			"latencies": {
-				"P50_inMs": 35,
-				"P90_inMs": 57,
-				"P95_inMs": 58,
-				"P99_inMs": 59,
-				"Max_inMx": 62,
-				"Min_inMs": 18,
-				"Mean_inMs": 34.36
-			},
-			"status_codes": {
-				"200": 100
-			},
-			"errors": {}
-		},
-		"Succeed": "true",
-		"SucceedRate": "1",
-		"TargetMethod": "GET",
-		"TargetName": "AppHttpHealthy target",
-		"TargetNumber": "1",
-		"TargetType": "AppHttpHealthy",
-		"TargetUrl": "http://kdoctor-agent-ipv4.kube-system.svc.cluster.local"
+kubectl delete apphttphealthy http https http-body
 ```
