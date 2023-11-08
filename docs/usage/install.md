@@ -49,15 +49,14 @@ helm install kdoctor kdoctor/kdoctor \
     --set feature.aggregateReport.controller.pvc.storageClass=local-path \
     --set feature.aggregateReport.controller.pvc.storageRequests="100Mi" \
     --set feature.aggregateReport.controller.pvc.storageLimits="500Mi"
-ðŸ "ðŸ "ðŸ "ðŸ "ðŸ "ðŸ "ñ
 ```
 
 ### Verify that all components of kdoctor are running properly
 
 ```shell
 kubectl get pod -n kdoctor
-NAME READY STATUS RESTARTS AGE
-kdoctor-controller-686b75d6d7-k4dcq 1/1 Running 0 137m
+NAME                                  READY   STATUS    RESTARTS   AGE
+kdoctor-controller-686b75d6d7-k4dcq   1/1     Running   0          137m
 ```
 
 ### Uninstall kdoctor
