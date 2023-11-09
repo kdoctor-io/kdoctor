@@ -1,4 +1,4 @@
-# install
+# Install
 
 [**简体中文**](./install-zh_CN.md) | **English**
 
@@ -6,37 +6,37 @@
 
 Install kdoctor to check network and performance inside and outside the cluster.
 
-## Implementation requirements
+## Prerequisites
 
 1. A complete k8s cluster.
 
-2. installed [Helm](https://helm.sh/docs/intro/install/)
+2. [Helm](https://helm.sh/docs/intro/install/) has been installed.
 
-3. storageClass (optional) if kdoctor-controller is required for high availability and report persistence is required.
+3. StorageClass (optional) is supported if kdoctor-controller is required for high availability and report persistence is required.
 
-## Installation
+## Install
 
-### Add helm repository
+### Add Helm Repository
 
 ```shell
 helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
 helm repo update kdoctor
 ```
 
-### Installing kdoctor
+### Install kdoctor
 
 kdoctor can be installed according to different needs, the following are the recommended installation methods for several scenarios
 
-#### 1. Non-highly available installation
+#### Non-highly Available Installation
 
-The kdoctor agent only prints reports to standard output in the following way
+The kdoctor agent only prints reports to standard output in the following way:
 
 ```shell
 helm install kdoctor kdoctor/kdoctor \
     -n kdoctor --debug --create-namespace 
 ```
 
-#### 2. Highly available installation
+#### Highly Available Installation
 
 The following method directs the collection reports from kdoctor-controller to storage, so you need to install storageClass.
 
@@ -52,7 +52,7 @@ helm install kdoctor kdoctor/kdoctor \
 ðŸ "ðŸ "ðŸ "ðŸ "ðŸ "ðŸ "ñ
 ```
 
-### Verify that all components of kdoctor are running properly
+### Verify that All Components of kdoctor are Running Properly
 
 ```shell
 kubectl get pod -n kdoctor

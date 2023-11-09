@@ -8,7 +8,7 @@ Kind 是一个使用 Docker 容器节点运行本地 Kubernetes 集群的工具�
 
 * 已安装 [Go](https://go.dev/)
 
-## Kind 上集群部署 kdoctor
+## 在 Kind 集群上部署 kdoctor
 
 1. 克隆 kdoctor 代码仓库到本地主机上，并进入 kdoctor 工程的根目录。
   
@@ -30,7 +30,9 @@ Kind 是一个使用 Docker 容器节点运行本地 Kubernetes 集群的工具�
     ~# make e2e_init -e PROJECT_IMAGE_VERSION=KDOCTOR_LATEST_IMAGE_TAG
     ```
 
-    注意：如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。
+!!! note
+
+    如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。
 
     ```bash
     ~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true
