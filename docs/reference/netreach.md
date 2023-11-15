@@ -4,7 +4,7 @@
 
 ## Basic description 
 
-For this kind of task, kdoctor-controller will generate corresponding [agent](../concepts/runtime.md) and other resources, and each agent pod sends http requests to each other with the request address of each agent's pod ip, service ip, ingress ip and so on, and obtains the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. And, detailed reports can be obtained through the aggregation API.
+For this kind of task, kdoctor-controller will generate corresponding [agent](../concepts/runtime.md) and other resources. Each agent Pod sends http requests to each other with the request address of each agent's Pod IP, service IP, ingress IP and so on, and obtains the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. Detailed reports can be obtained through the aggregation API.
 
 ## NetReach example
 
@@ -64,92 +64,94 @@ status:
 
 ### Metadata
 
-| fields | description | structure | validation |
+| Fields | Description | Structure | Validation |
 |-----|---------------|--------|-----|
-| name | Name of the NetReach resource | string | required |
+| Name | Name of the NetReach Resource | String | Required |
 
 ### Spec
 
-| fields | description | structure | validation | take values | default |
+| Fields | Description | Structure | Validation |  Values | Default |
 |-----------|-------------|--------------------------------------------|---------|-------|------|
-|  agentSpec | task execution agent configuration | [agentSpec](./apphttphealthy.md#agentspec) | optional |       |      |
-| schedule  |Schedule Task Execution | [schedule](./apphttphealthy.md#schedule) | optional |       |      |
-| request   |Request configuration for destination address | [request](./netdns.md#request) | Optional |       |      |
-| target    | Request target settings | [target](./apphttphealthy.md#target) | Optional |       |      |
-| expect    |Task success condition judgment | [expect](./apphttphealthy.md#expect) | Optional |       |      |
+|  agentSpec | Task Execution Agent Configuration | [agentSpec](./apphttphealthy.md#agentspec) | Optional |       |      |
+| Schedule  |Schedule Task Execution | [schedule](./apphttphealthy.md#schedule) | Optional |       |      |
+|Request   |Request Configuration for Destination Address | [request](./netdns.md#request) | Optional |       |      |
+|Target    | Request Target Settings | [target](./apphttphealthy.md#target) | Optional |       |      |
+|Expect    |Task Success Condition Judgment | [expect](./apphttphealthy.md#expect) | Optional |       |      |
 
 
 #### AgentSpec
 
 | Fields | Description | Structure | Validation | Values | Default |
 |-------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----|----------------------|-------------------------------|
-| annotation | annotation of agent workload | map[string]string | optional | | | |
-| kind | type of agent workload | string | optional | Deployment, DaemonSet | DaemonSet |
-| deploymentReplicas | The expected number of replicas when the agent workload type is deployment | int | optional | greater than or equal to 0 | 0 |
-| affinity | agent workload affinity | labelSelector | optional | | |
-| env | agent workload environment variable | env | optional | | | | hostNetwork | agent
-| hostNetwork | agent Whether or not the workload uses the host network | bool | optional | true, false | false |
-| resources | agent workload resource usage configuration | resources | optional | | limit cpu:1000m,memory:1024Mi |
-| terminationGracePeriodMinutes | agent How many minutes after a workload completes a task before it terminates | int | optional | greater than or equal to 0 | 60 |
+|Annotation | Annotation of Agent Workload |Map[string]String | Optional | | |
+| kind |Type of Agent Workload | String | Optional | Deployment, DaemonSet | DaemonSet |
+| deploymentReplicas | The expected number of replicas when the agent workload type is deployment | int | Optional | Greater than or equal to 0 | 0 |
+|Affinity | Agent Workload Affinity | labelSelector | Optional | | |
+| env | Agent Workload Environment Variable | env |Optional | | |
+| hostNetwork | Whether or not the agent workload uses the host network | Bool | Optional | True, false | False |
+| Resources | Agent Workload Resource Usage Configuration | Resources | Optional | | Limit cpu: 1000m,Memory:1024Mi |
+| terminationGracePeriodMinutes | the minutes after a agent workload completes a task before it terminates | int | Optional |Greater than or equal to 0 | 60 |
 
 
 #### Schedule
 
 | Fields | Description | Structure | Validation | Values | Defaults |
 |--------------------|---------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| roundNumber        | task execution rounds | int | optional | greater than or equal to -1, -1 means permanent, greater than 0 means rounds will be executed | 1 | schedule | task execution time, execution time should be less than roundTimeoutMinute | string | optional | Support linux crontab and interval method.<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1 * * * * * means execute every minute <br/>Interval method: written in "M N" format, M takes the value of a number, indicating how many minutes after opening the task, N takes the value of a number, indicating how many minutes between each round of task execution, for example, "0 1" means start the task immediately, each round of task interval 1min | "0 1" | roundTimeoutMininute
-| roundTimeoutMinute | Task timeout, needs to be greater than durationInSecond and task execution time | int | optional | greater than or equal to 1 | 60 |
+| roundNumber        |Task Execution Rounds | int | Optional | A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed | 1 | Schedule | Task execution time which should be less than roundTimeoutMinute | String | Optional | Support linux crontab and interval method<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1 * * * * * means execute every minute <br/>Interval method: writing format "M N". M is a number that indicates how many minutes after the task is started; N is a number that indicates how many minutes between each round of tasks. For example, "0 1" means start the task immediately, 1min between each round of tasks. | "0 60" |
+| roundTimeoutMinute | Task timeout which needs to be greater than durationInSecond and task execution time | int | Optional | Greater than or equal to 1 | 60 |
 
 #### Request
 
 | Fields | Description | Structure | Validation | Values | Defaults |
 |------------------------|---------------------------------------|--------|-----|---------------|---------------|
-| durationInSecond | Duration of request send pressure for each round of tasks less than roundTimeoutMinute | int | optional | greater than or equal to 1 | 2 |
-| perRequestTimeoutInMS | timeout per request, not greater than durationInSecond | int | optional | greater than or equal to 1 | 500 |
-| qps | requests per second per agent | int | optional | greater than or equal to 1 | 5 |
+| durationInSecond | Duration of request send pressure for each round of tasks which is less than roundTimeoutMinute | int |Optional | Greater than or equal to 1 | 2 |
+| perRequestTimeoutInMS | Timeout per request, not greater than durationInSecond | int |Optional | Greater than or equal to 1 | 500 |
+| QPS | Requests per second per agent | int | Optional | Greater than or equal to 1 | 5 |
 
-> Note: When using agent requests, all agents make requests to the destination address, so the actual qps received by the server is equal to the number of agents * the set qps.
+> When using agent requests, all agents will make requests to the destination address, so the actual QPS received by the server is equal to the number of agents multiplied by the set QPS.
 
 #### Target
 
 | Fields | Descriptions | Structures | Validations | Values | Defaults |
 |--------------------|-------------------------|--------|-----|------------|-------|
-| clusterIP        | Test cluster service's cluster ip | bool   | Optional  | true,false | true  |
-| endpoint           | Test cluster pod endpoint       | bool | Optional   | true,false   | true  |
-| multusInterface | Test cluster pod multus multi-NIC ip  | bool | Optional   | true,false  | false |
-| ipv4 | Test ipv4                 | bool | Optional   | true,false  | true  |
-| ipv6 | Test ipv6                 | bool | Optional   | true,false  | false |
-| ingress | Test ingress address           | bool | Optional   | true,false  | false |
-| nodePort | test service node port    | bool | Optional  | true,false  | true  |
-| enableLatencyMetric | Count demo distribution, when turned on it will increase memory usage      | bool | Optional   | true,false  | false |
+| ClusterIP        | Test cluster service's cluster IP | Bool   | Optional  | True,false |True  |
+| Endpoint           | Test cluster Pod endpoint       | Bool | Optional   | True,false   | True  |
+| multusInterface | Test cluster Pod Multus multi-NIC IP  | Bool | Optional   | True,false  | False |
+| IPv4 | Test IPv4                 | Bool | Optional   | True,false  | True  |
+| IPv6 | Test IPv6                 | Bool | Optional   | True,false  |False |
+|Ingress | Test Ingress Address           | Bool | Optional   | True,false  | False |
+| nodePort | Test Service Node Port    | Bool | Optional  | True,false  | True  |
+| enableLatencyMetric | Statistics demo distribution, which increases memory usage when turned on      | Bool | Optional   | True,false  |False |
 
 #### Expect
 
-Task success condition, if the task result does not meet the expected condition, the task will fail.
+Task success condition. If the task result does not meet the expected condition, the task will fail.
 
-| fields | description | structure | validation | values | default |
+| Fields | Description | Structures | Validation | Values | Default |
 | --------------------| ---------------------------------| -------| -----| --------| ------|
-| meanAccessDelayInMs | meanAccessDelayInMs | The average delay, if the final result exceeds this value, the task will be judged as failed | int | optional | greater than or equal to 1 | 5000 |
-| successRate | The success rate of the http request, if the final result is less than this value, the task will fail | float | optional | 0-1 | 1 |
+|meanAccessDelayInMs | The average delay. If the final result exceeds this value, the task will be judged as failed | int | Optional | Greater than or equal to 1 | 5000 |
+| successRate | Success rate of the HTTP request. If the final result is less than this value, the task will fail | Float | Optional | 0-1 | 1 |
 
 ### status
 
-| fields | description | structure | values |
+| Fields | Description | Structures | Values |
 |--------------------|----------|------------------------------------------|-----------------|
-| doneRound | number of completed task rounds | int | |
-| expectedRound | number of rounds expected to be performed | int | | |
-| finish | Whether the task is complete or not | bool | true, false |
-| lastRoundStatus | lastRoundStatus | string | notstarted, on-going, succeed, fail |
-| history | Task history | Element is [history](./apphttphealthy.md#history) array | |
+| doneRound | Number of completed task rounds | int | |
+| expectedRound | Number of rounds expected to be performed | int | |
+| Finish | Whether the task is complete or not |Bool |True, false |
+| lastRoundStatus | lastRoundStatus | String | Notstarted, on-going, succeed, fail |
+| History | Task History | Element is [history](./apphttphealthy.md#history) array | |
 
 #### History
 
 | Fields | Description | Structure | Values |
 | ----------------------------------|-----------------|--------------|--------------------------------|
-| roundNumber | Task round number | int | |
-| status | Task Status | string | notstarted, on-going, succeed, fail |
-| startTimeStamp | startTimeStamp | startTimeStamp | string | |
-| startTimeStamp | startTimeStamp | startTimeStamp | endTimeStamp | endTimeStamp | endTimeStamp | string | |
-| deadLineTimeStamp | deadLineTimeStamp | deadLineTimeStamp | deadLineTimeStamp | deadline | string | |
-| failedAgentNodeList | failedAgentNodeList | Array of failed agents | string | |
-| notReportAgentNodeList | agent who did not upload a task report | array of elements as string | | notReportAgentNodeList | agent who failed to upload a task report | array of elements as string｜
+| roundNumber | Task Round Number | int | |
+| Status | Task Status | String | Notstarted, on-going, succeed, fail |
+| startTimeStamp | Start of the current round of tasks | String | |
+| endTimeStamp | End of the current round of tasks | string |  |
+| duration |Execution time of the current round of tasks |string | |
+| deadLineTimeStamp | Deadline of the current round of tasks | string | |
+| failedAgentNodeList | Agent whose tasks failed |Array of elements as string | |
+| succeedAgentNodeList |Agent whose task succeeded | Array of elements as string | |
+| notReportAgentNodeList |Agent who did not upload a task report | Array of elements as string | |

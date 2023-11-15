@@ -4,7 +4,7 @@
 
 ## 基本描述 
 
-对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent pod 都会相互发送http请求，请求地址为每一个 agent 的 pod ip 、service ip、ingress ip 等等，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
+对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent Pod 都会相互发送 http 请求，请求地址为每一个 agent 的 Pod IP、service IP、ingress IP 等等，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
 ## NetReach 示例
 
@@ -72,7 +72,7 @@ status:
 
 | 字段       | 描述          | 结构                                         | 验证      | 取值    | 默认值  |
 |-----------|-------------|--------------------------------------------|---------|-------|------|
-| agentSpec  | 任务执行agent配置 | [agentSpec](./netreach-zh_CN.md#AgentSpec) | 可选      |       |      |
+| agentSpec  | 任务执行agent 配置 | [agentSpec](./netreach-zh_CN.md#AgentSpec) | 可选      |       |      |
 | schedule  | 调度任务执行      | [schedule](./netreach-zh_CN.md#Schedule)   | 可选      |       |      |
 | request   | 对目标地址请求配置   | [request](./netreach-zh_CN.md#Request)     | 可选      |       |      |
 | target    | 请求目标设置      | [target](./netreach-zh_CN.md#Target)       | 可选      |       |      |
@@ -114,11 +114,11 @@ status:
 
 | 字段                 | 描述                      | 结构     | 验证  | 取值         | 默认值   |
 |--------------------|-------------------------|--------|-----|------------|-------|
-| clusterIP        | 测试集群 service cluster ip | bool   | 可选  | true,false | true  |
-| endpoint           | 测试集群 pod endpoint       | bool | 可选  | true,false   | true  |
-| multusInterface | 测试集群 pod multus 多网卡 ip  | bool | 可选  | true,false  | false |
-| ipv4 | 测试 ipv4                 | bool | 可选  | true,false  | true  |
-| ipv6 | 测试 ipv6                 | bool | 可选  | true,false  | false |
+| clusterIP        | 测试集群 service cluster IP | bool   | 可选  | true,false | true  |
+| endpoint           | 测试集群 Pod endpoint       | bool | 可选  | true,false   | true  |
+| multusInterface | 测试集群 Pod multus 多网卡 IP  | bool | 可选  | true,false  | false |
+| IPv4 | 测试 IPv4                 | bool | 可选  | true,false  | true  |
+| IPv6 | 测试 IPv6                 | bool | 可选  | true,false  | false |
 | ingress | 测试 ingress 地址           | bool | 可选  | true,false  | false |
 | nodePort | 测试 service node port    | bool | 可选  | true,false  | true  |
 | enableLatencyMetric | 统计演示分布,开启后会增加内存使用量      | bool | 可选  | true,false  | false |
