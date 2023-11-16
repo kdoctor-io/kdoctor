@@ -25,8 +25,8 @@
 package loadDns
 
 import (
-	"context"
 	"crypto/tls"
+	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"github.com/miekg/dns"
@@ -144,55 +144,82 @@ func (b *Work) Finish() {
 	b.report.finalize(total)
 }
 
-func (b *Work) makeRequest(conn *dns.Conn, wg *sync.WaitGroup) {
+func (b *Work) makeRequest(client *dns.Client, msg *dns.Msg, conn *dns.Conn, wg *sync.WaitGroup) {
 	defer wg.Done()
-	var msg *dns.Msg
-	var rtt time.Duration
-	var err error
 
+	// Due to the time limitation on long-lived TCP connections by CoreDNS, connection reuse is not adopted for the TCP protocol.
+	if RequestProtocol(b.Protocol) == RequestMethodUdp {
+		err := client.ExchangeWithReuseConn(msg, conn)
+		if err != nil {
+			b.results <- &result{
+				duration: 0,
+				err:      err,
+				msg:      nil,
+			}
+		}
+	} else {
+		r, rtt, err := client.Exchange(msg, b.ServerAddr)
+		b.results <- &result{
+			duration: rtt,
+			err:      err,
+			msg:      r,
+		}
+	}
+
+}
+
+func (b *Work) runWorker() {
+	var conn *dns.Conn
+	var err error
 	client := new(dns.Client)
 	client.Net = b.Protocol
 	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
-	if b.Protocol == "tcp-tls" {
+	if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
 		tlsConfig := &tls.Config{
 			InsecureSkipVerify: true,
 		}
 		client.TLSConfig = tlsConfig
 	}
 
-	if b.Protocol == "tcp" || b.Protocol == "tcp-tls" {
-		msg, rtt, err = client.Exchange(b.Msg, b.ServerAddr)
-
-	} else {
-		if conn == nil {
-			conn, _ = client.Dial(b.ServerAddr)
+	if RequestProtocol(b.Protocol) == RequestMethodUdp {
+		conn, err = b.makeConn(client)
+		if err != nil {
+			b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
+			return
 		}
-		msg, rtt, err = client.ExchangeWithConn(b.Msg, conn)
+		go conn.Receiver()
+	} else {
+		conn = new(dns.Conn)
 	}
 
-	b.results <- &result{
-		duration: rtt,
-		err:      err,
-		msg:      msg,
-	}
-}
-
-func (b *Work) runWorker() {
-	conn, err := b.makeConn()
-	if err != nil {
-		b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
-		return
-	}
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
 		select {
 		case <-b.stopCh:
 			wg.Wait()
+			if RequestProtocol(b.Protocol) == RequestMethodUdp {
+				conn.ShutDownReceiver()
+				conn.Close()
+			}
 			return
 		case <-b.qosTokenBucket:
 			wg.Add(1)
-			go b.makeRequest(conn, wg)
+			msg := new(dns.Msg)
+			*msg = *b.Msg
+			msg.Id = dns.Id()
+			go b.makeRequest(client, msg, conn, wg)
+
+		case resp := <-conn.ResponseReceiver:
+			e := resp.Err
+			if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
+				e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
+			}
+			b.results <- &result{
+				duration: resp.Rtt,
+				err:      e,
+				msg:      resp.Msg,
+			}
 		}
 	}
 }
@@ -258,11 +285,20 @@ func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 	return metric
 }
 
-func (b *Work) makeConn() (*dns.Conn, error) {
+func (b *Work) makeConn(c *dns.Client) (*dns.Conn, error) {
 	var err error
-	d := net.Dialer{Timeout: time.Duration(b.Timeout) * time.Millisecond}
+	d := new(net.Dialer)
 	conn := new(dns.Conn)
-	conn.Conn, err = d.DialContext(context.Background(), "udp", b.ServerAddr)
+	conn.ResponseReceiver = make(chan dns.Response, b.QPS)
+	conn.ShutDown = make(chan struct{})
+	conn.Conn, err = d.Dial(b.Protocol, b.ServerAddr)
+	// write with the appropriate write timeout
+	t := time.Now()
+	writeDeadline := t.Add(time.Duration(b.RequestTimeSecond) * time.Second)
+	readDeadline := t.Add(time.Duration(b.RequestTimeSecond) * time.Second)
+	_ = conn.SetWriteDeadline(writeDeadline)
+	_ = conn.SetReadDeadline(readDeadline)
 
+	conn.TsigSecret, conn.TsigProvider = c.TsigSecret, c.TsigProvider
 	return conn, err
 }

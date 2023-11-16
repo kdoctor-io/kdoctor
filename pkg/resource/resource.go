@@ -70,11 +70,15 @@ func (r *UsedResource) RunResourceCollector() {
 
 func (r *UsedResource) Stats() v1beta1.SystemResource {
 	r.l.Lock()
-	defer r.l.Unlock()
+	useCPU := r.cpu
+	totalCPU := r.totalCPU
+	roundCount := r.roundCount
+	mem := r.mem
+	r.l.Unlock()
 	resource := v1beta1.SystemResource{
-		MaxCPU:    fmt.Sprintf("%.3f%%", r.cpu),
-		MeanCPU:   fmt.Sprintf("%.3f%%", r.totalCPU/float64(r.roundCount)),
-		MaxMemory: fmt.Sprintf("%.2fMB", float64(r.mem/(1024*1024))),
+		MaxCPU:    fmt.Sprintf("%.3f%%", useCPU),
+		MeanCPU:   fmt.Sprintf("%.3f%%", totalCPU/float64(roundCount)),
+		MaxMemory: fmt.Sprintf("%.2fMB", float64(mem/(1024*1024))),
 	}
 
 	return resource

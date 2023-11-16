@@ -47,6 +47,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		targetDns.ServiceName = &KubeDnsName
 		targetDns.ServiceNamespace = &KubeDnsNamespace
 		target.NetDnsTargetDns = targetDns
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
@@ -112,6 +113,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		port := 53
 		targetDnsUser.Port = &port
 		target.NetDnsTargetUser = targetDnsUser
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
@@ -172,14 +174,15 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		targetDns.ServiceName = &KubeDnsName
 		targetDns.ServiceNamespace = &KubeDnsNamespace
 		target.NetDnsTargetDns = targetDns
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = 1500
 		request.QPS = 5
 		request.DurationInSecond = 5
-		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
+		request.Domain = "kubernetes.default.svc.cluster.local"
 		protocol := "udp"
 		request.Protocol = &protocol
 		netDns.Spec.Request = request
@@ -230,14 +233,15 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		targetDns.ServiceName = &KubeDnsName
 		targetDns.ServiceNamespace = &KubeDnsNamespace
 		target.NetDnsTargetDns = targetDns
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = 1500
 		request.QPS = 5
 		request.DurationInSecond = 5
-		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
+		request.Domain = "kubernetes.default.svc.cluster.local"
 		protocol := "udp"
 		request.Protocol = &protocol
 		netDns.Spec.Request = request
@@ -292,6 +296,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		port := 53
 		targetDnsUser.Port = &port
 		target.NetDnsTargetUser = targetDnsUser
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
