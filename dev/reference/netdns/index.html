@@ -1,0 +1,1943 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../netreach/">
+      
+      
+        <link rel="next" href="../kdoctor-controller/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.8">
+    
+    
+      
+        <title>NetDns - kdoctor</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#netdns" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="kdoctor" class="md-header__button md-logo" aria-label="kdoctor" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kdoctor
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NetDns
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kdoctor-io/kdoctor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kdoctor-io/kdoctor
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  kdoctor
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../usage/install/" class="md-tabs__link">
+          
+  
+    
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../usage/apphttphealthy/" class="md-tabs__link">
+          
+  
+    
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../arch/" class="md-tabs__link">
+          
+  
+    
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../apphttphealthy/" class="md-tabs__link">
+          
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../develop/release/" class="md-tabs__link">
+          
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="kdoctor" class="md-nav__button md-logo" aria-label="kdoctor" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    kdoctor
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kdoctor-io/kdoctor" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kdoctor-io/kdoctor
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/get-started-kind/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickly Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/apphttphealthy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AppHttpHealthy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/netreach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetReach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/netdns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runtime
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apphttphealthy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AppHttpHealthy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../netreach/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NetReach
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    NetDns
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    NetDns
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-description" class="md-nav__link">
+    Basic Description
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns-example" class="md-nav__link">
+    netdns Example
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-dns-server-check" class="md-nav__link">
+    Cluster DNS Server Check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-dns-server-check" class="md-nav__link">
+    Specify DNS Server Check
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns-definition" class="md-nav__link">
+    netdns Definition
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spec" class="md-nav__link">
+    Spec
+  </a>
+  
+    <nav class="md-nav" aria-label="Spec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agentspec" class="md-nav__link">
+    AgentSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schedule" class="md-nav__link">
+    Schedule
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request" class="md-nav__link">
+    Request
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target" class="md-nav__link">
+    Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expect" class="md-nav__link">
+    Expect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetuser" class="md-nav__link">
+    TargetUser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetdns" class="md-nav__link">
+    TargetDns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kdoctor-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor-controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kdoctor-agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kdoctor-agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/performance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Performance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/release/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Release workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-description" class="md-nav__link">
+    Basic Description
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns-example" class="md-nav__link">
+    netdns Example
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-dns-server-check" class="md-nav__link">
+    Cluster DNS Server Check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specify-dns-server-check" class="md-nav__link">
+    Specify DNS Server Check
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns-definition" class="md-nav__link">
+    netdns Definition
+  </a>
+  
+    <nav class="md-nav" aria-label="netdns Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spec" class="md-nav__link">
+    Spec
+  </a>
+  
+    <nav class="md-nav" aria-label="Spec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agentspec" class="md-nav__link">
+    AgentSpec
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schedule" class="md-nav__link">
+    Schedule
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request" class="md-nav__link">
+    Request
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target" class="md-nav__link">
+    Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expect" class="md-nav__link">
+    Expect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetuser" class="md-nav__link">
+    TargetUser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targetdns" class="md-nav__link">
+    TargetDns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    History
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="netdns">netdns</h1>
+<p><a href="../netdns-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
+<h2 id="basic-description">Basic Description</h2>
+<p>For this kind of task, kdoctor-controller generates the corresponding <a href="../../concepts/runtime/">agent</a> and other resources. Each agent Pod sends a DNS request to the specified target and gets the success rate and average latency. It can specify a success condition to inform the result of success or failure.</p>
+<h2 id="netdns-example">netdns Example</h2>
+<h3 id="cluster-dns-server-check">Cluster DNS Server Check</h3>
+<p>Send a corresponding request to a DNS server (CoreDNS) in a cluster to get the performance status of the DNS server in the cluster.</p>
+<pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
+kind: Netdns
+metadata:
+  name: netdns-cluster
+spec:
+  agentSpec:
+    hostNetwork: false
+    kind: DaemonSet
+    terminationGracePeriodMinutes: 60
+  expect:
+    meanAccessDelayInMs: 1500
+    successRate: 1
+  request:
+    domain: kubernetes.default.svc.cluster.local
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
+  schedule:
+    roundNumber: 1
+    roundTimeoutMinute: 1
+    schedule: 0 1
+  target:
+    enableLatencyMetric: false
+    targetDns:
+      serviceName: kube-dns
+      serviceNamespace: kube-system
+      testIPv4: true
+      testIPv6: true
+status:
+  doneRound: 1
+  expectedRound: 1
+  finish: true
+  history:
+    - deadLineTimeStamp: &quot;2023-07-28T09:45:03Z&quot;
+      duration: 15.809063339s
+      endTimeStamp: &quot;2023-07-28T09:44:18Z&quot;
+      expectedActorNumber: 2
+      failedAgentNodeList: []
+      notReportAgentNodeList: []
+      roundNumber: 1
+      startTimeStamp: &quot;2023-07-28T09:44:03Z&quot;
+      status: succeed
+      succeedAgentNodeList:
+        - kdoctor-control-plane
+        - kdoctor-worker
+  lastRoundStatus: succeed
+</code></pre>
+<h3 id="specify-dns-server-check">Specify DNS Server Check</h3>
+<p>Send a corresponding request to a DNS server outside the cluster to get its performance status.</p>
+<pre><code class="language-Yaml">apiVersion: kdoctor.io/v1beta1
+kind: Netdns
+metadata:
+  name: netdns- user
+spec:
+  expect:
+    meanAccessDelayInMs: 1500
+    successRate: 1
+  request:
+    domain: www.baidu.com
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
+  schedule:
+    roundNumber: 1
+    roundTimeoutMinute: 1
+    schedule: 0 1
+  target:
+    enableLatencyMetric: false
+    targetUser:
+      port: 53
+      server: 172.41.54.83
+</code></pre>
+<h2 id="netdns-definition">netdns Definition</h2>
+<h3 id="metadata">Metadata</h3>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>Name of the netdns Resource</td>
+<td>String</td>
+<td>Required</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spec">Spec</h3>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Take Values</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>agentSpec</td>
+<td>Task Execution Agent Configuration</td>
+<td><a href="../apphttphealthy/#agentspec">agentSpec</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Schedule</td>
+<td>Schedule Task Execution</td>
+<td><a href="../apphttphealthy/#schedule">schedule</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Request</td>
+<td>Request Configuration for Destination Address</td>
+<td><a href="./#request">request</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Request Target Settings</td>
+<td><a href="../apphttphealthy/#target">Target</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Expect</td>
+<td>Task Success Condition Judgment</td>
+<td><a href="../apphttphealthy/#expect">expect</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="agentspec">AgentSpec</h4>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Annotation</td>
+<td>Annotation of Agent Workload</td>
+<td>Map[string]String</td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>kind</td>
+<td>Type of Agent Workload</td>
+<td>String</td>
+<td>Optional</td>
+<td>Deployment, DaemonSet</td>
+<td>DaemonSet</td>
+</tr>
+<tr>
+<td>deploymentReplicas</td>
+<td>The expected number of replicas when the agent workload type is deployment</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Affinity</td>
+<td>Agent Workload Affinity</td>
+<td>labelSelector</td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>env</td>
+<td>Agent Workload Environment Variable</td>
+<td>env</td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>hostNetwork</td>
+<td>Whether or not the agent workload uses the host network</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True, false</td>
+<td>False</td>
+</tr>
+<tr>
+<td>Resources</td>
+<td>Agent Workload Resource Usage Configuration</td>
+<td>Resources</td>
+<td>Optional</td>
+<td></td>
+<td>Limit cpu: 1000m,Memory:1024Mi</td>
+</tr>
+<tr>
+<td>terminationGracePeriodMinutes</td>
+<td>the minutes after a agent workload completes a task before it terminates</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 0</td>
+<td>60</td>
+</tr>
+</tbody>
+</table>
+<h4 id="schedule">Schedule</h4>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>roundNumber</td>
+<td>Task Execution Rounds</td>
+<td>int</td>
+<td>Optional</td>
+<td>A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed</td>
+<td>1</td>
+</tr>
+<tr>
+<td>roundTimeoutMinute</td>
+<td>Task timeout which needs to be greater than durationInSecond and task execution time</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>60</td>
+</tr>
+</tbody>
+</table>
+<h4 id="request">Request</h4>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>durationInSecond</td>
+<td>Duration of request send pressure for each round of tasks which is less than roundTimeoutMinute</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>perRequestTimeoutInMS</td>
+<td>Timeout per request, not greater than durationInSecond</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>500</td>
+</tr>
+<tr>
+<td>QPS</td>
+<td>Requests per second per agent</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>Request Protocol</td>
+<td>String</td>
+<td>Optional</td>
+<td>UDP, TCP, TCP-TLS</td>
+<td>UDP</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>When using agent requests, all agents will make requests to the destination address, so the actual QPS received by the server is equal to the number of agents multiplied by the set QPS.</p>
+</blockquote>
+<h4 id="target">Target</h4>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>targetUser</td>
+<td>DNS request to user-defined DNS server</td>
+<td><a href="./#targetuser">targetUser</a></td>
+<td>Optional</td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td>targetDns</td>
+<td>Make a DNS request to the cluster's DNS server (CoreDNS)</td>
+<td><a href="./#targetuser">targetDns</a></td>
+<td>Optional</td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td>enableLatencyMetric</td>
+<td>Statistics demo distribution, which increases memory usage when turned on</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+<h4 id="expect">Expect</h4>
+<p>Task success condition. If the task result does not meet the expected condition, the task will fail.</p>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meanAccessDelayInMs</td>
+<td>The average delay. If the final result exceeds this value, the task will be judged as failed</td>
+<td>int</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>successRate</td>
+<td>Success rate of the HTTP request. If the final result is less than this value, the task will fail</td>
+<td>Float</td>
+<td>Optional</td>
+<td>0-1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="targetuser">TargetUser</h4>
+<p>Test user customized DNS server</p>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server</td>
+<td>DNS Server Address</td>
+<td>String</td>
+<td>Required</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Port</td>
+<td>DNS Server Port</td>
+<td>int</td>
+<td>Required</td>
+<td>1-65535</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="targetdns">TargetDns</h4>
+<p>Test the DNS server in a cluster</p>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>testIPv4</td>
+<td>Test IPv4 address request A record</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>True</td>
+</tr>
+<tr>
+<td>testIPv6</td>
+<td>Test IPv6 address request AAAA record</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
+</tr>
+<tr>
+<td>serviceName</td>
+<td>Cluster DNS Server Service Address</td>
+<td>String</td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>serviceNamespace</td>
+<td>Cluster DNS Server Service Port</td>
+<td>String</td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="status">Status</h3>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>doneRound</td>
+<td>Number of completed task rounds</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>expectedRound</td>
+<td>Number of rounds expected to be performed</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>Finish</td>
+<td>Whether the task is complete or not</td>
+<td>Bool</td>
+<td>True, false</td>
+</tr>
+<tr>
+<td>lastRoundStatus</td>
+<td>lastRoundStatus</td>
+<td>String</td>
+<td>Notstarted, on-going, succeed, fail</td>
+</tr>
+<tr>
+<td>History</td>
+<td>Task History</td>
+<td>Element is <a href="../apphttphealthy/#history">history</a> array</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="history">History</h4>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>roundNumber</td>
+<td>Task Round Number</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Task Status</td>
+<td>String</td>
+<td>Notstarted, on-going, succeed, fail</td>
+</tr>
+<tr>
+<td>startTimeStamp</td>
+<td>Start of the current round of tasks</td>
+<td>String</td>
+<td></td>
+</tr>
+<tr>
+<td>endTimeStamp</td>
+<td>End of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>duration</td>
+<td>Execution time of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>deadLineTimeStamp</td>
+<td>Deadline of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>failedAgentNodeList</td>
+<td>Agent whose tasks failed</td>
+<td>Array of elements as string</td>
+<td></td>
+</tr>
+<tr>
+<td>succeedAgentNodeList</td>
+<td>Agent whose task succeeded</td>
+<td>Array of elements as string</td>
+<td></td>
+</tr>
+<tr>
+<td>notReportAgentNodeList</td>
+<td>Agent who did not upload a task report</td>
+<td>Array of elements as string</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.indexes", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "search.highlight", "search.suggest", "search.share"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      
+    
+  </body>
+</html>
