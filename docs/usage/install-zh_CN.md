@@ -26,16 +26,16 @@ helm repo update kdoctor
 ### 安装 kdoctor
 kdoctor 可以根据不同的需求进行安装，以下为几个场景的推荐安装方式
 
-#### 1.非高可用安装
+#### 非高可用安装
 
-以下方法 kdoctor agent 只将报告打印到标准输出
+以下方法 kdoctor agent 只将报告打印到标准输出：
 ```shell 
 helm install kdoctor kdoctor/kdoctor \
     -n kdoctor --debug --create-namespace 
 ```
-#### 2.高可用安装
+#### 高可用安装
 
-以下方法将 kdoctor-controller 的收集报告引导到存储，因此,需要安装storageClass
+以下方法将 kdoctor-controller 的收集报告引导到存储，因此,需要安装 storageClass
 
 ```shell 
 

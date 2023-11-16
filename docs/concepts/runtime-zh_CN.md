@@ -6,28 +6,27 @@
 
 ### 载体资源
 
-当任务 CR 下发后，kdocotr-controller 会创建或复用如下资源进行任务。
+当任务 CR 下发后，kdocotr-controller 会创建或复用如下资源执行任务。
 
 ### 工作负载
 
 1. 默认工作负载
-    >默认工作负载（DaemonSet）在部署 kdoctor 后生成，在未定义 AgentSpec 时，使用此载体进行任务，此载体不会因为任务删除或结束而被删除。
+    > 默认工作负载（DaemonSet）在部署 kdoctor 后生成，在未定义 AgentSpec 时，使用此载体执行任务，此载体不会因为任务删除或结束而被删除。
     
-    >因所有使用默认工作负载的任务都会在此负载中执行，因此适合请求量较少，资源使用较少的任务。  
+    > 因所有使用默认工作负载的任务都会在此负载中执行，因此适合请求量较少，资源使用较少的任务。  
 
 2. 新建工作负载
-    >工作负载为 DaemonSet 或 Deployment，默认为 DaemonSet，负载中的每一个 Pod 根据任务配置进行的请求，并将执行结果落盘到 Pod 中，可通过 AgentSpec 中设置
-    > 工作负载的销毁时间，默认任务执行完 60 分钟后，销毁工作负载，当删除 CR 任务时，工作负载会一并被删除。
+    > 工作负载为 DaemonSet 或 Deployment，默认为 DaemonSet，负载中的每一个 Pod 根据任务配置执行请求，并将执行结果落盘到 Pod 中，可通过 AgentSpec 中设置
+    工作负载的销毁时间，默认任务执行完 60 分钟后，销毁工作负载，当删除 CR 任务时，工作负载会一并被删除。
 
-    >此工作负载单独执行一个任务，因此与其他任务的资源使用是隔离的，适合请求量较大，资源消耗较大的任务。 
+    > 此工作负载单独执行一个任务，因此与其他任务的资源使用是隔离的，适合请求量较大，资源消耗较大的任务。 
 
 ### Service
 
 1. 默认工作载体 Service
     >与默认工作负载一样，在部署 kdoctor 后生成，与默认负载关联且不会因为任务删除或结束而被删除。
 2. 新建工作载体 Service
-    >在创建工作负载时，kdoctor-controller 同时会根据 IP Family 的配置，创建对应的 service 并于工作负载的 pod 绑定。用于测试 service 网络连通性。与工作负载
-    >的销毁逻辑相同。
+    >在创建工作负载时，kdoctor-controller 同时会根据 IP Family 的配置，创建对应的 service 与工作负载的 Pod 绑定。用于测试 service 网络连通性。与工作负载的销毁逻辑相同。
 
 ### Ingress
 
@@ -45,39 +44,9 @@
 
 ###  生命周期
 
-```mermaid
-sequenceDiagram
-    participant cr 任务
-    participant kdoctor_controller
-    participant workload
-    participant pod
-    participant service
-    participant ingress
+![生命周期](../images/lifecycle-zh.png)
 
-    cr 任务 ->>kdoctor_controller: cr 任务下发
-    kdoctor_controller ->>workload: 创建 ownerReferences 为任务 cr 工作负载（daemonSet 或 Deployment）
-    workload ->>pod: 创建任务执行 pod
-    kdoctor_controller ->>service: 创建 ownerReferences 为工作负载的 service
-    kdoctor_controller ->>ingress: 创建 ownerReferences 为工作负载的 ingress
-    workload ->>kdoctor_controller: workload 就绪
-    service ->>kdoctor_controller: service 就绪
-    ingress ->>kdoctor_controller: ingress 就绪
-    kdoctor_controller ->>pod: 任务执行
-    kdoctor_controller ->>pod: 定时收取报告
-    pod ->>kdoctor_controller: 任务执行完成
-    kdoctor_controller ->>pod: 报告收取完成
-    pod ->>pod: 报告收取完成默认 10 分钟后，自动清理报告
-    kdoctor_controller ->>workload: 到达 runtime 销毁时间，销毁 workload
-    workload ->>service:  到达 runtime 销毁时间，销毁 service
-    workload ->>ingress:  到达 runtime 销毁时间，销毁 ingress
-    cr 任务 ->>kdoctor_controller: cr 任务删除
-    kdoctor_controller ->> workload: cr 任务删除，workload 删除
-    workload ->> pod: workload 删除，pod 删除
-    workload ->>service: workload 删除，service 删除
-    workload ->>ingress: workload 删除，ingress 删除
-```
-
-* 任务开始后，kdoctor-controller 会定时向任务中的 pod 收取报告，任务完成后，报告收集完成，不会再进行报告收集。
+* 任务开始后，kdoctor-controller 会定时向任务中的 Pod 收取报告，任务完成后，报告收集完成，不会再进行报告收集。
 * 任务负载执行完任务后，报告被 kdoctor-controller 收取报告默认 10 分钟后，会自动清理掉负载中的报告。
 * 当删除掉已经完成的任务 CR 后，报告依然存在 kdoctor-controller 报告目录下，但无法通过 k8s 聚合 api 查看，需要手动才能进行查看。
 * 当删除执行中的任务 CR 时，任务会终止，创建 CR 时生成的资源会一并删除，已经收集好的报告依然存放在 kdoctor-controller 报告目录下。
