@@ -13,10 +13,8 @@ import (
 )
 
 type FileManager interface {
-	RemoveTaskFiles(kindName string, taskName string) error
 	WriteTaskFile(kindName string, taskName string, roundNumber int, nodeName string, endTime time.Time, data []byte) error
 	GetTaskAllFile(kindName string, taskName string) ([]string, error)
-	GetAllFile() ([]string, error)
 	CheckTaskFileExisted(kindName string, taskName string, roundNumber int) bool
 }
 
@@ -119,22 +117,6 @@ func GenerateTaskFileName(kindName string, taskName string, roundNumber int, nod
 	return fmt.Sprintf("%s_%s_round%d_%s_%s", kindName, taskName, roundNumber, nodeName, suffix)
 }
 
-func (s *fileManager) GetAllFile() ([]string, error) {
-	filelist, e := os.ReadDir(s.reportDir)
-	if e != nil {
-		return nil, fmt.Errorf("failed to read directory %s, error=%v", s.reportDir, e)
-	}
-
-	fileList := []string{}
-	for _, item := range filelist {
-		if item.IsDir() {
-			continue
-		}
-		fileList = append(fileList, path.Join(s.reportDir, item.Name()))
-	}
-	return fileList, nil
-}
-
 func (s *fileManager) GetTaskAllFile(kindName string, taskName string) ([]string, error) {
 	filelist, e := os.ReadDir(s.reportDir)
 	if e != nil {
@@ -172,29 +154,6 @@ func (s *fileManager) CheckTaskFileExisted(kindName string, taskName string, rou
 		}
 	}
 	return false
-}
-
-func (s *fileManager) RemoveTaskFiles(kindName string, taskName string) error {
-	v, e := s.GetTaskAllFile(kindName, taskName)
-	if e != nil {
-		return e
-	}
-
-	failList := []string{}
-	for _, m := range v {
-		if e := os.RemoveAll(m); e != nil {
-			failList = append(failList, m)
-			s.logger.Sugar().Errorf("failed to remove file %v for kind %v task %v, error=%v", m, kindName, taskName, e)
-		} else {
-			s.logger.Sugar().Info("remove file %v for kind %v task %v", m, kindName, taskName)
-		}
-	}
-
-	if len(failList) > 0 {
-		return fmt.Errorf("failed to remove files: %v", failList)
-	}
-	return nil
-
 }
 
 func (s *fileManager) WriteTaskFile(kindName string, taskName string, roundNumber int, nodeName string, endTime time.Time, data []byte) error {

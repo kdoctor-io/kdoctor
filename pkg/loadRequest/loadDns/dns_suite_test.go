@@ -11,7 +11,7 @@ import (
 	config "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
-func TestIppoolCR(t *testing.T) {
+func TestLoadDns(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "load request Suite")
 }

@@ -84,30 +84,22 @@ func BuildItem(resource crd.TaskResource, taskKind, taskName string, deletionTim
 
 func (d *Database) Apply(item Item) error {
 	d.Lock()
-
+	defer d.Unlock()
 	old, ok := d.cache[item.RuntimeKey]
 	if !ok {
 		if len(d.cache) == d.maxCap {
-			d.Unlock()
 			return fmt.Errorf("database is out of capacity, discard item %v", item)
 		}
-
 		d.cache[item.RuntimeKey] = item
-		d.Unlock()
 		d.log.Sugar().Debugf("create item %v", item)
-		return nil
 	} else {
 		if !reflect.DeepEqual(old, item) {
 			item.Task.Join(old.Task)
 			d.cache[item.RuntimeKey] = item
-			d.Unlock()
 			d.log.Sugar().Debugf("item %v has changed, the old one is %v, and the new one is %v",
 				item.RuntimeKey, old, item)
-			return nil
 		}
 	}
-
-	d.Unlock()
 	return nil
 }
 
@@ -130,6 +122,7 @@ func (d *Database) Delete(item Item) {
 	if !ok {
 		d.Unlock()
 		d.log.Sugar().Debugf("item %v already deleted", item.RuntimeKey)
+		return
 	}
 
 	delete(d.cache, item.RuntimeKey)

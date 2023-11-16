@@ -102,7 +102,7 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 		}
 	}
 
-	runtimeDB := make([]scheduler.DB, 0, len(s.chainingPlugins))
+	runtimeDB := make(map[string]scheduler.DB, len(s.chainingPlugins))
 	ctx, cancelFunc := context.WithCancel(context.TODO())
 	for name, plugin := range s.chainingPlugins {
 		// setup reconcile
@@ -120,7 +120,7 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 			SignalTimeOutDuration: time.Duration(types.ControllerConfig.ResourceTrackerSignalTimeoutSeconds) * time.Second,
 			TraceGapDuration:      time.Duration(types.ControllerConfig.ResourceTrackerTraceGapSeconds) * time.Second,
 		}, logger.Named(name+"Tracker"))
-		runtimeDB = append(runtimeDB, tracker.DB)
+		runtimeDB[name] = tracker.DB
 		k := &pluginControllerReconciler{
 			logger:                     logger.Named(name + "Reconciler"),
 			plugin:                     plugin,

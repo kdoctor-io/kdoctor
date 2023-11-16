@@ -5,17 +5,18 @@ package fileManager_test
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	"os"
 	"path"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
 	"github.com/kdoctor-io/kdoctor/pkg/logger"
 	"time"
 )
 
-var _ = Describe("test ippool CR", Label("ippoolCR"), Pending, func() {
+var _ = Describe("test fileManager", Label("fileManager"), func() {
 
 	var reportDir string
 
@@ -45,11 +46,11 @@ var _ = Describe("test ippool CR", Label("ippoolCR"), Pending, func() {
 		expectedFilePath := path.Join(reportDir, expectedFileName)
 		GinkgoWriter.Printf("expect file %v \n", expectedFilePath)
 
-		filelist, e := f.GetAllFile()
+		filelist, e := f.GetTaskAllFile(kindName, taskName)
 		Expect(e).NotTo(HaveOccurred(), "failed to read directory %s, error=%v", reportDir, e)
 		Expect(len(filelist)).To(Equal(1))
 		Expect(filelist).To(ConsistOf([]string{expectedFilePath}))
-
+		Expect(f.CheckTaskFileExisted(kindName, taskName, roundNumber)).To(BeTrue())
 		// read data
 		readdata, er := os.ReadFile(expectedFilePath)
 		Expect(er).NotTo(HaveOccurred(), "failed to read file %s, error=%v", expectedFilePath, er)
@@ -57,7 +58,7 @@ var _ = Describe("test ippool CR", Label("ippoolCR"), Pending, func() {
 
 		// ---- check deletion
 		time.Sleep(10 * time.Second)
-		filelist, e = f.GetAllFile()
+		filelist, e = f.GetTaskAllFile(kindName, taskName)
 		Expect(e).NotTo(HaveOccurred(), "failed to read directory , error=%v", e)
 		Expect(len(filelist)).To(Equal(0))
 
