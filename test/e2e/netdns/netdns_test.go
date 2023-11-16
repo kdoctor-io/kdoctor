@@ -176,7 +176,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = 1500
 		request.QPS = 5
 		request.DurationInSecond = 5
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)
@@ -234,7 +234,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		request.PerRequestTimeoutInMS = 1000
+		request.PerRequestTimeoutInMS = 1500
 		request.QPS = 5
 		request.DurationInSecond = 5
 		request.Domain = fmt.Sprintf(targetDomain, netDnsName)

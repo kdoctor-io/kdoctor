@@ -159,8 +159,6 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
-		HELM_OPTION+=" --set kdoctorAgent.resources.requests.cpu=200m " ; \
-		HELM_OPTION+=" --set kdoctorAgent.resources.requests.memory=256Mi " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/kdoctor/controller " ; \
 		HELM_OPTION+=" --set kdoctorAgent.debug.logLevel=debug --set kdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set kdoctorAgent.prometheus.enabled=true --set kdoctorController.prometheus.enabled=true  " ; \
@@ -171,7 +169,6 @@ deploy_project:
 				$${HELM_OPTION} \
 				|| { KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" $(E2E_INSTALL_NAMESPACE)  ; exit 1 ; } ; \
 		exit 0
-
 
 #=========================
 
