@@ -11,6 +11,7 @@ const (
 	PluginReportPath           = "/apis/system.kdoctor.io/v1beta1/namespaces/default/kdoctorreports/"
 	KDoctorCaName              = "kdoctor-ca"
 	KdoctorTestTokenSecretName = "apiserver-token"
+	RequestFaultRate           = 0.1
 )
 
 var (

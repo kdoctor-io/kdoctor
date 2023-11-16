@@ -834,7 +834,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 	})
 
-	It("Successfully testing using default daemonSet  as workload with Task AppHttpHealthy ", Label("E00017"), func() {
+	It("Successfully testing using default daemonSet  as workload with more Task AppHttpHealthy", Label("E00017"), func() {
 		var e error
 		successRate := float64(1)
 		successMean := int64(1500)

@@ -26,7 +26,6 @@ package loadHttp
 
 import (
 	"bytes"
-	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -251,9 +250,6 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		},
 	}
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-	ctx, cancel := context.WithTimeout(req.Context(), time.Duration(b.Timeout)*time.Millisecond)
-	defer cancel()
-	req = req.WithContext(ctx)
 	resp, err := c.Do(req)
 	t := b.now()
 	resDuration = t - resStart
