@@ -62,7 +62,7 @@ require (
 
 require (
 	github.com/agiledragon/gomonkey/v2 v2.11.0
-	github.com/docker/docker v24.0.5+incompatible
+	github.com/docker/docker v24.0.7+incompatible
 	github.com/golang/mock v1.6.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	k8s.io/apiserver v0.26.3
