@@ -233,12 +233,7 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	var size int64
 	var dnsStart, connStart, resStart time.Duration
 	var dnsDuration, connDuration, resDuration, reqDuration time.Duration
-	var req *http.Request
-	if b.RequestFunc != nil {
-		req = b.RequestFunc()
-	} else {
-		req = cloneRequest(b.Request, b.RequestBody)
-	}
+	req := genRequest(b.Request, b.RequestBody)
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(info httptrace.DNSStartInfo) {
 			dnsStart = b.now()
@@ -315,7 +310,7 @@ func (b *Work) runWorker() {
 		tr.TLSNextProto = make(map[string]func(string, *tls.Conn) http.RoundTripper)
 	}
 	// Each goroutine uses the same HTTP Client instance
-	client := &http.Client{Transport: tr, Timeout: time.Duration(b.Timeout) * time.Second}
+	client := &http.Client{Transport: tr, Timeout: time.Duration(b.Timeout) * time.Millisecond}
 	if b.DisableRedirects {
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -404,12 +399,9 @@ func (b *Work) AggregateMetric() *v1beta1.HttpMetrics {
 	return metric
 }
 
-// cloneRequest returns a clone of the provided *http.Request.
-// The clone is a shallow copy of the struct and its Header map.
-func cloneRequest(r *http.Request, body []byte) *http.Request {
+func genRequest(r *http.Request, body []byte) *http.Request {
 	// shallow copy of the struct
-	r2 := new(http.Request)
-	*r2 = *r
+	r2, _ := http.NewRequest(r.Method, r.URL.String(), nil)
 	// deep copy of the Header
 	r2.Header = make(http.Header, len(r.Header))
 	for k, s := range r.Header {
