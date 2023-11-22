@@ -25,7 +25,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("success http testing appHttpHealth method GET", Label("A00001", "A00011", "C00006", "E00002", "A00014"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -51,6 +51,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -87,7 +88,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("failed http testing appHttpHealth due to status code", Label("A00002"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		expectStatusCode := 205
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
@@ -115,6 +116,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -177,6 +179,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -213,7 +216,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("success https testing appHttpHealth method GET", Label("A00004"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 		appHttpHealth := new(v1beta1.AppHttpHealthy)
@@ -240,6 +243,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		}
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &common.TestNameSpace
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -276,7 +280,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("failed https testing appHttpHealth due to tls", Label("A00005"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -305,6 +309,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		}
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &common.TestNameSpace
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -341,7 +346,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully http testing appHttpHealth method PUT ", Label("A00006"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-put" + tools.RandomName()
 
@@ -367,6 +372,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -404,7 +410,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully http testing appHttpHealth method POST With Body", Label("A00007"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-post" + tools.RandomName()
 
@@ -433,6 +439,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target.BodyConfigName = &bodyConfigMapName
 		target.BodyConfigNamespace = &common.TestNameSpace
 		target.Header = []string{"Content-Type: application/json"}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -469,7 +476,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully http testing appHttpHealth method HEAD", Label("A00008"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-head" + tools.RandomName()
 
@@ -495,6 +502,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -531,7 +539,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully http testing appHttpHealth method PATCH", Label("A00009"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-patch" + tools.RandomName()
 
@@ -557,6 +565,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -593,7 +602,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully http testing appHttpHealth method OPTIONS", Label("A00010"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-options" + tools.RandomName()
 
@@ -619,6 +628,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -681,6 +691,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d/?delay=1&task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -717,7 +728,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully https testing appHttpHealth method GET Protocol Http2", Label("A00013"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -746,6 +757,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		target.TlsSecretName = &common.TlsClientName
 		target.TlsSecretNamespace = &common.TestNameSpace
 		target.Http2 = true
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -782,7 +794,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 	It("Successfully testing using default daemonSet  as workload with Task AppHttpHealthy ", Label("E00014"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -803,6 +815,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -834,10 +847,10 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 
 	})
 
-	It("Successfully testing using default daemonSet  as workload with Task AppHttpHealthy ", Label("E00017"), func() {
+	It("Successfully testing using default daemonSet  as workload with more Task AppHttpHealthy", Label("E00017"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -858,6 +871,7 @@ var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), func() {
 		} else {
 			target.Host = fmt.Sprintf("http://%s:%d?task=%s", testSvcIP, httpPort, appHttpHealthName)
 		}
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request

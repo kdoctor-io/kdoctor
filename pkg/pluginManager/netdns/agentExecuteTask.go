@@ -218,7 +218,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	}
 	wg.Wait()
 
-	logger.Sugar().Infof("plugin finished all http request tests")
+	logger.Sugar().Infof("plugin finished all dns request tests")
 
 	// ----------------------- aggregate report
 	task := &v1beta1.NetDNSTask{}

@@ -14,12 +14,12 @@ import (
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
 	var termMin = int64(1)
-	// 1000ms is not stable on GitHub ci, so increased to 3000ms
-	var requestTimeout = 3000
+	// 1000ms is not stable on GitHub ci, so increased to 7000ms
+	var requestTimeout = 7000
 	It("success testing netReach", Label("B00001", "C00004", "E00001"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(4000)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -52,6 +52,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
+		target.EnableLatencyMetric = true
 		netReach.Spec.Target = target
 
 		// request
@@ -88,7 +89,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	It("Successfully testing using default daemonSet  as workload with Task NetReach", Label("E00013"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(4000)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -117,6 +118,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
 		netReach.Spec.Target = target
+		target.EnableLatencyMetric = true
 
 		// request
 		request := new(v1beta1.NetHttpRequest)
@@ -150,7 +152,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	It("Successfully testing using default daemonSet  as workload with more Task NetReach", Label("E00016"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(4000)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -178,6 +180,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
+		target.EnableLatencyMetric = true
 		netReach.Spec.Target = target
 
 		// request

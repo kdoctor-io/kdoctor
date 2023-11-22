@@ -273,6 +273,7 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 			}
 		}
 	}
+
 	b.results <- &result{
 		duration:      finish,
 		statusCode:    statusCode,
@@ -310,7 +311,7 @@ func (b *Work) runWorker() {
 		tr.TLSNextProto = make(map[string]func(string, *tls.Conn) http.RoundTripper)
 	}
 	// Each goroutine uses the same HTTP Client instance
-	client := &http.Client{Transport: tr, Timeout: time.Duration(b.Timeout) * time.Millisecond}
+	client := &http.Client{Transport: tr}
 	if b.DisableRedirects {
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
