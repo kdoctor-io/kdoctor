@@ -10,32 +10,47 @@
 
 **简体中文** | [**English**](./README.md)
 
-## Introduction
+## 介绍
 
-kdoctor 是一个 kubernetes 数据面测试项目，通过压力注入的方式，实现对集群进行功能、性能的主动式巡检。
+kdoctor 是一个基于主动式压力注入的 Kubernetes 数据面测试组件，对集群进行功能、性能的测试。通过调研和抽象了运维人员的常规运维需求，让网络、存储、应用等运维任务进行了云原生实现，基于 CRD的设计，能够对接观测性组件。
 
-传统的集群巡检，通过采集指标、日志、应用状态等信息来确认集群和应用的状态，实现被动式巡检。但是在一些特殊场景下，这种方式可能不能实现预期的巡检目的、时效性、集群范围，运维人员就需要采用手动方式给集群注入一些压力，进行主动式巡检，当集群规模很大、巡检频率高或巡检流程复杂时，手工方式难以持久实施。这些场景包括：
+**kdoctor 主要包含以下 3 个类型的任务：**
+* [AppHttpHealthy](./reference/apphttphealthy-zh_CN.md): 根据任务配置对集群内外指定访问地址，使用 HTTP、HTTPS 协议进行连通性检查，支持 PUT、GET、POST 等多种请求方式。
+* [NetReach](./reference/netreach-zh_CN.md): 根据任务配置对集群内 Pod IP、ClusterIP、NodePort、Loadbalancer IP、Ingress IP, 甚至是 POD 多网卡、双栈IP进行连通性巡检。
+* [NetDns](./reference/netdns-zh_CN.md): 根据任务配置，对集群内外的指定 DNS Server 进行连通性检测，支持 udp、tcp、tcp-tls 协议。
 
-* 部署大规模集群后，希望确认所有节点间 POD 的网络连通性，避免某个节点存在网络故障，发现网络中是否存在偶发丢包问题，而通信渠道非常多，包括 pod IP、clusterIP、nodePort、loadbalancer ip、ingress ip, 甚至是 POD 多网卡、双栈IP
-
-* 希望主动检测所有节点间上的 POD 能够正常访问 coredns 服务，希望确认 coredns 服务的资源配置和副本数量正确，其服务性能能欧支持预期的最大访问量
-
-* 磁盘是易耗品，例如 etcd 等应用对磁盘性能是比较敏感的，在日常运维工作中，管理员希望周期地确认所有节点的本地磁盘是正常的，文件读写的吞吐量和延时是符合预期的
-
-* 给某个服务主动注入压力，它可能是镜像仓库、mysql 或者 api-server，以配合 BUG 复现，或确认服务性能
-
-kdoctor 是一个 kubernetes 数据面测试项目，来源于生产运维过程中的实践场景，通过压力注入的方式，实现对集群进行功能、性能的主动式巡检。 kdoctor 可以应用于:
-
-* 生产环境的部署检查、日常运维等场景，能避免了人工巡检的工作负担。
-
-* 能应用 E2E 测试、bug 复现、混沌测试等，减少编程工作。
+**kdoctor 较传统的测试组件有哪些优势:**
+* 通过下发 CRD 配置巡检任务需求，使用者只需要关注巡检目标、巡检频率、发压参数以及期望巡检结果。
+* 通过读取任务配置，以 Deployment 或 DaemonSet 的方式运行发压 agent，以达到多台发压机器的效果。
+* 根据任务的 spec 配置，使用 default agent 或创建新的 agent 执行任务，以达到资源重复利用和任务资源隔离。
+* 绑定相对应的资源目标，如 ingress 、service，每一个 agent pod 根据任务配置相互访问绑定的资源，根据请求结果得出结论。
+* 发压 client 通过性能调优，大大降低了发压请求时的资源消耗。
+* 巡检报告通过日志、聚合 api 、文件落盘等方式输出。
 
 ## 架构
 
+<div style="text-align:center">
+  <img src="./images/arch.png" alt="Your Image Description">
+</div>
+
+组件构成：
+* kdoctor controller: 以 Deployment 形式常驻，实施 CR 监控，任务创建，任务报告汇聚等。
+* kdoctor agent: 以 Deployment 或 DaemonSet 形式按需动态创建，任务的执行者。
+
 ## 快速开始
 
-## 核心功能
+**安装**
+* [安装 kdoctor](./usage/install-zh_CN.md) 或 [kind 快速开始](./usage/install-zh_CN.md)
+
+**开始任务**
+* [开始任务 AppHttpHealthy](./usage/apphttphealthy-zh_CN.md)
+* [开始任务 NetReach](./usage/netreach-zh_CN.md)
+* [开始任务 NetDNS](./usage/netdns-zh_CN.md)
+
+## 参与开发
+
+可参考 [开发搭建文档](./develop/contributing.md).
 
 ## License
 
-kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+kdoctor is licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the full license text.
