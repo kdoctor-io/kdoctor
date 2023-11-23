@@ -148,13 +148,13 @@ netdns-cluster   true     1               1           succeed           0 1
               Errors: {}
               FailedCounts: 0
               Latencies:
-                Max_inMx: 0
-                Mean_inMs: 0.2970297
-                Min_inMs: 0
-                P50_inMs: 0
-                P90_inMs: 0
-                P95_inMs: 0
-                P99_inMs: 0
+                MaxInMs: 0
+                MeanInMs: 0.2970297
+                MinInMs: 0
+                P50InMs: 0
+                P90InMs: 0
+                P95InMs: 0
+                P99InMs: 0
               ReplyCode:
                 NOERROR: 101
               RequestCounts: 101

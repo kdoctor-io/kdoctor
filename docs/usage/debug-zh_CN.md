@@ -35,3 +35,6 @@
         NetReachQPS: 0
       ...
      ```
+**Q: 为什么 Kdoctor agent 会 OOM？**
+* A: kdoctor agent 作为默认的执行任务的 agent，在任务中没有指定 agent 时，默认使用 kdoctor agent 执行，目前的 agent 还不支持根据任务负载情况，拒绝执行任务或延迟执行任务功能。
+     因此当 kdoctor agent 同时执行大量任务时，由于请求量过大，内存限制过低，将会导致 kdoctor agent 内存过载，导致 OOM，我们可以根据任务情况，错开使用 kdoctor agent，调整内存限制，或使用指定的 agent 隔离任务。

@@ -134,13 +134,13 @@ http        true     1               1           succeed           0 1
               EndTime: "2023-07-31T07:25:23Z"
               Errors: {}
               Latencies:
-                Max_inMx: 0
-                Mean_inMs: 10.317307
-                Min_inMs: 0
-                P50_inMs: 0
-                P90_inMs: 0
-                P95_inMs: 0
-                P99_inMs: 0
+                MaxInMs: 0
+                MeanInMs: 10.317307
+                MinInMs: 0
+                P50InMs: 0
+                P90InMs: 0
+                P95InMs: 0
+                P99InMs: 0
               RequestCounts: 104
               StartTime: "2023-07-31T07:25:12Z"
               StatusCodes:
