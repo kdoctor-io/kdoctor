@@ -189,4 +189,4 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 )
 
-replace github.com/miekg/dns v1.1.50 => github.com/kdoctor-io/dns v0.0.0-20231117104519-7085dea69b40
+replace github.com/miekg/dns v1.1.50 => github.com/kdoctor-io/dns v0.0.0-20231123074630-7b2e2fc81556

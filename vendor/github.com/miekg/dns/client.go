@@ -58,8 +58,8 @@ func (co *Conn) tsigProvider() TsigProvider {
 }
 
 func (co *Conn) ShutDownReceiver() {
-	co.ShutDown <- struct{}{}
 	co.Close()
+	co.ShutDown <- struct{}{}
 	close(co.ResponseReceiver)
 }
 

@@ -349,8 +349,8 @@ github.com/k8snetworkplumbingwg/network-attachment-definition-client v1.4.0 h1:V
 github.com/k8snetworkplumbingwg/network-attachment-definition-client v1.4.0/go.mod h1:nqCI7aelBJU61wiBeeZWJ6oi4bJy5nrjkM6lWIMA4j0=
 github.com/karrick/godirwalk v1.8.0/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=
 github.com/karrick/godirwalk v1.10.3/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=
-github.com/kdoctor-io/dns v0.0.0-20231117104519-7085dea69b40 h1:AlmnjvSvhzwJR9YpV3r0k0b0g6de4infGN0fOImcaO4=
-github.com/kdoctor-io/dns v0.0.0-20231117104519-7085dea69b40/go.mod h1:uqRjCRUuEAA6qsOiJvDd+CFo/vW+y5WR6SNmHE55hZk=
+github.com/kdoctor-io/dns v0.0.0-20231123074630-7b2e2fc81556 h1:5wa8cYpP1I3VMoX1WGOnDp2VmjEVgA481CIPTVNkBQE=
+github.com/kdoctor-io/dns v0.0.0-20231123074630-7b2e2fc81556/go.mod h1:uqRjCRUuEAA6qsOiJvDd+CFo/vW+y5WR6SNmHE55hZk=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/klauspost/compress v1.13.6/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=

@@ -184,6 +184,7 @@ func (b *Work) Run() {
 	go func() {
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
 		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
 		// The request should be sent immediately at 0 seconds
 		for i := 0; i < b.QPS; i++ {
 			b.qosTokenBucket <- struct{}{}
@@ -192,6 +193,8 @@ func (b *Work) Run() {
 		for {
 			select {
 			case <-c:
+				// Wait for the last request to return
+				time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
 				// Reach request duration stop request
 				if len(b.qosTokenBucket) > 0 {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))

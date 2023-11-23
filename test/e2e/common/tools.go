@@ -887,6 +887,7 @@ func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingr
 	<-c
 
 	switch resource.RuntimeType {
+
 	case kdoctor_types.KindDaemonSet:
 		_, err := f.GetDaemonSet(resource.RuntimeName, TestNameSpace)
 		if !errors.IsNotFound(err) {
