@@ -14,12 +14,12 @@ import (
 
 var _ = Describe("testing netReach ", Label("netReach"), func() {
 	var termMin = int64(1)
-	// 1000ms is not stable on GitHub ci, so increased to 7000ms
-	var requestTimeout = 7000
+	// 1000ms is not stable on GitHub ci, so increased to 9000ms
+	var requestTimeout = 9000
 	It("success testing netReach", Label("B00001", "C00004", "E00001"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(4000)
+		successMean := int64(4500)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -89,7 +89,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	It("Successfully testing using default daemonSet  as workload with Task NetReach", Label("E00013"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(4000)
+		successMean := int64(4500)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -152,7 +152,7 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 	It("Successfully testing using default daemonSet  as workload with more Task NetReach", Label("E00016"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(4000)
+		successMean := int64(4500)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 

@@ -320,7 +320,7 @@ github.com/mattn/go-isatty
 # github.com/matttproud/golang_protobuf_extensions v1.0.4
 ## explicit; go 1.9
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/miekg/dns v1.1.50 => github.com/kdoctor-io/dns v0.0.0-20231117104519-7085dea69b40
+# github.com/miekg/dns v1.1.50 => github.com/kdoctor-io/dns v0.0.0-20231123074630-7b2e2fc81556
 ## explicit; go 1.19
 github.com/miekg/dns
 # github.com/mitchellh/copystructure v1.2.0

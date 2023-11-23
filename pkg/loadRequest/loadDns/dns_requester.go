@@ -101,6 +101,7 @@ func (b *Work) Run() {
 	go func() {
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
 		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
 		// The request should be sent immediately at 0 seconds
 		for i := 0; i < b.QPS; i++ {
 			b.qosTokenBucket <- struct{}{}
@@ -199,6 +200,22 @@ func (b *Work) runWorker() {
 		case <-b.stopCh:
 			wg.Wait()
 			if RequestProtocol(b.Protocol) == RequestMethodUdp {
+				// Wait for the last request to return
+				time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
+				if len(conn.ResponseReceiver) > 0 {
+					for i := 0; i < len(conn.ResponseReceiver); i++ {
+						resp := <-conn.ResponseReceiver
+						e := resp.Err
+						if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
+							e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
+						}
+						b.results <- &result{
+							duration: resp.Rtt,
+							err:      e,
+							msg:      resp.Msg,
+						}
+					}
+				}
 				conn.ShutDownReceiver()
 				conn.Close()
 			}
@@ -209,7 +226,6 @@ func (b *Work) runWorker() {
 			*msg = *b.Msg
 			msg.Id = dns.Id()
 			go b.makeRequest(client, msg, conn, wg)
-
 		case resp := <-conn.ResponseReceiver:
 			e := resp.Err
 			if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
@@ -292,12 +308,10 @@ func (b *Work) makeConn(c *dns.Client) (*dns.Conn, error) {
 	conn.ResponseReceiver = make(chan dns.Response, b.QPS)
 	conn.ShutDown = make(chan struct{})
 	conn.Conn, err = d.Dial(b.Protocol, b.ServerAddr)
-	// write with the appropriate write timeout
-	t := time.Now()
-	writeDeadline := t.Add(time.Duration(b.RequestTimeSecond) * time.Second)
-	readDeadline := t.Add(time.Duration(b.RequestTimeSecond) * time.Second)
-	_ = conn.SetWriteDeadline(writeDeadline)
-	_ = conn.SetReadDeadline(readDeadline)
+
+	// A zero value for t means Read and Write will not time out.
+	_ = conn.SetWriteDeadline(time.Time{})
+	_ = conn.SetReadDeadline(time.Time{})
 
 	conn.TsigSecret, conn.TsigProvider = c.TsigSecret, c.TsigProvider
 	return conn, err
