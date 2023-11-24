@@ -123,8 +123,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 5
-		request.DurationInSecond = 5
+		request.QPS = 10
+		request.DurationInSecond = 10
 		netReach.Spec.Request = request
 
 		// Schedule
@@ -186,8 +186,8 @@ var _ = Describe("testing netReach ", Label("netReach"), func() {
 		// request
 		request := new(v1beta1.NetHttpRequest)
 		request.PerRequestTimeoutInMS = requestTimeout
-		request.QPS = 5
-		request.DurationInSecond = 5
+		request.QPS = 10
+		request.DurationInSecond = 10
 		netReach.Spec.Request = request
 
 		// Schedule
