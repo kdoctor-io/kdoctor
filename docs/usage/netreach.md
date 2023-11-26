@@ -110,13 +110,13 @@ task   true     1               1           succeed           0 1
               EndTime: "2023-08-01T08:37:06Z"
               Errors: {}
               Latencies:
-                Max_inMx: 0
-                Mean_inMs: 23.08
-                Min_inMs: 0
-                P50_inMs: 0
-                P90_inMs: 0
-                P95_inMs: 0
-                P99_inMs: 0
+                MaxInMs: 0
+                MeanInMs: 23.08
+                MinInMs: 0
+                P50InMs: 0
+                P90InMs: 0
+                P95InMs: 0
+                P99InMs: 0
               RequestCounts: 100
               StartTime: "2023-08-01T08:36:56Z"
               StatusCodes:

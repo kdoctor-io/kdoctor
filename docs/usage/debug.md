@@ -39,3 +39,8 @@
           NetReachQPS: 0
         ...
        ```
+**Q: Why does the Kdoctor agent experience OOM (Out of Memory) issues ？**
+* A: The Kdoctor agent serves as the default agent for executing tasks when no specific agent is specified in the task. Currently, the agent does not support features to reject or delay task execution based on the workload. 
+     Therefore, when the Kdoctor agent concurrently handles a large number of tasks, the high request volume combined with low memory limits can lead to memory overload and result in OOM (Out of Memory) errors.
+     To mitigate this issue, you can stagger the usage of the Kdoctor agent based on the task workload, adjust the memory limits accordingly, or isolate tasks using specific agents that are better suited for the workload.
+
