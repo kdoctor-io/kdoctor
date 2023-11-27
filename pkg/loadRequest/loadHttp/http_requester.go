@@ -200,8 +200,6 @@ func (b *Work) Run() {
 			select {
 			case <-c:
 				b.Logger.Sugar().Debugf("reach request duration time, stop request")
-				// Wait for the last request to return
-				time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
 				// Reach request duration stop request
 				if len(b.qosTokenBucket) > 0 {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))

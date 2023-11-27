@@ -210,9 +210,9 @@ func (b *Work) runWorker() {
 		select {
 		case <-b.stopCh:
 			wg.Wait()
+			// Wait for the last request to return
+			time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
 			if RequestProtocol(b.Protocol) == RequestMethodUdp {
-				// Wait for the last request to return
-				time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
 				if len(conn.ResponseReceiver) > 0 {
 					for i := 0; i < len(conn.ResponseReceiver); i++ {
 						resp := <-conn.ResponseReceiver
