@@ -99,6 +99,9 @@ func (b *Work) Run() {
 
 	// Send qps number of tokens to the channel qosTokenBucket every second to the coroutine for execution
 	go func() {
+		// Request token counter to avoid issuing multiple tokens due to errors
+		requestRound := 0
+
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
@@ -106,10 +109,13 @@ func (b *Work) Run() {
 		for i := 0; i < b.QPS; i++ {
 			b.qosTokenBucket <- struct{}{}
 		}
+		requestRound++
+
 		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 		for {
 			select {
 			case <-c:
+				b.Logger.Sugar().Debugf("reach request duration time, stop request")
 				// Reach request duration stop request
 				if len(b.qosTokenBucket) > 0 {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
@@ -118,10 +124,15 @@ func (b *Work) Run() {
 				b.Stop()
 				return
 			case <-ticker.C:
+				if requestRound >= b.RequestTimeSecond {
+					b.Logger.Sugar().Debugf("All request tokens have been sent and will not be sent again.")
+					continue
+				}
 				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 				for i := 0; i < b.QPS; i++ {
 					b.qosTokenBucket <- struct{}{}
 				}
+				requestRound++
 			}
 		}
 	}()
