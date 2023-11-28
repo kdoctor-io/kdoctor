@@ -198,7 +198,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 
 	}
 
-	var reportList []v1beta1.NetDNSTaskDetail
+	reportList := make([]v1beta1.NetDNSTaskDetail, 0, len(testTargetList))
 
 	var wg sync.WaitGroup
 	var l lock.Mutex

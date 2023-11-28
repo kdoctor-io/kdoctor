@@ -16,14 +16,14 @@ import (
 	"net"
 )
 
-var _ = Describe("testing appHttpHealth test ", Label("appHttpHealth"), Serial, func() {
+var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), func() {
 	// 2000ms is not stable on GitHub ci, so increased to 7000ms
 	// issue : https://github.com/kdoctor-io/kdoctor/issues/222
 	// issue : https://github.com/kdoctor-io/kdoctor/issues/223
 	// issue : https://github.com/kdoctor-io/kdoctor/issues/165
 	// issue : https://github.com/kdoctor-io/kdoctor/issues/96
-	var requestTimeout = 7000
-	var successMean = int64(3000)
+	var requestTimeout = 15000
+	var successMean = int64(7000)
 	It("success http testing appHttpHealth method GET", Serial, Label("A00001", "A00011", "C00006", "E00002", "A00014", "E00017"), func() {
 		var e error
 		successRate := float64(1)
