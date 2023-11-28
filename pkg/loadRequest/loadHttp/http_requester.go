@@ -53,10 +53,6 @@ const MaxResultChannelSize = 1000000
 type result struct {
 	err           error
 	duration      time.Duration
-	connDuration  time.Duration // connection setup(DNS lookup + Dial up) duration
-	dnsDuration   time.Duration // dns lookup duration
-	reqDuration   time.Duration // request "write" duration
-	resDuration   time.Duration // response "read" duration
 	statusCode    int
 	contentLength int64
 }
@@ -244,8 +240,8 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	defer wg.Done()
 	s := b.now()
 	var size int64
-	var dnsStart, connStart, resStart time.Duration
-	var dnsDuration, connDuration, resDuration, reqDuration time.Duration
+	var dnsStart, connStart, resStart, reqStart, delayStart time.Duration
+	var dnsDuration, connDuration, resDuration, reqDuration, delayDuration time.Duration
 	req := genRequest(b.Request, b.RequestBody)
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(info httptrace.DNSStartInfo) {
@@ -261,6 +257,15 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 			if !connInfo.Reused {
 				connDuration = b.now() - connStart
 			}
+			reqStart = b.now()
+		},
+		WroteRequest: func(w httptrace.WroteRequestInfo) {
+			reqDuration = b.now() - reqStart
+			delayStart = b.now()
+		},
+		GotFirstResponseByte: func() {
+			delayDuration = b.now() - delayStart
+			resStart = b.now()
 		},
 	}
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
@@ -278,6 +283,12 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		statusCode = resp.StatusCode
 	} else {
 		statusCode = 0
+		b.Logger.Sugar().Debugf("request err: %v", err)
+		b.Logger.Sugar().Debugf("connection setup(DNS lookup + Dial up) duration: %d", connDuration.Milliseconds())
+		b.Logger.Sugar().Debugf("dns lookup duration: %d", dnsDuration.Milliseconds())
+		b.Logger.Sugar().Debugf("request write duration: %d", reqDuration.Milliseconds())
+		b.Logger.Sugar().Debugf("response read duration: %d", resDuration.Milliseconds())
+		b.Logger.Sugar().Debugf("delay between response and request: %d", delayDuration.Milliseconds())
 	}
 	if b.ExpectStatusCode != nil {
 		if statusCode != *b.ExpectStatusCode {
@@ -292,10 +303,6 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		statusCode:    statusCode,
 		err:           err,
 		contentLength: size,
-		connDuration:  connDuration,
-		dnsDuration:   dnsDuration,
-		reqDuration:   reqDuration,
-		resDuration:   resDuration,
 	}
 }
 
