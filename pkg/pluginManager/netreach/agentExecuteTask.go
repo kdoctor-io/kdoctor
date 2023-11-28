@@ -283,7 +283,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	}
 
 	// ------------------------ implement for agent case and selected-pod case
-	var reportList []v1beta1.NetReachTaskDetail
+	reportList := make([]v1beta1.NetReachTaskDetail, 0, len(testTargetList))
 
 	var wg sync.WaitGroup
 	var l lock.Mutex
@@ -299,7 +299,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 			}
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *d)
-			failureReason, itemReport := SendRequestAndReport(logger, t.Name, d, successCondition)
+			failureReason, itemReport := SendRequestAndReport(logger.With(zap.String("url", t.Url)), t.Name, d, successCondition)
 			l.Lock()
 			if len(failureReason) > 0 {
 				finalfailureReason = fmt.Sprintf("test %v: %v", t.Name, failureReason)

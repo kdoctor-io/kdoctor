@@ -110,6 +110,7 @@ func (b *Work) Run() {
 			b.qosTokenBucket <- struct{}{}
 		}
 		requestRound++
+		b.Logger.Sugar().Debugf("send token %d times", requestRound)
 
 		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 		for {
@@ -133,6 +134,7 @@ func (b *Work) Run() {
 					b.qosTokenBucket <- struct{}{}
 				}
 				requestRound++
+				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 			}
 		}
 	}()
