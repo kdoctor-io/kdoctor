@@ -242,41 +242,32 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	defer wg.Done()
 	s := b.now()
 	var size int64
-	var dnsStart, connStart, resStart, reqStart, delayStart time.Duration
-	var dnsDuration, connDuration, resDuration, reqDuration, delayDuration time.Duration
 	req := genRequest(b.Request, b.RequestBody)
+	var t0, t1, t2, t3, t4, t5, t6 time.Time
 	trace := &httptrace.ClientTrace{
-		DNSStart: func(info httptrace.DNSStartInfo) {
-			dnsStart = b.now()
-		},
-		DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
-			dnsDuration = b.now() - dnsStart
-		},
-		GetConn: func(h string) {
-			connStart = b.now()
-		},
-		GotConn: func(connInfo httptrace.GotConnInfo) {
-			if !connInfo.Reused {
-				connDuration = b.now() - connStart
+		DNSStart: func(_ httptrace.DNSStartInfo) { t0 = time.Now() },
+		DNSDone:  func(_ httptrace.DNSDoneInfo) { t1 = time.Now() },
+		ConnectStart: func(_, _ string) {
+			if t1.IsZero() {
+				t1 = time.Now()
 			}
-			reqStart = b.now()
 		},
-		WroteRequest: func(w httptrace.WroteRequestInfo) {
-			reqDuration = b.now() - reqStart
-			delayStart = b.now()
+		ConnectDone: func(net, addr string, err error) {
+			t2 = time.Now()
+
 		},
-		GotFirstResponseByte: func() {
-			delayDuration = b.now() - delayStart
-			resStart = b.now()
-		},
+		GotConn:              func(_ httptrace.GotConnInfo) { t3 = time.Now() },
+		GotFirstResponseByte: func() { t4 = time.Now() },
+		TLSHandshakeStart:    func() { t5 = time.Now() },
+		TLSHandshakeDone:     func(_ tls.ConnectionState, _ error) { t6 = time.Now() },
 	}
-	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+	req = req.WithContext(httptrace.WithClientTrace(context.Background(), trace))
 	ctx, cancel := context.WithTimeout(req.Context(), time.Duration(b.Timeout)*time.Millisecond)
 	defer cancel()
 	req = req.WithContext(ctx)
 	resp, err := c.Do(req)
 	t := b.now()
-	resDuration = t - resStart
+	t7 := time.Now()
 	finish := t - s
 	var statusCode int
 	if err == nil {
@@ -285,12 +276,15 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		statusCode = resp.StatusCode
 	} else {
 		statusCode = 0
+		if t0.IsZero() {
+			t0 = t1
+		}
 		b.Logger.Sugar().Debugf("request err: %v", err)
-		b.Logger.Sugar().Debugf("connection setup(DNS lookup + Dial up) duration: %d", connDuration.Milliseconds())
-		b.Logger.Sugar().Debugf("dns lookup duration: %d", dnsDuration.Milliseconds())
-		b.Logger.Sugar().Debugf("request write duration: %d", reqDuration.Milliseconds())
-		b.Logger.Sugar().Debugf("response read duration: %d", resDuration.Milliseconds())
-		b.Logger.Sugar().Debugf("delay between response and request: %d", delayDuration.Milliseconds())
+		b.Logger.Sugar().Debugf("dns lookup duration: %d", t1.Sub(t0).Milliseconds())
+		b.Logger.Sugar().Debugf("tls handshake duration: %d", t6.Sub(t5).Milliseconds())
+		b.Logger.Sugar().Debugf("tcp connection duration: %d", t2.Sub(t1).Milliseconds())
+		b.Logger.Sugar().Debugf("server processing duration: %d", t4.Sub(t3).Milliseconds())
+		b.Logger.Sugar().Debugf("content transfer duration: %d", t7.Sub(t4).Milliseconds())
 	}
 	if b.ExpectStatusCode != nil {
 		if statusCode != *b.ExpectStatusCode {
