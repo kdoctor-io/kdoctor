@@ -130,6 +130,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait netDns task finish")
 
 		success, e := common.CompareResult(frame, netDnsName, pluginManager.KindNameNetdns, testPodIPs, reportNum, netDns)
+
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 
@@ -186,6 +187,7 @@ var _ = Describe("testing netDns ", Label("netDns"), func() {
 		Expect(e).NotTo(HaveOccurred(), "wait netDns task finish")
 
 		success, e := common.CompareResult(frame, netDnsName, pluginManager.KindNameNetdns, testPodIPs, reportNum, netDns)
+
 		Expect(e).NotTo(HaveOccurred(), "compare report and task")
 		Expect(success).To(BeTrue(), "compare report and task result")
 	})
