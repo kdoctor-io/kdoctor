@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -933,6 +957,26 @@
   
   <span class="md-ellipsis">
     Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
   </span>
   
 
@@ -1013,15 +1057,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    1.非高可用安装
+  <a href="#_5" class="md-nav__link">
+    非高可用安装
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    2.高可用安装
+  <a href="#_6" class="md-nav__link">
+    高可用安装
   </a>
   
 </li>
@@ -1083,13 +1127,13 @@ helm repo update kdoctor
 </code></pre>
 <h3 id="kdoctor">安装 kdoctor</h3>
 <p>kdoctor 可以根据不同的需求进行安装，以下为几个场景的推荐安装方式</p>
-<h4 id="1">1.非高可用安装</h4>
-<p>以下方法 kdoctor agent 只将报告打印到标准输出</p>
+<h4 id="_5">非高可用安装</h4>
+<p>以下方法 kdoctor agent 只将报告打印到标准输出：</p>
 <pre><code class="language-shell">helm install kdoctor kdoctor/kdoctor \
     -n kdoctor --debug --create-namespace 
 </code></pre>
-<h4 id="2">2.高可用安装</h4>
-<p>以下方法将 kdoctor-controller 的收集报告引导到存储，因此,需要安装storageClass</p>
+<h4 id="_6">高可用安装</h4>
+<p>以下方法将 kdoctor-controller 的收集报告引导到存储，因此,需要安装 storageClass</p>
 <pre><code class="language-shell">
 helm  install kdoctor kdoctor/kdoctor \
     -n kdoctor --debug --create-namespace \

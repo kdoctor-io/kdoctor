@@ -489,6 +489,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -568,6 +570,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -855,8 +877,17 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Performance
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -867,6 +898,64 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nethttp" class="md-nav__link">
+    Nethttp
+  </a>
+  
+    <nav class="md-nav" aria-label="Nethttp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http11" class="md-nav__link">
+    Http1.1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http2" class="md-nav__link">
+    Http2
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns" class="md-nav__link">
+    Netdns
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -887,6 +976,8 @@
   
     
     
+      
+        
       
         
       
@@ -960,6 +1051,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -984,8 +1095,55 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nethttp" class="md-nav__link">
+    Nethttp
+  </a>
+  
+    <nav class="md-nav" aria-label="Nethttp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http11" class="md-nav__link">
+    Http1.1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http2" class="md-nav__link">
+    Http2
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#netdns" class="md-nav__link">
+    Netdns
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1003,12 +1161,14 @@
   
 
 
-<h1 id="environment">environment</h1>
+  <h1>Performance</h1>
+
+<h2 id="environment">Environment</h2>
 <ul>
 <li>Kubenetes: <code>v1.25.4</code></li>
-<li>container runtime: <code>containerd 1.6.12</code></li>
+<li>Container runtime: <code>containerd 1.6.12</code></li>
 <li>OS: <code>CentOS Linux 8</code></li>
-<li>kernel: <code>4.18.0-348.7.1.el8_5.x86_64</code></li>
+<li>Kernel: <code>4.18.0-348.7.1.el8_5.x86_64</code></li>
 </ul>
 <table>
 <thead>
@@ -1082,17 +1242,17 @@
 </tr>
 </tbody>
 </table>
-<h1 id="nethttp">Nethttp</h1>
-<p>In a pod with a CPU of 1 </p>
-<p>The test server is a server that sleeps for one second and then returns</p>
-<h2 id="http11">Http1.1</h2>
+<h2 id="nethttp">Nethttp</h2>
+<p>The test is conducted in a pod with a CPU of 1 core.</p>
+<p>The test server is a server that sleeps for one second and then returns.</p>
+<h3 id="http11">Http1.1</h3>
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1130,10 +1290,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1171,10 +1331,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1209,14 +1369,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="http2">Http2</h2>
+<h3 id="http2">Http2</h3>
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1240,10 +1400,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1267,10 +1427,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1291,15 +1451,15 @@
 </tr>
 </tbody>
 </table>
-<h1 id="netdns">Netdns</h1>
-<p>In a pod with a CPU of 1</p>
+<h2 id="netdns">Netdns</h2>
+<p>The test is conducted in a Pod with a CPU of 1 core.</p>
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1323,10 +1483,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>
@@ -1350,10 +1510,10 @@
 <table>
 <thead>
 <tr>
-<th>client</th>
-<th>time</th>
-<th>requests</th>
-<th>qps</th>
+<th>Client</th>
+<th>Time</th>
+<th>Requests</th>
+<th>QPS</th>
 <th>Memory</th>
 </tr>
 </thead>

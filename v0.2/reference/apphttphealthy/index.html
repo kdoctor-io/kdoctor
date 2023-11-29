@@ -489,6 +489,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -568,6 +570,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -855,7 +877,7 @@
         
           <li class="md-nav__item">
   <a href="#tls" class="md-nav__link">
-    Tls
+    TLS
   </a>
   
 </li>
@@ -867,10 +889,10 @@
         
           <li class="md-nav__item">
   <a href="#status" class="md-nav__link">
-    status
+    Status
   </a>
   
-    <nav class="md-nav" aria-label="status">
+    <nav class="md-nav" aria-label="Status">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1038,6 +1060,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1097,6 +1121,26 @@
   
   <span class="md-ellipsis">
     Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
   </span>
   
 
@@ -1220,7 +1264,7 @@
         
           <li class="md-nav__item">
   <a href="#tls" class="md-nav__link">
-    Tls
+    TLS
   </a>
   
 </li>
@@ -1232,10 +1276,10 @@
         
           <li class="md-nav__item">
   <a href="#status" class="md-nav__link">
-    status
+    Status
   </a>
   
-    <nav class="md-nav" aria-label="status">
+    <nav class="md-nav" aria-label="Status">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1276,7 +1320,7 @@
 <h1 id="apphttphealthy">AppHttpHealthy</h1>
 <p><a href="../apphttphealthy-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
 <h2 id="basic-description">Basic description</h2>
-<p>For this kind of task, kdoctor-controller generates the corresponding <a href="../../concepts/runtime/">agent</a> and other resources. Each agent pod sends an http request to the specified target and gets the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. And, detailed reports can be obtained through the aggregation API.</p>
+<p>For this kind of task, kdoctor-controller generates the corresponding <a href="../../concepts/runtime/">agent</a> and other resources. Each agent Pod sends an HTTP request to the specified target and gets the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. And, detailed reports can be obtained through the aggregation API.</p>
 <h2 id="apphttphealthy-example">AppHttpHealthy Example</h2>
 <pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
 kind: AppHttpHealthy
@@ -1335,10 +1379,10 @@ status:
 </thead>
 <tbody>
 <tr>
-<td>name</td>
-<td>Name of the AppHttpHealthy resource</td>
-<td>string</td>
-<td>mandatory</td>
+<td>Name</td>
+<td>Name of the AppHttpHealthy Resource</td>
+<td>String</td>
+<td>Required</td>
 </tr>
 </tbody>
 </table>
@@ -1346,52 +1390,52 @@ status:
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>validation</th>
-<th>values</th>
-<th>default</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>agentSpec</td>
-<td>task execution agent configuration</td>
+<td>Task Execution Agent Configuration</td>
 <td><a href="./#agentspec">agentSpec</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>schedule</td>
+<td>Schedule</td>
 <td>Scheduling Task Execution</td>
 <td><a href="./#schedule">schedule</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>request</td>
-<td>Request configuration for a destination address</td>
+<td>Request</td>
+<td>Request Configuration for a Destination Address</td>
 <td><a href="./#request">request</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>target</td>
-<td>Request target settings</td>
+<td>Target</td>
+<td>Request Target Settings</td>
 <td><a href="./#target">target</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>expect</td>
-<td>Task success condition judgment</td>
+<td>Expect</td>
+<td>Task Success Condition Judgment</td>
 <td><a href="./#expect">expect</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
@@ -1411,18 +1455,18 @@ status:
 </thead>
 <tbody>
 <tr>
-<td>annotation</td>
-<td>annotation of agent workload</td>
-<td>map[string]string</td>
-<td>optional</td>
+<td>Annotation</td>
+<td>Annotation of Agent Workload</td>
+<td>Map[string]String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>kind</td>
-<td>type of agent workload</td>
-<td>string</td>
-<td>optional</td>
+<td>Kind</td>
+<td>Type of Agent Workload</td>
+<td>String</td>
+<td>Optional</td>
 <td>Deployment, DaemonSet</td>
 <td>DaemonSet</td>
 </tr>
@@ -1430,48 +1474,48 @@ status:
 <td>deploymentReplicas</td>
 <td>The expected number of replicas when the agent workload type is deployment</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 0</td>
+<td>Optional</td>
+<td>Greater than or Equal to 0</td>
 <td>0</td>
 </tr>
 <tr>
-<td>affinity</td>
-<td>agent workload affinity</td>
+<td>Affinity</td>
+<td>Agent Workload Affinity</td>
 <td>labelSelector</td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>env</td>
-<td>agent workload environment variable</td>
+<td>Agent Workload Environment Variable</td>
 <td>env</td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>hostNetwork</td>
-<td>agent Whether or not the workload uses the host network</td>
-<td>bool</td>
-<td>optional</td>
-<td>true, false</td>
-<td>false</td>
+<td>Whether or not the agent workload uses the host network</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True, false</td>
+<td>False</td>
 </tr>
 <tr>
-<td>resources</td>
-<td>agent workload resource usage configuration</td>
-<td>resources</td>
-<td>optional</td>
+<td>Resources</td>
+<td>Agent Workload Resource Usage Configuration</td>
+<td>Resources</td>
+<td>Optional</td>
 <td></td>
-<td>limit cpu:1000m,memory:1024Mi</td>
+<td>Limit CPU:1000m,Memory:1024Mi</td>
 </tr>
 <tr>
 <td>terminationGracePeriodMinutes</td>
-<td>agent How many minutes after a workload completes a task before it terminates</td>
+<td>the minutes after a agent workload completes a task before it terminates</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 0</td>
+<td>Optional</td>
+<td>Greater than or equal to 0</td>
 <td>60</td>
 </tr>
 </tbody>
@@ -1491,15 +1535,15 @@ status:
 <tbody>
 <tr>
 <td>roundNumber</td>
-<td>task execution rounds</td>
+<td>Task Execution Rounds</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to -1, -1 means permanent, greater than 0 means rounds will be executed</td>
+<td>Optional</td>
+<td>A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed</td>
 <td>1</td>
 </tr>
 <tr>
 <td>roundTimeoutMinute</td>
-<td>Task timeout, need to be greater than durationInSecond and task execution time</td>
+<td>Task timeout which needs to be greater than durationInSecond and task execution time</td>
 <td>int</td>
 <td>optional</td>
 <td>greater than or equal to 1</td>
@@ -1522,32 +1566,32 @@ status:
 <tbody>
 <tr>
 <td>durationInSecond</td>
-<td>Duration of request send pressure for each round of tasks less than roundTimeoutMinute</td>
+<td>Duration of request send pressure for each round of tasks which is less than roundTimeoutMinute</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>2</td>
 </tr>
 <tr>
 <td>perRequestTimeoutInMS</td>
-<td>timeout per request, not greater than durationInSecond</td>
+<td>Timeout per request, not greater than durationInSecond</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>500</td>
 </tr>
 <tr>
-<td>qps</td>
+<td>QPS</td>
 <td>Number of requests per second per agent</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>5</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>Note: When using agent requests, all agents will make requests to the destination address, so the actual qps received by the server is equal to the number of agents * the set qps.</p>
+<p>When using agent requests, all agents will make requests to the destination address, so the actual QPS received by the server is equal to the number of agents multiplied by the set QPS.</p>
 </blockquote>
 <h4 id="target">Target</h4>
 <table>
@@ -1563,32 +1607,32 @@ status:
 </thead>
 <tbody>
 <tr>
-<td>host</td>
-<td>http request address</td>
-<td>string</td>
+<td>Host</td>
+<td>HTTP Request Address</td>
+<td>String</td>
 <td></td>
 <td>Required</td>
 <td></td>
 </tr>
 <tr>
-<td>method</td>
-<td>http request method</td>
-<td>string</td>
-<td>mandatory</td>
+<td>Method</td>
+<td>HTTP Request Method</td>
+<td>String</td>
+<td>Required</td>
 <td>GET, POST, PUT, DELETE, CONNECT, OPTIONS, PATCH, HEAD</td>
 <td></td>
 </tr>
 <tr>
 <td>bodyConfigmapName</td>
-<td>The name of the configmap stored in the body of the http request, <a href="./#body">configmap content reference</a></td>
-<td></td>
-<td></td>
+<td>The name of the configmap stored in the body of the HTTP request. Refer to <a href="./#body">configmap</a>. If you don't need a body request, ignore this field.</td>
+<td>String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>bodyConfigmapNamespace</td>
-<td>http request body's configmap namespace, if bodyConfigmapName is not empty, need to set this field</td>
+<td>HTTP request body's configmap namespace. If bodyConfigmapName is not empty, you need to set this field</td>
 <td>string</td>
 <td>optional</td>
 <td></td>
@@ -1596,48 +1640,48 @@ status:
 </tr>
 <tr>
 <td>tlsSecretName</td>
-<td>The name of the secret where the https request certificate is stored, with a secret of type kubernetes.io/tls, <a href="./#tls">secret content reference</a>, ignore this field if using a protocol other than https</td>
-<td>string</td>
-<td></td>
+<td>The name of the secret where the HTTPs request certificate is stored, with a secret of type kubernetes.io/tls. Refer to <a href="./#tls">secret</a>. Ignore this field if using a protocol other than HTTPs</td>
+<td>String</td>
 <td>optional</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td>tlsSecretNamespace</td>
-<td>The secret namespace where the https request certificate is stored, if the tlsSecretName field is not null, you need to set this field</td>
-<td>string</td>
-<td>optional</td>
+<td>The secret namespace where the HTTPs request certificate is stored. If the tlsSecretName field is not null, you need to set this field</td>
+<td>String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>header</td>
-<td>http request header, as an array, for example "Content-Type: application/json"</td>
-<td>elements are an array of strings</td>
-<td>optional</td>
+<td>HTTP request header, in the form of an array, for example "Content-Type: application/json"</td>
+<td>Elements are an array of strings</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>http2</td>
-<td>Use the request using http2 protocol switch</td>
+<td>HTTP2</td>
+<td>Use the request HTTP2 protocol switch</td>
 <td>bool</td>
-<td>optional</td>
-<td>true,false</td>
-<td>false</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
 </tr>
 <tr>
 <td>enableLatencyMetric</td>
-<td>Statistical demo distribution, turn it on to increase memory usage</td>
-<td>bool</td>
-<td>optional</td>
-<td>true,false</td>
-<td>false</td>
+<td>Statistics demo distribution, which increases memory usage when turned on</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
 </tr>
 </tbody>
 </table>
 <h4 id="expect">Expect</h4>
-<p>Task success condition, if the task result does not meet the expected condition, the task fails.</p>
+<p>Task success condition. If the task result does not meet the expected condition, the task fails.</p>
 <table>
 <thead>
 <tr>
@@ -1652,32 +1696,32 @@ status:
 <tbody>
 <tr>
 <td>meanAccessDelayInMs</td>
-<td>meanAccessDelayInMs</td>
-<td>The average delay, if the final result exceeds this value, the task will be judged as failed</td>
+<td>The average delay. If the final result exceeds this value, the task will be judged as failed</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>5000</td>
 </tr>
 <tr>
 <td>successRate</td>
-<td>The success rate of the http request, if the final result is less than this value, the task will fail</td>
-<td>float</td>
-<td>optional</td>
+<td>Success rate of the HTTP request. If the final result is less than this value, the task will fail</td>
+<td>Float</td>
+<td>Optional</td>
 <td>0-1</td>
 <td>1</td>
 </tr>
 <tr>
 <td>statusCode</td>
-<td>The status code to expect from the http request, if the final result is not equal to this value, the task will be judged as failed</td>
+<td>The expected HTTP return status code. If the final result is not equal to this value, the task will be determined to have failed</td>
 <td>int</td>
-<td>optional</td>
+<td>Optional</td>
 <td>0-600</td>
 <td>200</td>
 </tr>
 </tbody>
 </table>
 <h4 id="body">Body</h4>
-<p>Carrying a body request, example of how to write a body</p>
+<p>Carry a body request. Example of how to write a body</p>
 <pre><code class="language-yaml">apiVersion: v1
 kind: ConfigMap
 metadata: name: kdoctor-test-body-5656-89207258
@@ -1687,8 +1731,8 @@ data: kdoctor-test-body-5656-89207258 namespace: kdoctor
   test1: test1
   test2: test2
 </code></pre>
-<h4 id="tls">Tls</h4>
-<p>If you don't fill in the ca certificate when using certificate for https request, the certificate security will not be verified, https request certificate example.</p>
+<h4 id="tls">TLS</h4>
+<p>If you don't fill in the CA certificate when using certificate for HTTPs request, the certificate security will not be verified, HTTPs request certificate example:</p>
 <pre><code class="language-yaml">apiVersion: v1
 data: ca.crt: xxxxxxx
   ca.crt: xxxxxxxxxxxbase64
@@ -1700,44 +1744,44 @@ metadata.
   namespace: kdoctor
 type: kubernetes.io/tls
 </code></pre>
-<h3 id="status">status</h3>
+<h3 id="status">Status</h3>
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structures</th>
-<th>values</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Values</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>doneRound</td>
-<td>number of completed task rounds</td>
+<td>Number of completed task rounds</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
 <td>expectedRound</td>
-<td>number of rounds expected to be performed</td>
+<td>Number of rounds expected to be performed</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
-<td>finish</td>
+<td>Finish</td>
 <td>Whether the task is complete or not</td>
-<td>bool</td>
-<td>true, false</td>
+<td>Bool</td>
+<td>True, false</td>
 </tr>
 <tr>
 <td>lastRoundStatus</td>
 <td>lastRoundStatus</td>
-<td>string</td>
-<td>notstarted, on-going, succeed, fail</td>
+<td>String</td>
+<td>Notstarted, on-going, succeed, fail</td>
 </tr>
 <tr>
-<td>history</td>
-<td>Task history</td>
+<td>History</td>
+<td>Task History</td>
 <td>Element is <a href="./#history">history</a> array</td>
 <td></td>
 </tr>
@@ -1756,44 +1800,56 @@ type: kubernetes.io/tls
 <tbody>
 <tr>
 <td>roundNumber</td>
-<td>Task round number</td>
+<td>Task Round Number</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
-<td>status</td>
-<td>Task status</td>
-<td>string</td>
-<td>notstarted, ongoing, succeed, fail</td>
+<td>Status</td>
+<td>Task Status</td>
+<td>String</td>
+<td>Notstarted, ongoing, succeed, fail</td>
 </tr>
 <tr>
 <td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>string</td>
+<td>Start of the current round of tasks</td>
+<td>String</td>
+<td></td>
 </tr>
 <tr>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
 <td>endTimeStamp</td>
-</tr>
-<tr>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-</tr>
-<tr>
-<td>failedAgentNodeList</td>
-<td>failedAgentNodeList</td>
-<td>Array of failed agents</td>
+<td>End of the current round of tasks</td>
 <td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>duration</td>
+<td>Execution time of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>deadLineTimeStamp</td>
+<td>Deadline of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>failedAgentNodeList</td>
+<td>Agent whose tasks failed</td>
+<td>Array of elements as string</td>
+<td></td>
+</tr>
+<tr>
+<td>succeedAgentNodeList</td>
+<td>Agent whose task succeeded</td>
+<td>Array of elements as string</td>
+<td></td>
 </tr>
 <tr>
 <td>notReportAgentNodeList</td>
-<td>agent who did not upload a task report</td>
-<td>array of elements as string</td>
+<td>Agent who did not upload a task report</td>
+<td>Array of elements as string</td>
 <td></td>
 </tr>
 </tbody>

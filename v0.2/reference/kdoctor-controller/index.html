@@ -489,6 +489,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -568,6 +570,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -836,10 +858,10 @@
       
         <li class="md-nav__item">
   <a href="#kdoctor-controller-daemon" class="md-nav__link">
-    kdoctor-controller daemon
+    kdoctor-controller Daemon
   </a>
   
-    <nav class="md-nav" aria-label="kdoctor-controller daemon">
+    <nav class="md-nav" aria-label="kdoctor-controller Daemon">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -949,6 +971,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1017,6 +1041,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1052,10 +1096,10 @@
       
         <li class="md-nav__item">
   <a href="#kdoctor-controller-daemon" class="md-nav__link">
-    kdoctor-controller daemon
+    kdoctor-controller Daemon
   </a>
   
-    <nav class="md-nav" aria-label="kdoctor-controller daemon">
+    <nav class="md-nav" aria-label="kdoctor-controller Daemon">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1097,30 +1141,30 @@
 
 <h1 id="kdoctor-controller">kdoctor-controller</h1>
 <p>This page describes CLI options and ENV of kdoctor-controller.</p>
-<h2 id="kdoctor-controller-daemon">kdoctor-controller daemon</h2>
+<h2 id="kdoctor-controller-daemon">kdoctor-controller Daemon</h2>
 <p>Run the kdoctor controller daemon.</p>
 <h3 id="options">Options</h3>
 <table>
 <thead>
 <tr>
-<th>options</th>
-<th>type</th>
-<th>default</th>
-<th>description</th>
+<th>Options</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>--config-dir</td>
-<td>string</td>
+<td>String</td>
 <td>/tmp/config-map/conf.yml</td>
-<td>config file path.</td>
+<td>Config file path.</td>
 </tr>
 <tr>
 <td>--tls-ca-cert</td>
 <td>string</td>
 <td>/etc/tls/ca.crt</td>
-<td>The CA certificate path, The CA is used to validate the certificate.</td>
+<td>The CA certificate path. The CA is used to validate the certificate.</td>
 </tr>
 <tr>
 <td>--tls-server-cert</td>
@@ -1150,7 +1194,7 @@
 <td>--configmap-pod-template</td>
 <td>string</td>
 <td>/tmp/configmap-app-template/pod.yml</td>
-<td>The configmap pod template file path.</td>
+<td>The configmap Pod template file path.</td>
 </tr>
 <tr>
 <td>--configmap-service-template</td>
@@ -1170,20 +1214,20 @@
 <table>
 <thead>
 <tr>
-<th>env</th>
-<th>default</th>
-<th>description</th>
+<th>Env</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>ENV_LOG_LEVEL</td>
-<td>info</td>
-<td>Log level, optional values are "debug", "info", "warn", "error", "fatal", "panic".</td>
+<td>Info</td>
+<td>Log level.Optional values are "debug", "info", "warn", "error", "fatal", "panic".</td>
 </tr>
 <tr>
 <td>ENV_ENABLED_METRIC</td>
-<td>false</td>
+<td>False</td>
 <td>Enable/disable metrics.</td>
 </tr>
 <tr>
@@ -1198,33 +1242,33 @@
 </tr>
 <tr>
 <td>ENV_ENABLE_AGGREGATE_AGENT_REPORT</td>
-<td>false</td>
-<td>enable aggregate report</td>
+<td>False</td>
+<td>Enable aggregate report</td>
 </tr>
 <tr>
 <td>ENV_CLEAN_AGED_REPORT_INTERVAL_IN_MINUTE</td>
 <td>10</td>
-<td>clean aggregate report interval in minute</td>
+<td>Clean aggregate report interval in minutes</td>
 </tr>
 <tr>
 <td>ENV_COLLECT_AGENT_REPORT_INTERVAL_IN_SECOND</td>
 <td>600</td>
-<td>collect agent report interval time</td>
+<td>Collect agent report interval time</td>
 </tr>
 <tr>
 <td>ENV_CONTROLLER_REPORT_AGE_IN_DAY</td>
 <td>30</td>
-<td>controller report age in ady</td>
+<td>Controller report age in ady</td>
 </tr>
 <tr>
 <td>ENV_AGENT_REPORT_STORAGE_PATH</td>
 <td>/report</td>
-<td>aggregate report storage path</td>
+<td>Aggregate report storage path</td>
 </tr>
 <tr>
 <td>ENV_CONTROLLER_REPORT_STORAGE_PATH</td>
 <td>/report</td>
-<td>controller report storage path</td>
+<td>Controller report storage path</td>
 </tr>
 <tr>
 <td>ENV_GOPS_LISTEN_PORT</td>
@@ -1234,7 +1278,7 @@
 <tr>
 <td>ENV_WEBHOOK_PORT</td>
 <td>5722</td>
-<td>controller webhook port</td>
+<td>Controller webhook port</td>
 </tr>
 <tr>
 <td>ENV_PYROSCOPE_PUSH_SERVER_ADDRESS</td>
@@ -1244,12 +1288,12 @@
 <tr>
 <td>ENV_POD_NAME</td>
 <td>""</td>
-<td>controller pod name</td>
+<td>Controller Pod name</td>
 </tr>
 <tr>
 <td>ENV_POD_NAMESPACE</td>
 <td>""</td>
-<td>controller pod namespace</td>
+<td>Controller Pod namespace</td>
 </tr>
 <tr>
 <td>ENV_GOLANG_MAXPROCS</td>
@@ -1259,22 +1303,22 @@
 <tr>
 <td>ENV_DEFAULT_AGENT_NAME</td>
 <td>kdoctor-agent</td>
-<td>default agent name</td>
+<td>Default agent name</td>
 </tr>
 <tr>
 <td>ENV_DEFAULT_AGENT_TYPE</td>
-<td>daemonset</td>
-<td>default agent type</td>
+<td>Daemonset</td>
+<td>Default agent type</td>
 </tr>
 <tr>
 <td>ENV_DEFAULT_AGENT_SERVICE_V4_NAME</td>
 <td>""</td>
-<td>default agent server ipv4 name</td>
+<td>Default agent server IPv4 name</td>
 </tr>
 <tr>
 <td>ENV_DEFAULT_AGENT_SERVICE_V6_NAME</td>
 <td>""</td>
-<td>default agent server ipv6 name</td>
+<td>Default agent server IPv6 name</td>
 </tr>
 </tbody>
 </table>

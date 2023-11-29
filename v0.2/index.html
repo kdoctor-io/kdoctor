@@ -440,8 +440,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feature" class="md-nav__link">
-    Feature
+  <a href="#contribution" class="md-nav__link">
+    Contribution
   </a>
   
 </li>
@@ -562,6 +562,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -641,6 +643,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -953,6 +975,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1021,6 +1045,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1076,8 +1120,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feature" class="md-nav__link">
-    Feature
+  <a href="#contribution" class="md-nav__link">
+    Contribution
   </a>
   
 </li>
@@ -1117,40 +1161,37 @@
 <hr />
 <p><strong>English</strong> | <a href="README-zh_CN/"><strong>简体中文</strong></a></p>
 <h2 id="introduction">Introduction</h2>
-<p>kdoctor is a cloud native project of data plane test. Through the pressure injection, it realizes the active inspection for the function and performance of the cluster.</p>
-<p>For the traditional operation and maintenance , the status of clusters and applications is confirmed by collecting information such as metrics, logs, and application status, 
-which could be called passive inspection. However, in some special scenarios, this method may not meet the expected purpose, timeliness, or cluster range, 
-administrators need to manually inject some pressure into the cluster and checkout the cluster status, which could be called active inspection. 
-When the cluster scale is large, or the inspection frequency is high, or the inspection process is complicated, it is hard to implement  manually. These scenarios include:</p>
-<ul>
-<li>
-<p>After deploying a large-scale cluster, administrators want to confirm the network connectivity between all nodes, to find out network failures on a certain 
-    node, or occasional packet loss. In addition, there are many communication ways including POD IP, clusterIP, nodePort, loadbalancerIP, ingress, or even POD multiple network interface, dual-stack IP.</p>
-</li>
-<li>
-<p>It is desired to make sure that PODs on all nodes can access the coredns service, or the resource configuration and the replica number of the coredns are enough to support expected access pressure.</p>
-</li>
-<li>
-<p>Disks are consumables and applications like etcd are sensitive to disk performance. In daily maintenance, administrators want to periodically confirm that local disks performance of all nodes are normal.</p>
-</li>
-<li>
-<p>Actively inject pressure on a service like registry, mysql or api-server, to cooperate with BUG reproduce, or to confirm service performance</p>
-</li>
-</ul>
-<p>kdoctor is a cloud native project of data plane test, which is derived from practices of the production operation and maintenance. Through the pressure injection, it realizes the active inspection for the function and performance of the cluster. kdoctor can be applied to scenarios:</p>
-<ul>
-<li>
-<p>inspection after creating new cluster, daily operation and maintenance. </p>
-</li>
-<li>
-<p>E2E testing, bug reproduction, chaos testing.</p>
-</li>
-</ul>
+<p>kdoctor is a Kubernetes data plane testing component that conducts functional and performance tests on clusters using proactive pressure injection. It addresses the operational needs of network, storage, and applications by adopting a cloud-native approach based on extensive research and abstraction. With its CRD design, kdoctor can seamlessly integrate with observability components.</p>
+<p><strong>kdoctor mainly offers three types of tasks:</strong>
+* <a href="reference/apphttphealthy/">AppHttpHealthy</a>: according to the task configuration, perform connectivity checks using HTTP and HTTPS protocols on specified addresses within or outside the cluster, supporting various request methods such as PUT, GET, and POST.
+* <a href="reference/netreach/">NetReach</a>: conduct connectivity inspections on Pod IP, ClusterIP, NodePort, LoadBalancer IP, Ingress IP, and even Pods with multiple network interfaces or dual-stack IPs.
+* <a href="reference/netdns/">NetDns</a>: perform connectivity checks on designated DNS servers within or outside the cluster, supporting UDP, TCP, and TCP-TLS protocols.</p>
+<p><strong>Advantages of kdoctor over traditional testing components:</strong>
+* By configuring inspection tasks through CRDs, users only need to focus on the inspection targets, frequency, pressure parameters, and expected results.
+* Pressure-injecting agents are dynamically run as Deployments or DaemonSets, achieving the effect of multiple pressure-injecting machines.
+* The execution of tasks utilizes default agents or newly created agents based on the task's spec configurations, enabling resource reuse and task resource isolation.
+* Agents are bound to corresponding resource targets such as ingress and service. Each agent Pod mutually accesses the bound resources according to the task configuration, deriving conclusions from the request results.
+* Through performance optimization, the pressure-injecting client significantly reduces resource consumption during requests.
+* Inspection reports can be generated through various means, including logging, aggregated APIs, and file storage.</p>
 <h2 id="architecture">Architecture</h2>
+<div style="text-align:center">
+  <img src="./images/arch.png" alt="Your Image Description">
+</div>
+
+<p>Components:
+* kdoctor agent: kdoctor controller: a persistent Deployment responsible for CR monitoring, task creation, and task report aggregation.
+* kdoctor agent: dynamically created on-demand as Deployments or DaemonSets to execute tasks.</p>
 <h2 id="quick-start">Quick Start</h2>
-<h2 id="feature">Feature</h2>
+<p><strong>Install</strong>
+* Refer to <a href="usage/install/">Install kdoctor</a> 或 <a href="usage/get-started-kind/">kind Quick Start</a></p>
+<p><strong>Task Get Started</strong>
+* <a href="usage/apphttphealthy/">AppHttpHealthy Get Started</a>
+* <a href="usage/netreach/">NetReach Get Started</a>
+* <a href="usage/netdns/">NetDNS Get Started</a></p>
+<h2 id="contribution">Contribution</h2>
+<p>Refer to the <a href="develop/contributing/">Contribution doc</a>.</p>
 <h2 id="license">License</h2>
-<p>kdoctor is licensed under the Apache License, Version 2.0. See <a href="./LICENSE">LICENSE</a> for the full license text.</p>
+<p>kdoctor is licensed under the Apache License, Version 2.0. See <a href="../LICENSE">LICENSE</a> for the full license text.</p>
 
 
 

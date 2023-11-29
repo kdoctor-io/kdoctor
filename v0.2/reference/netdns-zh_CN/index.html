@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -942,6 +966,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -992,14 +1036,14 @@
         
           <li class="md-nav__item">
   <a href="#dns-server" class="md-nav__link">
-    集群 Dns Server 检查
+    集群 DNS Server 检查
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dns-server_1" class="md-nav__link">
-    指定 dns server 检查
+    指定 DNS server 检查
   </a>
   
 </li>
@@ -1132,10 +1176,10 @@
 <h1 id="netdns">netdns</h1>
 <p><a href="../netdns/"><strong>English</strong></a> | <strong>简体中文</strong></p>
 <h2 id="_1">基本描述</h2>
-<p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent pod 都会向指定的目标发送 Dns 请求，并获得成功率和平均延迟。 它可以指定成功条件来告知结果成功或失败。</p>
+<p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent Pod 都会向指定的目标发送 DNS 请求，并获得成功率和平均延迟。它可以指定成功条件来告知结果成功或失败。</p>
 <h2 id="netdns_1">netdns 示例</h2>
-<h3 id="dns-server">集群 Dns Server 检查</h3>
-<p>对集群内的 dns server（coredns）发送对应请求，获取集群内 dns server 性能状态。</p>
+<h3 id="dns-server">集群 DNS Server 检查</h3>
+<p>对集群内的 DNS server（CoreDNS）发送对应请求，获取集群内 DNS server 性能状态。</p>
 <pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
@@ -1184,8 +1228,8 @@ status:
         - kdoctor-worker
   lastRoundStatus: succeed
 </code></pre>
-<h3 id="dns-server_1">指定 dns server 检查</h3>
-<p>对集群外部的 dns server 发送对应请求，获取集群外部 dns server 性能状态。</p>
+<h3 id="dns-server_1">指定 DNS server 检查</h3>
+<p>对集群外部的 DNS server 发送对应请求，获取集群外部 DNS server 性能状态。</p>
 <pre><code class="language-Yaml">apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
@@ -1245,7 +1289,7 @@ spec:
 <tbody>
 <tr>
 <td>agentSpec</td>
-<td>任务执行agent配置</td>
+<td>任务执行agent 配置</td>
 <td><a href="./#AgentSpec">agentSpec</a></td>
 <td>可选</td>
 <td></td>
@@ -1390,7 +1434,7 @@ spec:
 <td>任务执行时间, 执行时间应小于roundTimeoutMinute</td>
 <td>string</td>
 <td>可选</td>
-<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
+<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M 取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔 1min</td>
 <td>"0 60"</td>
 </tr>
 <tr>
@@ -1445,12 +1489,12 @@ spec:
 <td>请求协议</td>
 <td>string</td>
 <td>可选</td>
-<td>udp、tcp、tcp-tls</td>
-<td>udp</td>
+<td>UDP、TCP、TCP-TLS</td>
+<td>UDP</td>
 </tr>
 <tr>
 <td>domain</td>
-<td>dns 请求解析的域名</td>
+<td>DNS 请求解析的域名</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1459,7 +1503,7 @@ spec:
 </tbody>
 </table>
 <blockquote>
-<p>注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 qps 等于 agent 数量 * 设置的qps。</p>
+<p>注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 QPS 等于 agent 数量 * 设置的 QPS。</p>
 </blockquote>
 <h4 id="target">Target</h4>
 <table>
@@ -1476,7 +1520,7 @@ spec:
 <tbody>
 <tr>
 <td>targetUser</td>
-<td>对用户自定义的 dns server 进行 dns 请求</td>
+<td>对用户自定义的 DNS server 进行 DNS 请求</td>
 <td><a href="./#TargetUser">targetUser</a></td>
 <td>可选</td>
 <td></td>
@@ -1484,7 +1528,7 @@ spec:
 </tr>
 <tr>
 <td>targetDns</td>
-<td>对集群的 dns server（coredns）进行 dns 请求</td>
+<td>对集群的 DNS server（CoreDNS）进行 DNS 请求</td>
 <td><a href="./#TargetDns">targetDns</a></td>
 <td>可选</td>
 <td></td>
@@ -1533,7 +1577,7 @@ spec:
 </tbody>
 </table>
 <h4 id="targetuser">TargetUser</h4>
-<p>测试用户自定义 dns server</p>
+<p>测试用户自定义 DNS server</p>
 <table>
 <thead>
 <tr>
@@ -1548,7 +1592,7 @@ spec:
 <tbody>
 <tr>
 <td>server</td>
-<td>dns server 地址</td>
+<td>DNS server 地址</td>
 <td>string</td>
 <td>必填</td>
 <td></td>
@@ -1556,7 +1600,7 @@ spec:
 </tr>
 <tr>
 <td>port</td>
-<td>dns server 端口</td>
+<td>DNS server 端口</td>
 <td>int</td>
 <td>必填</td>
 <td>1-65535</td>
@@ -1565,7 +1609,7 @@ spec:
 </tbody>
 </table>
 <h4 id="targetdns">TargetDns</h4>
-<p>测试集群内 dns server</p>
+<p>测试集群内 DNS server</p>
 <table>
 <thead>
 <tr>
@@ -1580,7 +1624,7 @@ spec:
 <tbody>
 <tr>
 <td>testIPv4</td>
-<td>测试 ipv4 地址 请求 A 记录</td>
+<td>测试 IPv4 地址 请求 A 记录</td>
 <td>bool</td>
 <td>可选</td>
 <td>true,false</td>
@@ -1588,7 +1632,7 @@ spec:
 </tr>
 <tr>
 <td>testIPv6</td>
-<td>测试 ipv6 地址 请求 AAAA 记录</td>
+<td>测试 IPv6 地址 请求 AAAA 记录</td>
 <td>bool</td>
 <td>可选</td>
 <td>true,false</td>
@@ -1596,7 +1640,7 @@ spec:
 </tr>
 <tr>
 <td>serviceName</td>
-<td>集群 dns server service 地址</td>
+<td>集群 DNS server service 地址</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1604,7 +1648,7 @@ spec:
 </tr>
 <tr>
 <td>serviceNamespace</td>
-<td>集群 dns server service 端口</td>
+<td>集群 DNS server service 端口</td>
 <td>string</td>
 <td>可选</td>
 <td></td>

@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -942,6 +966,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -984,7 +1028,7 @@
       
         <li class="md-nav__item">
   <a href="#kind-kdoctor" class="md-nav__link">
-    Kind 上集群部署 kdoctor
+    在 Kind 集群上部署 kdoctor
   </a>
   
 </li>
@@ -1028,7 +1072,7 @@
 <ul>
 <li>已安装 <a href="https://go.dev/">Go</a></li>
 </ul>
-<h2 id="kind-kdoctor">Kind 上集群部署 kdoctor</h2>
+<h2 id="kind-kdoctor">在 Kind 集群上部署 kdoctor</h2>
 <ol>
 <li>
 <p>克隆 kdoctor 代码仓库到本地主机上，并进入 kdoctor 工程的根目录。</p>
@@ -1047,25 +1091,28 @@ https://github.com/kdoctor-io/kdoctor.git &amp;&amp; cd kdoctor</code></p>
 <p>执行以下命令，创建 Kind 集群，并为您安装 metallb、contour、nginx、kdoctor。</p>
 <p><code>bash
 ~# make e2e_init -e PROJECT_IMAGE_VERSION=KDOCTOR_LATEST_IMAGE_TAG</code></p>
-<p>注意：如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。</p>
-<p><code>bash
-~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true</code></p>
 </li>
 </ol>
+<p>!!! note</p>
+<pre><code>如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。
+
+```bash
+~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true
+```
+</code></pre>
 <h2 id="_2">验证安装</h2>
 <p>在 kdoctor 工程的根目录下执行如下命令，为 kubectl 配置 Kind 集群的 KUBECONFIG。</p>
-<p><code>bash
-   ~# export KUBECONFIG=$(pwd)/test/runtime/kubeconfig_kdoctor.config</code></p>
+<pre><code class="language-bash">~# export KUBECONFIG=$(pwd)/test/runtime/kubeconfig_kdoctor.config
+</code></pre>
 <p>您可以看到如下的内容输出：</p>
-<p>```bash
-   ~# kubectl get nodes 
-   NAME                    STATUS   ROLES           AGE     VERSION
-   kdoctor-control-plane   Ready    control-plane   7m3s    v1.27.1
-   kdoctor-worker          Ready    <none>          6m42s   v1.27.1</p>
-<p>~# kubectll get po -n kdoctor
-   NAME                                  READY   STATUS    RESTARTS   AGE
-   kdoctor-controller-686b75d6d7-ktctx   1/1     Running   0          2m33s
-   ```</p>
+<pre><code class="language-bash">~# kubectl get nodes 
+NAME                    STATUS   ROLES           AGE     VERSION
+kdoctor-control-plane   Ready    control-plane   7m3s    v1.27.1
+kdoctor-worker          Ready    &lt;none&gt;          6m42s   v1.27.1
+~# kubectll get po -n kdoctor
+NAME                                  READY   STATUS    RESTARTS   AGE
+kdoctor-controller-686b75d6d7-ktctx   1/1     Running   0          2m33s
+</code></pre>
 <p>接下来您可以根据您的需要进行任务的布置 <a href="../apphttphealthy-zh_CN/">AppHttpHealthy</a>、<a href="../netreach-zh_CN/">NetReach</a>、<a href="../netdns-zh_CN/">NetDns</a></p>
 <h2 id="_3">卸载</h2>
 <ul>

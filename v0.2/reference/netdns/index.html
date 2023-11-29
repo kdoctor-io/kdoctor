@@ -489,6 +489,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -568,6 +570,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -816,7 +838,7 @@
       
         <li class="md-nav__item">
   <a href="#basic-description" class="md-nav__link">
-    Basic description
+    Basic Description
   </a>
   
 </li>
@@ -831,14 +853,14 @@
         
           <li class="md-nav__item">
   <a href="#cluster-dns-server-check" class="md-nav__link">
-    Cluster Dns Server Check
+    Cluster DNS Server Check
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specify-dns-server-to-check" class="md-nav__link">
-    Specify dns server to check
+  <a href="#specify-dns-server-check" class="md-nav__link">
+    Specify DNS Server Check
   </a>
   
 </li>
@@ -850,10 +872,10 @@
       
         <li class="md-nav__item">
   <a href="#netdns-definition" class="md-nav__link">
-    netdns definition
+    netdns Definition
   </a>
   
-    <nav class="md-nav" aria-label="netdns definition">
+    <nav class="md-nav" aria-label="netdns Definition">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -927,10 +949,10 @@
         
           <li class="md-nav__item">
   <a href="#status" class="md-nav__link">
-    status
+    Status
   </a>
   
-    <nav class="md-nav" aria-label="status">
+    <nav class="md-nav" aria-label="Status">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1058,6 +1080,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1126,6 +1150,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1161,7 +1205,7 @@
       
         <li class="md-nav__item">
   <a href="#basic-description" class="md-nav__link">
-    Basic description
+    Basic Description
   </a>
   
 </li>
@@ -1176,14 +1220,14 @@
         
           <li class="md-nav__item">
   <a href="#cluster-dns-server-check" class="md-nav__link">
-    Cluster Dns Server Check
+    Cluster DNS Server Check
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specify-dns-server-to-check" class="md-nav__link">
-    Specify dns server to check
+  <a href="#specify-dns-server-check" class="md-nav__link">
+    Specify DNS Server Check
   </a>
   
 </li>
@@ -1195,10 +1239,10 @@
       
         <li class="md-nav__item">
   <a href="#netdns-definition" class="md-nav__link">
-    netdns definition
+    netdns Definition
   </a>
   
-    <nav class="md-nav" aria-label="netdns definition">
+    <nav class="md-nav" aria-label="netdns Definition">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1272,10 +1316,10 @@
         
           <li class="md-nav__item">
   <a href="#status" class="md-nav__link">
-    status
+    Status
   </a>
   
-    <nav class="md-nav" aria-label="status">
+    <nav class="md-nav" aria-label="Status">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1315,11 +1359,11 @@
 
 <h1 id="netdns">netdns</h1>
 <p><a href="../netdns-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
-<h2 id="basic-description">Basic description</h2>
-<p>For this kind of task, kdoctor-controller generates the corresponding <a href="../../concepts/runtime/">agent</a> and other resources. Each agent pod sends a Dns request to the specified target and gets the success rate and average latency. It can specify a success condition to inform the result of success or failure.</p>
+<h2 id="basic-description">Basic Description</h2>
+<p>For this kind of task, kdoctor-controller generates the corresponding <a href="../../concepts/runtime/">agent</a> and other resources. Each agent Pod sends a DNS request to the specified target and gets the success rate and average latency. It can specify a success condition to inform the result of success or failure.</p>
 <h2 id="netdns-example">netdns Example</h2>
-<h3 id="cluster-dns-server-check">Cluster Dns Server Check</h3>
-<p>Sends a corresponding request to a dns server (coredns) in a cluster to get the performance status of the dns server in the cluster.</p>
+<h3 id="cluster-dns-server-check">Cluster DNS Server Check</h3>
+<p>Send a corresponding request to a DNS server (CoreDNS) in a cluster to get the performance status of the DNS server in the cluster.</p>
 <pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
@@ -1368,8 +1412,8 @@ status:
         - kdoctor-worker
   lastRoundStatus: succeed
 </code></pre>
-<h3 id="specify-dns-server-to-check">Specify dns server to check</h3>
-<p>Send a corresponding request to a dns server outside the cluster to get the performance status of the dns server outside the cluster.</p>
+<h3 id="specify-dns-server-check">Specify DNS Server Check</h3>
+<p>Send a corresponding request to a DNS server outside the cluster to get its performance status.</p>
 <pre><code class="language-Yaml">apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
@@ -1394,23 +1438,23 @@ spec:
       port: 53
       server: 172.41.54.83
 </code></pre>
-<h2 id="netdns-definition">netdns definition</h2>
+<h2 id="netdns-definition">netdns Definition</h2>
 <h3 id="metadata">Metadata</h3>
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>validation</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>name</td>
-<td>Name of the netdns resource</td>
-<td>string</td>
-<td>required</td>
+<td>Name</td>
+<td>Name of the netdns Resource</td>
+<td>String</td>
+<td>Required</td>
 </tr>
 </tbody>
 </table>
@@ -1418,50 +1462,50 @@ spec:
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>validation</th>
-<th>take values</th>
-<th>default</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Take Values</th>
+<th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>agentSpec</td>
-<td>task execution agent configuration</td>
+<td>Task Execution Agent Configuration</td>
 <td><a href="../apphttphealthy/#agentspec">agentSpec</a></td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>schedule</td>
+<td>Schedule</td>
 <td>Schedule Task Execution</td>
 <td><a href="../apphttphealthy/#schedule">schedule</a></td>
-<td>optional</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>request</td>
-<td>Request configuration for destination address</td>
-<td><a href="../netdns-zh_CN/#Request">request</a></td>
 <td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>target</td>
-<td>Request target settings</td>
-<td><a href="../apphttphealthy/#target">target</a></td>
+<td>Request</td>
+<td>Request Configuration for Destination Address</td>
+<td><a href="./#request">request</a></td>
 <td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>expect</td>
-<td>Task success condition judgment</td>
+<td>Target</td>
+<td>Request Target Settings</td>
+<td><a href="../apphttphealthy/#target">Target</a></td>
+<td>Optional</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Expect</td>
+<td>Task Success Condition Judgment</td>
 <td><a href="../apphttphealthy/#expect">expect</a></td>
 <td>Optional</td>
 <td></td>
@@ -1483,18 +1527,18 @@ spec:
 </thead>
 <tbody>
 <tr>
-<td>annotation</td>
-<td>annotation of agent workload</td>
-<td>map[string]string</td>
-<td>optional</td>
+<td>Annotation</td>
+<td>Annotation of Agent Workload</td>
+<td>Map[string]String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>kind</td>
-<td>type of agent workload</td>
-<td>string</td>
-<td>optional</td>
+<td>Type of Agent Workload</td>
+<td>String</td>
+<td>Optional</td>
 <td>Deployment, DaemonSet</td>
 <td>DaemonSet</td>
 </tr>
@@ -1502,48 +1546,48 @@ spec:
 <td>deploymentReplicas</td>
 <td>The expected number of replicas when the agent workload type is deployment</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 0</td>
+<td>Optional</td>
+<td>Greater than or equal to 0</td>
 <td>0</td>
 </tr>
 <tr>
-<td>affinity</td>
-<td>agent workload affinity</td>
+<td>Affinity</td>
+<td>Agent Workload Affinity</td>
 <td>labelSelector</td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>env</td>
-<td>agent workload environment variable</td>
+<td>Agent Workload Environment Variable</td>
 <td>env</td>
-<td>optional</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>hostNetwork</td>
-<td>agent Whether or not the workload uses the host network</td>
-<td>bool</td>
-<td>optional</td>
-<td>true, false</td>
-<td>false</td>
+<td>Whether or not the agent workload uses the host network</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True, false</td>
+<td>False</td>
 </tr>
 <tr>
-<td>resources</td>
-<td>agent workload resource usage configuration</td>
-<td>resources</td>
-<td>optional</td>
+<td>Resources</td>
+<td>Agent Workload Resource Usage Configuration</td>
+<td>Resources</td>
+<td>Optional</td>
 <td></td>
-<td>limit cpu:1000m,memory:1024Mi</td>
+<td>Limit cpu: 1000m,Memory:1024Mi</td>
 </tr>
 <tr>
 <td>terminationGracePeriodMinutes</td>
-<td>agent How many minutes after a workload completes a task before it terminates</td>
+<td>the minutes after a agent workload completes a task before it terminates</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 0</td>
+<td>Optional</td>
+<td>Greater than or equal to 0</td>
 <td>60</td>
 </tr>
 </tbody>
@@ -1563,18 +1607,18 @@ spec:
 <tbody>
 <tr>
 <td>roundNumber</td>
-<td>task execution rounds</td>
+<td>Task Execution Rounds</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to -1, -1 means permanent, greater than 0 means rounds will be executed</td>
+<td>Optional</td>
+<td>A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed</td>
 <td>1</td>
 </tr>
 <tr>
 <td>roundTimeoutMinute</td>
-<td>Task timeout, needs to be greater than durationInSecond and task execution time</td>
+<td>Task timeout which needs to be greater than durationInSecond and task execution time</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>60</td>
 </tr>
 </tbody>
@@ -1594,48 +1638,40 @@ spec:
 <tbody>
 <tr>
 <td>durationInSecond</td>
-<td>Duration of request send pressure for each round of tasks less than roundTimeoutMinute</td>
+<td>Duration of request send pressure for each round of tasks which is less than roundTimeoutMinute</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>2</td>
 </tr>
 <tr>
 <td>perRequestTimeoutInMS</td>
-<td>timeout per request, not greater than durationInSecond</td>
+<td>Timeout per request, not greater than durationInSecond</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>500</td>
 </tr>
 <tr>
-<td>qps</td>
-<td>requests per second per agent</td>
+<td>QPS</td>
+<td>Requests per second per agent</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
 <td>5</td>
 </tr>
 <tr>
-<td>protocol</td>
-<td>request protocol</td>
-<td>string</td>
-<td>optional</td>
-<td>udp, tcp, tcp-tls</td>
-<td>udp</td>
-</tr>
-<tr>
-<td>domain</td>
-<td>dns The domain name for which the request is to be resolved</td>
-<td>string</td>
-<td>optional</td>
-<td></td>
-<td>kubernetes.default.svc.cluster.local</td>
+<td>Protocol</td>
+<td>Request Protocol</td>
+<td>String</td>
+<td>Optional</td>
+<td>UDP, TCP, TCP-TLS</td>
+<td>UDP</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>Note: When using agent requests, all agents make requests to the destination address, so the actual qps received by the server is equal to the number of agents * the set qps.</p>
+<p>When using agent requests, all agents will make requests to the destination address, so the actual QPS received by the server is equal to the number of agents multiplied by the set QPS.</p>
 </blockquote>
 <h4 id="target">Target</h4>
 <table>
@@ -1652,64 +1688,64 @@ spec:
 <tbody>
 <tr>
 <td>targetUser</td>
-<td>dns request to user-defined dns server</td>
+<td>DNS request to user-defined DNS server</td>
 <td><a href="./#targetuser">targetUser</a></td>
 <td>Optional</td>
 <td></td>
-<td>true</td>
+<td>True</td>
 </tr>
 <tr>
 <td>targetDns</td>
-<td>Make a dns request to the cluster's dns server (coredns)</td>
+<td>Make a DNS request to the cluster's DNS server (CoreDNS)</td>
 <td><a href="./#targetuser">targetDns</a></td>
 <td>Optional</td>
 <td></td>
-<td>true</td>
+<td>True</td>
 </tr>
 <tr>
 <td>enableLatencyMetric</td>
-<td>statisticsDemoDistribution,enable to increase memory usage</td>
-<td>bool</td>
-<td>optional</td>
-<td>true,false</td>
-<td>false</td>
+<td>Statistics demo distribution, which increases memory usage when turned on</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
 </tr>
 </tbody>
 </table>
 <h4 id="expect">Expect</h4>
-<p>Task success condition, if the task result does not meet the expected condition, the task will fail.</p>
+<p>Task success condition. If the task result does not meet the expected condition, the task will fail.</p>
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>validation</th>
-<th>values</th>
-<th>default</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>meanAccessDelayInMs</td>
-<td>meanAccessDelayInMs</td>
-<td>The average delay, if the final result exceeds this value, the task will be judged as failed</td>
+<td>The average delay. If the final result exceeds this value, the task will be judged as failed</td>
 <td>int</td>
-<td>optional</td>
-<td>greater than or equal to 1</td>
+<td>Optional</td>
+<td>Greater than or equal to 1</td>
+<td>5000</td>
 </tr>
 <tr>
 <td>successRate</td>
-<td>The success rate of the http request, if the final result is less than this value, the task will fail</td>
-<td>float</td>
-<td>optional</td>
+<td>Success rate of the HTTP request. If the final result is less than this value, the task will fail</td>
+<td>Float</td>
+<td>Optional</td>
 <td>0-1</td>
 <td>1</td>
 </tr>
 </tbody>
 </table>
 <h4 id="targetuser">TargetUser</h4>
-<p>Test user customized dns server</p>
+<p>Test user customized DNS server</p>
 <table>
 <thead>
 <tr>
@@ -1723,109 +1759,109 @@ spec:
 </thead>
 <tbody>
 <tr>
-<td>server</td>
-<td>dns server address</td>
-<td>string</td>
-<td>mandatory</td>
+<td>Server</td>
+<td>DNS Server Address</td>
+<td>String</td>
+<td>Required</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>port</td>
-<td>dns server port</td>
+<td>Port</td>
+<td>DNS Server Port</td>
 <td>int</td>
-<td>required</td>
+<td>Required</td>
 <td>1-65535</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <h4 id="targetdns">TargetDns</h4>
-<p>Test dns server in cluster</p>
+<p>Test the DNS server in a cluster</p>
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>validation</th>
-<th>values</th>
-<th>defaults</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structure</th>
+<th>Validation</th>
+<th>Values</th>
+<th>Defaults</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>testIPv4</td>
-<td>testIPv4</td>
-<td>Test ipv4 address request A record</td>
-<td>bool</td>
-<td>optional</td>
-<td>true,false</td>
+<td>Test IPv4 address request A record</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>True</td>
 </tr>
 <tr>
 <td>testIPv6</td>
-<td>Test ipv6 address request AAAA record</td>
-<td>bool</td>
-<td>optional</td>
-<td>true,false</td>
-<td>false</td>
+<td>Test IPv6 address request AAAA record</td>
+<td>Bool</td>
+<td>Optional</td>
+<td>True,false</td>
+<td>False</td>
 </tr>
 <tr>
 <td>serviceName</td>
-<td>cluster dns server service address</td>
-<td>string</td>
-<td>optional</td>
+<td>Cluster DNS Server Service Address</td>
+<td>String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>serviceNamespace</td>
-<td>cluster dns server service port</td>
-<td>string</td>
-<td>optional</td>
+<td>Cluster DNS Server Service Port</td>
+<td>String</td>
+<td>Optional</td>
 <td></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<h3 id="status">status</h3>
+<h3 id="status">Status</h3>
 <table>
 <thead>
 <tr>
-<th>fields</th>
-<th>description</th>
-<th>structure</th>
-<th>values</th>
+<th>Fields</th>
+<th>Description</th>
+<th>Structures</th>
+<th>Values</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>doneRound</td>
-<td>number of completed task rounds</td>
+<td>Number of completed task rounds</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
 <td>expectedRound</td>
-<td>number of rounds expected to be performed</td>
+<td>Number of rounds expected to be performed</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
-<td>finish</td>
+<td>Finish</td>
 <td>Whether the task is complete or not</td>
-<td>bool</td>
-<td>true, false</td>
+<td>Bool</td>
+<td>True, false</td>
 </tr>
 <tr>
 <td>lastRoundStatus</td>
 <td>lastRoundStatus</td>
-<td>string</td>
-<td>notstarted, on-going, succeed, fail</td>
+<td>String</td>
+<td>Notstarted, on-going, succeed, fail</td>
 </tr>
 <tr>
-<td>history</td>
-<td>Task history</td>
+<td>History</td>
+<td>Task History</td>
 <td>Element is <a href="../apphttphealthy/#history">history</a> array</td>
 <td></td>
 </tr>
@@ -1844,44 +1880,56 @@ spec:
 <tbody>
 <tr>
 <td>roundNumber</td>
-<td>Task round number</td>
+<td>Task Round Number</td>
 <td>int</td>
 <td></td>
 </tr>
 <tr>
-<td>status</td>
+<td>Status</td>
 <td>Task Status</td>
-<td>string</td>
-<td>notstarted, on-going, succeed, fail</td>
+<td>String</td>
+<td>Notstarted, on-going, succeed, fail</td>
 </tr>
 <tr>
 <td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>string</td>
+<td>Start of the current round of tasks</td>
+<td>String</td>
+<td></td>
 </tr>
 <tr>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
-<td>startTimeStamp</td>
 <td>endTimeStamp</td>
-</tr>
-<tr>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-<td>deadLineTimeStamp</td>
-</tr>
-<tr>
-<td>failedAgentNodeList</td>
-<td>failedAgentNodeList</td>
-<td>Array of failed agents</td>
+<td>End of the current round of tasks</td>
 <td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>duration</td>
+<td>Execution time of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>deadLineTimeStamp</td>
+<td>Deadline of the current round of tasks</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>failedAgentNodeList</td>
+<td>Agent whose tasks failed</td>
+<td>Array of elements as string</td>
+<td></td>
+</tr>
+<tr>
+<td>succeedAgentNodeList</td>
+<td>Agent whose task succeeded</td>
+<td>Array of elements as string</td>
+<td></td>
 </tr>
 <tr>
 <td>notReportAgentNodeList</td>
-<td>agent who did not upload a task report</td>
-<td>array of elements as string</td>
+<td>Agent who did not upload a task report</td>
+<td>Array of elements as string</td>
 <td></td>
 </tr>
 </tbody>

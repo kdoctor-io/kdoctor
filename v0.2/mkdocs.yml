@@ -50,6 +50,7 @@ nav:
       - AppHttpHealthy: usage/apphttphealthy.md
       - NetReach: usage/netreach.md
       - NetDns: usage/netdns.md
+      - Debug: usage/debug.md
   - Concepts:
       - Architecture: reference/arch.md
       - Runtime: concepts/runtime.md
@@ -64,3 +65,4 @@ nav:
   - Development:
       - Release workflow: develop/release.md
       - Roadmap: develop/roadmap.md
+      - Contribution: develop/contributing.md
