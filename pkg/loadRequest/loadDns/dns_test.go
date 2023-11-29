@@ -27,6 +27,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      10,
 			Qps:                   10,
+			Workers:               10,
 		}
 
 		log := logger.NewStdoutLogger("debug", "test")
@@ -57,6 +58,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      10,
 			Qps:                   10,
+			Workers:               10,
 			EnableLatencyMetric:   true,
 		}
 
@@ -88,6 +90,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      10,
 			Qps:                   10,
+			Workers:               10,
 		}
 
 		log := logger.NewStdoutLogger("debug", "test")
@@ -117,6 +120,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      10,
 			Qps:                   10,
+			Workers:               10,
 		}
 
 		log := logger.NewStdoutLogger("debug", "test")
@@ -146,6 +150,7 @@ var _ = Describe("test dns ", Label("dns"), func() {
 			PerRequestTimeoutInMs: 5000,
 			DurationInSecond:      10,
 			Qps:                   10,
+			Workers:               10,
 		}
 
 		log := logger.NewStdoutLogger("debug", "test")

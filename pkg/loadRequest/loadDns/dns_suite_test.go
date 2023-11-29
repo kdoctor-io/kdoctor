@@ -7,8 +7,6 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func TestLoadDns(t *testing.T) {
@@ -18,5 +16,4 @@ func TestLoadDns(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	// nothing to do
-	config.AgentConfig.Configmap.NetdnsDefaultConcurrency = 10
 })

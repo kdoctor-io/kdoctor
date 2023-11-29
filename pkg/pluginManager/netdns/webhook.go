@@ -62,8 +62,8 @@ func (s *PluginNetDns) WebhookValidateCreate(logger *zap.Logger, ctx context.Con
 	// validate request
 	if true {
 
-		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps {
-			s := fmt.Sprintf("netdns %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps)
+		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NetDnsRequestMaxQPS {
+			s := fmt.Sprintf("netdns %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NetDnsRequestMaxQPS)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
 		}

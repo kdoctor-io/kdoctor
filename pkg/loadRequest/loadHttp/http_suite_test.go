@@ -7,8 +7,6 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
 )
 
 func TestLoadHttp(t *testing.T) {
@@ -18,5 +16,4 @@ func TestLoadHttp(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	// nothing to do
-	config.AgentConfig.Configmap.NethttpDefaultConcurrency = 10
 })
