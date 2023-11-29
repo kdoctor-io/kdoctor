@@ -489,6 +489,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -568,6 +570,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -856,10 +878,10 @@
       
         <li class="md-nav__item">
   <a href="#kdoctor-agent-daemon" class="md-nav__link">
-    kdoctor-agent daemon
+    kdoctor-agent Daemon
   </a>
   
-    <nav class="md-nav" aria-label="kdoctor-agent daemon">
+    <nav class="md-nav" aria-label="kdoctor-agent Daemon">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -949,6 +971,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1017,6 +1041,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1052,10 +1096,10 @@
       
         <li class="md-nav__item">
   <a href="#kdoctor-agent-daemon" class="md-nav__link">
-    kdoctor-agent daemon
+    kdoctor-agent Daemon
   </a>
   
-    <nav class="md-nav" aria-label="kdoctor-agent daemon">
+    <nav class="md-nav" aria-label="kdoctor-agent Daemon">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1097,64 +1141,64 @@
 
 <h1 id="kdoctor-agent">kdoctor-agent</h1>
 <p>This page describes CLI options and ENV of kdoctor-agent.</p>
-<h2 id="kdoctor-agent-daemon">kdoctor-agent daemon</h2>
+<h2 id="kdoctor-agent-daemon">kdoctor-agent Daemon</h2>
 <p>Run the kdoctor agent daemon.</p>
 <h3 id="options">Options</h3>
 <table>
 <thead>
 <tr>
-<th>options</th>
-<th>type</th>
-<th>default</th>
-<th>description</th>
+<th>Options</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>--config-dir</td>
-<td>string</td>
+<td>String</td>
 <td>/tmp/config-map/conf.yml</td>
-<td>config file path.</td>
+<td>Config file path</td>
 </tr>
 <tr>
 <td>--app-mode</td>
 <td>bool</td>
 <td>false</td>
-<td>agent running mode ,when using app mode, the agent only provides an HTTP and HTTPS server for testing.</td>
+<td>Agent running mode. When using app mode, the agent only provides an HTTP and HTTPS server for testing.</td>
 </tr>
 <tr>
 <td>--tls-insecure</td>
-<td>bool</td>
-<td>true</td>
+<td>Bool</td>
+<td>True</td>
 <td>The HTTPS server skips TLS authentication.</td>
 </tr>
 <tr>
 <td>--default-agent</td>
-<td>bool</td>
-<td>false</td>
+<td>Bool</td>
+<td>False</td>
 <td>The default agent performs tasks.</td>
 </tr>
 <tr>
 <td>--tls-ca-cert</td>
-<td>string</td>
+<td>String</td>
 <td>/etc/tls/ca.crt</td>
 <td>The CA certificate path, which is used by the agent to generate the signing certificate.</td>
 </tr>
 <tr>
 <td>--tls-ca-key</td>
-<td>string</td>
+<td>String</td>
 <td>/etc/tls/ca.key</td>
 <td>The CA key path, which is used by the agent to generate the signing certificate.</td>
 </tr>
 <tr>
 <td>--task-kind</td>
-<td>string</td>
+<td>String</td>
 <td>""</td>
 <td>The kind of task. values AppHttpHealthy、NetReach and Netdns.</td>
 </tr>
 <tr>
 <td>--task-name</td>
-<td>string</td>
+<td>String</td>
 <td>""</td>
 <td>The name of task.</td>
 </tr>

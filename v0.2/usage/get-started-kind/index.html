@@ -509,22 +509,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#clustering-kdoctor-on-kind" class="md-nav__link">
-    Clustering kdoctor on Kind
+  <a href="#deploy-kdoctor-on-a-kind-cluster" class="md-nav__link">
+    Deploy kdoctor on a Kind Cluster
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#verify-the-installation" class="md-nav__link">
-    Verify the installation
+    Verify the Installation
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#uninstalling" class="md-nav__link">
-    Uninstalling
+  <a href="#uninstall" class="md-nav__link">
+    Uninstall
   </a>
   
 </li>
@@ -552,6 +552,8 @@
   
     
     
+      
+        
       
         
       
@@ -638,6 +640,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -950,6 +972,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1018,6 +1042,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1059,22 +1103,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#clustering-kdoctor-on-kind" class="md-nav__link">
-    Clustering kdoctor on Kind
+  <a href="#deploy-kdoctor-on-a-kind-cluster" class="md-nav__link">
+    Deploy kdoctor on a Kind Cluster
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#verify-the-installation" class="md-nav__link">
-    Verify the installation
+    Verify the Installation
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#uninstalling" class="md-nav__link">
-    Uninstalling
+  <a href="#uninstall" class="md-nav__link">
+    Uninstall
   </a>
   
 </li>
@@ -1099,21 +1143,20 @@
 
 <h1 id="kind-quick-start">Kind Quick Start</h1>
 <p><a href="../get-started-kind-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
-<p>Kind is a tool for running local Kubernetes clusters using Docker container nodes. kdoctor provides scripts for installing Kind clusters to quickly build a Kind cluster with nginx, ingress, and loadbalancer, which you can use for kdoctor testing and experience.</p>
+<p>Kind is a tool running local Kubernetes clusters using Docker container nodes. kdoctor provides scripts for installing Kind clusters to quickly build a Kind cluster with nginx, ingress, and loadbalancer, which you can use for kdoctor testing and experience.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li><a href="https://go.dev/">Go</a> is installed.</li>
 </ul>
-<h2 id="clustering-kdoctor-on-kind">Clustering kdoctor on Kind</h2>
+<h2 id="deploy-kdoctor-on-a-kind-cluster">Deploy kdoctor on a Kind Cluster</h2>
 <ol>
 <li>
 <p>Clone the kdoctor repository to your localhost and go to the root directory of your kdoctor project.</p>
 <p><code>bash
-https://github.com/kdoctor-io/kdoctor.git &amp;&amp; cd kdoctor
-cd kdoctor</code></p>
+https://github.com/kdoctor-io/kdoctor.git &amp;&amp; cd kdoctor</code></p>
 </li>
 <li>
-<p>Execute <code>make checkBin</code> to check if the development tools on the localhost meet the requirements for deploying a Kind cluster with kdoctor, and if the components are missing, they will be installed for you.</p>
+<p>Execute <code>make checkBin</code> to check if the development tools on the localhost meet the requirements for deploying a Kind cluster with kdoctor, and if the components are missing, they will be installed.</p>
 </li>
 <li>
 <p>Get the latest image of kdoctor by using the following method.</p>
@@ -1121,16 +1164,20 @@ cd kdoctor</code></p>
 ~# KDOCTOR_LATEST_IMAGE_TAG=$(curl -s https://api.github.com/repos/kdoctor-io/kdoctor/releases | jq -r '. [].tag_name | select(("^v1.[0-9]*. [0-9]*$"))' | head -n 1)</code></p>
 </li>
 <li>
-<p>Execute the following command to create the Kind cluster and install metallb, contour, nginx, and kdoctor for you.</p>
+<p>Execute the following command to create a Kind cluster and install metallb, contour, nginx, and kdoctor.</p>
 <p><code>bash
 ~# make e2e_init -e PROJECT_IMAGE_VERSION=KDOCTOR_LATEST_IMAGE_TAG</code></p>
-<p>Note: If you are a domestic user, you can use the following command to avoid pulling the image failures.</p>
-<p><code>bash
-~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true</code></p>
 </li>
 </ol>
-<h2 id="verify-the-installation">Verify the installation</h2>
-<p>Configure KUBECONFIG for the Kind cluster for kubectl by executing the following command in the root directory of the kdoctor project.</p>
+<p>!!! note</p>
+<pre><code>If you are a domestic user, you can use the following command to avoid pulling the image failures.
+
+```bash
+~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true
+```
+</code></pre>
+<h2 id="verify-the-installation">Verify the Installation</h2>
+<p>Configure KUBECONFIG of the Kind cluster for kubectl by executing the following command in the root directory of the kdoctor project.</p>
 <p><code>bash
    ~# export KUBECONFIG=$(pwd)/test/runtime/kubeconfig_kdoctor.config</code></p>
 <p>You can see the following output:</p>
@@ -1144,7 +1191,7 @@ cd kdoctor</code></p>
    kdoctor-controller-686b75d6d7-ktctx 1/1 Running 0 2m33s
    ```</p>
 <p>Next you can set up tasks as you see fit <a href="../apphttphealthy/">AppHttpHealthy</a>, <a href="../netreach/">NetReach</a>, <a href="../netdns/">NetDns</a></p>
-<h2 id="uninstalling">Uninstalling</h2>
+<h2 id="uninstall">Uninstall</h2>
 <ul>
 <li>To uninstall the Kind cluster
     Execute <code>make e2e_clean</code> to uninstall the Kind cluster.</li>

@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -933,6 +957,26 @@
   
   <span class="md-ellipsis">
     Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
   </span>
   
 
@@ -1056,7 +1100,7 @@
         
           <li class="md-nav__item">
   <a href="#tls" class="md-nav__link">
-    Tls
+    TLS
   </a>
   
 </li>
@@ -1068,10 +1112,10 @@
         
           <li class="md-nav__item">
   <a href="#status" class="md-nav__link">
-    status
+    Status
   </a>
   
-    <nav class="md-nav" aria-label="status">
+    <nav class="md-nav" aria-label="Status">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1112,7 +1156,7 @@
 <h1 id="apphttphealthy">AppHttpHealthy</h1>
 <p><a href="../apphttphealthy/"><strong>English</strong></a> | <strong>简体中文</strong></p>
 <h2 id="_1">基本描述</h2>
-<p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent pod 都会向指定的目标发送http请求，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。</p>
+<p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent Pod 都会向指定的目标发送 HTTP请求，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。</p>
 <h2 id="apphttphealthy_1">AppHttpHealthy 示例</h2>
 <pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
 kind: AppHttpHealthy
@@ -1193,7 +1237,7 @@ status:
 <tbody>
 <tr>
 <td>agentSpec</td>
-<td>任务执行agent配置</td>
+<td>任务执行 agent 配置</td>
 <td><a href="./#AgentSpec">agentSpec</a></td>
 <td>可选</td>
 <td></td>
@@ -1391,7 +1435,7 @@ status:
 </tbody>
 </table>
 <blockquote>
-<p>注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 qps 等于 agent 数量 * 设置的qps。</p>
+<p>使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 QPS 等于 agent 数量 * 设置的 QPS。</p>
 </blockquote>
 <h4 id="target">Target</h4>
 <table>
@@ -1408,7 +1452,7 @@ status:
 <tbody>
 <tr>
 <td>host</td>
-<td>http 请求地址</td>
+<td>HTTP 请求地址</td>
 <td>string</td>
 <td>必填</td>
 <td></td>
@@ -1416,7 +1460,7 @@ status:
 </tr>
 <tr>
 <td>method</td>
-<td>http 请求方法</td>
+<td>HTTP 请求方法</td>
 <td>string</td>
 <td>必填</td>
 <td>GET、POST、PUT、DELETE、CONNECT、OPTIONS、PATCH、HEAD</td>
@@ -1424,7 +1468,7 @@ status:
 </tr>
 <tr>
 <td>bodyConfigmapName</td>
-<td>http 请求 body 存放的 configmap 名称,<a href="./#Body">configmap 内容参考</a>，若不需要 body 请求，忽略此字段</td>
+<td>HTTP 请求 body 存放的 configmap 名称,<a href="./#Body">configmap 内容参考</a>，若不需要 body 请求，忽略此字段</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1432,7 +1476,7 @@ status:
 </tr>
 <tr>
 <td>bodyConfigmapNamespace</td>
-<td>http 请求 body 的 configmap 命名空间，如果 bodyConfigmapName 不为空，需要设置此字段</td>
+<td>HTTP 请求 body 的 configmap 命名空间，如果 bodyConfigmapName 不为空，需要设置此字段</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1440,7 +1484,7 @@ status:
 </tr>
 <tr>
 <td>tlsSecretName</td>
-<td>https 请求证书存放的 secret 名称，secret类型为 kubernetes.io/tls,<a href="./#Tls">secret 内容参考</a>，若使用协议非 https 忽略此字段</td>
+<td>HTTPs 请求证书存放的 secret 名称，secret类型为 kubernetes.io/tls,<a href="./#Tls">secret 内容参考</a>，若使用协议非 https 忽略此字段</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1448,7 +1492,7 @@ status:
 </tr>
 <tr>
 <td>tlsSecretNamespace</td>
-<td>https 请求证书存放的 secret 命名空间，如果 tlsSecretName 字段不为空，需要设置此字段</td>
+<td>HTTPs 请求证书存放的 secret 命名空间，如果 tlsSecretName 字段不为空，需要设置此字段</td>
 <td>string</td>
 <td>可选</td>
 <td></td>
@@ -1456,15 +1500,15 @@ status:
 </tr>
 <tr>
 <td>header</td>
-<td>http 请求头，数组形式,示例为 "Content-Type: application/json"</td>
+<td>HTTP 请求头，数组形式,示例为 "Content-Type: application/json"</td>
 <td>元素为字符串的数组</td>
 <td>可选</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>http2</td>
-<td>使用使用 http2 协议进行请求开关</td>
+<td>HTTP2</td>
+<td>使用 HTTP2 协议进行请求开关</td>
 <td>bool</td>
 <td>可选</td>
 <td>true,false</td>
@@ -1504,7 +1548,7 @@ status:
 </tr>
 <tr>
 <td>successRate</td>
-<td>http请求成功率,如果最终的结果 小于本值，任务会判定为失败</td>
+<td>HTTP 请求成功率,如果最终的结果 小于本值，任务会判定为失败</td>
 <td>float</td>
 <td>可选</td>
 <td>0-1</td>
@@ -1512,7 +1556,7 @@ status:
 </tr>
 <tr>
 <td>statusCode</td>
-<td>期待的http返回状态码，如果最终的结果不等于本值，任务会判定为失败</td>
+<td>期待的 HTTP 返回状态码，如果最终的结果不等于本值，任务会判定为失败</td>
 <td>int</td>
 <td>可选</td>
 <td>0-600</td>
@@ -1531,8 +1575,8 @@ data:
   test1: test1
   test2: test2
 </code></pre>
-<h4 id="tls">Tls</h4>
-<p>https 请求使用证书时，若不填写 ca证书 则 不对证书安全进行校验,https 请求证书示例。</p>
+<h4 id="tls">TLS</h4>
+<p>HTTPs 请求使用证书时，若不填写 CA 证书则不对证书安全进行校验，HTTPs 请求证书示例。</p>
 <pre><code class="language-yaml">apiVersion: v1
 data:
   ca.crt:  xxxxxxxxxbase64
@@ -1544,7 +1588,7 @@ metadata:
   namespace: kdoctor
 type: kubernetes.io/tls
 </code></pre>
-<h3 id="status">status</h3>
+<h3 id="status">Status</h3>
 <table>
 <thead>
 <tr>
@@ -1624,7 +1668,7 @@ type: kubernetes.io/tls
 </tr>
 <tr>
 <td>duration</td>
-<td>本轮任执行时间</td>
+<td>本轮任务执行时间</td>
 <td>string</td>
 <td></td>
 </tr>
@@ -1637,19 +1681,19 @@ type: kubernetes.io/tls
 <tr>
 <td>failedAgentNodeList</td>
 <td>任务失败的 agent</td>
-<td>元素为string的数组</td>
+<td>元素为 string 的数组</td>
 <td></td>
 </tr>
 <tr>
 <td>succeedAgentNodeList</td>
 <td>任务成功的 agent</td>
-<td>元素为string的数组</td>
+<td>元素为 string 的数组</td>
 <td></td>
 </tr>
 <tr>
 <td>notReportAgentNodeList</td>
 <td>没有上传任务报告的 agent</td>
-<td>元素为string的数组</td>
+<td>元素为 string 的数组</td>
 <td></td>
 </tr>
 </tbody>

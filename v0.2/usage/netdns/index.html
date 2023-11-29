@@ -12,7 +12,7 @@
         <link rel="prev" href="../netreach/">
       
       
-        <link rel="next" href="../../reference/arch/">
+        <link rel="next" href="../debug/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -491,6 +491,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -611,22 +613,70 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#concept" class="md-nav__link">
-    concept
+  <a href="#introduction" class="md-nav__link">
+    Introduction
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    example
+  <a href="#steps" class="md-nav__link">
+    Steps
+  </a>
+  
+    <nav class="md-nav" aria-label="Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-kdoctor" class="md-nav__link">
+    Install kdoctor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-test-server-optional" class="md-nav__link">
+    Install Test Server (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-netdns" class="md-nav__link">
+    Create NetDns
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-task-status" class="md-nav__link">
+    Check Task Status
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#view-task-reports" class="md-nav__link">
+    View Task Reports
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-an-external-dns-server" class="md-nav__link">
+    Test an External DNS Server
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#report" class="md-nav__link">
-    report
+  <a href="#environment-cleanup" class="md-nav__link">
+    Environment Cleanup
   </a>
   
 </li>
@@ -635,6 +685,26 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -943,6 +1013,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1011,6 +1083,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1045,22 +1137,70 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#concept" class="md-nav__link">
-    concept
+  <a href="#introduction" class="md-nav__link">
+    Introduction
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    example
+  <a href="#steps" class="md-nav__link">
+    Steps
+  </a>
+  
+    <nav class="md-nav" aria-label="Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-kdoctor" class="md-nav__link">
+    Install kdoctor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-test-server-optional" class="md-nav__link">
+    Install Test Server (Optional)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-netdns" class="md-nav__link">
+    Create NetDns
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-task-status" class="md-nav__link">
+    Check Task Status
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#view-task-reports" class="md-nav__link">
+    View Task Reports
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-an-external-dns-server" class="md-nav__link">
+    Test an External DNS Server
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#report" class="md-nav__link">
-    report
+  <a href="#environment-cleanup" class="md-nav__link">
+    Environment Cleanup
   </a>
   
 </li>
@@ -1085,277 +1225,237 @@
 
 <h1 id="netdns">netdns</h1>
 <p><a href="../netdns-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
-<h2 id="concept">concept</h2>
-<p>Fo this kind task, each kdoctor agent will send dns request to specified target, and get success rate and mean delay.
-It could specify success condition to tell the result succeed or fail.
-And, more detailed report will print to kdoctor agent stdout, or save to disc by kdoctor controller.</p>
-<p>the following is the spec of netdns</p>
-<pre><code class="language-shell">
-cat &lt;&lt;EOF &gt; netdns.yaml
+<h2 id="introduction">Introduction</h2>
+<p>kdoctor-controller creates the necessary resources, including <a href="../../concepts/runtime/">agent</a>, based on the agentSpec. Each agent Pod sends DNS requests to a specified DNS server. By default, the concurrency level is set to 50, which can handle scenarios with multiple replicas. The concurrency level can be configured in the kdoctor configmap. The success rate and average latency are measured, and the results are evaluated based on predefined success criteria. Detailed reports can be obtained using the aggregate API.</p>
+<ol>
+<li>
+<p>Use Cases:</p>
+<ul>
+<li>Test the accessibility of the CoreDNS service from all corners of the cluster in production or E2E environments.</li>
+<li>Adjust CoreDNS resources and replica count during application deployment to ensure it can handle the expected load.</li>
+<li>Apply stress to CoreDNS for purposes like testing upgrades, chaos tests, bug reproduction, etc</li>
+<li>Test external DNS services from within the cluster.</li>
+</ul>
+</li>
+<li>
+<p>For more detailed information about the NetDns CRD, refer to <a href="../../reference/netdns/">NetDns</a></p>
+</li>
+<li>
+<p>Features:</p>
+<ul>
+<li>Support testing DNS servers both inside and outside the cluster</li>
+<li>Supports typeA and typeAAAA records</li>
+<li>Supports UDP, TCP, and TCP-TLS protocols</li>
+</ul>
+</li>
+</ol>
+<h2 id="steps">Steps</h2>
+<p>The following example demonstrates how to use <code>NetDNS</code>.</p>
+<h3 id="install-kdoctor">Install kdoctor</h3>
+<p>Follow the <a href="../install/">installation guide</a> to install kdoctor.</p>
+<h3 id="install-test-server-optional">Install Test Server (Optional)</h3>
+<p>The official kdoctor repository includes an application called "server" that contains an HTTP server, HTTPS server, and DNS server. This server can be employed to test the functionality of kdoctor. If you have other test servers available, you can skip this installation step.</p>
+<pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
+helm repo update kdoctor
+helm install server kdoctor/server -n kdoctor-test-server --wait --debug --create-namespace 
+</code></pre>
+<p>Check the status of test server</p>
+<pre><code class="language-shell">kubectl get pod -n kdoctor -owide
+NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
+server-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
+server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   &lt;none&gt;           &lt;none&gt;
+</code></pre>
+<p>Obtain the service address of the test server</p>
+<pre><code class="language-shell">kubectl get service -n kdoctor 
+NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
+server   ClusterIP   172.41.71.0   &lt;none&gt;        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
+</code></pre>
+<h3 id="create-netdns">Create NetDns</h3>
+<p>Create <code>NetDns</code> object that will execute a 10-second continuous task. The task will send UDP requests to the cluster's internal DNS server at a rate of 10 QPS. It will request the typeA records whose domain name is <code>kubernetes.default.svc.cluster.local</code>.</p>
+<pre><code class="language-shell">cat &lt;&lt;EOF | kubectl apply -f -
 apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
-  name: testdns
+  name: netdns-cluster
 spec:
+  expect:
+    meanAccessDelayInMs: 1500
+    successRate: 1
+  request:
+    domain: kubernetes.default.svc.cluster.local
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
   schedule:
-    schedule: &quot;1 1&quot;
-    roundNumber: 2
+    roundNumber: 1
     roundTimeoutMinute: 1
+    schedule: 0 1
   target:
     targetDns:
-      testIPv4: true
-      testIPv6: false
-      serviceName: coredns
+      serviceName: kube-dns
       serviceNamespace: kube-system
-    targetUser:
-      server: 172.18.0.1
-      port: 53
-  request:
-    durationInSecond: 10
-    qps: 20
-    perRequestTimeoutInMS: 500
-    domain: &quot;kube-dns.kube-system.svc.cluster.local&quot;
-    protocol: udp
-  expect:
-    successRate: 1
-    meanAccessDelayInMs: 10000
-EOF
-
-kubectl apply -f netdns.yaml
-
-</code></pre>
-<ul>
-<li>
-<p>spec.schedule: set how to schedule the task.</p>
-<p>roundNumber: how many rounds it should be to run this task</p>
-<p>schedule: Support Linux crontab syntax for scheduling tasks, while also supporting simple writing. 
-            The first digit represents how long the task will start, and the second digit represents the interval time between each round of tasks,
-            separated by spaces. Example: "1 2" indicates that the task will start in 1 minute, and the interval time between each round of tasks.</p>
-<p>roundTimeoutMinute: the timeout in minute for each round, when the rask does not finish in time, it results to be failuire</p>
-<p>sourceAgentNodeSelector [optional]: set the node label selector, then, the kdoctor agent who locates on these nodes will implement the task. If not set this field, all kdoctor agent will execute the task</p>
-</li>
-<li>
-<p>spec.request: how each kdoctor agent should send the dns request</p>
-<p>durationInSecond: for each round, the duration in second how long the dns request lasts</p>
-<p>perRequestTimeoutInMS: timeout in ms for each dns request</p>
-<p>qps: qps</p>
-<p>domain： resolved domain</p>
-</li>
-<li>
-<p>spec.target: set the target of dns request. it could not set targetUser and targetDns at the same time</p>
-<p>targetUser [optional]: set an user-defined DNS server for the dns request</p>
-<pre><code>server: the address for dns server
-
-port: the port for dns server
-</code></pre>
-<p>targetDns: [optional]: set cluster dns server for the dns request</p>
-<pre><code>testIPv4: test DNS server IPv4 address and request is type A.
-
-testIPv6: test DNS server IPv6 address and request is type AAAA.
-
-serviceName: Specify the name of the DNS to be tested
-</code></pre>
-<ul>
-<li>
-<p>serviceNamespace: Specify the namespace of the DNS to be tested</p>
-</li>
-</ul>
-<p>protocol: Specify request protocol,Optional value udp，tcp，tcp-tls,default udp.</p>
-</li>
-<li>
-<p>spec.expect: define the success condition of the task result</p>
-</li>
-</ul>
-<p>meanAccessDelayInMs: mean access delay in MS, if the actual delay is bigger than this, it results to be failure</p>
-<p>successRate: the success rate of all dns requests. Notice, when a dns response code is &gt;=200 and &lt; 400, it's treated as success. if the actual whole success rate is smaller than successRate, the task results to be failure</p>
-<ul>
-<li>status: the status of the task
-  doneRound: how many rounds have finished</li>
-</ul>
-<p>expectedRound: how many rounds the task expect</p>
-<p>finish: whether all rounds of this task have finished</p>
-<p>lastRoundStatus: the result of last round</p>
-<p>history:
-  roundNumber: the round number</p>
-<pre><code>    status: the status of this round
-
-    startTimeStamp: when this round begins
-
-    endTimeStamp: when this round finally finished
-
-    duration: how long the round spent
-
-    deadLineTimeStamp: the time deadline of a round
-
-    failedAgentNodeList: the node list where failed kdoctor agent locate
-
-    notReportAgentNodeList: the node list where uknown kdoctor agent locate. This means these agents have problems.
-
-    succeedAgentNodeList: the node list where successful kdoctor agent locate
-</code></pre>
-<h2 id="example">example</h2>
-<p>test custom dns server by crontab</p>
-<pre><code class="language-shell">
-cat &lt;&lt;EOF &gt; netdns1.yaml
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: testdns
-spec:
-  schedule:
-    schedule: &quot;*/1 * * * *&quot;
-    roundNumber: 2
-    roundTimeoutMinute: 1
-  target:
-    targetUser:
-      server: 172.18.0.1
-      port: 53
-  request:
-    durationInSecond: 10
-    qps: 10
-    perRequestTimeoutInMS: 500
-    domain: &quot;baidu.com&quot;
-    protocol: udp
-  expect:
-    successRate: 1
-    meanAccessDelayInMs: 1000
-EOF
-
-kubectl apply -f netdns1.yaml
-
-</code></pre>
-<p>test custom dns server by simple</p>
-<pre><code class="language-shell">
-cat &lt;&lt;EOF &gt; netdns1.yaml
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: testdns
-spec:
-  schedule:
-    schedule: &quot;1 1&quot;
-    roundNumber: 2
-    roundTimeoutMinute: 1
-  target:
-    protocol: udp
-    targetUser:
-      server: 172.18.0.1
-      port: 53
-  request:
-    durationInSecond: 10
-    qps: 10
-    perRequestTimeoutInMS: 500
-    domain: &quot;baidu.com&quot;
-  expect:
-    successRate: 1
-    meanAccessDelayInMs: 1000
-EOF
-
-kubectl apply -f netdns1.yaml
-
-</code></pre>
-<p>test cluster dns server by crontab</p>
-<pre><code class="language-shell">
-cat &lt;&lt;EOF &gt; netdns.yaml
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: testdns
-spec:
-  schedule:
-    schedule: &quot;*/1 * * * *&quot;
-    roundNumber: 2
-    roundTimeoutMinute: 1
-  target:
-    targetDns:
       testIPv4: true
-      testIPv6: false
-      serviceNamespaceName: kube-system/kube-dns
-    protocol: udp
-  request:
-    durationInSecond: 10
-    qps: 20
-    perRequestTimeoutInMS: 500
-    domain: &quot;kube-dns.kube-system.svc.cluster.local&quot;
-  expect:
-    successRate: 1
-    meanAccessDelayInMs: 10000
 EOF
-
-kubectl apply -f netdns.yaml
-
 </code></pre>
-<p>test cluster dns server by simple</p>
-<pre><code class="language-shell">
-cat &lt;&lt;EOF &gt; netdns.yaml
+<h3 id="check-task-status">Check Task Status</h3>
+<p>After completing a round of tasks, you can use the kdoctor aggregate API to view the report for the current round. When the FINISH field is set to true, it indicates that all tasks have been completed, and you can access the overall report.</p>
+<pre><code class="language-shell">kubectl get netdns
+NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
+netdns-cluster   true     1               1           succeed           0 1
+</code></pre>
+<ul>
+<li>FINISH: indicate whether the task has been completed</li>
+<li>EXPECTEDROUND: number of expected task rounds</li>
+<li>DONEROUND: number of completed task rounds</li>
+<li>LASTROUNDSTATUS: execution status of the last round of tasks</li>
+<li>SCHEDULE: schedule rules for the task</li>
+</ul>
+<h3 id="view-task-reports">View Task Reports</h3>
+<ol>
+<li>
+<p>View existed reports</p>
+<p><code>shell
+kubectl get kdoctorreport
+NAME             CREATED AT
+netdns-cluster   0001-01-01T00:00:00Z</code></p>
+</li>
+<li>
+<p>View specific task reports</p>
+<p>The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.</p>
+<p><code>shell
+root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
+apiVersion: system.kdoctor.io/v1beta1
+kind: KdoctorReport
+metadata:
+  creationTimestamp: null
+  name: netdns-cluster
+spec:
+  FailedRoundNumber: null
+  FinishedRoundNumber: 1
+  Report:
+  - NodeName: kdoctor-control-plane
+    PodName: kdoctor-agent-ntp9l
+    ReportType: agent test report
+    RoundDuration: 11.025723086s
+    RoundNumber: 1
+    RoundResult: succeed
+    StartTimeStamp: "2023-08-01T09:09:39Z"
+    EndTimeStamp: "2023-08-01T09:09:50Z"
+    TaskName: netdns.netdns-cluster
+    TaskType: Netdns
+    netDNSTask:
+      detail:
+      - FailureReason: null
+        MeanDelay: 0.2970297
+        Metrics:
+          DNSMethod: udp
+          DNSServer: 172.41.0.10:53
+          Duration: 11.002666395s
+          EndTime: "2023-08-01T09:09:50Z"
+          Errors: {}
+          FailedCounts: 0
+          Latencies:
+            MaxInMs: 0
+            MeanInMs: 0.2970297
+            MinInMs: 0
+            P50InMs: 0
+            P90InMs: 0
+            P95InMs: 0
+            P99InMs: 0
+          ReplyCode:
+            NOERROR: 101
+          RequestCounts: 101
+          StartTime: "2023-08-01T09:09:39Z"
+          SuccessCounts: 101
+          TPS: 9.179593052634765
+          TargetDomain: kubernetes.default.svc.cluster.local.
+        Succeed: true
+        SucceedRate: 1
+        TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+        TargetProtocol: udp
+        TargetServer: 172.41.0.10:53
+      succeed: true
+      targetNumber: 1
+      targetType: kdoctor agent
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
+    netDNSTaskSpec:
+      ...
+  - NodeName: kdoctor-worker
+    PodName: kdoctor-agent-krrnp
+    ReportType: agent test report
+    RoundDuration: 10.024533428s
+    RoundNumber: 1
+    RoundResult: succeed
+    StartTimeStamp: "2023-08-01T09:09:39Z"
+    EndTimeStamp: "2023-08-01T09:09:49Z"
+    TaskName: netdns.netdns-cluster
+    TaskType: Netdns
+    netDNSTask:
+      detail:
+      - FailureReason: null
+        MeanDelay: 0.58
+        Metrics:
+          ...
+        Succeed: true
+        SucceedRate: 1
+        TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+        TargetProtocol: udp
+        TargetServer: 172.41.0.10:53
+      succeed: true
+      targetNumber: 1
+      targetType: kdoctor agent
+      MaxCPU: 30.651%
+      MaxMemory: 97.00MB
+    netDNSTaskSpec:
+      ...
+  ReportRoundNumber: 1
+  RoundNumber: 1
+  Status: Finished
+  TaskName: netdns-cluster
+  TaskType: Netdns</code></p>
+</li>
+</ol>
+<blockquote>
+<p>If the reports do not align with the expected results, check the MaxCPU and MaxMemory fields in the report to verify if there are available resources of the agents and adjust the resource limits for the agents accordingly.</p>
+</blockquote>
+<h2 id="test-an-external-dns-server">Test an External DNS Server</h2>
+<p>Below are examples of HTTP and HTTPS requests with body:</p>
+<ol>
+<li>
+<p>Create <code>NetDns</code> object that will execute a 10-second continuous task. The task will send UDP requests to the cluster's internal DNS server at a rate of 10 QPS. It will request the typeA records whose domain name is <code>kubernetes.default.svc.cluster.local</code>.</p>
+<p>We are using the service address of the test server. If you have a different server address available, feel free to use it instead.</p>
+<p>Create <code>NetDns</code></p>
+<p><code>shell
+SERVER="172.41.71.0"
 apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
-  name: testdns
+  name: netdns- user
 spec:
-  schedule:
-    schedule: &quot;1 1&quot;
-    roundNumber: 2
-    roundTimeoutMinute: 1
-  target:
-    targetDns:
-      testIPv4: true
-      testIPv6: false
-      serviceNamespaceName: kube-system/test-app
-    protocol: udp
-  request:
-    durationInSecond: 10
-    qps: 20
-    perRequestTimeoutInMS: 500
-    domain: &quot;kube-dns.kube-system.svc.cluster.local&quot;
   expect:
+    meanAccessDelayInMs: 1500
     successRate: 1
-    meanAccessDelayInMs: 10000
-EOF
-
-kubectl apply -f netdns.yaml
-
-</code></pre>
-<h2 id="report">report</h2>
-<p>when the kdoctor is not enabled to aggerate reports, all reports will be printed in the stdout of kdoctor agent.
-Use the following command to get its report</p>
-<pre><code class="language-shell">kubectl logs -n kube-system  kdoctor-agent-lwhtm | jq 'select( .TaskName==&quot;netdns.testdns&quot; )'
-</code></pre>
-<p>when the kdoctor is enabled to aggregate reports, all reports will be collected in the PVC or hostPath of kdoctor controller.</p>
-<p>metric introduction</p>
-<pre><code class="language-json">{
-  &quot;TaskName&quot;: &quot;netdns.testdns&quot;,
-  &quot;TaskSpec&quot;: {
-    &quot;schedule&quot;: {
-      &quot;schedule&quot;: &quot;1 1&quot;,
-      &quot;roundTimeoutMinute&quot;: 1,
-      &quot;roundNumber&quot;: 2
-    },
-    &quot;target&quot;: {
-      &quot;protocol&quot;: &quot;tcp&quot;
-    },
-    &quot;request&quot;: {
-      &quot;durationInSecond&quot;: 10,
-      &quot;qps&quot;: 20,
-      &quot;perRequestTimeoutInMS&quot;: 500,
-      &quot;domain&quot;: &quot;kube-dns.kube-system.svc.cluster.local&quot;
-    },
-    &quot;success&quot;: {
-      &quot;successRate&quot;: 1,
-      &quot;meanAccessDelayInMs&quot;: 10000
-    }
-  },
-  &quot;RoundNumber&quot;: 1,
-  &quot;RoundResult&quot;: &quot;succeed&quot;,
-  &quot;NodeName&quot;: &quot;kdoctor-control-plane&quot;,
-  &quot;PodName&quot;: &quot;kdoctor-agent-lwhtm&quot;,
-  &quot;FailedReason&quot;: &quot;&quot;,
-  &quot;StartTimeStamp&quot;: &quot;2023-04-27T07:07:32.032814878Z&quot;,
-  &quot;EndTimeStamp&quot;: &quot;2023-04-27T07:07:32.070513569Z&quot;,
-  &quot;RoundDuraiton&quot;: &quot;37.69869ms&quot;,
-  &quot;ReportType&quot;: &quot;agent test report&quot;,
-  &quot;Detail&quot;: {}
-}
+  request:
+    domain: kubernetes.default.svc.cluster.local
+    durationInSecond: 10
+    perRequestTimeoutInMS: 1000
+    protocol: udp
+    qps: 10
+  schedule:
+    roundNumber: 1
+    roundTimeoutMinute: 1
+    schedule: 0 1
+  target:
+    targetUser:
+      port: 53
+      server: ${SERVER}
+EOF</code></p>
+</li>
+</ol>
+<h2 id="environment-cleanup">Environment Cleanup</h2>
+<pre><code class="language-shell">kubectl delete netdns netdns-cluster netdns- user
 </code></pre>
 
 

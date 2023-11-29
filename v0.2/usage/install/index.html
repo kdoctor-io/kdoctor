@@ -489,45 +489,45 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-requirements" class="md-nav__link">
-    Implementation requirements
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#install_1" class="md-nav__link">
+    Install
   </a>
   
-    <nav class="md-nav" aria-label="Installation">
+    <nav class="md-nav" aria-label="Install">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#add-helm-repository" class="md-nav__link">
-    Add helm repository
+    Add Helm Repository
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#installing-kdoctor" class="md-nav__link">
-    Installing kdoctor
+  <a href="#install-kdoctor" class="md-nav__link">
+    Install kdoctor
   </a>
   
-    <nav class="md-nav" aria-label="Installing kdoctor">
+    <nav class="md-nav" aria-label="Install kdoctor">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-non-highly-available-installation" class="md-nav__link">
-    1. Non-highly available installation
+  <a href="#non-highly-available-installation" class="md-nav__link">
+    Non-highly Available Installation
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-highly-available-installation" class="md-nav__link">
-    2. Highly available installation
+  <a href="#highly-available-installation" class="md-nav__link">
+    Highly Available Installation
   </a>
   
 </li>
@@ -539,7 +539,7 @@
         
           <li class="md-nav__item">
   <a href="#verify-that-all-components-of-kdoctor-are-running-properly" class="md-nav__link">
-    Verify that all components of kdoctor are running properly
+    Verify that All Components of kdoctor are Running Properly
   </a>
   
 </li>
@@ -599,6 +599,8 @@
   
     
     
+      
+        
       
         
       
@@ -685,6 +687,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -997,6 +1019,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1065,6 +1089,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1106,45 +1150,45 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-requirements" class="md-nav__link">
-    Implementation requirements
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#install_1" class="md-nav__link">
+    Install
   </a>
   
-    <nav class="md-nav" aria-label="Installation">
+    <nav class="md-nav" aria-label="Install">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#add-helm-repository" class="md-nav__link">
-    Add helm repository
+    Add Helm Repository
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#installing-kdoctor" class="md-nav__link">
-    Installing kdoctor
+  <a href="#install-kdoctor" class="md-nav__link">
+    Install kdoctor
   </a>
   
-    <nav class="md-nav" aria-label="Installing kdoctor">
+    <nav class="md-nav" aria-label="Install kdoctor">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-non-highly-available-installation" class="md-nav__link">
-    1. Non-highly available installation
+  <a href="#non-highly-available-installation" class="md-nav__link">
+    Non-highly Available Installation
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-highly-available-installation" class="md-nav__link">
-    2. Highly available installation
+  <a href="#highly-available-installation" class="md-nav__link">
+    Highly Available Installation
   </a>
   
 </li>
@@ -1156,7 +1200,7 @@
         
           <li class="md-nav__item">
   <a href="#verify-that-all-components-of-kdoctor-are-running-properly" class="md-nav__link">
-    Verify that all components of kdoctor are running properly
+    Verify that All Components of kdoctor are Running Properly
   </a>
   
 </li>
@@ -1191,35 +1235,35 @@
   
 
 
-<h1 id="install">install</h1>
+<h1 id="install">Install</h1>
 <p><a href="../install-zh_CN/"><strong>简体中文</strong></a> | <strong>English</strong></p>
 <h2 id="introduction">Introduction</h2>
 <p>Install kdoctor to check network and performance inside and outside the cluster.</p>
-<h2 id="implementation-requirements">Implementation requirements</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 <ol>
 <li>
 <p>A complete k8s cluster.</p>
 </li>
 <li>
-<p>installed <a href="https://helm.sh/docs/intro/install/">Helm</a></p>
+<p><a href="https://helm.sh/docs/intro/install/">Helm</a> has been installed.</p>
 </li>
 <li>
-<p>storageClass (optional) if kdoctor-controller is required for high availability and report persistence is required.</p>
+<p>StorageClass (optional) is supported if kdoctor-controller is required for high availability and report persistence is required.</p>
 </li>
 </ol>
-<h2 id="installation">Installation</h2>
-<h3 id="add-helm-repository">Add helm repository</h3>
+<h2 id="install_1">Install</h2>
+<h3 id="add-helm-repository">Add Helm Repository</h3>
 <pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
 helm repo update kdoctor
 </code></pre>
-<h3 id="installing-kdoctor">Installing kdoctor</h3>
+<h3 id="install-kdoctor">Install kdoctor</h3>
 <p>kdoctor can be installed according to different needs, the following are the recommended installation methods for several scenarios</p>
-<h4 id="1-non-highly-available-installation">1. Non-highly available installation</h4>
-<p>The kdoctor agent only prints reports to standard output in the following way</p>
+<h4 id="non-highly-available-installation">Non-highly Available Installation</h4>
+<p>The kdoctor agent only prints reports to standard output in the following way:</p>
 <pre><code class="language-shell">helm install kdoctor kdoctor/kdoctor \
     -n kdoctor --debug --create-namespace 
 </code></pre>
-<h4 id="2-highly-available-installation">2. Highly available installation</h4>
+<h4 id="highly-available-installation">Highly Available Installation</h4>
 <p>The following method directs the collection reports from kdoctor-controller to storage, so you need to install storageClass.</p>
 <pre><code class="language-shell">
 helm install kdoctor kdoctor/kdoctor \
@@ -1229,12 +1273,11 @@ helm install kdoctor kdoctor/kdoctor \
     --set feature.aggregateReport.controller.pvc.storageClass=local-path \
     --set feature.aggregateReport.controller.pvc.storageRequests=&quot;100Mi&quot; \
     --set feature.aggregateReport.controller.pvc.storageLimits=&quot;500Mi&quot;
-ðŸ &quot;ðŸ &quot;ðŸ &quot;ðŸ &quot;ðŸ &quot;ðŸ &quot;ñ
 </code></pre>
-<h3 id="verify-that-all-components-of-kdoctor-are-running-properly">Verify that all components of kdoctor are running properly</h3>
+<h3 id="verify-that-all-components-of-kdoctor-are-running-properly">Verify that All Components of kdoctor are Running Properly</h3>
 <pre><code class="language-shell">kubectl get pod -n kdoctor
-NAME READY STATUS RESTARTS AGE
-kdoctor-controller-686b75d6d7-k4dcq 1/1 Running 0 137m
+NAME                                  READY   STATUS    RESTARTS   AGE
+kdoctor-controller-686b75d6d7-k4dcq   1/1     Running   0          137m
 </code></pre>
 <h3 id="uninstall-kdoctor">Uninstall kdoctor</h3>
 <pre><code class="language-shell">helm uninstall kdoctor -n kdoctor

@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -942,6 +966,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -984,10 +1028,10 @@
       
         <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
-    开始
+    使用步骤
   </a>
   
-    <nav class="md-nav" aria-label="开始">
+    <nav class="md-nav" aria-label="使用步骤">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1032,7 +1076,7 @@
       
         <li class="md-nav__item">
   <a href="#dns-server" class="md-nav__link">
-    集群外 dns server 测试
+    集群外 DNS server 测试
   </a>
   
 </li>
@@ -1065,25 +1109,35 @@
 <h1 id="netdns">NetDns</h1>
 <p><a href="../netdns/"><strong>English</strong></a> | <strong>简体中文</strong></p>
 <h2 id="_1">介绍</h2>
-<p>对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源 ，每一个 agent pod 都会向指定的 dns server 发送 dns 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kodcotr 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。</p>
-<p>1.应用场景：
-* 生产或 E2E 环境下，检测集群每个角落可访问 coreDNS 服务
-* 在应用部署阶段，用以配合调整 coredns 的资源和副本数量，以确认能够支撑期望的访问压力
-* 给 coredns 注入压力，配合 coredns 升级测试、混沌测试、bug 复现等目的
-* 测试集群外部的 dns 服务</p>
-<p>2.关于 NetDns CRD 的更多描述，可参考<a href="../../reference/netdns-zh_CN/">NetDns</a></p>
-<p>3.功能列表:</p>
+<p>对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源 ，每一个 agent Pod 都会向指定的 DNS server 发送 DNS 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kdoctor 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。</p>
+<ol>
+<li>
+<p>应用场景：</p>
 <ul>
-<li>支持集群内外 dns server 测试</li>
-<li>支持 typeA 、typeAAAA 记录</li>
-<li>支持 udp、tcp、tcp-tls 协议</li>
+<li>生产或 E2E 环境下，检测集群每个角落可访问 CoreDNS 服务</li>
+<li>在应用部署阶段，用以配合调整 CoreDNS 的资源和副本数量，以确认能够支撑期望的访问压力</li>
+<li>给 CoreDNS 注入压力，配合 CoreDNS 升级测试、混沌测试、bug 复现等目的</li>
+<li>测试集群外部的 DNS 服务</li>
 </ul>
-<h2 id="_2">开始</h2>
-<p>接下来将展示 <code>NetDns</code> 的使用示例</p>
+</li>
+<li>
+<p>关于 NetDns CRD 的更多描述，可参考<a href="../../reference/netdns-zh_CN/">NetDns</a></p>
+</li>
+<li>
+<p>功能列表:</p>
+<ul>
+<li>支持集群内外 DNS server 测试</li>
+<li>支持 typeA 、typeAAAA 记录</li>
+<li>支持 UDP、TCP、TCP-TLS 协议</li>
+</ul>
+</li>
+</ol>
+<h2 id="_2">使用步骤</h2>
+<p>接下来将展示 <code>NetDNS</code> 的使用示例</p>
 <h3 id="kdoctor">安装 kdoctor</h3>
 <p>参照<a href="../install-zh_CN/">安装教程</a>安装 kdoctor</p>
 <h3 id="server">安装测试 server (选做)</h3>
-<p>kdoctor 官方仓库中包含了一个名为 server 的应用，内包含 http server，https server, dns server 可用来测试 kdoctor 功能，若存在其他测试的 server 可跳过安装。</p>
+<p>kdoctor 官方仓库中包含了一个名为 server 的应用，内包含 http server，https server, DNS server，可用来测试 kdoctor 功能，若存在其他测试的 server 可跳过安装。</p>
 <pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
 helm repo update kdoctor
 helm install server kdoctor/server -n kdoctor-test-server --wait --debug --create-namespace 
@@ -1100,7 +1154,7 @@ NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)              
 server   ClusterIP   172.41.71.0   &lt;none&gt;        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
 </code></pre>
 <h3 id="netdns_1">创建 NetDns</h3>
-<p>创建 <code>NetDns</code> ，该任务将执行一轮持续 10s 的任务，任务会向集群内 dns server 以 qps 为 10 的速度使用 udp 协议，请求解析 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeA 记录，并且立即执行。</p>
+<p>创建 <code>NetDns</code>，该任务将执行一轮持续 10s 的任务，任务会向集群内 DNS server 以 QPS 为 10 的速度使用 UDP 协议，请求解析 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeA 记录，并且立即执行。</p>
 <pre><code class="language-shell">cat &lt;&lt;EOF | kubectl apply -f -
 apiVersion: kdoctor.io/v1beta1
 kind: Netdns
@@ -1141,14 +1195,19 @@ netdns-cluster   true     1               1           succeed           0 1
 <li>SCHEDULE：任务的调度规则</li>
 </ul>
 <h3 id="_4">查看任务报告</h3>
-<p>1.查看已有报告</p>
-<pre><code class="language-shell">kubectl get kdoctorreport
+<ol>
+<li>
+<p>查看已有报告</p>
+<p><code>shell
+kubectl get kdoctorreport
 NAME             CREATED AT
-netdns-cluster   0001-01-01T00:00:00Z
-</code></pre>
-<p>2.查看具体任务报告</p>
+netdns-cluster   0001-01-01T00:00:00Z</code></p>
+</li>
+<li>
+<p>查看具体任务报告</p>
 <p>节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成。</p>
-<pre><code class="language-shell">root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
+<p><code>shell
+root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
 apiVersion: system.kdoctor.io/v1beta1
 kind: KdoctorReport
 metadata:
@@ -1164,8 +1223,8 @@ spec:
     RoundDuration: 11.025723086s
     RoundNumber: 1
     RoundResult: succeed
-    StartTimeStamp: &quot;2023-08-01T09:09:39Z&quot;
-    EndTimeStamp: &quot;2023-08-01T09:09:50Z&quot;
+    StartTimeStamp: "2023-08-01T09:09:39Z"
+    EndTimeStamp: "2023-08-01T09:09:50Z"
     TaskName: netdns.netdns-cluster
     TaskType: Netdns
     netDNSTask:
@@ -1176,21 +1235,21 @@ spec:
           DNSMethod: udp
           DNSServer: 172.41.0.10:53
           Duration: 11.002666395s
-          EndTime: &quot;2023-08-01T09:09:50Z&quot;
+          EndTime: "2023-08-01T09:09:50Z"
           Errors: {}
           FailedCounts: 0
           Latencies:
-            Max_inMx: 0
-            Mean_inMs: 0.2970297
-            Min_inMs: 0
-            P50_inMs: 0
-            P90_inMs: 0
-            P95_inMs: 0
-            P99_inMs: 0
+            MaxInMs: 0
+            MeanInMs: 0.2970297
+            MinInMs: 0
+            P50InMs: 0
+            P90InMs: 0
+            P95InMs: 0
+            P99InMs: 0
           ReplyCode:
             NOERROR: 101
           RequestCounts: 101
-          StartTime: &quot;2023-08-01T09:09:39Z&quot;
+          StartTime: "2023-08-01T09:09:39Z"
           SuccessCounts: 101
           TPS: 9.179593052634765
           TargetDomain: kubernetes.default.svc.cluster.local.
@@ -1212,8 +1271,8 @@ spec:
     RoundDuration: 10.024533428s
     RoundNumber: 1
     RoundResult: succeed
-    StartTimeStamp: &quot;2023-08-01T09:09:39Z&quot;
-    EndTimeStamp: &quot;2023-08-01T09:09:49Z&quot;
+    StartTimeStamp: "2023-08-01T09:09:39Z"
+    EndTimeStamp: "2023-08-01T09:09:49Z"
     TaskName: netdns.netdns-cluster
     TaskType: Netdns
     netDNSTask:
@@ -1238,17 +1297,21 @@ spec:
   RoundNumber: 1
   Status: Finished
   TaskName: netdns-cluster
-  TaskType: Netdns
-</code></pre>
+  TaskType: Netdns</code></p>
+</li>
+</ol>
 <blockquote>
-<p>注：若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。</p>
+<p>若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。</p>
 </blockquote>
-<h2 id="dns-server">集群外 dns server 测试</h2>
-<p>下面是携带 body 的 http 请求示例和 https 的请求示例</p>
-<p>1.创建 <code>NetDns</code> 任务，该任务将执行一轮持续 10s 的任务，任务会向指定的 dns server 以 qps 为 10 的速度进行 udp 请求 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeAAAA，并且立即执行。</p>
+<h2 id="dns-server">集群外 DNS server 测试</h2>
+<p>下面是携带 body 的 http 请求示例和 https 的请求示例：</p>
+<ol>
+<li>
+<p>创建 <code>NetDns</code> 任务，该任务将执行一轮持续 10s 的任务，任务会向指定的 DNS server 以 QPS 为 10 的速度进行 UDP 请求 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeAAAA，并且立即执行。</p>
 <p>这里使用 server 的 service 地址，若有其他 server 地址 可使用其他 server 地址。</p>
 <p>创建 <code>NetDns</code></p>
-<pre><code class="language-shell">SERVER=&quot;172.41.71.0&quot;
+<p><code>shell
+SERVER="172.41.71.0"
 apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
@@ -1271,8 +1334,9 @@ spec:
     targetUser:
       port: 53
       server: ${SERVER}
-EOF
-</code></pre>
+EOF</code></p>
+</li>
+</ol>
 <h2 id="_5">环境清理</h2>
 <pre><code class="language-shell">kubectl delete netdns netdns-cluster netdns- user
 </code></pre>
