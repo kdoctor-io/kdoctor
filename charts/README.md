@@ -29,6 +29,7 @@
 | `feature.netReachMaxConcurrency`                                        | concurrency  for kind NetReach                                          | `20`                                 |
 | `feature.appHttpHealthyMaxConcurrency`                                  | concurrency  for kind AppHttpHealthy                                    | `10`                                 |
 | `feature.appHttpHealthyRequestMaxQPS`                                   | qps for kind AppHttpHealthy                                             | `100`                                |
+| `feature.netHttpDefaultRequestQPS`                                      | qps for kind NetHttp                                                    | `10`                                 |
 | `feature.netHttpDefaultMaxIdleConnsPerHost`                             | max idle connect for kind NetHttp                                       | `50`                                 |
 | `feature.netHttpDefaultRequestDurationInSecond`                         | Duration In Second for kind NetHttp                                     | `2`                                  |
 | `feature.netHttpDefaultRequestPerRequestTimeoutInMS`                    | PerRequest Timeout In MS for kind NetHttp                               | `500`                                |

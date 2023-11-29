@@ -8,7 +8,7 @@ type ConfigmapConfig struct {
 
 	TaskPollIntervalInSecond int `yaml:"taskPollIntervalInSecond"`
 	// nethttp
-	NetHttpDefaultRequestQPS                   int `yaml:"nethttpDefaultRequestQPS"`
+	NetHttpDefaultRequestQPS                   int `yaml:"netHttpDefaultRequestQPS"`
 	NetHttpDefaultMaxIdleConnsPerHost          int `yaml:"netHttpDefaultMaxIdleConnsPerHost"`
 	NetHttpDefaultRequestDurationInSecond      int `yaml:"netHttpDefaultRequestDurationInSecond"`
 	NetHttpDefaultRequestPerRequestTimeoutInMS int `yaml:"netHttpDefaultRequestPerRequestTimeoutInMS"`
