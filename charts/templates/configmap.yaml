@@ -21,8 +21,11 @@ data:
     netHttpDefaultRequestDurationInSecond: {{ .Values.feature.netHttpDefaultRequestDurationInSecond }}
     netHttpDefaultRequestPerRequestTimeoutInMS: {{ .Values.feature.netHttpDefaultRequestPerRequestTimeoutInMS }}
     netDnsMaxConcurrency: {{ .Values.feature.netDnsMaxConcurrency }}
+    netDnsRequestMaxQPS: {{ .Values.feature.netDnsRequestMaxQPS }}
     netReachMaxConcurrency: {{ .Values.feature.netReachMaxConcurrency }}
+    netReachRequestMaxQPS: {{ .Values.feature.netReachRequestMaxQPS }}
     appHttpHealthyMaxConcurrency: {{ .Values.feature.appHttpHealthyMaxConcurrency }}
+    appHttpHealthyRequestMaxQPS: {{ .Values.feature.appHttpHealthyRequestMaxQPS }}
     multusPodAnnotationKey: {{ .Values.feature.multusPodAnnotationKey }}
     agentDefaultTerminationGracePeriodMinutes: {{ .Values.feature.agentDefaultTerminationGracePeriodMinutes }}
     crdMaxHistory: {{ .Values.feature.crdMaxHistory }}
