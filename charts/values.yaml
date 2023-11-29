@@ -39,13 +39,13 @@ feature:
   enableIPv6: true
 
   ## @param feature.netReachRequestMaxQPS qps for kind NetReach
-  netReachRequestMaxQPS: 10
+  netReachRequestMaxQPS: 20
 
   ## @param feature.netReachMaxConcurrency concurrency  for kind NetReach
-  netReachMaxConcurrency: 20
+  netReachMaxConcurrency: 10
 
   ## @param feature.appHttpHealthyMaxConcurrency concurrency  for kind AppHttpHealthy
-  appHttpHealthyMaxConcurrency: 10
+  appHttpHealthyMaxConcurrency: 20
 
   ## @param feature.appHttpHealthyRequestMaxQPS qps for kind AppHttpHealthy
   appHttpHealthyRequestMaxQPS: 100

@@ -25,9 +25,9 @@
 | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------ |
 | `feature.enableIPv4`                                                    | enable ipv4                                                             | `true`                               |
 | `feature.enableIPv6`                                                    | enable ipv6                                                             | `true`                               |
-| `feature.netReachRequestMaxQPS`                                         | qps for kind NetReach                                                   | `10`                                 |
-| `feature.netReachMaxConcurrency`                                        | concurrency  for kind NetReach                                          | `20`                                 |
-| `feature.appHttpHealthyMaxConcurrency`                                  | concurrency  for kind AppHttpHealthy                                    | `10`                                 |
+| `feature.netReachRequestMaxQPS`                                         | qps for kind NetReach                                                   | `20`                                 |
+| `feature.netReachMaxConcurrency`                                        | concurrency  for kind NetReach                                          | `10`                                 |
+| `feature.appHttpHealthyMaxConcurrency`                                  | concurrency  for kind AppHttpHealthy                                    | `20`                                 |
 | `feature.appHttpHealthyRequestMaxQPS`                                   | qps for kind AppHttpHealthy                                             | `100`                                |
 | `feature.netHttpDefaultRequestQPS`                                      | qps for kind NetHttp                                                    | `10`                                 |
 | `feature.netHttpDefaultMaxIdleConnsPerHost`                             | max idle connect for kind NetHttp                                       | `50`                                 |

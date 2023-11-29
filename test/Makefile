@@ -159,8 +159,6 @@ deploy_project:
 		    HELM_OPTION+=" --set kdoctorAgent.ingress.enable=false " ; \
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
-		HELM_OPTION+=" --set feature.nethttp_defaultConcurrency=10 " ; \
-		HELM_OPTION+=" --set feature.netdns_defaultConcurrency=10 " ; \
   		HELM_OPTION+=" --set kdoctorAgent.resources.requests.cpu=500m " ; \
   		HELM_OPTION+=" --set kdoctorAgent.resources.limits.cpu=2000m " ; \
   		HELM_OPTION+=" --set kdoctorAgent.resources.requests.memory=512Mi " ; \
