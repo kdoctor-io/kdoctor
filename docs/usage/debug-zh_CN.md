@@ -4,12 +4,12 @@
 
 **Q: 想要使用更高的 QPS 应该如何设置？**
 * A: 当 QPS 设置过大，会导致服务器资源占用过高，影响业务。为了防止在生产坏境出现误操作。kdoctor 在 webhook 中添加了 QPS 的检查。如果您想使用更高的 QPS
-可通过参数设置 QPS 限制 `--set feature.nethttp_defaultRequest_MaxQps=1000`，也可以通过 kdoctor 的 configmap 中去更改 `nethttp_defaultRequest_MaxQps` ，
+可通过参数设置 QPS 限制 `--set feature.appHttpHealthyRequestMaxQPS=1000`,`--set feature.netReachRequestMaxQPS=1000`,`--set feature.netDnsRequestMaxQPS=1000`，也可以通过 kdoctor 的 configmap 中去更改 ，
 并重启 kdoctor 的相关 pod 重新加载 configmap。
 
 **Q: 为什么我的任务无法达到期望的 QPS ？**
 * A：无法达到 QPS 的期望原因有很多主要分为以下几种原因：
-  * 并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 `--set feature.nethttp_defaultConcurrency=50`，`--set feature.netdns_defaultConcurrency=50`。
+  * 并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 `--set feature.netReachMaxConcurrency=50`，`--set feature.appHttpHealthyMaxConcurrency=50`，`--set feature.netDnsMaxConcurrency=50`。
   * kdoctor agent 分配资源不充足，可通过 kdoctor 的聚合报告`kubectl get kdoctorreport `查看任务消耗的 cpu 与 内存使用量，确定 kdoctor agent 资源分配是否充足。
      ```shell
       ~kubectl get kdoctorreport test-task -oyaml

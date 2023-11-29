@@ -3,18 +3,28 @@
 package types
 
 type ConfigmapConfig struct {
-	EnableIPv4                                 bool   `yaml:"enableIPv4"`
-	EnableIPv6                                 bool   `yaml:"enableIPv6"`
-	TaskPollIntervalInSecond                   int    `yaml:"taskPollIntervalInSecond"`
-	NethttpDefaultRequestQps                   int    `yaml:"nethttp_defaultRequest_Qps"`
-	NethttpDefaultRequestMaxQps                int    `yaml:"nethttp_defaultRequest_MaxQps"`
-	NethttpDefaultConcurrency                  int    `yaml:"nethttp_defaultConcurrency"`
-	NethttpDefaultMaxIdleConnsPerHost          int    `yaml:"nethttp_defaultMaxIdleConnsPerHost"`
-	NethttpDefaultRequestDurationInSecond      int    `yaml:"nethttp_defaultRequest_DurationInSecond"`
-	NethttpDefaultRequestPerRequestTimeoutInMS int    `yaml:"nethttp_defaultRequest_PerRequestTimeoutInMS"`
-	NetdnsDefaultConcurrency                   int    `yaml:"netdns_defaultConcurrency"`
-	MultusPodAnnotationKey                     string `yaml:"multusPodAnnotationKey"`
-	CrdMaxHistory                              int    `yaml:"crdMaxHistory"`
+	EnableIPv4 bool `yaml:"enableIPv4"`
+	EnableIPv6 bool `yaml:"enableIPv6"`
+
+	TaskPollIntervalInSecond int `yaml:"taskPollIntervalInSecond"`
+	// nethttp
+	NetHttpDefaultRequestQPS                   int `yaml:"nethttpDefaultRequestQPS"`
+	NetHttpDefaultMaxIdleConnsPerHost          int `yaml:"netHttpDefaultMaxIdleConnsPerHost"`
+	NetHttpDefaultRequestDurationInSecond      int `yaml:"netHttpDefaultRequestDurationInSecond"`
+	NetHttpDefaultRequestPerRequestTimeoutInMS int `yaml:"netHttpDefaultRequestPerRequestTimeoutInMS"`
+
+	// netreach
+	NetReachMaxConcurrency int `yaml:"netReachMaxConcurrency"`
+	NetReachRequestMaxQPS  int `yaml:"netReachRequestMaxQPS"`
+	// apphttphealthy
+	AppHttpHealthyMaxConcurrency int `yaml:"appHttpHealthyMaxConcurrency"`
+	AppHttpHealthyRequestMaxQPS  int `yaml:"appHttpHealthyRequestMaxQPS"`
+	// netdns
+	NetDnsMaxConcurrency int `yaml:"netDnsMaxConcurrency"`
+	NetDnsRequestMaxQPS  int `yaml:"netDnsRequestMaxQPS"`
+
+	MultusPodAnnotationKey string `yaml:"multusPodAnnotationKey"`
+	CrdMaxHistory          int    `yaml:"crdMaxHistory"`
 
 	AgentSerivceIpv4Name string `yaml:"agentSerivceIpv4Name"`
 	AgentSerivceIpv6Name string `yaml:"agentSerivceIpv6Name"`

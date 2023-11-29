@@ -25,6 +25,7 @@ var _ = Describe("test http ", Label("http"), func() {
 			PerRequestTimeoutMS: 10000,
 			RequestTimeSecond:   10,
 			Qps:                 10,
+			Workers:             10,
 			Header:              header,
 		}
 		log := logger.NewStdoutLogger("debug", "test")
@@ -51,6 +52,7 @@ var _ = Describe("test http ", Label("http"), func() {
 			RequestTimeSecond:   10,
 			EnableLatencyMetric: true,
 			Qps:                 10,
+			Workers:             10,
 			Header:              header,
 		}
 		log := logger.NewStdoutLogger("debug", "test")

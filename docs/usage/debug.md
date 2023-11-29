@@ -6,12 +6,12 @@
 **Q: How to achieve higher QPS?**
 * A: When the QPS setting is too high, it can result in excessive server resource utilization, impacting business operations. 
   To prevent accidental misconfiguration in production environments, kdoctor has added QPS checks in the webhook. 
-* If you wish to use a higher QPS, you can set the QPS limit using the parameter `--set feature.nethttp_defaultRequest_MaxQps=1000`，You can also modify it through the configmap in kdoctor `nethttp_defaultRequest_MaxQps`,
+* If you wish to use a higher QPS, you can set the QPS limit using the parameter  `--set feature.appHttpHealthyRequestMaxQPS=1000`,`--set feature.netReachRequestMaxQPS=1000`,`--set feature.netDnsRequestMaxQPS=1000`，You can also modify it through the configmap in kdoctor,
   And restart the relevant pods of kdoctor to reload the configmap.
 
 **Q: Why is my task unable to achieve the desired QPS ？**
 * A：There are several reasons why the expected QPS cannot be achieved, primarily categorized into the following reasons：
-    * The concurrency worker setting is too low. kdoctor can adjust the concurrency by setting the parameters `--set feature.nethttp_defaultConcurrency=50` and `--set feature.netdns_defaultConcurrency=50`.
+    * The concurrency worker setting is too low. kdoctor can adjust the concurrency by setting the parameters `--set feature.netReachMaxConcurrency=50`，`--set feature.appHttpHealthyMaxConcurrency=50`，`--set feature.netDnsMaxConcurrency=50`.
     * The kdoctor agent may have insufficient resource allocation. You can use the kdoctor aggregate report `kubectl get kdoctorreport` to check the CPU and memory usage of the task. This will help you determine if the resource allocation for the kdoctor agent is sufficient.
        ```shell
         ~kubectl get kdoctorreport test-task -oyaml

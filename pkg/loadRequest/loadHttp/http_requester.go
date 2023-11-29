@@ -310,7 +310,7 @@ func (b *Work) runWorker() {
 			InsecureSkipVerify: true,
 			ServerName:         b.Request.Host,
 		},
-		MaxIdleConnsPerHost: config.AgentConfig.Configmap.NethttpDefaultMaxIdleConnsPerHost,
+		MaxIdleConnsPerHost: config.AgentConfig.Configmap.NetHttpDefaultMaxIdleConnsPerHost,
 		DisableCompression:  b.DisableCompression,
 		DisableKeepAlives:   b.DisableKeepAlives,
 		Proxy:               http.ProxyURL(b.ProxyAddr),

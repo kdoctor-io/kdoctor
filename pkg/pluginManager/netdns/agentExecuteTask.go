@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
+	config "github.com/kdoctor-io/kdoctor/pkg/types"
 	"net"
 	"strconv"
 	"sync"
@@ -95,6 +96,13 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 
 	logger.Sugar().Infof("plugin implement task round, instance=%+v", instance)
 
+	var workers int
+	if instance.Spec.Request.QPS > config.AgentConfig.Configmap.NetDnsMaxConcurrency {
+		workers = config.AgentConfig.Configmap.NetDnsMaxConcurrency
+	} else {
+		workers = instance.Spec.Request.QPS
+	}
+
 	var testTargetList []*testTarget
 	var server string
 
@@ -110,6 +118,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				DnsServerAddr:         server,
 				PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 				Qps:                   instance.Spec.Request.QPS,
+				Workers:               workers,
 				DurationInSecond:      instance.Spec.Request.DurationInSecond,
 				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
@@ -121,6 +130,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				DnsServerAddr:         server,
 				PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 				Qps:                   instance.Spec.Request.QPS,
+				Workers:               workers,
 				DurationInSecond:      instance.Spec.Request.DurationInSecond,
 				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
@@ -146,6 +156,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
+						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -157,6 +168,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
+						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -178,6 +190,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
+						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -189,6 +202,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
+						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
