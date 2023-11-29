@@ -1,6 +1,7 @@
 apiVersion: v2
 name: kdoctor
 home: "https://kdoctor-io.github.io/kdoctor"
+icon: https://raw.githubusercontent.com/kdoctor-io/kdoctor/main/docs/images/kdoctor.svg
 # application or library
 type: application
 # no need to modify this version , CI will auto update it with /VERSION
