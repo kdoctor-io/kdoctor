@@ -50,6 +50,9 @@ feature:
   ## @param feature.appHttpHealthyRequestMaxQPS qps for kind AppHttpHealthy
   appHttpHealthyRequestMaxQPS: 100
 
+  ## @param feature.netHttpDefaultRequestQPS qps for kind NetHttp
+  netHttpDefaultRequestQPS: 10
+
   ## @param feature.netHttpDefaultMaxIdleConnsPerHost max idle connect for kind NetHttp
   netHttpDefaultMaxIdleConnsPerHost: 50
 
