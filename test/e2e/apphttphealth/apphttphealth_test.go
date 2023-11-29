@@ -24,7 +24,7 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 	// issue : https://github.com/kdoctor-io/kdoctor/issues/96
 	var requestTimeout = 15000
 	var successMean = int64(7000)
-	It("success http testing appHttpHealth method GET", Serial, Label("A00001", "A00011", "C00006", "E00002", "A00014", "E00017"), func() {
+	It("success http testing appHttpHealth method GET", Serial, Label("A00001", "A00011", "C00006", "E00014", "A00014", "E00017"), func() {
 		var e error
 		successRate := float64(1)
 		crontab := "0 1"
@@ -766,6 +766,69 @@ var _ = Describe("testing appHttpHealth test ", Serial, Label("appHttpHealth"), 
 		agentSpec.TerminationGracePeriodMinutes = pointer.Int64(1)
 		agentSpec.Kind = types.KindDeployment
 		agentSpec.DeploymentReplicas = pointer.Int32(2)
+		appHttpHealth.Spec.AgentSpec = agentSpec
+
+		// successCondition
+		successCondition := new(v1beta1.NetSuccessCondition)
+		successCondition.SuccessRate = &successRate
+		successCondition.MeanAccessDelayInMs = &successMean
+		appHttpHealth.Spec.SuccessCondition = successCondition
+
+		// target
+		target := new(v1beta1.AppHttpHealthyTarget)
+		target.Method = "GET"
+		if net.ParseIP(testSvcIP).To4() == nil {
+			target.Host = fmt.Sprintf("http://[%s]:%d/?task=%s", testSvcIP, httpPort, appHttpHealthName)
+		} else {
+			target.Host = fmt.Sprintf("http://%s:%d?task=%s", testSvcIP, httpPort, appHttpHealthName)
+		}
+		target.EnableLatencyMetric = true
+		appHttpHealth.Spec.Target = target
+
+		// request
+		request := new(v1beta1.NetHttpRequest)
+		request.PerRequestTimeoutInMS = requestTimeout
+		request.QPS = 10
+		request.DurationInSecond = 10
+		appHttpHealth.Spec.Request = request
+
+		// Schedule
+		Schedule := new(v1beta1.SchedulePlan)
+		Schedule.Schedule = &crontab
+		Schedule.RoundNumber = 1
+		Schedule.RoundTimeoutMinute = 1
+		appHttpHealth.Spec.Schedule = Schedule
+
+		e = frame.CreateResource(appHttpHealth)
+		Expect(e).NotTo(HaveOccurred(), "create appHttpHealth resource")
+
+		e = common.CheckRuntime(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 60)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime spec")
+
+		e = common.WaitKdoctorTaskDone(frame, appHttpHealth, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "wait appHttpHealth task finish")
+
+		success, e := common.CompareResult(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, testPodIPs, reportNum, appHttpHealth)
+		Expect(e).NotTo(HaveOccurred(), "compare report and task")
+		Expect(success).To(BeTrue(), "compare report and task result")
+
+		e = common.CheckRuntimeDeadLine(frame, appHttpHealthName, pluginManager.KindNameAppHttpHealthy, 120)
+		Expect(e).NotTo(HaveOccurred(), "check task runtime resource delete")
+	})
+
+	It("Successfully testing Task NetAppHttpHealthy Runtime DaemonSet Service creation", Serial, Label("E00002"), func() {
+		var e error
+		successRate := float64(1)
+		successMean := int64(3000)
+		crontab := "0 1"
+		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
+
+		appHttpHealth := new(v1beta1.AppHttpHealthy)
+		appHttpHealth.Name = appHttpHealthName
+
+		// agent
+		agentSpec := new(v1beta1.AgentSpec)
+		agentSpec.TerminationGracePeriodMinutes = pointer.Int64(1)
 		appHttpHealth.Spec.AgentSpec = agentSpec
 
 		// successCondition
