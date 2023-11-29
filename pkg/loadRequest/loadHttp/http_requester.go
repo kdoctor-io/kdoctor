@@ -53,10 +53,6 @@ const MaxResultChannelSize = 1000000
 type result struct {
 	err           error
 	duration      time.Duration
-	connDuration  time.Duration // connection setup(DNS lookup + Dial up) duration
-	dnsDuration   time.Duration // dns lookup duration
-	reqDuration   time.Duration // request "write" duration
-	resDuration   time.Duration // response "read" duration
 	statusCode    int
 	contentLength int64
 }
@@ -182,16 +178,25 @@ func (b *Work) Run() {
 
 	// Send qps number of tokens to the channel qosTokenBucket every second to the coroutine for execution
 	go func() {
+		// Request token counter to avoid issuing multiple tokens due to errors
+		requestRound := 0
+
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
 		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+
 		// The request should be sent immediately at 0 seconds
 		for i := 0; i < b.QPS; i++ {
 			b.qosTokenBucket <- struct{}{}
 		}
+		requestRound++
+		b.Logger.Sugar().Debugf("send token %d times", requestRound)
+
 		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 		for {
 			select {
 			case <-c:
+				b.Logger.Sugar().Debugf("reach request duration time, stop request")
 				// Reach request duration stop request
 				if len(b.qosTokenBucket) > 0 {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
@@ -200,10 +205,16 @@ func (b *Work) Run() {
 				b.Stop()
 				return
 			case <-ticker.C:
+				if requestRound >= b.RequestTimeSecond {
+					b.Logger.Sugar().Debugf("All request tokens have been sent and will not be sent again.")
+					continue
+				}
 				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 				for i := 0; i < b.QPS; i++ {
 					b.qosTokenBucket <- struct{}{}
 				}
+				requestRound++
+				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 			}
 		}
 	}()
@@ -231,37 +242,32 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	defer wg.Done()
 	s := b.now()
 	var size int64
-	var dnsStart, connStart, resStart time.Duration
-	var dnsDuration, connDuration, resDuration, reqDuration time.Duration
-	var req *http.Request
-	if b.RequestFunc != nil {
-		req = b.RequestFunc()
-	} else {
-		req = cloneRequest(b.Request, b.RequestBody)
-	}
+	req := genRequest(b.Request, b.RequestBody)
+	var t0, t1, t2, t3, t4, t5, t6 time.Time
 	trace := &httptrace.ClientTrace{
-		DNSStart: func(info httptrace.DNSStartInfo) {
-			dnsStart = b.now()
-		},
-		DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
-			dnsDuration = b.now() - dnsStart
-		},
-		GetConn: func(h string) {
-			connStart = b.now()
-		},
-		GotConn: func(connInfo httptrace.GotConnInfo) {
-			if !connInfo.Reused {
-				connDuration = b.now() - connStart
+		DNSStart: func(_ httptrace.DNSStartInfo) { t0 = time.Now() },
+		DNSDone:  func(_ httptrace.DNSDoneInfo) { t1 = time.Now() },
+		ConnectStart: func(_, _ string) {
+			if t1.IsZero() {
+				t1 = time.Now()
 			}
 		},
+		ConnectDone: func(net, addr string, err error) {
+			t2 = time.Now()
+
+		},
+		GotConn:              func(_ httptrace.GotConnInfo) { t3 = time.Now() },
+		GotFirstResponseByte: func() { t4 = time.Now() },
+		TLSHandshakeStart:    func() { t5 = time.Now() },
+		TLSHandshakeDone:     func(_ tls.ConnectionState, _ error) { t6 = time.Now() },
 	}
-	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+	req = req.WithContext(httptrace.WithClientTrace(context.Background(), trace))
 	ctx, cancel := context.WithTimeout(req.Context(), time.Duration(b.Timeout)*time.Millisecond)
 	defer cancel()
 	req = req.WithContext(ctx)
 	resp, err := c.Do(req)
 	t := b.now()
-	resDuration = t - resStart
+	t7 := time.Now()
 	finish := t - s
 	var statusCode int
 	if err == nil {
@@ -270,6 +276,15 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		statusCode = resp.StatusCode
 	} else {
 		statusCode = 0
+		if t0.IsZero() {
+			t0 = t1
+		}
+		b.Logger.Sugar().Debugf("request err: %v", err)
+		b.Logger.Sugar().Debugf("dns lookup duration: %d", t1.Sub(t0).Milliseconds())
+		b.Logger.Sugar().Debugf("tls handshake duration: %d", t6.Sub(t5).Milliseconds())
+		b.Logger.Sugar().Debugf("tcp connection duration: %d", t2.Sub(t1).Milliseconds())
+		b.Logger.Sugar().Debugf("server processing duration: %d", t4.Sub(t3).Milliseconds())
+		b.Logger.Sugar().Debugf("content transfer duration: %d", t7.Sub(t4).Milliseconds())
 	}
 	if b.ExpectStatusCode != nil {
 		if statusCode != *b.ExpectStatusCode {
@@ -278,15 +293,12 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 			}
 		}
 	}
+
 	b.results <- &result{
 		duration:      finish,
 		statusCode:    statusCode,
 		err:           err,
 		contentLength: size,
-		connDuration:  connDuration,
-		dnsDuration:   dnsDuration,
-		reqDuration:   reqDuration,
-		resDuration:   resDuration,
 	}
 }
 
@@ -298,7 +310,7 @@ func (b *Work) runWorker() {
 			InsecureSkipVerify: true,
 			ServerName:         b.Request.Host,
 		},
-		MaxIdleConnsPerHost: config.AgentConfig.Configmap.NethttpDefaultMaxIdleConnsPerHost,
+		MaxIdleConnsPerHost: config.AgentConfig.Configmap.NetHttpDefaultMaxIdleConnsPerHost,
 		DisableCompression:  b.DisableCompression,
 		DisableKeepAlives:   b.DisableKeepAlives,
 		Proxy:               http.ProxyURL(b.ProxyAddr),
@@ -315,7 +327,7 @@ func (b *Work) runWorker() {
 		tr.TLSNextProto = make(map[string]func(string, *tls.Conn) http.RoundTripper)
 	}
 	// Each goroutine uses the same HTTP Client instance
-	client := &http.Client{Transport: tr, Timeout: time.Duration(b.Timeout) * time.Second}
+	client := &http.Client{Transport: tr}
 	if b.DisableRedirects {
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -404,12 +416,9 @@ func (b *Work) AggregateMetric() *v1beta1.HttpMetrics {
 	return metric
 }
 
-// cloneRequest returns a clone of the provided *http.Request.
-// The clone is a shallow copy of the struct and its Header map.
-func cloneRequest(r *http.Request, body []byte) *http.Request {
+func genRequest(r *http.Request, body []byte) *http.Request {
 	// shallow copy of the struct
-	r2 := new(http.Request)
-	*r2 = *r
+	r2, _ := http.NewRequest(r.Method, r.URL.String(), nil)
 	// deep copy of the Header
 	r2.Header = make(http.Header, len(r.Header))
 	for k, s := range r.Header {

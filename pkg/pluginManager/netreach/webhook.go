@@ -94,9 +94,9 @@ func (s *PluginNetReach) WebhookMutating(logger *zap.Logger, ctx context.Context
 
 	if req.Spec.Request == nil {
 		m := &crd.NetHttpRequest{
-			DurationInSecond:      types.ControllerConfig.Configmap.NethttpDefaultRequestDurationInSecond,
-			QPS:                   types.ControllerConfig.Configmap.NethttpDefaultRequestQps,
-			PerRequestTimeoutInMS: types.ControllerConfig.Configmap.NethttpDefaultRequestPerRequestTimeoutInMS,
+			DurationInSecond:      types.ControllerConfig.Configmap.NetHttpDefaultRequestDurationInSecond,
+			QPS:                   types.ControllerConfig.Configmap.NetHttpDefaultRequestQPS,
+			PerRequestTimeoutInMS: types.ControllerConfig.Configmap.NetHttpDefaultRequestPerRequestTimeoutInMS,
 		}
 		req.Spec.Request = m
 		logger.Sugar().Debugf("set default Request for NetReach %v", req.Name)
@@ -138,8 +138,8 @@ func (s *PluginNetReach) WebhookValidateCreate(logger *zap.Logger, ctx context.C
 
 	// validate request
 	if true {
-		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps {
-			s := fmt.Sprintf("NetReach %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps)
+		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NetReachRequestMaxQPS {
+			s := fmt.Sprintf("NetReach %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NetReachRequestMaxQPS)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
 		}

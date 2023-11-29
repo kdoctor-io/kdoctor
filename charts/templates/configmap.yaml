@@ -16,13 +16,16 @@ data:
     enableIPv4: {{ .Values.feature.enableIPv4 }}
     enableIPv6: {{ .Values.feature.enableIPv6 }}
     taskPollIntervalInSecond: {{ .Values.feature.taskPollIntervalInSecond }}
-    nethttp_defaultRequest_Qps: {{ .Values.feature.nethttp_defaultRequest_Qps }}
-    nethttp_defaultRequest_MaxQps: {{ .Values.feature.nethttp_defaultRequest_MaxQps }}
-    nethttp_defaultConcurrency: {{ .Values.feature.nethttp_defaultConcurrency }}
-    nethttp_defaultMaxIdleConnsPerHost: {{ .Values.feature.nethttp_defaultMaxIdleConnsPerHost }}
-    nethttp_defaultRequest_DurationInSecond: {{ .Values.feature.nethttp_defaultRequest_DurationInSecond }}
-    nethttp_defaultRequest_PerRequestTimeoutInMS: {{ .Values.feature.nethttp_defaultRequest_PerRequestTimeoutInMS }}
-    netdns_defaultConcurrency: {{ .Values.feature.netdns_defaultConcurrency }}
+    netHttpDefaultRequestQPS: {{ .Values.feature.netHttpDefaultRequestQPS }}
+    netHttpDefaultMaxIdleConnsPerHost: {{ .Values.feature.netHttpDefaultMaxIdleConnsPerHost }}
+    netHttpDefaultRequestDurationInSecond: {{ .Values.feature.netHttpDefaultRequestDurationInSecond }}
+    netHttpDefaultRequestPerRequestTimeoutInMS: {{ .Values.feature.netHttpDefaultRequestPerRequestTimeoutInMS }}
+    netDnsMaxConcurrency: {{ .Values.feature.netDnsMaxConcurrency }}
+    netDnsRequestMaxQPS: {{ .Values.feature.netDnsRequestMaxQPS }}
+    netReachMaxConcurrency: {{ .Values.feature.netReachMaxConcurrency }}
+    netReachRequestMaxQPS: {{ .Values.feature.netReachRequestMaxQPS }}
+    appHttpHealthyMaxConcurrency: {{ .Values.feature.appHttpHealthyMaxConcurrency }}
+    appHttpHealthyRequestMaxQPS: {{ .Values.feature.appHttpHealthyRequestMaxQPS }}
     multusPodAnnotationKey: {{ .Values.feature.multusPodAnnotationKey }}
     agentDefaultTerminationGracePeriodMinutes: {{ .Values.feature.agentDefaultTerminationGracePeriodMinutes }}
     crdMaxHistory: {{ .Values.feature.crdMaxHistory }}

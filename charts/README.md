@@ -25,14 +25,16 @@
 | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------ |
 | `feature.enableIPv4`                                                    | enable ipv4                                                             | `true`                               |
 | `feature.enableIPv6`                                                    | enable ipv6                                                             | `true`                               |
-| `feature.nethttp_defaultRequest_Qps`                                    | qps for kind nethttp                                                    | `10`                                 |
-| `feature.nethttp_defaultRequest_MaxQps`                                 | qps for kind nethttp                                                    | `100`                                |
-| `feature.nethttp_defaultConcurrency`                                    | concurrency  for kind nethttp                                           | `50`                                 |
-| `feature.nethttp_defaultMaxIdleConnsPerHost`                            | max idle connect for kind nethttp                                       | `50`                                 |
-| `feature.nethttp_defaultRequest_DurationInSecond`                       | Duration In Second for kind nethttp                                     | `2`                                  |
-| `feature.nethttp_defaultRequest_PerRequestTimeoutInMS`                  | PerRequest Timeout In MS for kind nethttp                               | `500`                                |
-| `feature.nethttp_defaultFail_MeanDelayInMs`                             | mean delay in ms for kind nethttp                                       | `2000`                               |
-| `feature.netdns_defaultConcurrency`                                     | concurrency  for kind netdns                                            | `50`                                 |
+| `feature.netReachRequestMaxQPS`                                         | qps for kind NetReach                                                   | `20`                                 |
+| `feature.netReachMaxConcurrency`                                        | concurrency  for kind NetReach                                          | `10`                                 |
+| `feature.appHttpHealthyMaxConcurrency`                                  | concurrency  for kind AppHttpHealthy                                    | `20`                                 |
+| `feature.appHttpHealthyRequestMaxQPS`                                   | qps for kind AppHttpHealthy                                             | `100`                                |
+| `feature.netHttpDefaultRequestQPS`                                      | qps for kind NetHttp                                                    | `10`                                 |
+| `feature.netHttpDefaultMaxIdleConnsPerHost`                             | max idle connect for kind NetHttp                                       | `50`                                 |
+| `feature.netHttpDefaultRequestDurationInSecond`                         | Duration In Second for kind NetHttp                                     | `2`                                  |
+| `feature.netHttpDefaultRequestPerRequestTimeoutInMS`                    | PerRequest Timeout In MS for kind NetHttp                               | `500`                                |
+| `feature.netDnsMaxConcurrency`                                          | concurrency  for kind NetDns                                            | `20`                                 |
+| `feature.netDnsRequestMaxQPS`                                           | qps for kind NetDns                                                     | `100`                                |
 | `feature.agentDefaultTerminationGracePeriodMinutes`                     | agent termination after minutes                                         | `60`                                 |
 | `feature.taskPollIntervalInSecond`                                      | the interval to poll the task in controller and agent pod               | `5`                                  |
 | `feature.multusPodAnnotationKey`                                        | the multus annotation key for ip status                                 | `k8s.v1.cni.cncf.io/networks-status` |

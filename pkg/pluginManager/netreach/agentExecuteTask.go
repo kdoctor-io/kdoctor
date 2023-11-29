@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	networkingv1 "k8s.io/api/networking/v1"
 	"sync"
 
@@ -71,7 +72,11 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, rt *runningTask.RunningTask) (finalfailureReason string, finalReport types.Task, err error) {
+	// process mem cpu stats
+	resourceStats := resource.InitResource(ctx)
+	resourceStats.RunResourceCollector()
+
 	finalfailureReason = ""
 	err = nil
 	var e error
@@ -90,6 +95,14 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	request := instance.Spec.Request
 	successCondition := instance.Spec.SuccessCondition
 	runtimeResource := instance.Status.Resource
+
+	var workers int
+	if request.QPS > config.AgentConfig.Configmap.NetReachMaxConcurrency {
+		workers = config.AgentConfig.Configmap.NetReachMaxConcurrency
+	} else {
+		workers = request.QPS
+	}
+
 	testTargetList := []*TestTarget{}
 
 	// test kdoctor agent
@@ -278,7 +291,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	}
 
 	// ------------------------ implement for agent case and selected-pod case
-	var reportList []v1beta1.NetReachTaskDetail
+	reportList := make([]v1beta1.NetReachTaskDetail, 0, len(testTargetList))
 
 	var wg sync.WaitGroup
 	var l lock.Mutex
@@ -289,12 +302,13 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				Method:              t.Method,
 				Url:                 t.Url,
 				Qps:                 request.QPS,
+				Workers:             workers,
 				PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 				RequestTimeSecond:   request.DurationInSecond,
 				EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,
 			}
 			logger.Sugar().Debugf("implement test %v, request %v ", t.Name, *d)
-			failureReason, itemReport := SendRequestAndReport(logger, t.Name, d, successCondition)
+			failureReason, itemReport := SendRequestAndReport(logger.With(zap.String("url", t.Url)), t.Name, d, successCondition)
 			l.Lock()
 			if len(failureReason) > 0 {
 				finalfailureReason = fmt.Sprintf("test %v: %v", t.Name, failureReason)
@@ -321,11 +335,9 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 		task.Succeed = true
 	}
 
-	mem, cpu := r.Stats()
-	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
-	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
-	// every round done clean cpu mem stats
-	r.CleanStats()
+	task.SystemResource = resourceStats.Stats()
+	resourceStats.Stop()
+	task.TotalRunningLoad = rt.QpsStats()
 	return finalfailureReason, task, err
 
 }

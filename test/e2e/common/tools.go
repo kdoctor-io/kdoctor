@@ -16,16 +16,16 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/apimachinery/pkg/api/errors"
-
 	"github.com/docker/docker/api/types"
 	docker_client "github.com/docker/docker/client"
 	"github.com/onsi/ginkgo/v2"
 	frame "github.com/spidernet-io/e2eframework/framework"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/yaml"
 
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
@@ -112,7 +112,6 @@ func WaitKdoctorTaskDone(f *frame.Framework, task client.Object, taskKind string
 	default:
 		return fmt.Errorf("unknown task type: %s", task.GetObjectKind().GroupVersionKind().Kind)
 	}
-
 }
 
 func GetKdoctorToken(f *frame.Framework) (string, error) {
@@ -170,7 +169,6 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 	if err != nil {
 		return nil, fmt.Errorf("read plugin report body failed,err : %v", err)
 	}
-	ginkgo.GinkgoWriter.Println(string(body))
 	report := new(kdoctor_report.KdoctorReport)
 
 	err = json.Unmarshal(body, report)
@@ -202,6 +200,10 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 			break
 		}
 	}
+
+	out, _ := yaml.Marshal(r)
+	ginkgo.GinkgoWriter.Println(string(out))
+
 	switch taskKind {
 	case pluginManager.KindNameNetReach:
 		obj := object.(*v1beta1.NetReach)
@@ -246,8 +248,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// qps
 				expectRequestCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realRequestCount := float64(m.Metrics.RequestCounts)
-				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > 0.05 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realRequestCount), int(expectRequestCount))
+				if math.Abs(realRequestCount-expectRequestCount)/expectRequestCount > RequestFaultRate {
+					return GetResultFromReport(r), fmt.Errorf("the error in the number of requests is greater than %.2f ,real request count: %d,expect request count:%d", RequestFaultRate, int(realRequestCount), int(expectRequestCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -301,8 +306,11 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05 ,real request count: %d,expect request count:%d", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > RequestFaultRate {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than %.2f ,real request count: %d,expect request count:%d", RequestFaultRate, int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -365,12 +373,15 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		for _, v := range *r.Spec.Report {
 			for _, m := range v.NetDNSTask.Detail {
 				// qps
-				expectCount := float64((*rs.Spec.Request.QPS) * (*rs.Spec.Request.DurationInSecond))
+				expectCount := float64((rs.Spec.Request.QPS) * (rs.Spec.Request.DurationInSecond))
 				realCount := float64(m.Metrics.RequestCounts)
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
-				if math.Abs(realCount-expectCount)/expectCount > 0.05 {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than 0.05, real request count: %d,expect request count:%d ", int(realCount), int(expectCount))
+				if math.Abs(realCount-expectCount)/expectCount > RequestFaultRate {
+					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than %.2f, real request count: %d,expect request count:%d ", RequestFaultRate, int(realCount), int(expectCount))
+				}
+				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
+					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
 					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
@@ -894,6 +905,7 @@ func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingr
 	<-c
 
 	switch resource.RuntimeType {
+
 	case kdoctor_types.KindDaemonSet:
 		_, err := f.GetDaemonSet(resource.RuntimeName, TestNameSpace)
 		if !errors.IsNotFound(err) {

@@ -6,13 +6,13 @@ package v1beta1
 const NetReachTaskName = "NetReach"
 
 type NetReachTask struct {
-	TargetType    string               `json:"TargetType"`
-	TargetNumber  int64                `json:"TargetNumber"`
-	FailureReason *string              `json:"FailureReason,omitempty"`
-	Succeed       bool                 `json:"Succeed"`
-	MaxCPU        string               `json:"MaxCPU"`
-	MaxMemory     string               `json:"MaxMemory"`
-	Detail        []NetReachTaskDetail `json:"Detail"`
+	TargetType       string               `json:"TargetType"`
+	TargetNumber     int64                `json:"TargetNumber"`
+	FailureReason    *string              `json:"FailureReason,omitempty"`
+	Succeed          bool                 `json:"Succeed"`
+	SystemResource   SystemResource       `json:"SystemResource"`
+	TotalRunningLoad TotalRunningLoad     `json:"TotalRunningLoad"`
+	Detail           []NetReachTaskDetail `json:"Detail"`
 }
 
 type NetReachTaskDetail struct {

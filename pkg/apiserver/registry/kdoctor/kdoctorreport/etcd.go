@@ -111,7 +111,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 
 	var taskStatus *crd.TaskStatus
 	var taskType string
-
+	var creationTimestamp metav1.Time
 	_, name, err := NamespaceAndNameFromKey(key, false)
 	if nil != err {
 		return err
@@ -128,6 +128,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 	} else {
 		fmt.Printf("succeed to get NetDNS %s\n", name)
 		taskStatus = netdns.Status.DeepCopy()
+		creationTimestamp = netdns.CreationTimestamp
 		taskType = v1beta1.NetDNSTaskName
 	}
 
@@ -141,6 +142,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 	} else {
 		fmt.Printf("succeed to get NetReachHealthy %s\n", name)
 		taskStatus = netReach.Status.DeepCopy()
+		creationTimestamp = netReach.CreationTimestamp
 		taskType = v1beta1.NetReachTaskName
 	}
 
@@ -154,6 +156,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 	} else {
 		fmt.Printf("succeed to get HttpAppHealthy %s\n", name)
 		taskStatus = appHttpHealthy.Status.DeepCopy()
+		creationTimestamp = appHttpHealthy.CreationTimestamp
 		taskType = v1beta1.AppHttpHealthyTaskName
 	}
 
@@ -199,6 +202,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 	}
 
 	kdoctorReport := objPtr.(*v1beta1.KdoctorReport)
+	kdoctorReport.CreationTimestamp = creationTimestamp
 	kdoctorReport.Spec = v1beta1.KdoctorReportSpec{
 		TaskName:            name,
 		TaskType:            taskType,
@@ -402,6 +406,7 @@ func (p kdoctorReportStorage) getNetDNSKdoctorReports(ctx context.Context, fileN
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
 		kdoctorReport.Name = tmpNetDNS.Name
+		kdoctorReport.CreationTimestamp = tmpNetDNS.CreationTimestamp
 		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,
@@ -475,6 +480,7 @@ func (p kdoctorReportStorage) getHttpAppHealthyReports(ctx context.Context, file
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
 		kdoctorReport.Name = tmpHttpAppHealthy.Name
+		kdoctorReport.CreationTimestamp = tmpHttpAppHealthy.CreationTimestamp
 		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,
@@ -548,6 +554,7 @@ func (p kdoctorReportStorage) getNetReachHealthyReports(ctx context.Context, fil
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
 		kdoctorReport.Name = tmpNetReachHealthy.Name
+		kdoctorReport.CreationTimestamp = tmpNetReachHealthy.CreationTimestamp
 		kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   v1beta1.GroupName,
 			Version: v1beta1.V1betaVersion,

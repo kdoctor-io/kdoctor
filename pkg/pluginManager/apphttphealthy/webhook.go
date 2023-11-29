@@ -39,9 +39,9 @@ func (s *PluginAppHttpHealthy) WebhookMutating(logger *zap.Logger, ctx context.C
 
 	if req.Spec.Request == nil {
 		m := &crd.NetHttpRequest{
-			DurationInSecond:      types.ControllerConfig.Configmap.NethttpDefaultRequestDurationInSecond,
-			QPS:                   types.ControllerConfig.Configmap.NethttpDefaultRequestQps,
-			PerRequestTimeoutInMS: types.ControllerConfig.Configmap.NethttpDefaultRequestPerRequestTimeoutInMS,
+			DurationInSecond:      types.ControllerConfig.Configmap.NetHttpDefaultRequestDurationInSecond,
+			QPS:                   types.ControllerConfig.Configmap.NetHttpDefaultRequestQPS,
+			PerRequestTimeoutInMS: types.ControllerConfig.Configmap.NetHttpDefaultRequestPerRequestTimeoutInMS,
 		}
 		req.Spec.Request = m
 		logger.Sugar().Debugf("set default Request for HttpAppHealthy %v", req.Name)
@@ -94,8 +94,8 @@ func (s *PluginAppHttpHealthy) WebhookValidateCreate(logger *zap.Logger, ctx con
 
 	// validate request
 	if true {
-		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps {
-			s := fmt.Sprintf("HttpAppHealthy %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.NethttpDefaultRequestMaxQps)
+		if r.Spec.Request.QPS >= types.ControllerConfig.Configmap.AppHttpHealthyRequestMaxQPS {
+			s := fmt.Sprintf("HttpAppHealthy %v requires qps %v bigger than maximum %v", r.Name, r.Spec.Request.QPS, types.ControllerConfig.Configmap.AppHttpHealthyRequestMaxQPS)
 			logger.Error(s)
 			return apierrors.NewBadRequest(s)
 		}

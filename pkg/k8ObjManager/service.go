@@ -6,9 +6,11 @@ package k8sObjManager
 import (
 	"context"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"net"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -72,11 +74,21 @@ func (nm *k8sObjManager) GetServiceAccessUrl(ctx context.Context, name, namespac
 	// get clusterip url
 	if len(s.Spec.ClusterIPs) > 0 {
 		for _, v := range s.Spec.ClusterIPs {
-			t := fmt.Sprintf("%s:%v", v, s.Spec.Ports[portIndex].Port)
+			var t string
+			if net.ParseIP(v).To4() == nil {
+				t = fmt.Sprintf("[%s]:%v", v, s.Spec.Ports[portIndex].Port)
+			} else {
+				t = fmt.Sprintf("%s:%v", v, s.Spec.Ports[portIndex].Port)
+			}
 			r.ClusterIPUrl = append(r.ClusterIPUrl, t)
 		}
 	} else if len(s.Spec.ClusterIP) > 0 {
-		t := fmt.Sprintf("%s:%v", s.Spec.ClusterIP, s.Spec.Ports[portIndex].Port)
+		var t string
+		if net.ParseIP(s.Spec.ClusterIP).To4() == nil {
+			t = fmt.Sprintf("[%s]:%v", s.Spec.ClusterIP, s.Spec.Ports[portIndex].Port)
+		} else {
+			t = fmt.Sprintf("%s:%v", s.Spec.ClusterIP, s.Spec.Ports[portIndex].Port)
+		}
 		r.ClusterIPUrl = append(r.ClusterIPUrl, t)
 	}
 
@@ -86,7 +98,12 @@ func (nm *k8sObjManager) GetServiceAccessUrl(ctx context.Context, name, namespac
 	// get loadbalancer url
 	if len(s.Status.LoadBalancer.Ingress) > 0 {
 		for _, v := range s.Status.LoadBalancer.Ingress {
-			t := fmt.Sprintf("%s:%v", v.IP, s.Spec.Ports[portIndex].Port)
+			var t string
+			if net.ParseIP(s.Spec.ClusterIP).To4() == nil {
+				t = fmt.Sprintf("[%s]:%v", v.IP, s.Spec.Ports[portIndex].Port)
+			} else {
+				t = fmt.Sprintf("%s:%v", v.IP, s.Spec.Ports[portIndex].Port)
+			}
 			r.LoadBalancerUrl = append(r.LoadBalancerUrl, t)
 		}
 	}
@@ -98,9 +115,11 @@ func (nm *k8sObjManager) ListServicesDnsIP(ctx context.Context) ([]string, error
 	serviceList := new(corev1.ServiceList)
 	var err error
 	var result []string
+
 	label := map[string]string{
-		"k8s-app": "kube-dns",
+		types.AgentConfig.DnsServiceSelectLabelKey: types.AgentConfig.DnsServiceSelectLabelValue,
 	}
+
 	ListOption := &client.ListOptions{
 		Namespace:     "kube-system",
 		LabelSelector: labels.SelectorFromSet(label),

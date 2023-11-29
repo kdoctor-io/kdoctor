@@ -26,11 +26,13 @@ package loadDns
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"github.com/miekg/dns"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net"
 	"sync"
 	"time"
 )
@@ -97,16 +99,24 @@ func (b *Work) Run() {
 
 	// Send qps number of tokens to the channel qosTokenBucket every second to the coroutine for execution
 	go func() {
+		// Request token counter to avoid issuing multiple tokens due to errors
+		requestRound := 0
+
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
 		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
 		// The request should be sent immediately at 0 seconds
 		for i := 0; i < b.QPS; i++ {
 			b.qosTokenBucket <- struct{}{}
 		}
+		requestRound++
+		b.Logger.Sugar().Debugf("send token %d times", requestRound)
+
 		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 		for {
 			select {
 			case <-c:
+				b.Logger.Sugar().Debugf("reach request duration time, stop request")
 				// Reach request duration stop request
 				if len(b.qosTokenBucket) > 0 {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
@@ -115,10 +125,16 @@ func (b *Work) Run() {
 				b.Stop()
 				return
 			case <-ticker.C:
+				if requestRound >= b.RequestTimeSecond {
+					b.Logger.Sugar().Debugf("All request tokens have been sent and will not be sent again.")
+					continue
+				}
 				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 				for i := 0; i < b.QPS; i++ {
 					b.qosTokenBucket <- struct{}{}
 				}
+				requestRound++
+				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 			}
 		}
 	}()
@@ -142,50 +158,97 @@ func (b *Work) Finish() {
 	b.report.finalize(total)
 }
 
-func (b *Work) makeRequest(client *dns.Client, conn *dns.Conn, wg *sync.WaitGroup) {
+func (b *Work) makeRequest(client *dns.Client, msg *dns.Msg, conn *dns.Conn, wg *sync.WaitGroup) {
 	defer wg.Done()
-	var msg *dns.Msg
-	var rtt time.Duration
-	var err error
 
-	if b.Protocol == "tcp" || b.Protocol == "tcp-tls" {
-		msg, rtt, err = client.Exchange(b.Msg, b.ServerAddr)
-
-	} else {
-		if conn == nil {
-			conn, _ = client.Dial(b.ServerAddr)
+	// Due to the time limitation on long-lived TCP connections by CoreDNS, connection reuse is not adopted for the TCP protocol.
+	if RequestProtocol(b.Protocol) == RequestMethodUdp {
+		err := client.ExchangeWithReuseConn(msg, conn)
+		if err != nil {
+			b.results <- &result{
+				duration: 0,
+				err:      err,
+				msg:      nil,
+			}
 		}
-		msg, rtt, err = client.ExchangeWithConn(b.Msg, conn)
+	} else {
+		r, rtt, err := client.Exchange(msg, b.ServerAddr)
+		b.results <- &result{
+			duration: rtt,
+			err:      err,
+			msg:      r,
+		}
 	}
 
-	b.results <- &result{
-		duration: rtt,
-		err:      err,
-		msg:      msg,
-	}
 }
 
 func (b *Work) runWorker() {
+	var conn *dns.Conn
+	var err error
 	client := new(dns.Client)
 	client.Net = b.Protocol
 	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
-	conn, _ := client.Dial(b.ServerAddr)
-	if b.Protocol == "tcp-tls" {
+	if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
 		tlsConfig := &tls.Config{
 			InsecureSkipVerify: true,
 		}
 		client.TLSConfig = tlsConfig
 	}
+
+	if RequestProtocol(b.Protocol) == RequestMethodUdp {
+		conn, err = b.makeConn(client)
+		if err != nil {
+			b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
+			return
+		}
+		go conn.Receiver()
+	} else {
+		conn = new(dns.Conn)
+	}
+
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
 		select {
 		case <-b.stopCh:
 			wg.Wait()
+			// Wait for the last request to return
+			time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
+			if RequestProtocol(b.Protocol) == RequestMethodUdp {
+				if len(conn.ResponseReceiver) > 0 {
+					for i := 0; i < len(conn.ResponseReceiver); i++ {
+						resp := <-conn.ResponseReceiver
+						e := resp.Err
+						if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
+							e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
+						}
+						b.results <- &result{
+							duration: resp.Rtt,
+							err:      e,
+							msg:      resp.Msg,
+						}
+					}
+				}
+				conn.ShutDownReceiver()
+				conn.Close()
+			}
 			return
 		case <-b.qosTokenBucket:
 			wg.Add(1)
-			go b.makeRequest(client, conn, wg)
+			msg := new(dns.Msg)
+			*msg = *b.Msg
+			msg.Id = dns.Id()
+			go b.makeRequest(client, msg, conn, wg)
+		case resp := <-conn.ResponseReceiver:
+			e := resp.Err
+			if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
+				e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
+			}
+			b.results <- &result{
+				duration: resp.Rtt,
+				err:      e,
+				msg:      resp.Msg,
+			}
 		}
 	}
 }
@@ -249,4 +312,20 @@ func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 	}
 
 	return metric
+}
+
+func (b *Work) makeConn(c *dns.Client) (*dns.Conn, error) {
+	var err error
+	d := new(net.Dialer)
+	conn := new(dns.Conn)
+	conn.ResponseReceiver = make(chan dns.Response, b.QPS)
+	conn.ShutDown = make(chan struct{})
+	conn.Conn, err = d.Dial(b.Protocol, b.ServerAddr)
+
+	// A zero value for t means Read and Write will not time out.
+	_ = conn.SetWriteDeadline(time.Time{})
+	_ = conn.SetReadDeadline(time.Time{})
+
+	conn.TsigSecret, conn.TsigProvider = c.TsigSecret, c.TsigProvider
+	return conn, err
 }

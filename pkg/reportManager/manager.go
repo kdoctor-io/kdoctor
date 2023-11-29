@@ -6,6 +6,7 @@ package reportManager
 import (
 	"context"
 	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/util/workqueue"
@@ -17,16 +18,18 @@ const (
 )
 
 type reportManager struct {
-	logger          *zap.Logger
-	reportDir       string
-	collectInterval time.Duration
-	queue           workqueue.RateLimitingInterface
-	runtimeDB       []scheduler.DB
+	logger                  *zap.Logger
+	reportDir               string
+	collectInterval         time.Duration
+	queue                   workqueue.RateLimitingInterface
+	appHttpHealthyRuntimeDB scheduler.DB
+	netReachRuntimeDB       scheduler.DB
+	netDNSRuntimeDB         scheduler.DB
 }
 
 var globalReportManager *reportManager
 
-func InitReportManager(logger *zap.Logger, reportDir string, collectInterval time.Duration, db []scheduler.DB) {
+func InitReportManager(logger *zap.Logger, reportDir string, collectInterval time.Duration, db map[string]scheduler.DB) {
 	if globalReportManager != nil {
 		return
 	}
@@ -36,8 +39,19 @@ func InitReportManager(logger *zap.Logger, reportDir string, collectInterval tim
 		reportDir:       reportDir,
 		collectInterval: collectInterval,
 		queue:           workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "reportManager"),
-		runtimeDB:       db,
 	}
+
+	for k, v := range db {
+		switch k {
+		case types.KindNameAppHttpHealthy:
+			globalReportManager.appHttpHealthyRuntimeDB = v
+		case types.KindNameNetReach:
+			globalReportManager.netReachRuntimeDB = v
+		case types.KindNameNetdns:
+			globalReportManager.netDNSRuntimeDB = v
+		}
+	}
+
 	go globalReportManager.runWorker()
 }
 
@@ -56,18 +70,14 @@ func (s *reportManager) runWorker() {
 	// please do not run more than one worker, or else it races to write reports
 	go wait.UntilWithContext(ctx, s.worker, time.Second)
 
-	// periodically trigger sync
-	for {
-		TriggerSyncReport("periodicallyTrigger")
-		<-time.After(s.collectInterval)
-	}
+	select {}
 }
 
-func TriggerSyncReport(triggerName string) {
+func TriggerSyncReport(tgt string) {
 	if globalReportManager != nil {
-		globalReportManager.logger.Sugar().Debugf("trigger to sync agent report from source %v", triggerName)
+		globalReportManager.logger.Sugar().Debugf("trigger to sync agent report from source %v", tgt)
 		// s.queue.AddRateLimited(triggerName)
-		globalReportManager.queue.AddAfter(triggerName, 10*time.Second)
+		globalReportManager.queue.AddAfter(tgt, 10*time.Second)
 	}
 }
 

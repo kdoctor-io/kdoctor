@@ -4,13 +4,13 @@
 
 ## 基本描述
 
-对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent pod 都会向指定的目标发送 Dns 请求，并获得成功率和平均延迟。 它可以指定成功条件来告知结果成功或失败。
+对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent Pod 都会向指定的目标发送 DNS 请求，并获得成功率和平均延迟。它可以指定成功条件来告知结果成功或失败。
 
 ## netdns 示例
 
-### 集群 Dns Server 检查
+### 集群 DNS Server 检查
 
-对集群内的 dns server（coredns）发送对应请求，获取集群内 dns server 性能状态。
+对集群内的 DNS server（CoreDNS）发送对应请求，获取集群内 DNS server 性能状态。
 
 ```yaml
 apiVersion: kdoctor.io/v1beta1
@@ -62,9 +62,9 @@ status:
   lastRoundStatus: succeed
 ```
 
-### 指定 dns server 检查
+### 指定 DNS server 检查
 
-对集群外部的 dns server 发送对应请求，获取集群外部 dns server 性能状态。
+对集群外部的 DNS server 发送对应请求，获取集群外部 DNS server 性能状态。
 
 ```Yaml
 apiVersion: kdoctor.io/v1beta1
@@ -104,7 +104,7 @@ spec:
 
 | 字段       | 描述          | 结构                                         | 验证      | 取值    | 默认值  |
 |-----------|-------------|--------------------------------------------|---------|-------|------|
-| agentSpec  | 任务执行agent配置 | [agentSpec](./netdns-zh_CN.md#AgentSpec) | 可选      |       |      |
+| agentSpec  | 任务执行agent 配置 | [agentSpec](./netdns-zh_CN.md#AgentSpec) | 可选      |       |      |
 | schedule  | 调度任务执行      | [schedule](./netdns-zh_CN.md#Schedule)   | 可选      |       |      |
 | request   | 对目标地址请求配置   | [request](./netdns-zh_CN.md#Request)     | 可选      |       |      |
 | target    | 请求目标设置      | [target](./netdns-zh_CN.md#Target)       | 可选      |       |      |
@@ -129,7 +129,7 @@ spec:
 | 字段                 | 描述                                    | 结构     | 验证  | 取值                                                                                                                                                                                                          | 默认值  |
 |--------------------|---------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
 | roundNumber        | 任务执行轮数                                | int    | 可选  | 大于等于-1，为 -1 时表示永久执行,大于 0 表示将要执行的轮数                                                                                                                                                             | 1    |
-| schedule           | 任务执行时间, 执行时间应小于roundTimeoutMinute     | string | 可选  | 支持 linux crontab 与间隔法两种写法<br/>[linux crontab](https://linuxhandbook.com/crontab/) ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min | "0 60" |
+| schedule           | 任务执行时间, 执行时间应小于roundTimeoutMinute     | string | 可选  | 支持 linux crontab 与间隔法两种写法<br/>[linux crontab](https://linuxhandbook.com/crontab/) ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M 取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔 1min | "0 60" |
 | roundTimeoutMinute | 任务超时时间，需要大于 durationInSecond 和 任务执行时间 | int    | 可选  | 大于等于 1                                                                                                                                                                                                      | 60   |
 
 #### Request
@@ -139,17 +139,17 @@ spec:
 | durationInSecond       | 每轮任务的请求发压的持续时间，小于roundTimeoutMinute   | int    | 可选  | 大于等于 1        | 2             |
 | perRequestTimeoutInMS  | 每个请求的超时时间，不可大于 durationInSecond       | int    | 可选  | 大于等于 1        | 500           |
 | qps                    | 每一个 agent 每秒请求数量                      | int    | 可选  | 大于等于 1        | 5             |
-| protocol               | 请求协议                                  | string | 可选  | udp、tcp、tcp-tls | udp           |
-| domain                 | dns 请求解析的域名                           | string | 可选  |               | kubernetes.default.svc.cluster.local |
+| protocol               | 请求协议                                  | string | 可选  | UDP、TCP、TCP-TLS | UDP           |
+| domain                 | DNS 请求解析的域名                           | string | 可选  |               | kubernetes.default.svc.cluster.local |
 
-> 注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 qps 等于 agent 数量 * 设置的qps。
+> 注意：使用 agent 请求时，所有的 agent 都会向目标地址进行请求，因此实际 server 接收的 QPS 等于 agent 数量 * 设置的 QPS。
 
 #### Target
 
 | 字段                 | 描述                      | 结构                                           | 验证  | 取值         | 默认值   |
 |--------------------|-------------------------|----------------------------------------------|-----|------------|-------|
-| targetUser        | 对用户自定义的 dns server 进行 dns 请求| [targetUser](./netdns-zh_CN.md#TargetUser) | 可选  |            | true  |
-| targetDns           | 对集群的 dns server（coredns）进行 dns 请求 | [targetDns](./netdns-zh_CN.md#TargetDns)   | 可选  |            | true  |
+| targetUser        | 对用户自定义的 DNS server 进行 DNS 请求| [targetUser](./netdns-zh_CN.md#TargetUser) | 可选  |            | true  |
+| targetDns           | 对集群的 DNS server（CoreDNS）进行 DNS 请求 | [targetDns](./netdns-zh_CN.md#TargetDns)   | 可选  |            | true  |
 | enableLatencyMetric | 统计演示分布,开启后会增加内存使用量      | bool                                         | 可选  | true,false | false |
 
 #### Expect
@@ -163,24 +163,24 @@ spec:
 
 #### TargetUser
 
-测试用户自定义 dns server
+测试用户自定义 DNS server
 
 | 字段          | 描述            | 结构     | 验证  | 取值      | 默认值 |
 |-------------|---------------|--------|-----|---------|---|
-| server  | dns server 地址 | string | 必填  |         |  |
-| port    | dns server 端口 | int    | 必填  | 1-65535 |   |
+| server  | DNS server 地址 | string | 必填  |         |  |
+| port    | DNS server 端口 | int    | 必填  | 1-65535 |   |
 
 
 #### TargetDns
 
-测试集群内 dns server
+测试集群内 DNS server
 
 | 字段       | 描述                       | 结构     | 验证  | 取值        | 默认值   |
 |----------|--------------------------|--------|-----|-----------|-------|
-| testIPv4 | 测试 ipv4 地址 请求 A 记录       | bool   | 可选  | true,false | true  |
-| testIPv6 | 测试 ipv6 地址 请求 AAAA 记录    | bool   | 可选  | true,false    | false |
-| serviceName     | 集群 dns server service 地址 | string | 可选  |    |       |
-| serviceNamespace  | 集群 dns server service 端口 | string | 可选  |    |       |
+| testIPv4 | 测试 IPv4 地址 请求 A 记录       | bool   | 可选  | true,false | true  |
+| testIPv6 | 测试 IPv6 地址 请求 AAAA 记录    | bool   | 可选  | true,false    | false |
+| serviceName     | 集群 DNS server service 地址 | string | 可选  |    |       |
+| serviceNamespace  | 集群 DNS server service 端口 | string | 可选  |    |       |
 
 ### status
 

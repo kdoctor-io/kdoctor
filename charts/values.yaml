@@ -38,29 +38,35 @@ feature:
   ## @param feature.enableIPv6 enable ipv6
   enableIPv6: true
 
-  ## @param feature.nethttp_defaultRequest_Qps qps for kind nethttp
-  nethttp_defaultRequest_Qps: 10
+  ## @param feature.netReachRequestMaxQPS qps for kind NetReach
+  netReachRequestMaxQPS: 20
 
-  ## @param feature.nethttp_defaultRequest_MaxQps qps for kind nethttp
-  nethttp_defaultRequest_MaxQps: 100
+  ## @param feature.netReachMaxConcurrency concurrency  for kind NetReach
+  netReachMaxConcurrency: 10
 
-  ## @param feature.nethttp_defaultConcurrency concurrency  for kind nethttp
-  nethttp_defaultConcurrency: 50
+  ## @param feature.appHttpHealthyMaxConcurrency concurrency  for kind AppHttpHealthy
+  appHttpHealthyMaxConcurrency: 20
 
-  ## @param feature.nethttp_defaultMaxIdleConnsPerHost max idle connect for kind nethttp
-  nethttp_defaultMaxIdleConnsPerHost: 50
+  ## @param feature.appHttpHealthyRequestMaxQPS qps for kind AppHttpHealthy
+  appHttpHealthyRequestMaxQPS: 100
 
-  ## @param feature.nethttp_defaultRequest_DurationInSecond Duration In Second for kind nethttp
-  nethttp_defaultRequest_DurationInSecond: 2
+  ## @param feature.netHttpDefaultRequestQPS qps for kind NetHttp
+  netHttpDefaultRequestQPS: 10
 
-  ## @param feature.nethttp_defaultRequest_PerRequestTimeoutInMS PerRequest Timeout In MS for kind nethttp
-  nethttp_defaultRequest_PerRequestTimeoutInMS: 500
+  ## @param feature.netHttpDefaultMaxIdleConnsPerHost max idle connect for kind NetHttp
+  netHttpDefaultMaxIdleConnsPerHost: 50
 
-  ## @param feature.nethttp_defaultFail_MeanDelayInMs mean delay in ms for kind nethttp
-  nethttp_defaultFail_MeanDelayInMs: 2000
+  ## @param feature.netHttpDefaultRequestDurationInSecond Duration In Second for kind NetHttp
+  netHttpDefaultRequestDurationInSecond: 2
 
-  ## @param feature.netdns_defaultConcurrency concurrency  for kind netdns
-  netdns_defaultConcurrency: 50
+  ## @param feature.netHttpDefaultRequestPerRequestTimeoutInMS PerRequest Timeout In MS for kind NetHttp
+  netHttpDefaultRequestPerRequestTimeoutInMS: 500
+
+  ## @param feature.netDnsMaxConcurrency concurrency  for kind NetDns
+  netDnsMaxConcurrency: 20
+
+  ## @param feature.netDnsRequestMaxQPS qps for kind NetDns
+  netDnsRequestMaxQPS: 100
 
   ## @param feature.agentDefaultTerminationGracePeriodMinutes agent termination after minutes
   agentDefaultTerminationGracePeriodMinutes: 60

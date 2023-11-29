@@ -6,6 +6,7 @@ package pluginManager
 import (
 	"context"
 	"fmt"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	networkingv1 "k8s.io/api/networking/v1"
 	"time"
 
@@ -85,6 +86,8 @@ func (s *pluginManager) RunAgentController() {
 		logger.Sugar().Fatalf("unsupported TaskKind %s in %v", types.AgentConfig.TaskKind, types.TaskKinds)
 	}
 
+	runningTaskManager := runningTask.InitRunningTask()
+
 	for name, plugin := range s.chainingPlugins {
 		if name != types.AgentConfig.TaskKind && !types.AgentConfig.DefaultAgent {
 			continue
@@ -92,13 +95,14 @@ func (s *pluginManager) RunAgentController() {
 
 		logger.Sugar().Infof("run controller for plugin %v", name)
 		k := &pluginAgentReconciler{
-			logger:        logger.Named(name + "Reconciler"),
-			plugin:        plugin,
-			client:        mgr.GetClient(),
-			crdKind:       name,
-			taskRoundData: taskStatusManager.NewTaskStatus(),
-			localNodeName: types.AgentConfig.LocalNodeName,
-			fm:            fm,
+			logger:             logger.Named(name + "Reconciler"),
+			plugin:             plugin,
+			client:             mgr.GetClient(),
+			crdKind:            name,
+			taskRoundData:      taskStatusManager.NewTaskStatus(),
+			localNodeName:      types.AgentConfig.LocalNodeName,
+			fm:                 fm,
+			runningTaskManager: runningTaskManager,
 		}
 		if e := k.SetupWithManager(mgr); e != nil {
 			s.logger.Sugar().Fatalf("failed to builder reconcile for plugin %v, error=%v", name, e)

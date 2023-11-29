@@ -23,7 +23,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 	It("Successfully testing cascading deletion with Task NetReach DaemonSet Service and Ingress ", Label("E00007"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -57,6 +57,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
+		target.EnableLatencyMetric = true
 		netReach.Spec.Target = target
 
 		// request
@@ -100,7 +101,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 	It("Successfully testing cascading deletion with Task NetAppHttpHealthy DaemonSet Service", Label("E00008"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -122,6 +123,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		target.Host = "www.baidu.com"
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -193,16 +195,14 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		targetDns.ServiceName = &ServiceName
 		targetDns.ServiceNamespace = &ServiceNamespace
 		target.NetDnsTargetDns = targetDns
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 3000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = "www.baidu.com"
 		protocol := "udp"
 		request.Protocol = &protocol
@@ -243,7 +243,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 	It("Successfully testing cascading deletion with Task NetReach Deployment Service and Ingress ", Label("E00010"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		netReachName := "netreach-" + tools.RandomName()
 
@@ -279,6 +279,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		target.MultusInterface = &disable
 		target.IPv4 = &common.TestIPv4
 		target.IPv6 = &common.TestIPv6
+		target.EnableLatencyMetric = true
 		netReach.Spec.Target = target
 
 		// request
@@ -322,7 +323,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 	It("Successfully testing cascading deletion with Task NetAppHttpHealthy Deployment Service", Label("E00011"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		appHttpHealthName := "apphttphealth-get" + tools.RandomName()
 
@@ -346,6 +347,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		target := new(v1beta1.AppHttpHealthyTarget)
 		target.Method = "GET"
 		target.Host = "www.baidu.com"
+		target.EnableLatencyMetric = true
 		appHttpHealth.Spec.Target = target
 
 		// request
@@ -389,7 +391,7 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 	It("Successfully testing cascading deletion with Task NetDns Deployment Service  ", Label("E00012"), func() {
 		var e error
 		successRate := float64(1)
-		successMean := int64(1500)
+		successMean := int64(3000)
 		crontab := "0 1"
 		netDnsName := "netdns-e2e-" + tools.RandomName()
 
@@ -419,16 +421,14 @@ var _ = Describe("testing runtime ", Label("runtime"), func() {
 		targetDns.ServiceName = &ServiceName
 		targetDns.ServiceNamespace = &ServiceNamespace
 		target.NetDnsTargetDns = targetDns
+		target.EnableLatencyMetric = true
 		netDns.Spec.Target = target
 
 		// request
 		request := new(v1beta1.NetdnsRequest)
-		var perRequestTimeoutInMS = uint64(1000)
-		var qps = uint64(10)
-		var durationInSecond = uint64(10)
-		request.PerRequestTimeoutInMS = &perRequestTimeoutInMS
-		request.QPS = &qps
-		request.DurationInSecond = &durationInSecond
+		request.PerRequestTimeoutInMS = 3000
+		request.QPS = 10
+		request.DurationInSecond = 10
 		request.Domain = "www.baidu.com"
 		protocol := "udp"
 		request.Protocol = &protocol

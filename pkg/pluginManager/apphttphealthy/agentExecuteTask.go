@@ -15,6 +15,8 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/loadRequest/loadHttp"
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
+	config "github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
@@ -68,7 +70,11 @@ type TestTarget struct {
 	Method loadHttp.HttpMethod
 }
 
-func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, r *resource.UsedResource) (finalfailureReason string, finalReport types.Task, err error) {
+func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, rt *runningTask.RunningTask) (finalfailureReason string, finalReport types.Task, err error) {
+	// process mem cpu stats
+	resourceStats := resource.InitResource(ctx)
+	resourceStats.RunResourceCollector()
+
 	finalfailureReason = ""
 	task := &v1beta1.AppHttpHealthyTask{}
 	err = nil
@@ -86,6 +92,14 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	target := instance.Spec.Target
 	request := instance.Spec.Request
 	successCondition := instance.Spec.SuccessCondition
+
+	var workers int
+	if request.QPS > config.AgentConfig.Configmap.AppHttpHealthyMaxConcurrency {
+		workers = config.AgentConfig.Configmap.AppHttpHealthyMaxConcurrency
+	} else {
+		workers = request.QPS
+	}
+
 	logger.Sugar().Infof("load test custom target: Method=%v, Url=%v , qps=%v, PerRequestTimeout=%vs, Duration=%vs", target.Method, target.Host, request.QPS, request.PerRequestTimeoutInMS, request.DurationInSecond)
 	task.TargetType = "HttpAppHealthy"
 	task.TargetNumber = 1
@@ -93,6 +107,7 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		Method:              loadHttp.HttpMethod(target.Method),
 		Url:                 target.Host,
 		Qps:                 request.QPS,
+		Workers:             workers,
 		PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
@@ -172,11 +187,9 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	} else {
 		task.Succeed = true
 	}
-	mem, cpu := r.Stats()
-	task.MaxMemory = fmt.Sprintf("%.2fMB", float64(mem/(1024*1024)))
-	task.MaxCPU = fmt.Sprintf("%.3f%%", cpu)
-	// every round done clean cpu mem stats
-	r.CleanStats()
+	task.SystemResource = resourceStats.Stats()
+	resourceStats.Stop()
+	task.TotalRunningLoad = rt.QpsStats()
 
 	return finalfailureReason, task, err
 

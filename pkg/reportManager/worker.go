@@ -82,7 +82,7 @@ func (s *reportManager) syncReportFromOneAgent(ctx context.Context, logger *zap.
 
 }
 
-func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger, taskName string) error {
+func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, logger *zap.Logger, taskKind string, taskName string) error {
 	var task scheduler.Item
 	var err error
 	var podIP k8sObjManager.PodIps
@@ -96,15 +96,14 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 		return nil
 	}
 	logger.Sugar().Debugf("before sync, local report files: %v", localFileList)
-	// get all runtime obj
-	for _, v := range s.runtimeDB {
-		task, err = v.Get(taskName)
-		if err != nil {
-			logger.Sugar().Debugf(err.Error())
-			continue
-		} else {
-			break
-		}
+
+	switch taskKind {
+	case types.KindNameAppHttpHealthy:
+		task, err = s.appHttpHealthyRuntimeDB.Get(taskName)
+	case types.KindNameNetReach:
+		task, err = s.netReachRuntimeDB.Get(taskName)
+	case types.KindNameNetdns:
+		task, err = s.netDNSRuntimeDB.Get(taskName)
 	}
 	if err != nil {
 		return err
@@ -155,16 +154,9 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 }
 
 // just one worker to sync all report and save to local disc of controller pod
-func (s *reportManager) syncHandler(ctx context.Context, triggerName string) error {
+func (s *reportManager) syncHandler(ctx context.Context, trigger string) error {
 	logger := s.logger.With(
-		zap.String("triggerSource", triggerName),
+		zap.String("triggerSource", trigger),
 	)
-	var taskName string
-	if triggerName == "periodicallyTrigger" {
-		taskName = triggerName
-	} else {
-		taskName = strings.Split(triggerName, ".")[1]
-	}
-
-	return s.runControllerAggregateReportOnce(ctx, logger, taskName)
+	return s.runControllerAggregateReportOnce(ctx, logger, strings.Split(trigger, ".")[0], strings.Split(trigger, ".")[1])
 }

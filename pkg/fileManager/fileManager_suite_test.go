@@ -9,9 +9,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestIppoolCR(t *testing.T) {
+func TestFileManager(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "logger Suite")
+	RunSpecs(t, "file manager Suite")
 }
 
 var _ = BeforeSuite(func() {
