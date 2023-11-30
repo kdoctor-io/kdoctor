@@ -32,7 +32,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptrace"
 	"net/url"
 	"strconv"
 	"sync"
@@ -243,31 +242,11 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	s := b.now()
 	var size int64
 	req := genRequest(b.Request, b.RequestBody)
-	var t0, t1, t2, t3, t4, t5, t6 time.Time
-	trace := &httptrace.ClientTrace{
-		DNSStart: func(_ httptrace.DNSStartInfo) { t0 = time.Now() },
-		DNSDone:  func(_ httptrace.DNSDoneInfo) { t1 = time.Now() },
-		ConnectStart: func(_, _ string) {
-			if t1.IsZero() {
-				t1 = time.Now()
-			}
-		},
-		ConnectDone: func(net, addr string, err error) {
-			t2 = time.Now()
-
-		},
-		GotConn:              func(_ httptrace.GotConnInfo) { t3 = time.Now() },
-		GotFirstResponseByte: func() { t4 = time.Now() },
-		TLSHandshakeStart:    func() { t5 = time.Now() },
-		TLSHandshakeDone:     func(_ tls.ConnectionState, _ error) { t6 = time.Now() },
-	}
-	req = req.WithContext(httptrace.WithClientTrace(context.Background(), trace))
 	ctx, cancel := context.WithTimeout(req.Context(), time.Duration(b.Timeout)*time.Millisecond)
 	defer cancel()
 	req = req.WithContext(ctx)
 	resp, err := c.Do(req)
 	t := b.now()
-	t7 := time.Now()
 	finish := t - s
 	var statusCode int
 	if err == nil {
@@ -276,15 +255,6 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 		statusCode = resp.StatusCode
 	} else {
 		statusCode = 0
-		if t0.IsZero() {
-			t0 = t1
-		}
-		b.Logger.Sugar().Debugf("request err: %v", err)
-		b.Logger.Sugar().Debugf("dns lookup duration: %d", t1.Sub(t0).Milliseconds())
-		b.Logger.Sugar().Debugf("tls handshake duration: %d", t6.Sub(t5).Milliseconds())
-		b.Logger.Sugar().Debugf("tcp connection duration: %d", t2.Sub(t1).Milliseconds())
-		b.Logger.Sugar().Debugf("server processing duration: %d", t4.Sub(t3).Milliseconds())
-		b.Logger.Sugar().Debugf("content transfer duration: %d", t7.Sub(t4).Milliseconds())
 	}
 	if b.ExpectStatusCode != nil {
 		if statusCode != *b.ExpectStatusCode {
