@@ -251,6 +251,7 @@ func (b *Work) makeRequest(c *http.Client, wg *sync.WaitGroup) {
 	var statusCode int
 	if err == nil {
 		size = resp.ContentLength
+		_, _ = io.Copy(io.Discard, resp.Body)
 		resp.Body.Close()
 		statusCode = resp.StatusCode
 	} else {
