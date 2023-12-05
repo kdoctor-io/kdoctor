@@ -16,7 +16,6 @@ import (
 	"github.com/kdoctor-io/kdoctor/pkg/pluginManager/types"
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
@@ -93,13 +92,6 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	request := instance.Spec.Request
 	successCondition := instance.Spec.SuccessCondition
 
-	var workers int
-	if request.QPS > config.AgentConfig.Configmap.AppHttpHealthyMaxConcurrency {
-		workers = config.AgentConfig.Configmap.AppHttpHealthyMaxConcurrency
-	} else {
-		workers = request.QPS
-	}
-
 	logger.Sugar().Infof("load test custom target: Method=%v, Url=%v , qps=%v, PerRequestTimeout=%vs, Duration=%vs", target.Method, target.Host, request.QPS, request.PerRequestTimeoutInMS, request.DurationInSecond)
 	task.TargetType = "HttpAppHealthy"
 	task.TargetNumber = 1
@@ -107,7 +99,6 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		Method:              loadHttp.HttpMethod(target.Method),
 		Url:                 target.Host,
 		Qps:                 request.QPS,
-		Workers:             workers,
 		PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 		RequestTimeSecond:   request.DurationInSecond,
 		Http2:               target.Http2,
