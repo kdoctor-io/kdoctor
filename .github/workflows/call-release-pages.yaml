@@ -27,7 +27,7 @@ jobs:
     name: prepare
     runs-on: ubuntu-latest
     outputs:
-      ref: ${{ env.RUN_REF }}
+      ref: ${{ env.REF }}
       publish_docs_to_dev: ${{ env.PUBLISH_DOCS_TO_DEV }}
       doc_tag: ${{ env.DOCS_TAG }}
     steps:
