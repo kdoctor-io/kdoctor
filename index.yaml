@@ -1,26 +1,5 @@
 apiVersion: v1
 entries:
-  http-server-test:
-  - apiVersion: v2
-    appVersion: 0.1.0
-    created: "2023-11-29T12:55:14.612074514Z"
-    description: http-server-test for kdoctor
-    digest: a882420f4c74803fa0a09cfe41a25ecb4235c5188d235395b14138b83d609084
-    home: https://kdoctor-io.github.io/kdoctor
-    keywords:
-    - kdoctor
-    - operation
-    kubeVersion: '>= 1.16.0-0'
-    maintainers:
-    - name: kdoctor-io
-      url: https://github.com/kdoctor-io
-    name: http-server-test
-    sources:
-    - https://github.com/kdoctor-io/kdoctor
-    type: application
-    urls:
-    - https://kdoctor-io.github.io/kdoctor/charts/http-server-test-0.1.0.tgz
-    version: 0.1.0
   kdoctor:
   - apiVersion: v2
     appVersion: 0.2.1
