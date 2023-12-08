@@ -20,7 +20,6 @@ data:
     netHttpDefaultMaxIdleConnsPerHost: {{ .Values.feature.netHttpDefaultMaxIdleConnsPerHost }}
     netHttpDefaultRequestDurationInSecond: {{ .Values.feature.netHttpDefaultRequestDurationInSecond }}
     netHttpDefaultRequestPerRequestTimeoutInMS: {{ .Values.feature.netHttpDefaultRequestPerRequestTimeoutInMS }}
-    netDnsMaxConcurrency: {{ .Values.feature.netDnsMaxConcurrency }}
     netDnsRequestMaxQPS: {{ .Values.feature.netDnsRequestMaxQPS }}
     netReachMaxConcurrency: {{ .Values.feature.netReachMaxConcurrency }}
     netReachRequestMaxQPS: {{ .Values.feature.netReachRequestMaxQPS }}

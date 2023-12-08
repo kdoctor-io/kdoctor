@@ -37,8 +37,7 @@ func (k *DNSKEY) ReadPrivateKey(q io.Reader, file string) (crypto.PrivateKey, er
 		return nil, ErrPrivKey
 	}
 	// TODO(mg): check if the pubkey matches the private key
-	algoStr, _, _ := strings.Cut(m["algorithm"], " ")
-	algo, err := strconv.ParseUint(algoStr, 10, 8)
+	algo, err := strconv.ParseUint(strings.SplitN(m["algorithm"], " ", 2)[0], 10, 8)
 	if err != nil {
 		return nil, ErrPrivKey
 	}
