@@ -20,8 +20,7 @@ type ConfigmapConfig struct {
 	AppHttpHealthyMaxConcurrency int `yaml:"appHttpHealthyMaxConcurrency"`
 	AppHttpHealthyRequestMaxQPS  int `yaml:"appHttpHealthyRequestMaxQPS"`
 	// netdns
-	NetDnsMaxConcurrency int `yaml:"netDnsMaxConcurrency"`
-	NetDnsRequestMaxQPS  int `yaml:"netDnsRequestMaxQPS"`
+	NetDnsRequestMaxQPS int `yaml:"netDnsRequestMaxQPS"`
 
 	MultusPodAnnotationKey string `yaml:"multusPodAnnotationKey"`
 	CrdMaxHistory          int    `yaml:"crdMaxHistory"`

@@ -50,7 +50,6 @@ type DnsRequestData struct {
 	DnsServerAddr         string
 	PerRequestTimeoutInMs int
 	Qps                   int
-	Workers               int
 	DurationInSecond      int
 	EnableLatencyMetric   bool
 }
@@ -69,10 +68,7 @@ func DnsRequest(logger *zap.Logger, reqData *DnsRequestData) (result *v1beta1.DN
 	}
 	duration := time.Duration(reqData.DurationInSecond) * time.Second
 
-	logger.Sugar().Infof("http request Concurrency=%d", reqData.Workers)
-
 	w := &Work{
-		Concurrency:         reqData.Workers,
 		RequestTimeSecond:   reqData.DurationInSecond,
 		QPS:                 reqData.Qps,
 		Timeout:             reqData.PerRequestTimeoutInMs,

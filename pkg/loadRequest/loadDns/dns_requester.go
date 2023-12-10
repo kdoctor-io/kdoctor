@@ -26,15 +26,17 @@ package loadDns
 
 import (
 	"crypto/tls"
-	"fmt"
-	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
-	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
-	"github.com/miekg/dns"
-	"go.uber.org/zap"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
+	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
+
+	"github.com/ii2day/connexus"
+	"github.com/miekg/dns"
+	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Max size of the buffer of result channel.
@@ -53,9 +55,6 @@ type Work struct {
 
 	Protocol string
 
-	// C is the concurrency level, the number of concurrent workers to run.
-	Concurrency int
-
 	// Timeout in seconds.
 	Timeout int
 
@@ -70,6 +69,8 @@ type Work struct {
 	Logger *zap.Logger
 
 	initOnce       sync.Once
+	client         *dns.Client
+	pool           connexus.Pool
 	results        chan *result
 	stopCh         chan struct{}
 	qosTokenBucket chan struct{}
@@ -81,8 +82,22 @@ type Work struct {
 func (b *Work) Init() {
 	b.initOnce.Do(func() {
 		b.results = make(chan *result, maxResult)
-		b.stopCh = make(chan struct{}, b.Concurrency)
+		b.stopCh = make(chan struct{}, 1)
 		b.qosTokenBucket = make(chan struct{}, b.QPS)
+		client := new(dns.Client)
+		client.Net = b.Protocol
+		client.Timeout = time.Duration(b.Timeout) * time.Millisecond
+		if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
+			tlsConfig := &tls.Config{
+				InsecureSkipVerify: true,
+			}
+			client.TLSConfig = tlsConfig
+		}
+		b.client = client
+		err := b.InitPool()
+		if err != nil {
+			b.Logger.Sugar().Fatalf("init connect pool failed err=%v", err)
+		}
 	})
 }
 
@@ -138,15 +153,12 @@ func (b *Work) Run() {
 			}
 		}
 	}()
-	b.runWorkers()
+	b.runWorker()
 	b.Finish()
 }
 
 func (b *Work) Stop() {
-	// Send stop signal so that workers can stop gracefully.
-	for i := 0; i < b.Concurrency; i++ {
-		b.stopCh <- struct{}{}
-	}
+	b.stopCh <- struct{}{}
 }
 
 func (b *Work) Finish() {
@@ -158,111 +170,41 @@ func (b *Work) Finish() {
 	b.report.finalize(total)
 }
 
-func (b *Work) makeRequest(client *dns.Client, msg *dns.Msg, conn *dns.Conn, wg *sync.WaitGroup) {
+func (b *Work) makeRequest(wg *sync.WaitGroup) {
 	defer wg.Done()
+	msg := new(dns.Msg)
+	*msg = *b.Msg
+	msg.Id = dns.Id()
 
-	// Due to the time limitation on long-lived TCP connections by CoreDNS, connection reuse is not adopted for the TCP protocol.
-	if RequestProtocol(b.Protocol) == RequestMethodUdp {
-		err := client.ExchangeWithReuseConn(msg, conn)
-		if err != nil {
-			b.results <- &result{
-				duration: 0,
-				err:      err,
-				msg:      nil,
-			}
-		}
+	conn, err := b.pool.Get()
+	if err != nil {
+		b.Logger.Sugar().Errorf("failed get connect err=%v", err)
+		return
 	} else {
-		r, rtt, err := client.Exchange(msg, b.ServerAddr)
-		b.results <- &result{
-			duration: rtt,
-			err:      err,
-			msg:      r,
-		}
+		defer conn.Close()
 	}
-
+	r, rtt, err := b.client.ExchangeWithConn(msg, conn.(*connexus.Connex).Conn.(*dns.Conn))
+	b.results <- &result{
+		duration: rtt,
+		err:      err,
+		msg:      r,
+	}
 }
 
 func (b *Work) runWorker() {
-	var conn *dns.Conn
-	var err error
-	client := new(dns.Client)
-	client.Net = b.Protocol
-	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
-	if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
-		tlsConfig := &tls.Config{
-			InsecureSkipVerify: true,
-		}
-		client.TLSConfig = tlsConfig
-	}
-
-	if RequestProtocol(b.Protocol) == RequestMethodUdp {
-		conn, err = b.makeConn(client)
-		if err != nil {
-			b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
-			return
-		}
-		go conn.Receiver()
-	} else {
-		conn = new(dns.Conn)
-	}
-
 	wg := &sync.WaitGroup{}
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
 		select {
 		case <-b.stopCh:
 			wg.Wait()
-			// Wait for the last request to return
-			time.Sleep(time.Duration(b.Timeout) * time.Millisecond)
-			if RequestProtocol(b.Protocol) == RequestMethodUdp {
-				if len(conn.ResponseReceiver) > 0 {
-					for i := 0; i < len(conn.ResponseReceiver); i++ {
-						resp := <-conn.ResponseReceiver
-						e := resp.Err
-						if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
-							e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
-						}
-						b.results <- &result{
-							duration: resp.Rtt,
-							err:      e,
-							msg:      resp.Msg,
-						}
-					}
-				}
-				conn.ShutDownReceiver()
-				conn.Close()
-			}
+			b.pool.Close()
 			return
 		case <-b.qosTokenBucket:
 			wg.Add(1)
-			msg := new(dns.Msg)
-			*msg = *b.Msg
-			msg.Id = dns.Id()
-			go b.makeRequest(client, msg, conn, wg)
-		case resp := <-conn.ResponseReceiver:
-			e := resp.Err
-			if resp.Rtt > time.Duration(b.Timeout)*time.Millisecond {
-				e = fmt.Errorf("timeout for request, %d more than %d", resp.Rtt.Milliseconds(), b.Timeout)
-			}
-			b.results <- &result{
-				duration: resp.Rtt,
-				err:      e,
-				msg:      resp.Msg,
-			}
+			go b.makeRequest(wg)
 		}
 	}
-}
-
-func (b *Work) runWorkers() {
-	var wg sync.WaitGroup
-	wg.Add(b.Concurrency)
-	for i := 0; i < b.Concurrency; i++ {
-		go func() {
-			b.runWorker()
-			wg.Done()
-		}()
-	}
-	wg.Wait()
 
 }
 
@@ -313,19 +255,15 @@ func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 
 	return metric
 }
-
-func (b *Work) makeConn(c *dns.Client) (*dns.Conn, error) {
+func (b *Work) InitPool() error {
 	var err error
-	d := new(net.Dialer)
-	conn := new(dns.Conn)
-	conn.ResponseReceiver = make(chan dns.Response, b.QPS)
-	conn.ShutDown = make(chan struct{})
-	conn.Conn, err = d.Dial(b.Protocol, b.ServerAddr)
-
-	// A zero value for t means Read and Write will not time out.
-	_ = conn.SetWriteDeadline(time.Time{})
-	_ = conn.SetReadDeadline(time.Time{})
-
-	conn.TsigSecret, conn.TsigProvider = c.TsigSecret, c.TsigProvider
-	return conn, err
+	cfg := connexus.PoolConfig{
+		Cap:        b.QPS,
+		MaxIdleCap: b.QPS * 2,
+		Factory: func() (net.Conn, error) {
+			return b.client.Dial(b.ServerAddr)
+		},
+	}
+	b.pool, err = connexus.NewConnexPool(cfg)
+	return err
 }
