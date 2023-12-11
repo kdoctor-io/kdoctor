@@ -96,13 +96,6 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	successCondition := instance.Spec.SuccessCondition
 	runtimeResource := instance.Status.Resource
 
-	var workers int
-	if request.QPS > config.AgentConfig.Configmap.NetReachMaxConcurrency {
-		workers = config.AgentConfig.Configmap.NetReachMaxConcurrency
-	} else {
-		workers = request.QPS
-	}
-
 	testTargetList := []*TestTarget{}
 
 	// test kdoctor agent
@@ -302,7 +295,6 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 				Method:              t.Method,
 				Url:                 t.Url,
 				Qps:                 request.QPS,
-				Workers:             workers,
 				PerRequestTimeoutMS: request.PerRequestTimeoutInMS,
 				RequestTimeSecond:   request.DurationInSecond,
 				EnableLatencyMetric: instance.Spec.Target.EnableLatencyMetric,

@@ -50,7 +50,6 @@ type HttpRequestData struct {
 	Method              HttpMethod
 	Url                 string
 	Qps                 int
-	Workers             int
 	PerRequestTimeoutMS int
 	RequestTimeSecond   int
 	Header              map[string]string
@@ -73,12 +72,9 @@ func HttpRequest(logger *zap.Logger, reqData *HttpRequestData) *v1beta1.HttpMetr
 		req.Header.Set(k, v)
 	}
 
-	logger.Sugar().Infof("http request Concurrency=%d", reqData.Workers)
-
 	w := &Work{
 		Request:             req,
 		RequestTimeSecond:   reqData.RequestTimeSecond,
-		Concurrency:         reqData.Workers,
 		QPS:                 reqData.Qps,
 		Timeout:             reqData.PerRequestTimeoutMS,
 		DisableCompression:  reqData.DisableCompression,

@@ -38,7 +38,6 @@ import (
 	"time"
 
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
 	"go.uber.org/zap"
 
@@ -103,9 +102,6 @@ type Work struct {
 	// Request and RequestData are cloned for each request.
 	RequestFunc func() *http.Request
 
-	// Concurrency is the concurrency level, the number of concurrent workers to run.
-	Concurrency int
-
 	// Http2 is an option to make HTTP/2 requests
 	Http2 bool
 
@@ -158,7 +154,7 @@ type Work struct {
 func (b *Work) Init() {
 	b.initOnce.Do(func() {
 		b.results = make(chan *result, MaxResultChannelSize)
-		b.stopCh = make(chan struct{}, b.Concurrency)
+		b.stopCh = make(chan struct{}, 1)
 		b.qosTokenBucket = make(chan struct{}, b.QPS)
 	})
 }
@@ -217,15 +213,13 @@ func (b *Work) Run() {
 			}
 		}
 	}()
-	b.runWorkers()
+	b.runWorker()
 	b.Finish()
 }
 
 func (b *Work) Stop() {
 	// Send stop signal so that workers can stop gracefully.
-	for i := 0; i < b.Concurrency; i++ {
-		b.stopCh <- struct{}{}
-	}
+	b.stopCh <- struct{}{}
 }
 
 func (b *Work) Finish() {
@@ -280,7 +274,7 @@ func (b *Work) runWorker() {
 			InsecureSkipVerify: true,
 			ServerName:         b.Request.Host,
 		},
-		MaxIdleConnsPerHost: config.AgentConfig.Configmap.NetHttpDefaultMaxIdleConnsPerHost,
+		MaxIdleConnsPerHost: b.QPS,
 		DisableCompression:  b.DisableCompression,
 		DisableKeepAlives:   b.DisableKeepAlives,
 		Proxy:               http.ProxyURL(b.ProxyAddr),
@@ -317,18 +311,6 @@ func (b *Work) runWorker() {
 			go b.makeRequest(client, wg)
 		}
 	}
-}
-
-func (b *Work) runWorkers() {
-	var wg sync.WaitGroup
-	wg.Add(b.Concurrency)
-	for i := 0; i < b.Concurrency; i++ {
-		go func() {
-			b.runWorker()
-			wg.Done()
-		}()
-	}
-	wg.Wait()
 
 }
 

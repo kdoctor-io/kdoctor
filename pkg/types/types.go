@@ -9,16 +9,13 @@ type ConfigmapConfig struct {
 	TaskPollIntervalInSecond int `yaml:"taskPollIntervalInSecond"`
 	// nethttp
 	NetHttpDefaultRequestQPS                   int `yaml:"netHttpDefaultRequestQPS"`
-	NetHttpDefaultMaxIdleConnsPerHost          int `yaml:"netHttpDefaultMaxIdleConnsPerHost"`
 	NetHttpDefaultRequestDurationInSecond      int `yaml:"netHttpDefaultRequestDurationInSecond"`
 	NetHttpDefaultRequestPerRequestTimeoutInMS int `yaml:"netHttpDefaultRequestPerRequestTimeoutInMS"`
 
 	// netreach
-	NetReachMaxConcurrency int `yaml:"netReachMaxConcurrency"`
-	NetReachRequestMaxQPS  int `yaml:"netReachRequestMaxQPS"`
+	NetReachRequestMaxQPS int `yaml:"netReachRequestMaxQPS"`
 	// apphttphealthy
-	AppHttpHealthyMaxConcurrency int `yaml:"appHttpHealthyMaxConcurrency"`
-	AppHttpHealthyRequestMaxQPS  int `yaml:"appHttpHealthyRequestMaxQPS"`
+	AppHttpHealthyRequestMaxQPS int `yaml:"appHttpHealthyRequestMaxQPS"`
 	// netdns
 	NetDnsMaxConcurrency int `yaml:"netDnsMaxConcurrency"`
 	NetDnsRequestMaxQPS  int `yaml:"netDnsRequestMaxQPS"`

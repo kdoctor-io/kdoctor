@@ -17,14 +17,11 @@ data:
     enableIPv6: {{ .Values.feature.enableIPv6 }}
     taskPollIntervalInSecond: {{ .Values.feature.taskPollIntervalInSecond }}
     netHttpDefaultRequestQPS: {{ .Values.feature.netHttpDefaultRequestQPS }}
-    netHttpDefaultMaxIdleConnsPerHost: {{ .Values.feature.netHttpDefaultMaxIdleConnsPerHost }}
     netHttpDefaultRequestDurationInSecond: {{ .Values.feature.netHttpDefaultRequestDurationInSecond }}
     netHttpDefaultRequestPerRequestTimeoutInMS: {{ .Values.feature.netHttpDefaultRequestPerRequestTimeoutInMS }}
     netDnsMaxConcurrency: {{ .Values.feature.netDnsMaxConcurrency }}
     netDnsRequestMaxQPS: {{ .Values.feature.netDnsRequestMaxQPS }}
-    netReachMaxConcurrency: {{ .Values.feature.netReachMaxConcurrency }}
     netReachRequestMaxQPS: {{ .Values.feature.netReachRequestMaxQPS }}
-    appHttpHealthyMaxConcurrency: {{ .Values.feature.appHttpHealthyMaxConcurrency }}
     appHttpHealthyRequestMaxQPS: {{ .Values.feature.appHttpHealthyRequestMaxQPS }}
     multusPodAnnotationKey: {{ .Values.feature.multusPodAnnotationKey }}
     agentDefaultTerminationGracePeriodMinutes: {{ .Values.feature.agentDefaultTerminationGracePeriodMinutes }}
