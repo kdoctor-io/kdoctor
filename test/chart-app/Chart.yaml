@@ -1,5 +1,5 @@
 apiVersion: v2
-name: server
+name: kdoctor-test-server
 home: "https://kdoctor-io.github.io/kdoctor"
 # application or library
 type: application

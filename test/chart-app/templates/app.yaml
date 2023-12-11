@@ -14,7 +14,7 @@ metadata:
 spec:
   {{- if eq .Values.appKind "Deployment" }}
   replicas: {{ .Values.deploymentReplicas }}
-  {{ else }}}
+  {{ else }}
   {{- with .Values.updateStrategy }}
   updateStrategy:
     {{- toYaml . | trim | nindent 4 }}
@@ -164,6 +164,10 @@ spec:
               value: {{ .Values.http.appHttpsPort | quote }}
             - name: ENV_AGENT_GRPC_LISTEN_PORT
               value: {{ .Values.grpcServer.port | quote }}
+            - name: ENV_DNS_SERVICE_SELECT_LABEL_KEY
+              value: {{ .Values.dns.coreDNSServiceLabelKey | quote }}
+            - name: ENV_DNS_SERVICE_SELECT_LABEL_VALUE
+              value: {{ .Values.dns.coreDNSServiceLabelValue | quote }}
             - name: ENV_POD_NAME
               valueFrom:
                 fieldRef:
