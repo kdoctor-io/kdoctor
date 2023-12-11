@@ -483,6 +483,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -562,6 +564,26 @@
   
   <span class="md-ellipsis">
     NetDns
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debug/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debug
   </span>
   
 
@@ -874,6 +896,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -942,6 +966,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -989,11 +1033,11 @@
 <p><a href="../debug/"><strong>English</strong></a> | <strong>简体中文</strong></p>
 <p><strong>Q: 想要使用更高的 QPS 应该如何设置？</strong>
 * A: 当 QPS 设置过大，会导致服务器资源占用过高，影响业务。为了防止在生产坏境出现误操作。kdoctor 在 webhook 中添加了 QPS 的检查。如果您想使用更高的 QPS
-可通过参数设置 QPS 限制 <code>--set feature.nethttp_defaultRequest_MaxQps=1000</code>，也可以通过 kdoctor 的 configmap 中去更改 <code>nethttp_defaultRequest_MaxQps</code> ，
+可通过参数设置 QPS 限制 <code>--set feature.appHttpHealthyRequestMaxQPS=1000</code>,<code>--set feature.netReachRequestMaxQPS=1000</code>,<code>--set feature.netDnsRequestMaxQPS=1000</code>，也可以通过 kdoctor 的 configmap 中去更改 ，
 并重启 kdoctor 的相关 pod 重新加载 configmap。</p>
 <p><strong>Q: 为什么我的任务无法达到期望的 QPS ？</strong>
 * A：无法达到 QPS 的期望原因有很多主要分为以下几种原因：
-  * 并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 <code>--set feature.nethttp_defaultConcurrency=50</code>，<code>--set feature.netdns_defaultConcurrency=50</code>。
+  * 并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 <code>--set feature.netReachMaxConcurrency=50</code>，<code>--set feature.appHttpHealthyMaxConcurrency=50</code>，<code>--set feature.netDnsMaxConcurrency=50</code>。
   * kdoctor agent 分配资源不充足，可通过 kdoctor 的聚合报告<code>kubectl get kdoctorreport</code>查看任务消耗的 cpu 与 内存使用量，确定 kdoctor agent 资源分配是否充足。
      <code>shell
       ~kubectl get kdoctorreport test-task -oyaml
@@ -1015,7 +1059,10 @@
         AppHttpHealthyQPS: 100
         NetDnsQPS: 50
         NetReachQPS: 0
-      ...</code></p>
+      ...</code>
+<strong>Q: 为什么 Kdoctor agent 会 OOM？</strong>
+* A: kdoctor agent 作为默认的执行任务的 agent，在任务中没有指定 agent 时，默认使用 kdoctor agent 执行，目前的 agent 还不支持根据任务负载情况，拒绝执行任务或延迟执行任务功能。
+     因此当 kdoctor agent 同时执行大量任务时，由于请求量过大，内存限制过低，将会导致 kdoctor agent 内存过载，导致 OOM，我们可以根据任务情况，错开使用 kdoctor agent，调整内存限制，或使用指定的 agent 隔离任务。</p>
 
 
 
