@@ -30,7 +30,6 @@
 | `feature.netHttpDefaultRequestQPS`                                      | qps for kind NetHttp                                                    | `10`                                 |
 | `feature.netHttpDefaultRequestDurationInSecond`                         | Duration In Second for kind NetHttp                                     | `2`                                  |
 | `feature.netHttpDefaultRequestPerRequestTimeoutInMS`                    | PerRequest Timeout In MS for kind NetHttp                               | `500`                                |
-| `feature.netDnsMaxConcurrency`                                          | concurrency  for kind NetDns                                            | `20`                                 |
 | `feature.netDnsRequestMaxQPS`                                           | qps for kind NetDns                                                     | `100`                                |
 | `feature.agentDefaultTerminationGracePeriodMinutes`                     | agent termination after minutes                                         | `60`                                 |
 | `feature.taskPollIntervalInSecond`                                      | the interval to poll the task in controller and agent pod               | `5`                                  |
