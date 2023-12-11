@@ -40,6 +40,8 @@ markdown_extensions:
   - fenced_code
   - tables
   - attr_list
+  - pymdownx.tabbed:
+      alternate_style: true
 
 nav:
   - README.md
