@@ -128,7 +128,9 @@ func (cp *connexPool) inducer() {
 		select {
 		case <-ticker.C:
 			cp.mu.Lock()
-			sort.Sort(cp.freeConn)
+			if cp.freeConn != nil {
+				sort.Sort(cp.freeConn)
+			}
 			cp.mu.Unlock()
 
 		case <-cp.cleanerCh:
