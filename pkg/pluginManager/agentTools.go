@@ -93,13 +93,11 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 	go func() {
 		startTime := metav1.Now()
 		msg := &systemv1beta1.Report{
-			TaskName:       strings.ToLower(taskName),
 			RoundNumber:    int64(roundNumber),
 			NodeName:       s.localNodeName,
 			PodName:        types.AgentConfig.PodName,
 			FailedReason:   nil,
 			StartTimeStamp: startTime,
-			ReportType:     plugintypes.ReportTypeAgent,
 		}
 		failureReason, report, e := s.plugin.AgentExecuteTask(logger, ctx, obj, s.runningTaskManager)
 
@@ -126,13 +124,12 @@ func (s *pluginAgentReconciler) CallPluginImplementRoundTask(logger *zap.Logger,
 					msg.FailedReason = pointer.String(failureReason)
 				}
 			}
-			msg.TaskType = report.KindTask()
 		}
 		endTime := metav1.Now()
 		msg.EndTimeStamp = endTime
 		msg.RoundDuration = endTime.Sub(startTime.Time).String()
 		if report != nil {
-			err := s.plugin.SetReportWithTask(msg, crdObjSpec, report)
+			err := s.plugin.SetReportWithTask(msg, report)
 			if nil != err {
 				// TODO (Icarus9913): improve the error solution
 				logger.Sugar().Errorf("failed to set task details to report, error: %v", err)

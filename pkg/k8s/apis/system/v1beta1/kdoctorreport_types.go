@@ -4,9 +4,8 @@
 package v1beta1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // +genclient:nonNamespaced
@@ -18,7 +17,15 @@ type KdoctorReport struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec KdoctorReportSpec `json:"spec,omitempty"`
+	Report Reports `json:"report,omitempty"`
+
+	Status Status `json:"status,omitempty"`
+
+	Task TaskInfo `json:"task,omitempty"`
+}
+
+type Reports struct {
+	LatestRoundReport *[]Report `json:"latestRoundReport,omitempty"`
 }
 
 // KdoctorReportList
@@ -30,37 +37,40 @@ type KdoctorReportList struct {
 	Items []KdoctorReport `json:"items"`
 }
 
-// KdoctorReportSpec defines the desired state of KdoctorReport
-type KdoctorReportSpec struct {
-	TaskName            string    `json:"TaskName"`
-	TaskType            string    `json:"TaskType"`
-	ToTalRoundNumber    int64     `json:"RoundNumber"`
-	FinishedRoundNumber int64     `json:"FinishedRoundNumber"`
-	FailedRoundNumber   []int64   `json:"FailedRoundNumber"`
-	Status              string    `json:"Status"`
-	ReportRoundNumber   int64     `json:"ReportRoundNumber"`
-	Report              *[]Report `json:"Report,omitempty"`
+type Report struct {
+	RoundNumber    int64       `json:"roundNumber"`
+	RoundResult    string      `json:"roundResult"`
+	NodeName       string      `json:"nodeName"`
+	PodName        string      `json:"podName"`
+	FailedReason   *string     `json:"reasonsForFailure,omitempty"`
+	StartTimeStamp metav1.Time `json:"roundStartTimeStamp"`
+	EndTimeStamp   metav1.Time `json:"roundEndTimeStamp"`
+	RoundDuration  string      `json:"roundDuration"`
+
+	TaskNetReach *NetReachTask `json:"taskNetReach,omitempty"`
+
+	TaskAppHttpHealthy *AppHttpHealthyTask `json:"taskAppHealthy,omitempty"`
+
+	TaskNetDNS *NetDNSTask `json:"taskNetDns,omitempty"`
 }
 
-type Report struct {
-	TaskName       string      `json:"TaskName"`
-	TaskType       string      `json:"TaskType"`
-	RoundNumber    int64       `json:"RoundNumber"`
-	RoundResult    string      `json:"RoundResult"`
-	NodeName       string      `json:"NodeName"`
-	PodName        string      `json:"PodName"`
-	FailedReason   *string     `json:"FailedReason,omitempty"`
-	StartTimeStamp metav1.Time `json:"StartTimeStamp"`
-	EndTimeStamp   metav1.Time `json:"EndTimeStamp"`
-	RoundDuration  string      `json:"RoundDuration"`
-	ReportType     string      `json:"ReportType"`
+type Status struct {
+	ToTalRoundNumber    int64  `json:"totalRoundNumber"`
+	FinishedRoundNumber int64  `json:"roundFinishedNumber"`
+	Status              string `json:"status"`
+	RoundNumber         int64  `json:"roundNumber"`
+}
 
-	NetReachTaskSpec *v1beta1.NetReachSpec `json:"NetReachTaskSpec,omitempty"`
-	NetReachTask     *NetReachTask         `json:"NetReachTask,omitempty"`
+type TaskInfo struct {
+	TaskName string   `json:"name"`
+	TaskType string   `json:"kind"`
+	Spec     TaskSpec `json:"spec"`
+}
 
-	HttpAppHealthyTaskSpec *v1beta1.AppHttpHealthySpec `json:"HttpAppHealthyTaskSpec,omitempty"`
-	HttpAppHealthyTask     *AppHttpHealthyTask         `json:"HttpAppHealthyTask,omitempty"`
+type TaskSpec struct {
+	NetReachTaskSpec *v1beta1.NetReachSpec `json:"netReach,omitempty"`
 
-	NetDNSTaskSpec *v1beta1.NetdnsSpec `json:"netDNSTaskSpec,omitempty"`
-	NetDNSTask     *NetDNSTask         `json:"netDNSTask,omitempty"`
+	AppHttpHealthyTaskSpec *v1beta1.AppHttpHealthySpec `json:"appHttpHealthy,omitempty"`
+
+	NetDNSTaskSpec *v1beta1.NetdnsSpec `json:"netDns,omitempty"`
 }

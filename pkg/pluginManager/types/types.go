@@ -22,7 +22,7 @@ type ChainingPlugin interface {
 	GetApiType() client.Object
 
 	AgentExecuteTask(logger *zap.Logger, ctx context.Context, obj runtime.Object, rt *runningTask.RunningTask) (failureReason string, task Task, err error)
-	SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task Task) error
+	SetReportWithTask(report *v1beta1.Report, task Task) error
 
 	// ControllerReconcile(*zap.Logger, client.Client, context.Context, reconcile.Request) (reconcile.Result, error)
 	// AgentReconcile(*zap.Logger, client.Client, context.Context, reconcile.Request) (reconcile.Result, error)
