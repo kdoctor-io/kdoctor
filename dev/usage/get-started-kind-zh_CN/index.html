@@ -1132,10 +1132,11 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
 <p><code>kdoctor-test-server</code> 为 kdoctor 的测试 server，里面包含 http server、https server、dns udp server、dns tcp server,供测试 kdocotr 功能使用。 </p>
 </blockquote>
 <h2 id="_3">配置任务</h2>
-<p>===  "AppHttpHealthy"</p>
-<pre><code>  我们对 kdocotr-test-server 的 service ip 进行访问，获取 kdocotr-test-server 的响应情况。
-
-  ```bash
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">AppHttpHealthy</label><label for="__tabbed_1_2">NetReach</label><label for="__tabbed_1_3">NetDns</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们对 kdocotr-test-server 的 service ip 进行访问，获取 kdocotr-test-server 的响应情况。</p>
+<p><code>bash
   SERVER="172.41.95.144"
   cat &lt;&lt;EOF | kubectl apply -f -
   apiVersion: kdoctor.io/v1beta1
@@ -1157,23 +1158,17 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
     target:
       host: http://${SERVER}
       method: GET
-  EOF
-  ```
-
-  查看任务状态，等待任务完成。
-
-  ```bash
+  EOF</code></p>
+<p>查看任务状态，等待任务完成。</p>
+<p><code>bash
   ～# kubectl get apphttphealthy
   NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
   http-test   false    1               0                             0 1
   ～# kubectl get apphttphealthy
   NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-  http-test   true     1               1           succeed           0 1
-  ```
-
-  查询任务详细报告。
-
-  ```bash
+  http-test   true     1               1           succeed           0 1</code>      </p>
+<p>查询任务详细报告。</p>
+<p><code>bash
   ~# kubectl get kdoctorreport http-test -oyaml
   apiVersion: system.kdoctor.io/v1beta1
   kind: KdoctorReport
@@ -1290,13 +1285,11 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
     RoundNumber: 1
     Status: Finished
     TaskName: http-test
-    TaskType: AppHttpHealthy
-  ```
-</code></pre>
-<p>===  "NetReach"</p>
-<pre><code>  我们对集群的连通性进行检测。
-
-  ```bash
+    TaskType: AppHttpHealthy</code></p>
+</div>
+<div class="tabbed-block">
+<p>我们对集群的连通性进行检测。</p>
+<p><code>bash
   cat &lt;&lt;EOF | kubectl apply -f -
   apiVersion: kdoctor.io/v1beta1
   kind: NetReach
@@ -1322,23 +1315,17 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
       loadBalancer: true
       multusInterface: false
       nodePort: true
-  EOF
-  ```
-
-  查看任务状态，等待任务完成。
-
-  ```bash 
+  EOF</code></p>
+<p>查看任务状态，等待任务完成。</p>
+<p><code>bash 
   ~# kubectl get netreach
   NAME   FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
   task   false    1               0                             0 1
   ~# kubectl get netreach
   NAME   FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-  task   true     1               1           succeed           0 1
-  ```
-
-  查询任务详细报告。
-
-  ```bash
+  task   true     1               1           succeed           0 1</code></p>
+<p>查询任务详细报告。</p>
+<p><code>bash
   root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
   apiVersion: system.kdoctor.io/v1beta1
   kind: KdoctorReport
@@ -1504,13 +1491,11 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
   RoundNumber: 1
   Status: Finished
   TaskName: task
-  TaskType: NetReach
-  ```
-</code></pre>
-<p>===  "NetDns"</p>
-<pre><code>  我们对集群的 dns 服务进行连通性检测，
-
-  ```bash
+  TaskType: NetReach</code></p>
+</div>
+<div class="tabbed-block">
+<p>我们对集群的 dns 服务进行连通性检测，</p>
+<p><code>bash
   cat &lt;&lt;EOF | kubectl apply -f -
   apiVersion: kdoctor.io/v1beta1
   kind: Netdns
@@ -1535,23 +1520,17 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
         serviceName: kube-dns
         serviceNamespace: kube-system
         testIPv4: true
-  EOF
-  ```
-
-  查看任务状态，等待任务完成，
-
-  ```bash
+  EOF</code></p>
+<p>查看任务状态，等待任务完成，</p>
+<p><code>bash
   ~# kubectl get netdns
   NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
   netdns-cluster   false    1               0                             0 1
   ~# kubectl get netdns
   NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-  netdns-cluster   true     1               1           succeed           0 1
-  ```
-
-  查询任务详细报告
-
-  ```bash
+  netdns-cluster   true     1               1           succeed           0 1</code></p>
+<p>查询任务详细报告</p>
+<p><code>bash
   root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
   apiVersion: system.kdoctor.io/v1beta1
   kind: KdoctorReport
@@ -1642,9 +1621,10 @@ kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;            
   RoundNumber: 1
   Status: Finished
   TaskName: netdns-cluster
-  TaskType: Netdns
-  ```
-</code></pre>
+  TaskType: Netdns</code></p>
+</div>
+</div>
+</div>
 <p>接下来您可以根据您的需要进行任务的定制化配置:<a href="../../reference/apphttphealthy-zh_CN/">AppHttpHealthy</a>、<a href="../../reference/netreach-zh_CN/">NetReach</a>、<a href="../../reference/netdns-zh_CN/">NetDns</a></p>
 <h2 id="_4">卸载</h2>
 <ul>
