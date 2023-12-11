@@ -9,6 +9,10 @@
       
       
       
+        <link rel="prev" href="../netdns/">
+      
+      
+        <link rel="next" href="../../reference/arch/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -235,10 +239,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../apphttphealthy/" class="md-tabs__link">
           
   
@@ -473,6 +479,8 @@
       
   
   
+    
+  
   
     
     
@@ -483,15 +491,17 @@
       
         
       
+        
+      
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
@@ -504,7 +514,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Usage
@@ -566,6 +576,36 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Debug
+  </span>
+  
+
+      </a>
+      
     </li>
   
 
@@ -874,6 +914,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -942,6 +984,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../develop/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -990,11 +1052,11 @@
 <p><strong>Q: How to achieve higher QPS?</strong>
 * A: When the QPS setting is too high, it can result in excessive server resource utilization, impacting business operations. 
   To prevent accidental misconfiguration in production environments, kdoctor has added QPS checks in the webhook. 
-* If you wish to use a higher QPS, you can set the QPS limit using the parameter <code>--set feature.nethttp_defaultRequest_MaxQps=1000</code>，You can also modify it through the configmap in kdoctor <code>nethttp_defaultRequest_MaxQps</code>,
+* If you wish to use a higher QPS, you can set the QPS limit using the parameter  <code>--set feature.appHttpHealthyRequestMaxQPS=1000</code>,<code>--set feature.netReachRequestMaxQPS=1000</code>,<code>--set feature.netDnsRequestMaxQPS=1000</code>，You can also modify it through the configmap in kdoctor,
   And restart the relevant pods of kdoctor to reload the configmap.</p>
 <p><strong>Q: Why is my task unable to achieve the desired QPS ？</strong>
 * A：There are several reasons why the expected QPS cannot be achieved, primarily categorized into the following reasons：
-    * The concurrency worker setting is too low. kdoctor can adjust the concurrency by setting the parameters <code>--set feature.nethttp_defaultConcurrency=50</code> and <code>--set feature.netdns_defaultConcurrency=50</code>.
+    * The concurrency worker setting is too low. kdoctor can adjust the concurrency by setting the parameters <code>--set feature.netReachMaxConcurrency=50</code>，<code>--set feature.appHttpHealthyMaxConcurrency=50</code>，<code>--set feature.netDnsMaxConcurrency=50</code>.
     * The kdoctor agent may have insufficient resource allocation. You can use the kdoctor aggregate report <code>kubectl get kdoctorreport</code> to check the CPU and memory usage of the task. This will help you determine if the resource allocation for the kdoctor agent is sufficient.
        <code>shell
         ~kubectl get kdoctorreport test-task -oyaml
@@ -1018,7 +1080,11 @@
           AppHttpHealthyQPS: 100
           NetDnsQPS: 50
           NetReachQPS: 0
-        ...</code></p>
+        ...</code>
+<strong>Q: Why does the Kdoctor agent experience OOM (Out of Memory) issues ？</strong>
+* A: The Kdoctor agent serves as the default agent for executing tasks when no specific agent is specified in the task. Currently, the agent does not support features to reject or delay task execution based on the workload. 
+     Therefore, when the Kdoctor agent concurrently handles a large number of tasks, the high request volume combined with low memory limits can lead to memory overload and result in OOM (Out of Memory) errors.
+     To mitigate this issue, you can stagger the usage of the Kdoctor agent based on the task workload, adjust the memory limits accordingly, or isolate tasks using specific agents that are better suited for the workload.</p>
 
 
 
