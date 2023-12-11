@@ -82,13 +82,13 @@ func (cp *connexPool) Get() (net.Conn, error) {
 }
 
 func (cp *connexPool) Close() {
-	cp.mu.Lock()
-	defer cp.mu.Unlock()
-
 	if cp.freeConn == nil {
 		return
 	}
+	cp.mu.Lock()
 	cp.cleanerCh <- struct{}{}
+	cp.mu.Unlock()
+	cp.mu.Lock()
 	cp.factory = nil
 	for cp.freeConn.Len() > 0 {
 		c := heap.Pop(cp.freeConn).(*Connex)
@@ -96,6 +96,7 @@ func (cp *connexPool) Close() {
 		c.Conn.Close()
 	}
 	cp.freeConn = nil
+	cp.mu.Unlock()
 }
 
 func (cp *connexPool) put(conn *Connex) error {
