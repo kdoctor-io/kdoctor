@@ -2,7 +2,7 @@
 
 [**English**](./netreach.md) | **简体中文**
 
-## 基本描述 
+## 基本描述
 
 对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent Pod 都会相互发送 http 请求，请求地址为每一个 agent 的 Pod IP、service IP、ingress IP 等等，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。
 
@@ -60,7 +60,7 @@ status:
   lastRoundStatus: fail
 ```
 
-##  NetReach 定义
+## NetReach 定义
 
 ### Metadata
 
@@ -77,7 +77,6 @@ status:
 | request   | 对目标地址请求配置   | [request](./netreach-zh_CN.md#Request)     | 可选      |       |      |
 | target    | 请求目标设置      | [target](./netreach-zh_CN.md#Target)       | 可选      |       |      |
 | expect    | 任务成功条件判断    | [expect](./netreach-zh_CN.md#Expect)       | 可选      |       |      |
-
 
 #### AgentSpec
 
@@ -97,7 +96,7 @@ status:
 | 字段                 | 描述                                    | 结构     | 验证  | 取值                                                                                                                                                                                                          | 默认值   |
 |--------------------|---------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
 | roundNumber        | 任务执行轮数                                | int    | 可选  | 大于等于-1，为 -1 时表示永久执行,大于 0 表示将要执行的轮数                                                                                                                                                             | 1     |
-| schedule           | 任务执行时间, 执行时间应小于roundTimeoutMinute     | string | 可选  | 支持 linux crontab 与间隔法两种写法<br/>[linux crontab](https://linuxhandbook.com/crontab/) ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min | "0 1" |
+| schedule           | 任务执行时间, 执行时间应小于roundTimeoutMinute     | string | 可选  | 支持 linux crontab 与间隔法两种写法<br/>[linux crontab](https://linuxhandbook.com/crontab/) ： */1* ** * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min | "0 1" |
 | roundTimeoutMinute | 任务超时时间，需要大于 durationInSecond 和 任务执行时间 | int    | 可选  | 大于等于 1                                                                                                                                                                                                      | 60    |
 
 #### Request

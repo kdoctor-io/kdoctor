@@ -2,7 +2,7 @@
 
 [**English**](./apphttphealthy.md) | **简体中文**
 
-## 介绍 
+## 介绍
 
 对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源 ，每一个 agent Pod 都会向指定的 DNS server 发送 DNS 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kdoctor 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。
 
@@ -16,14 +16,14 @@
 2. 关于 AppHttpHealthy CRD 的更多描述，可参考[AppHttpHealthy](../reference/apphttphealthy-zh_CN.md)
 
 3. 功能列表:
-    
+
       * 支持 HTTP、HTTPS、HTTP2，能够定义 header、body
 
 ## 使用步骤
 
 接下来将展示 `AppHttpHealthy` 的使用示例
 
-### 安装 kdoctor 
+### 安装 kdoctor
 
 参照[安装教程](./install-zh_CN.md)安装 kdoctor
 
@@ -38,6 +38,7 @@ helm install server kdoctor/server -n kdoctor --wait --debug --create-namespace
 ```
 
 查看测试 server 状态
+
 ```shell
 kubectl get pod -n kdoctor -owide
 NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
@@ -46,13 +47,14 @@ server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoct
 ```
 
 获取测试 server 的 service 地址
+
 ```shell
 kubectl get service -n kdoctor
 NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
 server   ClusterIP   172.41.71.0   <none>        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
 ```
 
-### 创建 AppHttpHealthy 
+### 创建 AppHttpHealthy
 
 创建 http `AppHttpHealthy` ，该任务将执行一轮持续 10s 的任务，任务会向指定的 server 以 QPS 为 10 的速度发送 Get 请求，并且立即执行。
 
@@ -98,7 +100,6 @@ http        true     1               1           succeed           0 1
 * DONEROUND：当前执行完成轮数
 * LASTROUNDSTATUS：最后一轮任务执行情况
 * SCHEDULE：任务的调度规则
-
 
 ### 查看任务报告
 
@@ -203,7 +204,7 @@ http        true     1               1           succeed           0 1
 
 > 若报告与预期结果不符合，可关注报告中的 MaxCPU和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。
 
-## 其他常用示例 
+## 其他常用示例
 
 下面是携带 body 的 http 请求示例和 https 的请求示例
 

@@ -2,7 +2,7 @@
 
 [**简体中文**](./apphttphealthy-zh_CN.md) | **English**
 
-## Basic description 
+## Basic description
 
 For this kind of task, kdoctor-controller generates the corresponding [agent](../concepts/runtime.md) and other resources. Each agent Pod sends an HTTP request to the specified target and gets the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. And, detailed reports can be obtained through the aggregation API.
 
@@ -89,7 +89,7 @@ status:
 
 | Fields | Description | Structure | Validation | Values | Defaults |
 |--------------------|---------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| roundNumber       | Task Execution Rounds | int |Optional |A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed | 1 | Schedule | Task execution time which should be less than roundTimeoutMinute | String | Optional | Support linux crontab and interval method<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1 * * * * * means execute every minute <br/>Interval method: writing format "M N". M is a number that indicates how many minutes after the task is started; N is a number that indicates how many minutes between each round of tasks. For example, "0 1" means start the task immediately, 1min between each round of tasks.| "0 1" |
+| roundNumber       | Task Execution Rounds | int |Optional |A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed | 1 | Schedule | Task execution time which should be less than roundTimeoutMinute | String | Optional | Support linux crontab and interval method<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1* ** ** means execute every minute <br/>Interval method: writing format "M N". M is a number that indicates how many minutes after the task is started; N is a number that indicates how many minutes between each round of tasks. For example, "0 1" means start the task immediately, 1min between each round of tasks.| "0 1" |
 | roundTimeoutMinute | Task timeout which needs to be greater than durationInSecond and task execution time | int | optional | greater than or equal to 1 | 60 |
 
 #### Request
@@ -157,7 +157,6 @@ metadata.
   namespace: kdoctor
 type: kubernetes.io/tls
 ```
-
 
 ### Status
 
