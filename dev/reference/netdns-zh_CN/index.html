@@ -1180,80 +1180,80 @@
 <h2 id="netdns_1">netdns 示例</h2>
 <h3 id="dns-server">集群 DNS Server 检查</h3>
 <p>对集群内的 DNS server（CoreDNS）发送对应请求，获取集群内 DNS server 性能状态。</p>
-<pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: netdns-cluster
-spec:
-  agentSpec:
-    hostNetwork: false
-    kind: DaemonSet
-    terminationGracePeriodMinutes: 60
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    domain: kubernetes.default.svc.cluster.local
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    protocol: udp
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    enableLatencyMetric: false
-    targetDns:
-      serviceName: kube-dns
-      serviceNamespace: kube-system
-      testIPv4: true
-      testIPv6: true
-status:
-  doneRound: 1
-  expectedRound: 1
-  finish: true
-  history:
-    - deadLineTimeStamp: &quot;2023-07-28T09:45:03Z&quot;
-      duration: 15.809063339s
-      endTimeStamp: &quot;2023-07-28T09:44:18Z&quot;
-      expectedActorNumber: 2
-      failedAgentNodeList: []
-      notReportAgentNodeList: []
-      roundNumber: 1
-      startTimeStamp: &quot;2023-07-28T09:44:03Z&quot;
-      status: succeed
-      succeedAgentNodeList:
-        - kdoctor-control-plane
-        - kdoctor-worker
-  lastRoundStatus: succeed
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Netdns</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">netdns-cluster</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">agentSpec</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hostNetwork</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DaemonSet</span>
+<span class="w">    </span><span class="nt">terminationGracePeriodMinutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">meanAccessDelayInMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">    </span><span class="nt">successRate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.default.svc.cluster.local</span>
+<span class="w">    </span><span class="nt">durationInSecond</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">perRequestTimeoutInMS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp</span>
+<span class="w">    </span><span class="nt">qps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">roundTimeoutMinute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0 1</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enableLatencyMetric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">targetDns</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-dns</span>
+<span class="w">      </span><span class="nt">serviceNamespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-system</span>
+<span class="w">      </span><span class="nt">testIPv4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">testIPv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">status</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">doneRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">expectedRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">finish</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">history</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deadLineTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:45:03Z&quot;</span>
+<span class="w">      </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15.809063339s</span>
+<span class="w">      </span><span class="nt">endTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:44:18Z&quot;</span>
+<span class="w">      </span><span class="nt">expectedActorNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">failedAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">notReportAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">startTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:44:03Z&quot;</span>
+<span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeed</span>
+<span class="w">      </span><span class="nt">succeedAgentNodeList</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-control-plane</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-worker</span>
+<span class="w">  </span><span class="nt">lastRoundStatus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeed</span>
+</code></pre></div>
 <h3 id="dns-server_1">指定 DNS server 检查</h3>
 <p>对集群外部的 DNS server 发送对应请求，获取集群外部 DNS server 性能状态。</p>
-<pre><code class="language-Yaml">apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: netdns- user
-spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    domain: www.baidu.com
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    protocol: udp
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    enableLatencyMetric: false
-    targetUser:
-      port: 53
-      server: 172.41.54.83
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Netdns</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">netdns- user</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">meanAccessDelayInMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">    </span><span class="nt">successRate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">www.baidu.com</span>
+<span class="w">    </span><span class="nt">durationInSecond</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">perRequestTimeoutInMS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">udp</span>
+<span class="w">    </span><span class="nt">qps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">roundTimeoutMinute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0 1</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enableLatencyMetric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">targetUser</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">53</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.41.54.83</span>
+</code></pre></div>
 <h2 id="netdns_2">netdns 定义</h2>
 <h3 id="metadata">Metadata</h3>
 <table>

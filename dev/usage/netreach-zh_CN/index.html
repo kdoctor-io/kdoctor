@@ -1120,39 +1120,39 @@
 <p>参照<a href="../install-zh_CN/">安装教程</a>安装 kdoctor</p>
 <h3 id="netreach_1">创建 NetReach</h3>
 <p>创建 <code>NetReach</code> ，该任务将执行一轮持续 10s 的任务，每个节点的 agent 会相互使用 http 协议访问 ClusterIP、Endpoint、Ingress、NodePort、LoadBalancer 的 IPv4 地址，并立即执行。</p>
-<pre><code class="language-shell">cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: NetReach
-metadata:
-  name: task
-spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    clusterIP: true
-    endpoint: true
-    ingress: true
-    ipv4: true
-    loadBalancer: true
-    multusInterface: false
-    nodePort: true
-EOF
-</code></pre>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: NetReach</span>
+<span class="s">metadata:</span>
+<span class="s">  name: task</span>
+<span class="s">spec:</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1500</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  target:</span>
+<span class="s">    clusterIP: true</span>
+<span class="s">    endpoint: true</span>
+<span class="s">    ingress: true</span>
+<span class="s">    ipv4: true</span>
+<span class="s">    loadBalancer: true</span>
+<span class="s">    multusInterface: false</span>
+<span class="s">    nodePort: true</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <h3 id="_3">查看任务状态</h3>
 <p>当执行完成一轮后就可以使用 kdoctor 聚合 api 查看当前轮的报告，当 FINISH 为 true 时任务全部完成，可查看整体报告</p>
-<pre><code class="language-shell">kubectl get netreach
-NAME   FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-task   true     1               1           succeed           0 1
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>netreach
+NAME<span class="w">   </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+task<span class="w">   </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <ul>
 <li>FINISH：任务是否完成</li>
 <li>EXPECTEDROUND：希望任务执行轮数</li>
@@ -1164,189 +1164,189 @@ task   true     1               1           succeed           0 1
 <ol>
 <li>
 <p>查看已有报告</p>
-<p><code>shell
-kubectl get kdoctorreport
-NAME   CREATED AT
-task   0001-01-01T00:00:00Z</code></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport
+NAME<span class="w">   </span>CREATED<span class="w"> </span>AT
+task<span class="w">   </span><span class="m">0001</span>-01-01T00:00:00Z
+</code></pre></div>
 </li>
 <li>
 <p>查看具体任务报告</p>
 <p>节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮互相发压后，将 agent 报告聚合而成。</p>
-<p><code>shell
-root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<div class="highlight"><pre><span></span><code>root@kdoctor-control-plane:/#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>task<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-  creationTimestamp: null
-  name: task
+<span class="w">  </span>creationTimestamp:<span class="w"> </span>null
+<span class="w">  </span>name:<span class="w"> </span>task
 spec:
-  FailedRoundNumber: null
-  FinishedRoundNumber: 1
-  Report:
-  - NodeName: kdoctor-control-plane
-    NetReachTask:
-      Detail:
-      - TargetName: AgentLoadbalancerV4IP_172.18.0.51:80
-        Metrics:
-          Duration: 10.032286878s
-          EndTime: "2023-08-01T08:37:06Z"
-          Errors: {}
-          Latencies:
-            MaxInMs: 0
-            MeanInMs: 23.08
-            MinInMs: 0
-            P50InMs: 0
-            P90InMs: 0
-            P95InMs: 0
-            P99InMs: 0
-          RequestCounts: 100
-          StartTime: "2023-08-01T08:36:56Z"
-          StatusCodes:
-            "200": 100
-          SuccessCounts: 100
-          TPS: 9.967817030760152
-          TotalDataSize: 36968 byte
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.51:80
-        MeanDelay: 23.08
-      - TargetName: AgentNodePortV4IP_172.18.0.3_32713
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.3:32713
-        MeanDelay: 68.42
-      - TargetName: AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.40.0.6:80
-        MeanDelay: 44.049503
-      - TargetName: AgentClusterV4IP_172.41.249.6:80
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.41.249.6:80
-        MeanDelay: 26.307692
-      - TargetName: AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.40.1.5:80
-        MeanDelay: 61.564358
-      - TargetName: AgentIngress_http://172.18.0.50/kdoctoragent
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.50/kdoctoragent
-        MeanDelay: 65.47059
-      Succeed: true
-      TargetNumber: 6
-      TargetType: NetReach
-      MaxCPU: 26.203%
-      MaxMemory: 101.00MB
-    NetReachTaskSpec:
-    ...
-    PodName: kdoctor-agent-ntp9l
-    ReportType: agent test report
-    RoundDuration: 11.178657432s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-08-01T08:36:56Z"
-    EndTimeStamp: "2023-08-01T08:37:07Z"
-    TaskName: netreach.task
-    TaskType: NetReach
-  - NodeName: kdoctor-worker
-    NetReachTask:
-      Detail:
-      - TargetName: AgentClusterV4IP_172.41.249.6:80
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.41.249.6:80
-        MeanDelay: 47.25
-      - TargetName: AgentNodePortV4IP_172.18.0.2_32713
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.2:32713
-        MeanDelay: 13.480392
-      - TargetName: AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.40.1.5:80
-        MeanDelay: 39.637257
-      - TargetName: AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.40.0.6:80
-        MeanDelay: 51.38614
-      - TargetName: AgentLoadbalancerV4IP_172.18.0.51:80
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.51:80
-        MeanDelay: 41.735847
-        - TargetName: AgentIngress_http://172.18.0.50/kdoctoragent
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetUrl: http://172.18.0.50/kdoctoragent
-        MeanDelay: 60.463634
-      Succeed: true
-      TargetNumber: 6
-      TargetType: NetReach
-      MaxCPU: 30.651%
-      MaxMemory: 97.00MB
-    NetReachTaskSpec:
-    ...
-    PodName: kdoctor-agent-krrnp
-    ReportType: agent test report
-    RoundDuration: 11.180813761s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-08-01T08:36:56Z"
-    EndTimeStamp: "2023-08-01T08:37:07Z"
-    TaskName: netreach.task
-    TaskType: NetReach
-  ReportRoundNumber: 1
-  RoundNumber: 1
-  Status: Finished
-  TaskName: task
-  TaskType: NetReach</code></p>
+<span class="w">  </span>FailedRoundNumber:<span class="w"> </span>null
+<span class="w">  </span>FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Report:
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">    </span>NetReachTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentLoadbalancerV4IP_172.18.0.51:80
+<span class="w">        </span>Metrics:
+<span class="w">          </span>Duration:<span class="w"> </span><span class="m">10</span>.032286878s
+<span class="w">          </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:06Z&quot;</span>
+<span class="w">          </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">          </span>Latencies:
+<span class="w">            </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>MeanInMs:<span class="w"> </span><span class="m">23</span>.08
+<span class="w">            </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>RequestCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">          </span>StatusCodes:
+<span class="w">            </span><span class="s2">&quot;200&quot;</span>:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>SuccessCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>TPS:<span class="w"> </span><span class="m">9</span>.967817030760152
+<span class="w">          </span>TotalDataSize:<span class="w"> </span><span class="m">36968</span><span class="w"> </span>byte
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.51:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">23</span>.08
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentNodePortV4IP_172.18.0.3_32713
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.3:32713
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">68</span>.42
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.40.0.6:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">44</span>.049503
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentClusterV4IP_172.41.249.6:80
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.249.6:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">26</span>.307692
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.40.1.5:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">61</span>.564358
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentIngress_http://172.18.0.50/kdoctoragent
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.50/kdoctoragent
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">65</span>.47059
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">6</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>NetReach
+<span class="w">      </span>MaxCPU:<span class="w"> </span><span class="m">26</span>.203%
+<span class="w">      </span>MaxMemory:<span class="w"> </span><span class="m">101</span>.00MB
+<span class="w">    </span>NetReachTaskSpec:
+<span class="w">    </span>...
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-ntp9l
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.178657432s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:07Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>netreach.task
+<span class="w">    </span>TaskType:<span class="w"> </span>NetReach
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">    </span>NetReachTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentClusterV4IP_172.41.249.6:80
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.249.6:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">47</span>.25
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentNodePortV4IP_172.18.0.2_32713
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.2:32713
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">13</span>.480392
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.40.1.5:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">39</span>.637257
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.40.0.6:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">51</span>.38614
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentLoadbalancerV4IP_172.18.0.51:80
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.51:80
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">41</span>.735847
+<span class="w">        </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentIngress_http://172.18.0.50/kdoctoragent
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.18.0.50/kdoctoragent
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">60</span>.463634
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">6</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>NetReach
+<span class="w">      </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">      </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">    </span>NetReachTaskSpec:
+<span class="w">    </span>...
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-krrnp
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.180813761s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:07Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>netreach.task
+<span class="w">    </span>TaskType:<span class="w"> </span>NetReach
+<span class="w">  </span>ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Status:<span class="w"> </span>Finished
+<span class="w">  </span>TaskName:<span class="w"> </span>task
+<span class="w">  </span>TaskType:<span class="w"> </span>NetReach
+</code></pre></div>
 </li>
 </ol>
 <blockquote>
 <p>若报告与预期结果不符合，可关注报告中的 MaxCPU 和 MaxMemory 字段，对比 agent 资源是否充足，调整 agent 的资源限制。</p>
 </blockquote>
 <h2 id="_5">环境清理</h2>
-<pre><code class="language-shell">kubectl delete netreach task
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>delete<span class="w"> </span>netreach<span class="w"> </span>task
+</code></pre></div>
 
 
 
