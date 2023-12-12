@@ -1253,35 +1253,34 @@
 </ol>
 <h2 id="install_1">Install</h2>
 <h3 id="add-helm-repository">Add Helm Repository</h3>
-<pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
-helm repo update kdoctor
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>kdoctor<span class="w"> </span>https://kdoctor-io.github.io/kdoctor
+helm<span class="w"> </span>repo<span class="w"> </span>update<span class="w"> </span>kdoctor
+</code></pre></div>
 <h3 id="install-kdoctor">Install kdoctor</h3>
 <p>kdoctor can be installed according to different needs, the following are the recommended installation methods for several scenarios</p>
 <h4 id="non-highly-available-installation">Non-highly Available Installation</h4>
 <p>The kdoctor agent only prints reports to standard output in the following way:</p>
-<pre><code class="language-shell">helm install kdoctor kdoctor/kdoctor \
-    -n kdoctor --debug --create-namespace 
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>kdoctor<span class="w"> </span>kdoctor/kdoctor<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>--debug<span class="w"> </span>--create-namespace<span class="w"> </span>
+</code></pre></div>
 <h4 id="highly-available-installation">Highly Available Installation</h4>
 <p>The following method directs the collection reports from kdoctor-controller to storage, so you need to install storageClass.</p>
-<pre><code class="language-shell">
-helm install kdoctor kdoctor/kdoctor \
-    -n kdoctor --debug --create-namespace \
-    --set kdoctorController.replicas=2 \
-    --set feature.aggregateReport.controller.pvc.enabled=true \
-    --set feature.aggregateReport.controller.pvc.storageClass=local-path \
-    --set feature.aggregateReport.controller.pvc.storageRequests=&quot;100Mi&quot; \
-    --set feature.aggregateReport.controller.pvc.storageLimits=&quot;500Mi&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>kdoctor<span class="w"> </span>kdoctor/kdoctor<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>--debug<span class="w"> </span>--create-namespace<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>kdoctorController.replicas<span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>feature.aggregateReport.controller.pvc.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>feature.aggregateReport.controller.pvc.storageClass<span class="o">=</span>local-path<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>feature.aggregateReport.controller.pvc.storageRequests<span class="o">=</span><span class="s2">&quot;100Mi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>feature.aggregateReport.controller.pvc.storageLimits<span class="o">=</span><span class="s2">&quot;500Mi&quot;</span>
+</code></pre></div>
 <h3 id="verify-that-all-components-of-kdoctor-are-running-properly">Verify that All Components of kdoctor are Running Properly</h3>
-<pre><code class="language-shell">kubectl get pod -n kdoctor
-NAME                                  READY   STATUS    RESTARTS   AGE
-kdoctor-controller-686b75d6d7-k4dcq   1/1     Running   0          137m
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kdoctor
+NAME<span class="w">                                  </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+kdoctor-controller-686b75d6d7-k4dcq<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>137m
+</code></pre></div>
 <h3 id="uninstall-kdoctor">Uninstall kdoctor</h3>
-<pre><code class="language-shell">helm uninstall kdoctor -n kdoctor
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>uninstall<span class="w"> </span>kdoctor<span class="w"> </span>-n<span class="w"> </span>kdoctor
+</code></pre></div>
 
 
 

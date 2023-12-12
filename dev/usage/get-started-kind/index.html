@@ -523,8 +523,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    配置任务
+  <a href="#configuration-tasks" class="md-nav__link">
+    Configuration tasks
   </a>
   
 </li>
@@ -1124,8 +1124,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    配置任务
+  <a href="#configuration-tasks" class="md-nav__link">
+    Configuration tasks
   </a>
   
 </li>
@@ -1166,545 +1166,545 @@
 <ol>
 <li>
 <p>Clone the code for the stable version of kdoctor to the localhost and go to the root directory of the kdoctor project.</p>
-<p><code>bash
-~# LATEST_RELEASE_VERISON=$(curl -s https://api.github.com/repos/kdoctor-io/kdoctor/releases | grep '"tag_name":' | grep -v rc | grep -Eo "([0-9]+\.[0-9]+\.[0-9])" | sort -r | head -n 1)
-~# curl -Lo /tmp/$LATEST_RELEASE_VERISON.tar.gz https://github.com/kdoctor-io/kdoctor/archive/refs/tags/v$LATEST_RELEASE_VERISON.tar.gz
-~# tar -xvf /tmp/$LATEST_RELEASE_VERISON.tar.gz -C /tmp/
-~# cd /tmp/kdoctor-$LATEST_RELEASE_VERISON</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span><span class="nv">LATEST_RELEASE_VERISON</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/repos/kdoctor-io/kdoctor/releases<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;&quot;tag_name&quot;:&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>rc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-Eo<span class="w"> </span><span class="s2">&quot;([0-9]+\.[0-9]+\.[0-9])&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-r<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+~#<span class="w"> </span>curl<span class="w"> </span>-Lo<span class="w"> </span>/tmp/<span class="nv">$LATEST_RELEASE_VERISON</span>.tar.gz<span class="w"> </span>https://github.com/kdoctor-io/kdoctor/archive/refs/tags/v<span class="nv">$LATEST_RELEASE_VERISON</span>.tar.gz
+~#<span class="w"> </span>tar<span class="w"> </span>-xvf<span class="w"> </span>/tmp/<span class="nv">$LATEST_RELEASE_VERISON</span>.tar.gz<span class="w"> </span>-C<span class="w"> </span>/tmp/
+~#<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/tmp/kdoctor-<span class="nv">$LATEST_RELEASE_VERISON</span>
+</code></pre></div>
 </li>
 <li>
 <p>Get the latest image of kdoctor by using the following method.</p>
-<p><code>bash
-~# KDOCTOR_LATEST_IMAGE_TAG=$(curl -s https://api.github.com/repos/kdoctor-io/kdoctor/releases | jq -r '. [].tag_name | select(("^v1.[0-9]*. [0-9]*$"))' | head -n 1)</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span><span class="nv">KDOCTOR_LATEST_IMAGE_TAG</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/repos/kdoctor-io/kdoctor/releases<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;. [].tag_name | select((&quot;^v1.[0-9]*. [0-9]*$&quot;))&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span>
+</code></pre></div>
 </li>
 <li>
 <p>Execute the following command to create a Kind cluster and install metallb, contour, nginx, and kdoctor.</p>
-<p><code>bash
-~# make e2e_init -e PROJECT_IMAGE_VERSION=KDOCTOR_LATEST_IMAGE_TAG</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>make<span class="w"> </span>e2e_init<span class="w"> </span>-e<span class="w"> </span><span class="nv">PROJECT_IMAGE_VERSION</span><span class="o">=</span>KDOCTOR_LATEST_IMAGE_TAG
+</code></pre></div>
 <p>note: If you are a domestic user, you can use the following command to avoid pulling the image failures.</p>
-<p><code>bash
-~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>make<span class="w"> </span>e2e_init<span class="w"> </span>-e<span class="w"> </span><span class="nv">E2E_SPIDERPOOL_TAG</span><span class="o">=</span><span class="nv">$SPIDERPOOL_LATEST_IMAGE_TAG</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">E2E_CHINA_IMAGE_REGISTRY</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
 </li>
 </ol>
 <h2 id="verify-the-installation">Verify the Installation</h2>
 <p>Configure KUBECONFIG of the Kind cluster for kubectl by executing the following command in the root directory of the kdoctor project.</p>
-<p><code>bash
-   ~# export KUBECONFIG=$(pwd)/test/runtime/kubeconfig_kdoctor.config</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">KUBECONFIG</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/test/runtime/kubeconfig_kdoctor.config
+</code></pre></div>
 <p>You can see the following output:</p>
-<pre><code class="language-bash">~# kubectl get nodes 
-NAME                    STATUS   ROLES           AGE     VERSION
-kdoctor-control-plane   Ready    control-plane   3h50m    v1.27.1
-kdoctor-worker          Ready    &lt;none&gt;          3h50m   v1.27.1
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>
+NAME<span class="w">                    </span>STATUS<span class="w">   </span>ROLES<span class="w">           </span>AGE<span class="w">     </span>VERSION
+kdoctor-control-plane<span class="w">   </span>Ready<span class="w">    </span>control-plane<span class="w">   </span>3h50m<span class="w">    </span>v1.27.1
+kdoctor-worker<span class="w">          </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">          </span>3h50m<span class="w">   </span>v1.27.1
 
-~# kubectl get pod -n kdoctor -owide
-NAME                                     READY   STATUS    RESTARTS   AGE     IP            NODE                    NOMINATED NODE   READINESS GATES
-kdoctor-agent-5n4nb                      1/1     Running   0          3h46m   172.40.1.29   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
-kdoctor-agent-zm4tn                      1/1     Running   0          3h46m   172.40.0.83   kdoctor-control-plane   &lt;none&gt;           &lt;none&gt;
-kdoctor-controller-78589d96c8-lgcw9      1/1     Running   0          3h46m   172.40.1.28   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
-kdoctor-test-server-6bf7f9df47-dq8th     1/1     Running   0          3h46m   172.40.0.82   kdoctor-control-plane   &lt;none&gt;           &lt;none&gt;
-kdoctor-test-server-6bf7f9df47-mhsml     1/1     Running   0          3h46m   172.40.1.27   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
+~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>-owide
+NAME<span class="w">                                     </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE<span class="w">     </span>IP<span class="w">            </span>NODE<span class="w">                    </span>NOMINATED<span class="w"> </span>NODE<span class="w">   </span>READINESS<span class="w"> </span>GATES
+kdoctor-agent-5n4nb<span class="w">                      </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3h46m<span class="w">   </span><span class="m">172</span>.40.1.29<span class="w">   </span>kdoctor-worker<span class="w">          </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+kdoctor-agent-zm4tn<span class="w">                      </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3h46m<span class="w">   </span><span class="m">172</span>.40.0.83<span class="w">   </span>kdoctor-control-plane<span class="w">   </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+kdoctor-controller-78589d96c8-lgcw9<span class="w">      </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3h46m<span class="w">   </span><span class="m">172</span>.40.1.28<span class="w">   </span>kdoctor-worker<span class="w">          </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+kdoctor-test-server-6bf7f9df47-dq8th<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3h46m<span class="w">   </span><span class="m">172</span>.40.0.82<span class="w">   </span>kdoctor-control-plane<span class="w">   </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+kdoctor-test-server-6bf7f9df47-mhsml<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3h46m<span class="w">   </span><span class="m">172</span>.40.1.27<span class="w">   </span>kdoctor-worker<span class="w">          </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
 
-~# kubectl get svc -n kdoctor
-NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP              PORT(S)                                     AGE
-kdoctor-agent-ipv4      LoadBalancer   172.41.217.12    172.18.0.51              5711:30778/TCP,80:31835/TCP,443:30675/TCP   3h46m
-kdoctor-agent-ipv6      LoadBalancer   fd41::2274       fc00:f853:ccd:e793::50   5711:30022/TCP,80:30761/TCP,443:30516/TCP   3h46m
-kdoctor-controller      ClusterIP      172.41.210.120   &lt;none&gt;                   5721/TCP,5722/TCP,443/TCP                   3h46m
-kdoctor-test-server     ClusterIP      172.41.95.144    &lt;none&gt;                   80/TCP,443/TCP,53/UDP,53/TCP,853/TCP        3h46m
-</code></pre>
+~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>-n<span class="w"> </span>kdoctor
+NAME<span class="w">                    </span>TYPE<span class="w">           </span>CLUSTER-IP<span class="w">       </span>EXTERNAL-IP<span class="w">              </span>PORT<span class="o">(</span>S<span class="o">)</span><span class="w">                                     </span>AGE
+kdoctor-agent-ipv4<span class="w">      </span>LoadBalancer<span class="w">   </span><span class="m">172</span>.41.217.12<span class="w">    </span><span class="m">172</span>.18.0.51<span class="w">              </span><span class="m">5711</span>:30778/TCP,80:31835/TCP,443:30675/TCP<span class="w">   </span>3h46m
+kdoctor-agent-ipv6<span class="w">      </span>LoadBalancer<span class="w">   </span>fd41::2274<span class="w">       </span>fc00:f853:ccd:e793::50<span class="w">   </span><span class="m">5711</span>:30022/TCP,80:30761/TCP,443:30516/TCP<span class="w">   </span>3h46m
+kdoctor-controller<span class="w">      </span>ClusterIP<span class="w">      </span><span class="m">172</span>.41.210.120<span class="w">   </span>&lt;none&gt;<span class="w">                   </span><span class="m">5721</span>/TCP,5722/TCP,443/TCP<span class="w">                   </span>3h46m
+kdoctor-test-server<span class="w">     </span>ClusterIP<span class="w">      </span><span class="m">172</span>.41.95.144<span class="w">    </span>&lt;none&gt;<span class="w">                   </span><span class="m">80</span>/TCP,443/TCP,53/UDP,53/TCP,853/TCP<span class="w">        </span>3h46m
+</code></pre></div>
 <blockquote>
 <p><code>kdoctor-test-server</code> is kdoctor's test server, which contains http server, https server, dns udp server, dns tcp server, for testing kdocotr functions.</p>
 </blockquote>
-<h2 id="_1">配置任务</h2>
+<h2 id="configuration-tasks">Configuration tasks</h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">AppHttpHealthy</label><label for="__tabbed_1_2">NetReach</label><label for="__tabbed_1_3">NetDns</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>We have access to kdocotr-test-server's service ip to get a response from kdocotr-test-server.</p>
-<p><code>bash
-SERVER="172.41.95.144"
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: http-test
-spec:
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  expect:
-    meanAccessDelayInMs: 1000
-    successRate: 1
-  target:
-    host: http://${SERVER}
-    method: GET
-EOF</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">SERVER</span><span class="o">=</span><span class="s2">&quot;172.41.95.144&quot;</span>
+cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: AppHttpHealthy</span>
+<span class="s">metadata:</span>
+<span class="s">  name: http-test</span>
+<span class="s">spec:</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1000</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  target:</span>
+<span class="s">    host: http://${SERVER}</span>
+<span class="s">    method: GET</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Check the status of the task and wait for it to complete.</p>
-<p><code>bash
-～# kubectl get apphttphealthy
-NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-http-test   false    1               0                             0 1
-～# kubectl get apphttphealthy
-NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-http-test   true     1               1           succeed           0 1</code>      </p>
+<div class="highlight"><pre><span></span><code>～#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>apphttphealthy
+NAME<span class="w">        </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+http-test<span class="w">   </span><span class="nb">false</span><span class="w">    </span><span class="m">1</span><span class="w">               </span><span class="m">0</span><span class="w">                             </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+～#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>apphttphealthy
+NAME<span class="w">        </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+http-test<span class="w">   </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <p>Detailed reports on query missions.</p>
-<p><code>bash
-~# kubectl get kdoctorreport http-test -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>http-test<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-  creationTimestamp: "2023-12-11T07:20:01Z"
-  name: http-test
+<span class="w">  </span>creationTimestamp:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:01Z&quot;</span>
+<span class="w">  </span>name:<span class="w"> </span>http-test
 spec:
-  FailedRoundNumber: null
-  FinishedRoundNumber: 1
-  Report:
-  - EndTimeStamp: "2023-12-11T07:20:11Z"
-    HttpAppHealthyTask:
-      Detail:
-      - MeanDelay: 10.44
-        Metrics:
-          Duration: 10.003604664s
-          EndTime: "2023-12-11T07:20:11Z"
-          Errors: {}
-          ExistsNotSendRequests: false
-          Latencies:
-            MaxInMs: 0
-            MeanInMs: 10.44
-            MinInMs: 0
-            P50InMs: 0
-            P90InMs: 0
-            P95InMs: 0
-            P99InMs: 0
-          RequestCounts: 100
-          StartTime: "2023-12-11T07:20:01Z"
-          StatusCodes:
-            "200": 100
-          SuccessCounts: 100
-          TPS: 9.996396634892049
-          TotalDataSize: 37394 byte
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetName: HttpAppHealthy target
-        TargetUrl: http://172.41.95.144
-      Succeed: true
-      SystemResource:
-        MaxCPU: 12.723%
-        MaxMemory: 35.00MB
-        MeanCPU: 6.227%
-      TargetNumber: 1
-      TargetType: HttpAppHealthy
-      TotalRunningLoad:
-        AppHttpHealthyQPS: 10
-        NetDnsQPS: 0
-        NetReachQPS: 0
-    HttpAppHealthyTaskSpec:
-      ...
-    NodeName: kdoctor-control-plane
-    PodName: kdoctor-agent-zm4tn
-    ReportType: agent test report
-    RoundDuration: 10.014725655s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-12-11T07:20:01Z"
-    TaskName: apphttphealthy.http-test
-    TaskType: AppHttpHealthy
-  - EndTimeStamp: "2023-12-11T07:20:11Z"
-    HttpAppHealthyTask:
-      Detail:
-      - MeanDelay: 11.24
-        Metrics:
-          Duration: 10.00058331s
-          EndTime: "2023-12-11T07:20:11Z"
-          Errors: {}
-          ExistsNotSendRequests: false
-          Latencies:
-            MaxInMs: 0
-            MeanInMs: 11.24
-            MinInMs: 0
-            P50InMs: 0
-            P90InMs: 0
-            P95InMs: 0
-            P99InMs: 0
-          RequestCounts: 100
-          StartTime: "2023-12-11T07:20:01Z"
-          StatusCodes:
-            "200": 100
-          SuccessCounts: 100
-          TPS: 9.999416724023071
-          TotalDataSize: 37391 byte
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetName: HttpAppHealthy target
-        TargetUrl: http://172.41.95.144
-      Succeed: true
-      SystemResource:
-        MaxCPU: 12.704%
-        MaxMemory: 35.00MB
-        MeanCPU: 6.370%
-      TargetNumber: 1
-      TargetType: HttpAppHealthy
-      TotalRunningLoad:
-        AppHttpHealthyQPS: 10
-        NetDnsQPS: 0
-        NetReachQPS: 0
-    HttpAppHealthyTaskSpec:
-      ...
-    NodeName: kdoctor-worker
-    PodName: kdoctor-agent-5n4nb
-    ReportType: agent test report
-    RoundDuration: 10.010301747s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-12-11T07:20:01Z"
-    TaskName: apphttphealthy.http-test
-    TaskType: AppHttpHealthy
-  ReportRoundNumber: 1
-  RoundNumber: 1
-  Status: Finished
-  TaskName: http-test
-  TaskType: AppHttpHealthy</code></p>
+<span class="w">  </span>FailedRoundNumber:<span class="w"> </span>null
+<span class="w">  </span>FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Report:
+<span class="w">  </span>-<span class="w"> </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:11Z&quot;</span>
+<span class="w">    </span>HttpAppHealthyTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>MeanDelay:<span class="w"> </span><span class="m">10</span>.44
+<span class="w">        </span>Metrics:
+<span class="w">          </span>Duration:<span class="w"> </span><span class="m">10</span>.003604664s
+<span class="w">          </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:11Z&quot;</span>
+<span class="w">          </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">          </span>ExistsNotSendRequests:<span class="w"> </span><span class="nb">false</span>
+<span class="w">          </span>Latencies:
+<span class="w">            </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>MeanInMs:<span class="w"> </span><span class="m">10</span>.44
+<span class="w">            </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>RequestCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:01Z&quot;</span>
+<span class="w">          </span>StatusCodes:
+<span class="w">            </span><span class="s2">&quot;200&quot;</span>:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>SuccessCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>TPS:<span class="w"> </span><span class="m">9</span>.996396634892049
+<span class="w">          </span>TotalDataSize:<span class="w"> </span><span class="m">37394</span><span class="w"> </span>byte
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetName:<span class="w"> </span>HttpAppHealthy<span class="w"> </span>target
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.95.144
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SystemResource:
+<span class="w">        </span>MaxCPU:<span class="w"> </span><span class="m">12</span>.723%
+<span class="w">        </span>MaxMemory:<span class="w"> </span><span class="m">35</span>.00MB
+<span class="w">        </span>MeanCPU:<span class="w"> </span><span class="m">6</span>.227%
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>HttpAppHealthy
+<span class="w">      </span>TotalRunningLoad:
+<span class="w">        </span>AppHttpHealthyQPS:<span class="w"> </span><span class="m">10</span>
+<span class="w">        </span>NetDnsQPS:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>NetReachQPS:<span class="w"> </span><span class="m">0</span>
+<span class="w">    </span>HttpAppHealthyTaskSpec:
+<span class="w">      </span>...
+<span class="w">    </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-zm4tn
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">10</span>.014725655s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:01Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>apphttphealthy.http-test
+<span class="w">    </span>TaskType:<span class="w"> </span>AppHttpHealthy
+<span class="w">  </span>-<span class="w"> </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:11Z&quot;</span>
+<span class="w">    </span>HttpAppHealthyTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>MeanDelay:<span class="w"> </span><span class="m">11</span>.24
+<span class="w">        </span>Metrics:
+<span class="w">          </span>Duration:<span class="w"> </span><span class="m">10</span>.00058331s
+<span class="w">          </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:11Z&quot;</span>
+<span class="w">          </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">          </span>ExistsNotSendRequests:<span class="w"> </span><span class="nb">false</span>
+<span class="w">          </span>Latencies:
+<span class="w">            </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>MeanInMs:<span class="w"> </span><span class="m">11</span>.24
+<span class="w">            </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>RequestCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:01Z&quot;</span>
+<span class="w">          </span>StatusCodes:
+<span class="w">            </span><span class="s2">&quot;200&quot;</span>:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>SuccessCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">          </span>TPS:<span class="w"> </span><span class="m">9</span>.999416724023071
+<span class="w">          </span>TotalDataSize:<span class="w"> </span><span class="m">37391</span><span class="w"> </span>byte
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetName:<span class="w"> </span>HttpAppHealthy<span class="w"> </span>target
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.95.144
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SystemResource:
+<span class="w">        </span>MaxCPU:<span class="w"> </span><span class="m">12</span>.704%
+<span class="w">        </span>MaxMemory:<span class="w"> </span><span class="m">35</span>.00MB
+<span class="w">        </span>MeanCPU:<span class="w"> </span><span class="m">6</span>.370%
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>HttpAppHealthy
+<span class="w">      </span>TotalRunningLoad:
+<span class="w">        </span>AppHttpHealthyQPS:<span class="w"> </span><span class="m">10</span>
+<span class="w">        </span>NetDnsQPS:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>NetReachQPS:<span class="w"> </span><span class="m">0</span>
+<span class="w">    </span>HttpAppHealthyTaskSpec:
+<span class="w">      </span>...
+<span class="w">    </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-5n4nb
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">10</span>.010301747s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-12-11T07:20:01Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>apphttphealthy.http-test
+<span class="w">    </span>TaskType:<span class="w"> </span>AppHttpHealthy
+<span class="w">  </span>ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Status:<span class="w"> </span>Finished
+<span class="w">  </span>TaskName:<span class="w"> </span>http-test
+<span class="w">  </span>TaskType:<span class="w"> </span>AppHttpHealthy
+</code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>We test the connectivity of the cluster.</p>
-<p><code>bash
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: NetReach
-metadata:
-  name: task
-spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    clusterIP: true
-    endpoint: true
-    ingress: true
-    ipv4: true
-    loadBalancer: true
-    multusInterface: false
-    nodePort: true
-EOF</code></p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: NetReach</span>
+<span class="s">metadata:</span>
+<span class="s">  name: task</span>
+<span class="s">spec:</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1500</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  target:</span>
+<span class="s">    clusterIP: true</span>
+<span class="s">    endpoint: true</span>
+<span class="s">    ingress: true</span>
+<span class="s">    ipv4: true</span>
+<span class="s">    loadBalancer: true</span>
+<span class="s">    multusInterface: false</span>
+<span class="s">    nodePort: true</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Check the status of the task and wait for it to complete.</p>
-<p><code>bash 
-~# kubectl get netreach
-NAME   FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-task   false    1               0                             0 1
-~# kubectl get netreach
-NAME   FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-task   true     1               1           succeed           0 1</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>netreach
+NAME<span class="w">   </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+task<span class="w">   </span><span class="nb">false</span><span class="w">    </span><span class="m">1</span><span class="w">               </span><span class="m">0</span><span class="w">                             </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>netreach
+NAME<span class="w">   </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+task<span class="w">   </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <p>Detailed reports on query missions.</p>
-<p><code>bash
-root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<div class="highlight"><pre><span></span><code>root@kdoctor-control-plane:/#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>task<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-creationTimestamp: null
-name: task
+creationTimestamp:<span class="w"> </span>null
+name:<span class="w"> </span>task
 spec:
-FailedRoundNumber: null
-FinishedRoundNumber: 1
+FailedRoundNumber:<span class="w"> </span>null
+FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
 Report:
-- NodeName: kdoctor-control-plane
-  NetReachTask:
-    Detail:
-    - TargetName: AgentLoadbalancerV4IP_172.18.0.51:80
-      Metrics:
-        Duration: 10.032286878s
-        EndTime: "2023-08-01T08:37:06Z"
-        Errors: {}
-        Latencies:
-          MaxInMs: 0
-          MeanInMs: 23.08
-          MinInMs: 0
-          P50InMs: 0
-          P90InMs: 0
-          P95InMs: 0
-          P99InMs: 0
-        RequestCounts: 100
-        StartTime: "2023-08-01T08:36:56Z"
-        StatusCodes:
-          "200": 100
-        SuccessCounts: 100
-        TPS: 9.967817030760152
-        TotalDataSize: 36968 byte
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.51:80
-      MeanDelay: 23.08
-    - TargetName: AgentNodePortV4IP_172.18.0.3_32713
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.3:32713
-      MeanDelay: 68.42
-    - TargetName: AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.40.0.6:80
-      MeanDelay: 44.049503
-    - TargetName: AgentClusterV4IP_172.41.249.6:80
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.41.249.6:80
-      MeanDelay: 26.307692
-    - TargetName: AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.40.1.5:80
-      MeanDelay: 61.564358
-    - TargetName: AgentIngress_http://172.18.0.50/kdoctoragent
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.50/kdoctoragent
-      MeanDelay: 65.47059
-    Succeed: true
-    TargetNumber: 6
-    TargetType: NetReach
-    MaxCPU: 26.203%
-    MaxMemory: 101.00MB
-  NetReachTaskSpec:
-  ...
-  PodName: kdoctor-agent-ntp9l
-  ReportType: agent test report
-  RoundDuration: 11.178657432s
-  RoundNumber: 1
-  RoundResult: succeed
-  StartTimeStamp: "2023-08-01T08:36:56Z"
-  EndTimeStamp: "2023-08-01T08:37:07Z"
-  TaskName: netreach.task
-  TaskType: NetReach
-- NodeName: kdoctor-worker
-  NetReachTask:
-    Detail:
-    - TargetName: AgentClusterV4IP_172.41.249.6:80
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.41.249.6:80
-      MeanDelay: 47.25
-    - TargetName: AgentNodePortV4IP_172.18.0.2_32713
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.2:32713
-      MeanDelay: 13.480392
-    - TargetName: AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.40.1.5:80
-      MeanDelay: 39.637257
-    - TargetName: AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.40.0.6:80
-      MeanDelay: 51.38614
-    - TargetName: AgentLoadbalancerV4IP_172.18.0.51:80
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.51:80
-      MeanDelay: 41.735847
-      - TargetName: AgentIngress_http://172.18.0.50/kdoctoragent
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetMethod: GET
-      TargetUrl: http://172.18.0.50/kdoctoragent
-      MeanDelay: 60.463634
-    Succeed: true
-    TargetNumber: 6
-    TargetType: NetReach
-    MaxCPU: 30.651%
-    MaxMemory: 97.00MB
-  NetReachTaskSpec:
-  ...
-  PodName: kdoctor-agent-krrnp
-  ReportType: agent test report
-  RoundDuration: 11.180813761s
-  RoundNumber: 1
-  RoundResult: succeed
-  StartTimeStamp: "2023-08-01T08:36:56Z"
-  EndTimeStamp: "2023-08-01T08:37:07Z"
-  TaskName: netreach.task
-  TaskType: NetReach
-ReportRoundNumber: 1
-RoundNumber: 1
-Status: Finished
-TaskName: task
-TaskType: NetReach</code></p>
+-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">  </span>NetReachTask:
+<span class="w">    </span>Detail:
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentLoadbalancerV4IP_172.18.0.51:80
+<span class="w">      </span>Metrics:
+<span class="w">        </span>Duration:<span class="w"> </span><span class="m">10</span>.032286878s
+<span class="w">        </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:06Z&quot;</span>
+<span class="w">        </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">        </span>Latencies:
+<span class="w">          </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>MeanInMs:<span class="w"> </span><span class="m">23</span>.08
+<span class="w">          </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>RequestCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">        </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">        </span>StatusCodes:
+<span class="w">          </span><span class="s2">&quot;200&quot;</span>:<span class="w"> </span><span class="m">100</span>
+<span class="w">        </span>SuccessCounts:<span class="w"> </span><span class="m">100</span>
+<span class="w">        </span>TPS:<span class="w"> </span><span class="m">9</span>.967817030760152
+<span class="w">        </span>TotalDataSize:<span class="w"> </span><span class="m">36968</span><span class="w"> </span>byte
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.51:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">23</span>.08
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentNodePortV4IP_172.18.0.3_32713
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.3:32713
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">68</span>.42
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.40.0.6:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">44</span>.049503
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentClusterV4IP_172.41.249.6:80
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.41.249.6:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">26</span>.307692
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.40.1.5:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">61</span>.564358
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentIngress_http://172.18.0.50/kdoctoragent
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.50/kdoctoragent
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">65</span>.47059
+<span class="w">    </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span>TargetNumber:<span class="w"> </span><span class="m">6</span>
+<span class="w">    </span>TargetType:<span class="w"> </span>NetReach
+<span class="w">    </span>MaxCPU:<span class="w"> </span><span class="m">26</span>.203%
+<span class="w">    </span>MaxMemory:<span class="w"> </span><span class="m">101</span>.00MB
+<span class="w">  </span>NetReachTaskSpec:
+<span class="w">  </span>...
+<span class="w">  </span>PodName:<span class="w"> </span>kdoctor-agent-ntp9l
+<span class="w">  </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">  </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.178657432s
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">  </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">  </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:07Z&quot;</span>
+<span class="w">  </span>TaskName:<span class="w"> </span>netreach.task
+<span class="w">  </span>TaskType:<span class="w"> </span>NetReach
+-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">  </span>NetReachTask:
+<span class="w">    </span>Detail:
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentClusterV4IP_172.41.249.6:80
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.41.249.6:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">47</span>.25
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentNodePortV4IP_172.18.0.2_32713
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.2:32713
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">13</span>.480392
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-krrnp_172.40.1.5
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.40.1.5:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">39</span>.637257
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentPodV4IP_kdoctor-agent-ntp9l_172.40.0.6
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.40.0.6:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">51</span>.38614
+<span class="w">    </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentLoadbalancerV4IP_172.18.0.51:80
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.51:80
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">41</span>.735847
+<span class="w">      </span>-<span class="w"> </span>TargetName:<span class="w"> </span>AgentIngress_http://172.18.0.50/kdoctoragent
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">      </span>TargetUrl:<span class="w"> </span>http://172.18.0.50/kdoctoragent
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">60</span>.463634
+<span class="w">    </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span>TargetNumber:<span class="w"> </span><span class="m">6</span>
+<span class="w">    </span>TargetType:<span class="w"> </span>NetReach
+<span class="w">    </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">    </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">  </span>NetReachTaskSpec:
+<span class="w">  </span>...
+<span class="w">  </span>PodName:<span class="w"> </span>kdoctor-agent-krrnp
+<span class="w">  </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">  </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.180813761s
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">  </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:36:56Z&quot;</span>
+<span class="w">  </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T08:37:07Z&quot;</span>
+<span class="w">  </span>TaskName:<span class="w"> </span>netreach.task
+<span class="w">  </span>TaskType:<span class="w"> </span>NetReach
+ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+RoundNumber:<span class="w"> </span><span class="m">1</span>
+Status:<span class="w"> </span>Finished
+TaskName:<span class="w"> </span>task
+TaskType:<span class="w"> </span>NetReach
+</code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>We perform a connectivity check on the cluster's dns service.</p>
-<p><code>bash
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: netdns-cluster
-spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    domain: kubernetes.default.svc.cluster.local
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    protocol: udp
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    targetDns:
-      serviceName: kube-dns
-      serviceNamespace: kube-system
-      testIPv4: true
-EOF</code></p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: Netdns</span>
+<span class="s">metadata:</span>
+<span class="s">  name: netdns-cluster</span>
+<span class="s">spec:</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1500</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  request:</span>
+<span class="s">    domain: kubernetes.default.svc.cluster.local</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    protocol: udp</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  target:</span>
+<span class="s">    targetDns:</span>
+<span class="s">      serviceName: kube-dns</span>
+<span class="s">      serviceNamespace: kube-system</span>
+<span class="s">      testIPv4: true</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Check the status of the task and wait for it to complete.</p>
-<p><code>bash
-~# kubectl get netdns
-NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-netdns-cluster   false    1               0                             0 1
-~# kubectl get netdns
-NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-netdns-cluster   true     1               1           succeed           0 1</code></p>
+<div class="highlight"><pre><span></span><code>~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>netdns
+NAME<span class="w">             </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+netdns-cluster<span class="w">   </span><span class="nb">false</span><span class="w">    </span><span class="m">1</span><span class="w">               </span><span class="m">0</span><span class="w">                             </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+~#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>netdns
+NAME<span class="w">             </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+netdns-cluster<span class="w">   </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <p>Detailed reports on query missions.</p>
-<p><code>bash
-root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<div class="highlight"><pre><span></span><code>root@kdoctor-control-plane:/#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>netdns-cluster<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-creationTimestamp: null
-name: netdns-cluster
+creationTimestamp:<span class="w"> </span>null
+name:<span class="w"> </span>netdns-cluster
 spec:
-FailedRoundNumber: null
-FinishedRoundNumber: 1
+FailedRoundNumber:<span class="w"> </span>null
+FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
 Report:
-- NodeName: kdoctor-control-plane
-  PodName: kdoctor-agent-ntp9l
-  ReportType: agent test report
-  RoundDuration: 11.025723086s
-  RoundNumber: 1
-  RoundResult: succeed
-  StartTimeStamp: "2023-08-01T09:09:39Z"
-  EndTimeStamp: "2023-08-01T09:09:50Z"
-  TaskName: netdns.netdns-cluster
-  TaskType: Netdns
-  netDNSTask:
-    detail:
-    - FailureReason: null
-      MeanDelay: 0.2970297
-      Metrics:
-        DNSMethod: udp
-        DNSServer: 172.41.0.10:53
-        Duration: 11.002666395s
-        EndTime: "2023-08-01T09:09:50Z"
-        Errors: {}
-        FailedCounts: 0
-        Latencies:
-          MaxInMs: 0
-          MeanInMs: 0.2970297
-          MinInMs: 0
-          P50InMs: 0
-          P90InMs: 0
-          P95InMs: 0
-          P99InMs: 0
-        ReplyCode:
-          NOERROR: 101
-        RequestCounts: 101
-        StartTime: "2023-08-01T09:09:39Z"
-        SuccessCounts: 101
-        TPS: 9.179593052634765
-        TargetDomain: kubernetes.default.svc.cluster.local.
-      Succeed: true
-      SucceedRate: 1
-      TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
-      TargetProtocol: udp
-      TargetServer: 172.41.0.10:53
-    succeed: true
-    targetNumber: 1
-    targetType: kdoctor agent
-    MaxCPU: 30.651%
-    MaxMemory: 97.00MB
-  netDNSTaskSpec:
-    ...
-- NodeName: kdoctor-worker
-  PodName: kdoctor-agent-krrnp
-  ReportType: agent test report
-  RoundDuration: 10.024533428s
-  RoundNumber: 1
-  RoundResult: succeed
-  StartTimeStamp: "2023-08-01T09:09:39Z"
-  EndTimeStamp: "2023-08-01T09:09:49Z"
-  TaskName: netdns.netdns-cluster
-  TaskType: Netdns
-  netDNSTask:
-    detail:
-    - FailureReason: null
-      MeanDelay: 0.58
-      Metrics:
-        ...
-      Succeed: true
-      SucceedRate: 1
-      TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
-      TargetProtocol: udp
-      TargetServer: 172.41.0.10:53
-    succeed: true
-    targetNumber: 1
-    targetType: kdoctor agent
-    MaxCPU: 30.651%
-    MaxMemory: 97.00MB
-  netDNSTaskSpec:
-    ...
-ReportRoundNumber: 1
-RoundNumber: 1
-Status: Finished
-TaskName: netdns-cluster
-TaskType: Netdns</code></p>
+-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">  </span>PodName:<span class="w"> </span>kdoctor-agent-ntp9l
+<span class="w">  </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">  </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.025723086s
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">  </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">  </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:50Z&quot;</span>
+<span class="w">  </span>TaskName:<span class="w"> </span>netdns.netdns-cluster
+<span class="w">  </span>TaskType:<span class="w"> </span>Netdns
+<span class="w">  </span>netDNSTask:
+<span class="w">    </span>detail:
+<span class="w">    </span>-<span class="w"> </span>FailureReason:<span class="w"> </span>null
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">0</span>.2970297
+<span class="w">      </span>Metrics:
+<span class="w">        </span>DNSMethod:<span class="w"> </span>udp
+<span class="w">        </span>DNSServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">        </span>Duration:<span class="w"> </span><span class="m">11</span>.002666395s
+<span class="w">        </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:50Z&quot;</span>
+<span class="w">        </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">        </span>FailedCounts:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>Latencies:
+<span class="w">          </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>MeanInMs:<span class="w"> </span><span class="m">0</span>.2970297
+<span class="w">          </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">        </span>ReplyCode:
+<span class="w">          </span>NOERROR:<span class="w"> </span><span class="m">101</span>
+<span class="w">        </span>RequestCounts:<span class="w"> </span><span class="m">101</span>
+<span class="w">        </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">        </span>SuccessCounts:<span class="w"> </span><span class="m">101</span>
+<span class="w">        </span>TPS:<span class="w"> </span><span class="m">9</span>.179593052634765
+<span class="w">        </span>TargetDomain:<span class="w"> </span>kubernetes.default.svc.cluster.local.
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetName:<span class="w"> </span>typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+<span class="w">      </span>TargetProtocol:<span class="w"> </span>udp
+<span class="w">      </span>TargetServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">    </span>succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span>targetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>targetType:<span class="w"> </span>kdoctor<span class="w"> </span>agent
+<span class="w">    </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">    </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">  </span>netDNSTaskSpec:
+<span class="w">    </span>...
+-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">  </span>PodName:<span class="w"> </span>kdoctor-agent-krrnp
+<span class="w">  </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">  </span>RoundDuration:<span class="w"> </span><span class="m">10</span>.024533428s
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">  </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">  </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:49Z&quot;</span>
+<span class="w">  </span>TaskName:<span class="w"> </span>netdns.netdns-cluster
+<span class="w">  </span>TaskType:<span class="w"> </span>Netdns
+<span class="w">  </span>netDNSTask:
+<span class="w">    </span>detail:
+<span class="w">    </span>-<span class="w"> </span>FailureReason:<span class="w"> </span>null
+<span class="w">      </span>MeanDelay:<span class="w"> </span><span class="m">0</span>.58
+<span class="w">      </span>Metrics:
+<span class="w">        </span>...
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetName:<span class="w"> </span>typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+<span class="w">      </span>TargetProtocol:<span class="w"> </span>udp
+<span class="w">      </span>TargetServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">    </span>succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span>targetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>targetType:<span class="w"> </span>kdoctor<span class="w"> </span>agent
+<span class="w">    </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">    </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">  </span>netDNSTaskSpec:
+<span class="w">    </span>...
+ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+RoundNumber:<span class="w"> </span><span class="m">1</span>
+Status:<span class="w"> </span>Finished
+TaskName:<span class="w"> </span>netdns-cluster
+TaskType:<span class="w"> </span>Netdns
+</code></pre></div>
 </div>
 </div>
 </div>
