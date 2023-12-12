@@ -577,8 +577,8 @@ deploy_test_server:
 			kind load docker-image $${IMAGE}  --name $(KIND_CLUSTER_NAME)  ; \
 		done ; \
 	fi
-	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n $(E2E_INSTALL_NAMESPACE) server || true
-		helm --kubeconfig=$(KIND_KUBECONFIG) install server $(APP_CHART_DIR) \
+	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n $(E2E_INSTALL_NAMESPACE) $(E2E_TEST_SERVER_NAME) || true
+		helm --kubeconfig=$(KIND_KUBECONFIG) install $(E2E_TEST_SERVER_NAME) $(APP_CHART_DIR) \
 				-n $(E2E_INSTALL_NAMESPACE) --create-namespace --wait --debug \
 				--set image.tag=$(PROJECT_IMAGE_VERSION) \
 				|| { KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" $(E2E_INSTALL_NAMESPACE)  ; exit 1 ; } ; \

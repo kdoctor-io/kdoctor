@@ -40,9 +40,8 @@ func DaemonMain() {
 		rootLogger.Info("run in app mode")
 		scheme := runtime.NewScheme()
 		if err := clientgoscheme.AddToScheme(scheme); err != nil {
-			rootLogger.Sugar().Fatalf("failed to add to scheme, reason=%v", err)
+			rootLogger.Sugar().Errorf("failed to add to scheme, reason=%v", err)
 		}
-
 		n := ctrl.Options{
 			Scheme:                 scheme,
 			MetricsBindAddress:     "0",
@@ -62,31 +61,43 @@ func DaemonMain() {
 		}
 		mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), n)
 		if err != nil {
-			rootLogger.Sugar().Fatalf("failed to NewManager, reason=%v", err)
+			rootLogger.Sugar().Errorf("failed to NewManager, reason=%v", err)
 		}
 
 		if e := k8sObjManager.Initk8sObjManager(mgr.GetClient()); e != nil {
-			rootLogger.Sugar().Fatalf("failed to Initk8sObjManager, error=%v", e)
+			rootLogger.Sugar().Errorf("failed to Initk8sObjManager, error=%v", e)
+		}
+
+		err = GenServerCert(rootLogger)
+		if err != nil {
+			rootLogger.Sugar().Errorf("Generating a certificate fails, and the server will not use the certificate for authentication")
+			agentHttpServer.SetupAppHttpServer(rootLogger, "", "")
+			agentDnsServer.SetupAppDnsServer(rootLogger, "", "")
+		} else {
+			agentHttpServer.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
+			agentDnsServer.SetupAppDnsServer(rootLogger, TlsCertPath, TlsKeyPath)
 		}
 	} else {
 		rootLogger.Info("run in agent mode")
 
 		SetupUtility()
-
 		RunMetricsServer(types.AgentConfig.PodName)
 
 		s := pluginManager.InitPluginManager(rootLogger.Named("agentController"))
 		s.RunAgentController()
+		err := GenServerCert(rootLogger)
+		if err != nil {
+			rootLogger.Sugar().Fatalf("Generating a certificate fails,err=%v", err)
+		}
+		agentHttpServer.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
+		initGrpcServer()
 
 	}
-	rootLogger.Sugar().Info("generate server cert and key")
-	GenServerCert(rootLogger)
+
 	agentHttpServer.SetupHealthHttpServer(rootLogger)
-	agentHttpServer.SetupAppHttpServer(rootLogger, TlsCertPath, TlsKeyPath)
-	initGrpcServer()
-	agentDnsServer.SetupAppDnsServer(rootLogger, TlsCertPath, TlsKeyPath)
 
 	rootLogger.Info("finish initialization")
 	// sleep forever
 	select {}
+
 }

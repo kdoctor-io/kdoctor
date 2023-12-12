@@ -5,18 +5,20 @@ package agentHttpServer
 
 import (
 	"fmt"
-	"github.com/go-openapi/loads"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/jessevdk/go-flags"
+	"os"
+	"time"
+
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/models"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi"
 	"github.com/kdoctor-io/kdoctor/api/v1/agentServer/server/restapi/echo"
 	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
+
+	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/jessevdk/go-flags"
 	"go.uber.org/zap"
-	"os"
-	"time"
 )
 
 var (
@@ -481,8 +483,7 @@ func SetupAppHttpServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 	srvApp.EnabledListeners = []string{"https", "http"}
 	// http
 	srvApp.Port = int(types.AgentConfig.AppHttpPort)
-	// https
-	srvApp.TLSPort = int(types.AgentConfig.AppHttpsPort)
+
 	// verify ca
 	if !types.AgentConfig.TlsInsecure {
 		srvApp.TLSCACertificate = flags.Filename(types.AgentConfig.TlsCaCertPath)
@@ -490,11 +491,14 @@ func SetupAppHttpServer(rootLogger *zap.Logger, tlsCert, tlsKey string) {
 	} else {
 		logger.Sugar().Infof("agent disabled verify tls")
 	}
-	srvApp.TLSCertificate = flags.Filename(tlsCert)
-	srvApp.TLSCertificateKey = flags.Filename(tlsKey)
+	if tlsCert != "" && tlsKey != "" {
+		srvApp.TLSCertificate = flags.Filename(tlsCert)
+		srvApp.TLSCertificateKey = flags.Filename(tlsKey)
+		srvApp.TLSPort = int(types.AgentConfig.AppHttpsPort)
+		logger.Sugar().Infof("setup agent app https server at port %v", types.AgentConfig.AppHttpsPort)
+	}
 
 	logger.Sugar().Infof("setup agent app http server at port %v", types.AgentConfig.AppHttpPort)
-	logger.Sugar().Infof("setup agent app https server at port %v", types.AgentConfig.AppHttpsPort)
 
 	srvApp.ConfigureAPI()
 	go func() {

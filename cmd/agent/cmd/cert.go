@@ -24,18 +24,19 @@ var (
 	CaCertPath  = "/tmp/ca.crt"
 )
 
-func GenServerCert(logger *zap.Logger) {
+func GenServerCert(logger *zap.Logger) error {
+	logger.Sugar().Info("generate server cert and key")
 	checkServiceReady(logger)
 
 	// get svc domain and ip
 	alternateIP := []net.IP{}
 	alternateDNS := []string{}
 	servicePortName := "http"
-
+	var err error
 	if types.AgentConfig.Configmap.EnableIPv4 {
 		serviceIPv4, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace, servicePortName)
 		if err != nil {
-			logger.Sugar().Fatalf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV4Name, err)
+			logger.Sugar().Errorf("failed to get kdoctor ipv4 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV4Name, err)
 		}
 		logger.Sugar().Debugf("get ipv4 serviceAccessurl %v", serviceIPv4)
 		// ipv4 ip
@@ -68,7 +69,7 @@ func GenServerCert(logger *zap.Logger) {
 	if types.AgentConfig.Configmap.EnableIPv6 {
 		serviceIPv6, err := k8sObjManager.GetK8sObjManager().GetServiceAccessUrl(context.Background(), types.AgentConfig.ServiceV6Name, types.AgentConfig.PodNamespace, servicePortName)
 		if err != nil {
-			logger.Sugar().Fatalf("failed to get kdoctor ipv6 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
+			logger.Sugar().Errorf("failed to get kdoctor ipv6 service %s/%s, reason=%v ", types.AgentConfig.PodNamespace, types.AgentConfig.ServiceV6Name, err)
 		}
 		// ipv6 ip
 		logger.Sugar().Debugf("get ipv6 serviceAccessurl %v", serviceIPv6)
@@ -104,13 +105,14 @@ func GenServerCert(logger *zap.Logger) {
 	logger.Sugar().Debugf("alternate dns for tls cert:  %v", alternateDNS)
 	// generate self-signed certificates
 	if e := utils.NewServerCertKeyForLocalNode(alternateDNS, alternateIP, types.AgentConfig.TlsCaCertPath, types.AgentConfig.TlsCaKeyPath, TlsCertPath, TlsKeyPath, CaCertPath); e != nil {
-		logger.Sugar().Fatalf("failed to generate certiface, error=%v", e)
+		logger.Sugar().Errorf("failed to generate certiface, error=%v", e)
 	}
+	return err
 }
 
 func checkServiceReady(logger *zap.Logger) {
-	ctx := context.TODO()
-
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	defer cancel()
 	if types.AgentConfig.Configmap.EnableIPv4 {
 		for {
 			_, err := k8sObjManager.GetK8sObjManager().GetService(ctx, types.AgentConfig.ServiceV4Name, types.AgentConfig.PodNamespace)
