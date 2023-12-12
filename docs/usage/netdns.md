@@ -24,7 +24,7 @@ kdoctor-controller creates the necessary resources, including [agent](../concept
 
 The following example demonstrates how to use `NetDNS`.
 
-### Install kdoctor 
+### Install kdoctor
 
 Follow the [installation guide](./install.md) to install kdoctor.
 

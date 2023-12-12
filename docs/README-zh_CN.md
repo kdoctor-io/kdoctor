@@ -1,4 +1,5 @@
 # kdoctor
+
 [![Auto Release Version](https://github.com/kdoctor-io/kdoctor/actions/workflows/auto-release.yaml/badge.svg)](https://github.com/kdoctor-io/kdoctor/actions/workflows/auto-release.yaml)
 [![Auto Nightly CI](https://github.com/kdoctor-io/kdoctor/actions/workflows/auto-nightly-ci.yaml/badge.svg)](https://github.com/kdoctor-io/kdoctor/actions/workflows/auto-nightly-ci.yaml)
 [![codecov](https://codecov.io/gh/kdoctor-io/kdoctor/branch/main/graph/badge.svg?token=rLmsuiBLM2)](https://codecov.io/gh/kdoctor-io/kdoctor)
@@ -15,11 +16,13 @@
 kdoctor 是一个基于主动式压力注入的 Kubernetes 数据面测试组件，对集群进行功能、性能的测试。通过调研和抽象了运维人员的常规运维需求，让网络、存储、应用等运维任务进行了云原生实现，基于 CRD的设计，能够对接观测性组件。
 
 **kdoctor 主要包含以下 3 个类型的任务：**
+
 * [AppHttpHealthy](./reference/apphttphealthy-zh_CN.md): 根据任务配置对集群内外指定访问地址，使用 HTTP、HTTPS 协议进行连通性检查，支持 PUT、GET、POST 等多种请求方式。
 * [NetReach](./reference/netreach-zh_CN.md): 根据任务配置对集群内 Pod IP、ClusterIP、NodePort、Loadbalancer IP、Ingress IP, 甚至是 POD 多网卡、双栈IP进行连通性巡检。
 * [NetDns](./reference/netdns-zh_CN.md): 根据任务配置，对集群内外的指定 DNS Server 进行连通性检测，支持 udp、tcp、tcp-tls 协议。
 
 **kdoctor 较传统的测试组件有哪些优势:**
+
 * 通过下发 CRD 配置巡检任务需求，使用者只需要关注巡检目标、巡检频率、发压参数以及期望巡检结果。
 * 通过读取任务配置，以 Deployment 或 DaemonSet 的方式运行发压 agent，以达到多台发压机器的效果。
 * 根据任务的 spec 配置，使用 default agent 或创建新的 agent 执行任务，以达到资源重复利用和任务资源隔离。
@@ -34,15 +37,18 @@ kdoctor 是一个基于主动式压力注入的 Kubernetes 数据面测试组件
 </div>
 
 组件构成：
+
 * kdoctor controller: 以 Deployment 形式常驻，实施 CR 监控，任务创建，任务报告汇聚等。
 * kdoctor agent: 以 Deployment 或 DaemonSet 形式按需动态创建，任务的执行者。
 
 ## 快速开始
 
-**安装**
+### 安装
+
 * [安装 kdoctor](./usage/install-zh_CN.md) 或 [kind 快速开始](./usage/install-zh_CN.md)
 
-**开始任务**
+### 开始任务
+
 * [开始任务 AppHttpHealthy](./usage/apphttphealthy-zh_CN.md)
 * [开始任务 NetReach](./usage/netreach-zh_CN.md)
 * [开始任务 NetDNS](./usage/netdns-zh_CN.md)

@@ -23,11 +23,11 @@ kdoctor-controller creates the necessary resources, including [agent](../concept
 
 The following example demonstrates how to use `NetReach`.
 
-### Install kdoctor 
+### Install kdoctor
 
 Follow the [installation guide](./install.md) to install kdoctor.
 
-### Create NetReach 
+### Create NetReach
 
 Create `NetReach` object that will execute a 10-second continuous task. Each agent on the nodes will use the HTTP protocol to access the IPv4 addresses of ClusterIP, Endpoint, Ingress, NodePort, and LoadBalancer immediately.
 

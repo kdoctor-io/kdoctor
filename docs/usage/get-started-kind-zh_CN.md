@@ -31,7 +31,7 @@ Kind 是一个使用 Docker 容器节点运行本地 Kubernetes 集群的工具�
     ~# make e2e_init -e PROJECT_IMAGE_VERSION=KDOCTOR_LATEST_IMAGE_TAG
     ```
 
-     note: 如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。
+    note: 如果您是国内用户，您可以使用如下命令，避免拉取镜像失败。
 
     ```bash
     ~# make e2e_init -e E2E_SPIDERPOOL_TAG=$SPIDERPOOL_LATEST_IMAGE_TAG -e E2E_CHINA_IMAGE_REGISTRY=true
@@ -69,14 +69,14 @@ kdoctor-controller      ClusterIP      172.41.210.120   <none>                  
 kdoctor-test-server     ClusterIP      172.41.95.144    <none>                   80/TCP,443/TCP,53/UDP,53/TCP,853/TCP        3h46m
 ```
 
-> `kdoctor-test-server` 为 kdoctor 的测试 server，里面包含 http server、https server、dns udp server、dns tcp server,供测试 kdocotr 功能使用。 
+> `kdoctor-test-server` 为 kdoctor 的测试 server，里面包含 http server、https server、dns udp server、dns tcp server,供测试 kdocotr 功能使用。
 
 ## 配置任务
 
 ===  "AppHttpHealthy"
 
     我们对 kdocotr-test-server 的 service ip 进行访问，获取 kdocotr-test-server 的响应情况。
-      
+
     ```bash
     SERVER="172.41.95.144"
     cat <<EOF | kubectl apply -f -
@@ -111,8 +111,8 @@ kdoctor-test-server     ClusterIP      172.41.95.144    <none>                  
     ~# kubectl get apphttphealthy
     NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
     http-test   true     1               1           succeed           0 1
-    ```      
-      
+    ```
+
     查询任务详细报告。
 
     ```bash

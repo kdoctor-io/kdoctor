@@ -71,7 +71,7 @@ kdoctor-test-server     ClusterIP      172.41.95.144    <none>                  
 
 > `kdoctor-test-server` is kdoctor's test server, which contains http server, https server, dns udp server, dns tcp server, for testing kdocotr functions.
 
-## 配置任务
+## Configuration tasks
 
 ===  "AppHttpHealthy"
 
