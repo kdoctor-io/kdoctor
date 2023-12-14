@@ -47,7 +47,7 @@ func (t TableGenerator) ConvertToTable(ctx context.Context, obj runtime.Object, 
 		pluginReport := obj.(*v1beta1.KdoctorReport)
 		return []interface{}{
 			name,
-			pluginReport.Spec.ToTalRoundNumber,
+			pluginReport.Status.ToTalRoundNumber,
 			// pluginReport.Spec.StartTimeStamp.Time.UTC().Format(time.RFC3339),
 		}, nil
 	})

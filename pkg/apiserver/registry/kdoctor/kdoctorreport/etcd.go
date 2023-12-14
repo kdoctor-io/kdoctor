@@ -108,7 +108,7 @@ func (p kdoctorReportStorage) Watch(ctx context.Context, key string, opts storag
 
 func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.GetOptions, objPtr runtime.Object) error {
 	klog.Infof("Get called with key: %v on resource %v\n", key, p.resourceName)
-
+	kdoctorReport := objPtr.(*v1beta1.KdoctorReport)
 	var taskStatus *crd.TaskStatus
 	var taskType string
 	var creationTimestamp metav1.Time
@@ -130,6 +130,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 		taskStatus = netdns.Status.DeepCopy()
 		creationTimestamp = netdns.CreationTimestamp
 		taskType = v1beta1.NetDNSTaskName
+		kdoctorReport.Task.Spec.NetDNSTaskSpec = &netdns.Spec
 	}
 
 	netReach, err := p.clientSet.KdoctorV1beta1().NetReaches().Get(ctx, name, metav1.GetOptions{})
@@ -144,6 +145,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 		taskStatus = netReach.Status.DeepCopy()
 		creationTimestamp = netReach.CreationTimestamp
 		taskType = v1beta1.NetReachTaskName
+		kdoctorReport.Task.Spec.NetReachTaskSpec = &netReach.Spec
 	}
 
 	appHttpHealthy, err := p.clientSet.KdoctorV1beta1().AppHttpHealthies().Get(ctx, name, metav1.GetOptions{})
@@ -158,6 +160,7 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 		taskStatus = appHttpHealthy.Status.DeepCopy()
 		creationTimestamp = appHttpHealthy.CreationTimestamp
 		taskType = v1beta1.AppHttpHealthyTaskName
+		kdoctorReport.Task.Spec.AppHttpHealthyTaskSpec = &appHttpHealthy.Spec
 	}
 
 	if taskStatus == nil {
@@ -201,19 +204,16 @@ func (p kdoctorReportStorage) Get(ctx context.Context, key string, opts storage.
 		return fmt.Errorf("no '%s' reports found", name)
 	}
 
-	kdoctorReport := objPtr.(*v1beta1.KdoctorReport)
 	kdoctorReport.CreationTimestamp = creationTimestamp
-	kdoctorReport.Spec = v1beta1.KdoctorReportSpec{
-		TaskName:            name,
-		TaskType:            taskType,
+	kdoctorReport.Report = v1beta1.Reports{LatestRoundReport: getReports}
+	kdoctorReport.Status = v1beta1.Status{
 		ToTalRoundNumber:    toTalRoundNumber,
 		FinishedRoundNumber: finishedRoundNumber,
-		FailedRoundNumber:   nil,
 		Status:              status,
-		ReportRoundNumber:   latestRoundNumber,
-		Report:              getReports,
+		RoundNumber:         latestRoundNumber,
 	}
-
+	kdoctorReport.Task.TaskName = name
+	kdoctorReport.Task.TaskType = taskType
 	kdoctorReport.Name = name
 	kdoctorReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
 		Group:   v1beta1.GroupName,
@@ -393,15 +393,11 @@ func (p kdoctorReportStorage) getNetDNSKdoctorReports(ctx context.Context, fileN
 			finishedRoundNumber = int64(tmpNetDNS.Status.History[0].RoundNumber)
 		}
 
-		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
-			TaskName:            tmpNetDNS.Name,
-			TaskType:            v1beta1.NetDNSTaskName,
+		kdoctorReportStatus := v1beta1.Status{
 			ToTalRoundNumber:    *tmpNetDNS.Status.ExpectedRound,
 			FinishedRoundNumber: finishedRoundNumber,
-			FailedRoundNumber:   nil,
 			Status:              taskStatus,
-			ReportRoundNumber:   latestRoundNumber,
-			Report:              result,
+			RoundNumber:         latestRoundNumber,
 		}
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
@@ -412,8 +408,11 @@ func (p kdoctorReportStorage) getNetDNSKdoctorReports(ctx context.Context, fileN
 			Version: v1beta1.V1betaVersion,
 			Kind:    v1beta1.KindKdoctorReport,
 		})
-		kdoctorReport.Spec = kdoctorReportSpec
-
+		kdoctorReport.Status = kdoctorReportStatus
+		kdoctorReport.Task.Spec.NetDNSTaskSpec = &netDNS.Spec
+		kdoctorReport.Task.TaskName = tmpNetDNS.Name
+		kdoctorReport.Task.TaskType = v1beta1.NetDNSTaskName
+		kdoctorReport.Report = v1beta1.Reports{LatestRoundReport: result}
 		resList = append(resList, kdoctorReport)
 	}
 
@@ -467,15 +466,11 @@ func (p kdoctorReportStorage) getHttpAppHealthyReports(ctx context.Context, file
 			finishedRoundNumber = int64(tmpHttpAppHealthy.Status.History[0].RoundNumber)
 		}
 
-		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
-			TaskName:            tmpHttpAppHealthy.Name,
-			TaskType:            v1beta1.AppHttpHealthyTaskName,
+		kdoctorReportStatus := v1beta1.Status{
 			ToTalRoundNumber:    *tmpHttpAppHealthy.Status.ExpectedRound,
 			FinishedRoundNumber: finishedRoundNumber,
-			FailedRoundNumber:   nil,
 			Status:              taskStatus,
-			ReportRoundNumber:   latestRoundNumber,
-			Report:              result,
+			RoundNumber:         latestRoundNumber,
 		}
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
@@ -486,8 +481,11 @@ func (p kdoctorReportStorage) getHttpAppHealthyReports(ctx context.Context, file
 			Version: v1beta1.V1betaVersion,
 			Kind:    v1beta1.KindKdoctorReport,
 		})
-		kdoctorReport.Spec = kdoctorReportSpec
-
+		kdoctorReport.Status = kdoctorReportStatus
+		kdoctorReport.Report = v1beta1.Reports{LatestRoundReport: result}
+		kdoctorReport.Task.Spec.AppHttpHealthyTaskSpec = &appHttpHealthy.Spec
+		kdoctorReport.Task.TaskName = tmpHttpAppHealthy.Name
+		kdoctorReport.Task.TaskType = v1beta1.AppHttpHealthyTaskName
 		resList = append(resList, kdoctorReport)
 	}
 
@@ -541,15 +539,11 @@ func (p kdoctorReportStorage) getNetReachHealthyReports(ctx context.Context, fil
 			finishedRoundNumber = int64(tmpNetReachHealthy.Status.History[0].RoundNumber)
 		}
 
-		kdoctorReportSpec := v1beta1.KdoctorReportSpec{
-			TaskName:            tmpNetReachHealthy.Name,
-			TaskType:            v1beta1.NetReachTaskName,
+		kdoctorReportStatus := v1beta1.Status{
 			ToTalRoundNumber:    *tmpNetReachHealthy.Status.ExpectedRound,
 			FinishedRoundNumber: finishedRoundNumber,
-			FailedRoundNumber:   nil,
 			Status:              taskStatus,
-			ReportRoundNumber:   latestRoundNumber,
-			Report:              result,
+			RoundNumber:         latestRoundNumber,
 		}
 
 		kdoctorReport := &v1beta1.KdoctorReport{}
@@ -560,8 +554,11 @@ func (p kdoctorReportStorage) getNetReachHealthyReports(ctx context.Context, fil
 			Version: v1beta1.V1betaVersion,
 			Kind:    v1beta1.KindKdoctorReport,
 		})
-		kdoctorReport.Spec = kdoctorReportSpec
-
+		kdoctorReport.Status = kdoctorReportStatus
+		kdoctorReport.Report = v1beta1.Reports{LatestRoundReport: result}
+		kdoctorReport.Task.Spec.NetReachTaskSpec = &netReach.Spec
+		kdoctorReport.Task.TaskName = tmpNetReachHealthy.Name
+		kdoctorReport.Task.TaskType = v1beta1.NetReachTaskName
 		resList = append(resList, kdoctorReport)
 	}
 

@@ -186,18 +186,12 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 
 }
 
-func (s *PluginAppHttpHealthy) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
-	httpAppHealthySpec, ok := crdSpec.(*crd.AppHttpHealthySpec)
-	if !ok {
-		return fmt.Errorf("the given crd spec %#v doesn't match HttpAppHealthySpec", crdSpec)
-	}
-
-	httpAppHealthyTask, ok := task.(*v1beta1.AppHttpHealthyTask)
+func (s *PluginAppHttpHealthy) SetReportWithTask(report *v1beta1.Report, task types.Task) error {
+	AppHttpHealthyTask, ok := task.(*v1beta1.AppHttpHealthyTask)
 	if !ok {
 		return fmt.Errorf("task type %v doesn't match HttpAppHealthyTask", task.KindTask())
 	}
 
-	report.HttpAppHealthyTaskSpec = httpAppHealthySpec
-	report.HttpAppHealthyTask = httpAppHealthyTask
+	report.TaskAppHttpHealthy = AppHttpHealthyTask
 	return nil
 }
