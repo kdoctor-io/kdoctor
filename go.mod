@@ -64,7 +64,7 @@ require (
 	github.com/agiledragon/gomonkey/v2 v2.11.0
 	github.com/docker/docker v24.0.5+incompatible
 	github.com/golang/mock v1.6.0
-	github.com/ii2day/connexus v0.1.5
+	github.com/ii2day/connexus v0.1.10
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	k8s.io/apiserver v0.26.3
 	sigs.k8s.io/yaml v1.3.0

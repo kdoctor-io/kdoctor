@@ -313,8 +313,8 @@ github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T
 github.com/huandu/xstrings v1.3.3 h1:/Gcsuc1x8JVbJ9/rlye4xZnVAbEkGauT8lbebqcQws4=
 github.com/huandu/xstrings v1.3.3/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
-github.com/ii2day/connexus v0.1.5 h1:zGMsXRR9mpjYc5lBzadR+OFcpnWqkfb0kMbIPTkEoNo=
-github.com/ii2day/connexus v0.1.5/go.mod h1:4YzgPU8WKH7PK1iUxmrDPf/XRHWU4/Bnu4k4tH8PqoU=
+github.com/ii2day/connexus v0.1.10 h1:eDkWz9F/YGyzwUHgMhBhycrzhBB6xrx221Lbdzf2bOY=
+github.com/ii2day/connexus v0.1.10/go.mod h1:4YzgPU8WKH7PK1iUxmrDPf/XRHWU4/Bnu4k4tH8PqoU=
 github.com/imdario/mergo v0.3.11/go.mod h1:jmQim1M+e3UYxmgPu/WyfjB3N3VflVyUjjjwH0dnCYA=
 github.com/imdario/mergo v0.3.13 h1:lFzP57bqS/wsqKssCGmtLAb8A0wKjLGrve2q3PPVcBk=
 github.com/imdario/mergo v0.3.13/go.mod h1:4lJ1jqUDcsbIECGy0RUJAXNIhg+6ocWgb1ALK2O4oXg=
