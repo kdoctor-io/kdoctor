@@ -21,7 +21,7 @@ func (c *Connex) Close() error {
 
 	c.updatedTime = time.Now()
 
-	if c.cp.Len() > c.cp.MaxIdleCap {
+	if c.cp.Len() > c.cp.maxIdleCap {
 		c.cp = nil
 		return c.Conn.Close()
 	}

@@ -178,7 +178,8 @@ func (b *Work) makeRequest(wg *sync.WaitGroup) {
 
 	conn, err := b.pool.Get()
 	if err != nil {
-		b.Logger.Sugar().Errorf("failed get connect err=%v", err)
+		b.Logger.Sugar().Errorf("failed get connect err=%v,token requeue", err)
+		b.qosTokenBucket <- struct{}{}
 		return
 	} else {
 		defer conn.Close()
