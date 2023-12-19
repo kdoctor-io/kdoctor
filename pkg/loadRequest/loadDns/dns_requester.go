@@ -26,21 +26,21 @@ package loadDns
 
 import (
 	"crypto/tls"
-	"net"
-	"sync"
-	"time"
-
+	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
+	"github.com/kdoctor-io/kdoctor/pkg/lock"
 	"github.com/kdoctor-io/kdoctor/pkg/utils/stats"
-
-	"github.com/ii2day/connexus"
 	"github.com/miekg/dns"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net"
+	"sync"
+	"time"
 )
 
 // Max size of the buffer of result channel.
 const maxResult = 1000000
+const connectCount = 50
 
 type result struct {
 	err      error
@@ -69,35 +69,22 @@ type Work struct {
 	Logger *zap.Logger
 
 	initOnce       sync.Once
-	client         *dns.Client
-	pool           connexus.Pool
+	msgID          uint16
 	results        chan *result
 	stopCh         chan struct{}
 	qosTokenBucket chan struct{}
 	startTime      metav1.Time
 	report         *report
+	l              lock.Mutex
 }
 
 // Init initializes internal data-structures
 func (b *Work) Init() {
 	b.initOnce.Do(func() {
 		b.results = make(chan *result, maxResult)
-		b.stopCh = make(chan struct{}, 1)
+		b.stopCh = make(chan struct{}, connectCount)
 		b.qosTokenBucket = make(chan struct{}, b.QPS)
-		client := new(dns.Client)
-		client.Net = b.Protocol
-		client.Timeout = time.Duration(b.Timeout) * time.Millisecond
-		if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
-			tlsConfig := &tls.Config{
-				InsecureSkipVerify: true,
-			}
-			client.TLSConfig = tlsConfig
-		}
-		b.client = client
-		err := b.InitPool()
-		if err != nil {
-			b.Logger.Sugar().Fatalf("init connect pool failed err=%v", err)
-		}
+		b.msgID = 1
 	})
 }
 
@@ -153,12 +140,15 @@ func (b *Work) Run() {
 			}
 		}
 	}()
-	b.runWorker()
+	b.runWorkers()
 	b.Finish()
 }
 
 func (b *Work) Stop() {
-	b.stopCh <- struct{}{}
+	// Send stop signal so that workers can stop gracefully.
+	for i := 0; i < connectCount; i++ {
+		b.stopCh <- struct{}{}
+	}
 }
 
 func (b *Work) Finish() {
@@ -170,42 +160,68 @@ func (b *Work) Finish() {
 	b.report.finalize(total)
 }
 
-func (b *Work) makeRequest(wg *sync.WaitGroup) {
-	defer wg.Done()
+func (b *Work) makeRequest(client *dns.Client, conn *dns.Conn) {
 	msg := new(dns.Msg)
 	*msg = *b.Msg
-	msg.Id = dns.Id()
-
-	conn, err := b.pool.Get()
+	b.l.Lock()
+	msg.Id = b.msgID
+	b.msgID++
+	b.l.Unlock()
+	b.Logger.Sugar().Debugf("msg id %d", msg.Id)
+	err := client.ExchangeWithReuseConn(msg, conn)
 	if err != nil {
-		b.Logger.Sugar().Errorf("failed get connect err=%v,token requeue", err)
-		b.qosTokenBucket <- struct{}{}
-		return
-	} else {
-		defer conn.Close()
+		b.results <- &result{
+			duration: 0,
+			err:      err,
+			msg:      nil,
+		}
 	}
-	r, rtt, err := b.client.ExchangeWithConn(msg, conn.(*connexus.Connex).Conn.(*dns.Conn))
-	b.results <- &result{
-		duration: rtt,
-		err:      err,
-		msg:      r,
-	}
+
 }
 
 func (b *Work) runWorker() {
-	wg := &sync.WaitGroup{}
+	var err error
+	client := new(dns.Client)
+	client.Net = b.Protocol
+	client.Timeout = time.Duration(b.Timeout) * time.Millisecond
+	if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true,
+		}
+		client.TLSConfig = tlsConfig
+	}
+
+	conn, err := b.makeConn(client)
+	if err != nil {
+		b.Logger.Sugar().Errorf("failed create dns conn,err=%v", err)
+		return
+	}
+
+	go b.connReceiver(conn)
+
 	for {
 		// Check if application is stopped. Do not send into a closed channel.
 		select {
 		case <-b.stopCh:
-			wg.Wait()
-			b.pool.Close()
+			conn.ShutDown <- struct{}{}
+			conn.Close()
 			return
 		case <-b.qosTokenBucket:
-			wg.Add(1)
-			go b.makeRequest(wg)
+			b.makeRequest(client, conn)
 		}
 	}
+}
+
+func (b *Work) runWorkers() {
+	var wg sync.WaitGroup
+	wg.Add(connectCount)
+	for i := 0; i < connectCount; i++ {
+		go func() {
+			b.runWorker()
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 
 }
 
@@ -256,15 +272,51 @@ func (b *Work) AggregateMetric() *v1beta1.DNSMetrics {
 
 	return metric
 }
-func (b *Work) InitPool() error {
+
+func (b *Work) makeConn(c *dns.Client) (*dns.Conn, error) {
 	var err error
-	cfg := connexus.PoolConfig{
-		Cap:        b.QPS,
-		MaxIdleCap: b.QPS * 2,
-		Factory: func() (net.Conn, error) {
-			return b.client.Dial(b.ServerAddr)
-		},
+	d := new(net.Dialer)
+	conn := new(dns.Conn)
+	conn.ShutDown = make(chan struct{})
+	conn.Conn, err = d.Dial(b.Protocol, b.ServerAddr)
+	// A zero value for t means Read and Write will not time out.
+	t := time.Now()
+	deadLine := t.Add(time.Duration(b.RequestTimeSecond) * time.Second)
+
+	_ = conn.SetWriteDeadline(deadLine.Add(time.Duration(b.Timeout) * time.Millisecond))
+	_ = conn.SetReadDeadline(deadLine.Add(time.Duration(b.Timeout) * time.Millisecond))
+
+	conn.TsigSecret, conn.TsigProvider = c.TsigSecret, c.TsigProvider
+	return conn, err
+}
+
+func (b *Work) connReceiver(co *dns.Conn) {
+
+	for {
+		select {
+		case <-co.ShutDown:
+			return
+		default:
+			r, err := co.ReadMsg()
+			if r == nil {
+				continue
+			}
+			startTime, ok := co.SendStartTime.LoadAndDelete(r.Id)
+			var rtt time.Duration
+			if !ok {
+				err = fmt.Errorf("no record msg id %d", r.Id)
+			} else {
+				rtt = time.Since(startTime.(time.Time))
+				if rtt > time.Duration(b.Timeout)*time.Millisecond {
+					err = fmt.Errorf("timeout for request %d more than %d", rtt.Milliseconds(), b.Timeout)
+				}
+			}
+			b.results <- &result{
+				duration: rtt,
+				err:      err,
+				msg:      r,
+			}
+		}
+
 	}
-	b.pool, err = connexus.NewConnexPool(cfg)
-	return err
 }
