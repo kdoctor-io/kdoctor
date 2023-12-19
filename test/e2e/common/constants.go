@@ -16,7 +16,6 @@ const (
 
 var (
 	TlsClientName = "https-client-cert"
-
 	// get from env
 	KdoctroTestToken   = ""
 	APISERVICEADDR     = ""
