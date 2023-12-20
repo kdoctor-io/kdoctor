@@ -88,15 +88,15 @@ task   true     1               1           succeed           0 1
 
 2. 查看具体任务报告
 
-    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮互相发压后，将 agent 报告聚合而成。
+    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮互相发压后，将 agent 报告聚合而成，报告名称由`${TaskKind}-${TaskName}`组成。
 
     ```shell
-    root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
+    root@kdoctor-control-plane:/# kubectl get kdoctorreport neteach-task -oyaml
     apiVersion: system.kdoctor.io/v1beta1
     kind: KdoctorReport
     metadata:
       creationTimestamp: null
-      name: task
+      name: neteach-task
     spec:
       FailedRoundNumber: null
       FinishedRoundNumber: 1
