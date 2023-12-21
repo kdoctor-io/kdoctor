@@ -22,7 +22,7 @@ permissions: write-all
 jobs:
   call-by-workflow:
     uses: ./.github/workflows/call-release-image.yaml
-    if: ${{ inputs.ref != '' }}
+    if: ${{ inputs.ref != '' && github.event_name != 'pull_request_target'}}
     with:
       ref: ${{ inputs.ref }}
       push: "false"
@@ -36,6 +36,6 @@ jobs:
     with:
       ref: ${{ github.event.pull_request.head.sha }}
       push: "false"
-      upload: "false"
+      upload: "true"
       race: "1"
     secrets: inherit

@@ -222,14 +222,14 @@ jobs:
       - name: Upload artifact digests
         uses: actions/upload-artifact@v4.0.0
         with:
-          name: image-digest-artifact-${{ env.RUN_IMAGE_TAG }}
+          name: image-digest-artifact-${{ matrix.name }}-${{ env.RUN_IMAGE_TAG }}
           path: image-digest-output.txt
           retention-days: 1
 
       - name: Upload artifact digests
         uses: actions/upload-artifact@v4.0.0
         with:
-          name: makefile-digest-artifact-${{ env.RUN_IMAGE_TAG }}
+          name: makefile-digest-artifact-${{ matrix.name }}-${{ env.RUN_IMAGE_TAG }}
           path: Makefile.digests
           retention-days: 1
 
