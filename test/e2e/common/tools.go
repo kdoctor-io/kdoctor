@@ -189,14 +189,15 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 	var r *kdoctor_report.KdoctorReport
 	var err error
 	c := time.After(time.Second * 60)
-	r, err = GetPluginReportResult(f, name, n)
+	reportName := strings.ToLower(taskKind) + "-" + name
+	r, err = GetPluginReportResult(f, reportName, n)
 	for err != nil {
 		select {
 		case <-c:
 			return false, fmt.Errorf("get %s %s report time out,err: %v ", taskKind, name, err)
 		default:
 			time.Sleep(time.Second * 5)
-			r, err = GetPluginReportResult(f, name, n)
+			r, err = GetPluginReportResult(f, reportName, n)
 			break
 		}
 	}

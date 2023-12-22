@@ -115,7 +115,7 @@ netdns-cluster   true     1               1           succeed           0 1
 
 2. 查看具体任务报告
 
-    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成。
+    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成，报告名称由`${TaskKind}-${TaskName}`组成
 
     ```shell
     root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml

@@ -113,15 +113,15 @@ http        true     1               1           succeed           0 1
 
 2. View specific task reports
 
-    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.
+    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively,Report name consists of `${TaskKind}-${TaskName}`
 
     ```shell
-    kubectl get kdoctorreport http -oyaml
+    kubectl get kdoctorreport apphttphealthy-http -oyaml
     apiVersion: system.kdoctor.io/v1beta1
     kind: KdoctorReport
     metadata:
       creationTimestamp: null
-      name: http
+      name: apphttphealthy-http
     spec:
       FailedRoundNumber: null
       FinishedRoundNumber: 1
