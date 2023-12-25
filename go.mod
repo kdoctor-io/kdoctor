@@ -13,7 +13,7 @@ require (
 	github.com/pyroscope-io/client v0.7.1
 	github.com/robfig/cron v1.2.0
 	github.com/sasha-s/go-deadlock v0.3.1
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.1
 	github.com/spidernet-io/e2eframework v0.0.0-20230403061847-445757b963b3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.35.0 // indirect
