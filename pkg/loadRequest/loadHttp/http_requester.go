@@ -177,17 +177,12 @@ func (b *Work) Run() {
 		requestRound := 0
 
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
-		ticker := time.NewTicker(time.Second)
+		ticker := time.NewTicker(time.Duration(1e9/(b.QPS)) * time.Nanosecond)
 		defer ticker.Stop()
 
-		// The request should be sent immediately at 0 seconds
-		for i := 0; i < b.QPS; i++ {
-			b.qosTokenBucket <- struct{}{}
-		}
-		requestRound++
-		b.Logger.Sugar().Debugf("send token %d times", requestRound)
+		b.qosTokenBucket <- struct{}{}
 
-		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
+		requestRound++
 		for {
 			select {
 			case <-c:
@@ -197,19 +192,16 @@ func (b *Work) Run() {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
 					b.report.existsNotSendRequests = true
 				}
+				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 				b.Stop()
 				return
 			case <-ticker.C:
-				if requestRound >= b.RequestTimeSecond {
+				if requestRound >= b.RequestTimeSecond*b.QPS {
 					b.Logger.Sugar().Debugf("All request tokens have been sent and will not be sent again.")
 					continue
 				}
-				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
-				for i := 0; i < b.QPS; i++ {
-					b.qosTokenBucket <- struct{}{}
-				}
+				b.qosTokenBucket <- struct{}{}
 				requestRound++
-				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 			}
 		}
 	}()

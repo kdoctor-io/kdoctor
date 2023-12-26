@@ -26,6 +26,7 @@ package loadDns
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -87,6 +88,7 @@ func (b *Work) Init() {
 		client := new(dns.Client)
 		client.Net = b.Protocol
 		client.Timeout = time.Duration(b.Timeout) * time.Millisecond
+		client.Dialer = &net.Dialer{Timeout: time.Duration(b.RequestTimeSecond) * time.Second}
 		if RequestProtocol(b.Protocol) == RequestMethodTcpTls {
 			tlsConfig := &tls.Config{
 				InsecureSkipVerify: true,
@@ -94,9 +96,12 @@ func (b *Work) Init() {
 			client.TLSConfig = tlsConfig
 		}
 		b.client = client
-		err := b.InitPool()
-		if err != nil {
-			b.Logger.Sugar().Fatalf("init connect pool failed err=%v", err)
+
+		if RequestProtocol(b.Protocol) == RequestMethodUdp {
+			err := b.InitPool()
+			if err != nil {
+				b.Logger.Sugar().Fatalf("init connect pool failed err=%v", err)
+			}
 		}
 	})
 }
@@ -118,16 +123,11 @@ func (b *Work) Run() {
 		requestRound := 0
 
 		c := time.After(time.Duration(b.RequestTimeSecond) * time.Second)
-		ticker := time.NewTicker(time.Second)
+		ticker := time.NewTicker(time.Duration(1e9/(b.QPS)) * time.Nanosecond)
 		defer ticker.Stop()
 		// The request should be sent immediately at 0 seconds
-		for i := 0; i < b.QPS; i++ {
-			b.qosTokenBucket <- struct{}{}
-		}
+		b.qosTokenBucket <- struct{}{}
 		requestRound++
-		b.Logger.Sugar().Debugf("send token %d times", requestRound)
-
-		b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
 		for {
 			select {
 			case <-c:
@@ -137,19 +137,16 @@ func (b *Work) Run() {
 					b.Logger.Sugar().Errorf("request finish remaining number of tokens len: %d", len(b.qosTokenBucket))
 					b.report.existsNotSendRequests = true
 				}
+				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 				b.Stop()
 				return
 			case <-ticker.C:
-				if requestRound >= b.RequestTimeSecond {
+				if requestRound >= b.QPS*b.RequestTimeSecond {
 					b.Logger.Sugar().Debugf("All request tokens have been sent and will not be sent again.")
 					continue
 				}
-				b.Logger.Sugar().Debugf("request token channel len: %d", len(b.qosTokenBucket))
-				for i := 0; i < b.QPS; i++ {
-					b.qosTokenBucket <- struct{}{}
-				}
+				b.qosTokenBucket <- struct{}{}
 				requestRound++
-				b.Logger.Sugar().Debugf("send token %d times", requestRound)
 			}
 		}
 	}()
@@ -172,19 +169,33 @@ func (b *Work) Finish() {
 
 func (b *Work) makeRequest(wg *sync.WaitGroup) {
 	defer wg.Done()
+
+	var r *dns.Msg
+	var rtt time.Duration
+	var err error
+
 	msg := new(dns.Msg)
 	*msg = *b.Msg
 	msg.Id = dns.Id()
 
-	conn, err := b.pool.Get()
-	if err != nil {
-		b.Logger.Sugar().Errorf("failed get connect err=%v,token requeue", err)
-		b.qosTokenBucket <- struct{}{}
-		return
+	if RequestProtocol(b.Protocol) == RequestMethodUdp {
+		var conn net.Conn
+		conn, err = b.pool.Get()
+		if err != nil {
+			b.Logger.Sugar().Errorf("failed get connect err=%v,token requeue", err)
+			b.qosTokenBucket <- struct{}{}
+			return
+		} else {
+			defer conn.Close()
+		}
+		r, rtt, err = b.client.ExchangeWithConn(msg, conn.(*connexus.Connex).Conn.(*dns.Conn))
 	} else {
-		defer conn.Close()
+		r, rtt, err = b.client.Exchange(msg, b.ServerAddr)
 	}
-	r, rtt, err := b.client.ExchangeWithConn(msg, conn.(*connexus.Connex).Conn.(*dns.Conn))
+
+	if rtt > time.Duration(b.Timeout)*time.Millisecond {
+		err = fmt.Errorf("request duration is %d,more than timeout %d", rtt.Milliseconds(), b.Timeout)
+	}
 	b.results <- &result{
 		duration: rtt,
 		err:      err,
@@ -199,7 +210,9 @@ func (b *Work) runWorker() {
 		select {
 		case <-b.stopCh:
 			wg.Wait()
-			b.pool.Close()
+			if RequestProtocol(b.Protocol) == RequestMethodUdp {
+				b.pool.Close()
+			}
 			return
 		case <-b.qosTokenBucket:
 			wg.Add(1)
@@ -260,7 +273,7 @@ func (b *Work) InitPool() error {
 	var err error
 	cfg := connexus.PoolConfig{
 		Cap:        b.QPS,
-		MaxIdleCap: b.QPS * 2,
+		MaxIdleCap: b.QPS,
 		Factory: func() (net.Conn, error) {
 			return b.client.Dial(b.ServerAddr)
 		},
