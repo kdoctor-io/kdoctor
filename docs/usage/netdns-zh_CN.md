@@ -2,7 +2,7 @@
 
 [**English**](./netdns.md) | **简体中文**
 
-## 介绍 
+## 介绍
 
 对于这种任务， kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源 ，每一个 agent Pod 都会向指定的 DNS server 发送 DNS 请求，默认并发量为 50 可覆盖多副本情况，并发量可在 kdoctor 的 configmap 中设置，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。
 
@@ -24,7 +24,7 @@
 
 接下来将展示 `NetDNS` 的使用示例
 
-### 安装 kdoctor 
+### 安装 kdoctor
 
 参照[安装教程](./install-zh_CN.md)安装 kdoctor
 
@@ -39,6 +39,7 @@ helm install server kdoctor/server -n kdoctor-test-server --wait --debug --creat
 ```
 
 查看测试 server 状态
+
 ```shell
 kubectl get pod -n kdoctor -owide
 NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
@@ -47,6 +48,7 @@ server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoct
 ```
 
 获取测试 server 的 service 地址
+
 ```shell
 kubectl get service -n kdoctor 
 NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
@@ -113,7 +115,7 @@ netdns-cluster   true     1               1           succeed           0 1
 
 2. 查看具体任务报告
 
-    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成。
+    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成，报告名称由`${TaskKind}-${TaskName}`组成
 
     ```shell
     root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml

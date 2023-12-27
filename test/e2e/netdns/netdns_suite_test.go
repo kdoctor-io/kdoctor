@@ -19,7 +19,7 @@ import (
 
 func TestNetReach(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "NetReach Suite")
+	RunSpecs(t, "NetDns Suite")
 }
 
 var (

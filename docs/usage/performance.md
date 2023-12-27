@@ -1,87 +1,80 @@
 
+# Kdoctor Performance
+
 ## Environment
 
-- Kubenetes: `v1.25.4`
-- Container runtime: `containerd 1.6.12`
-- OS: `CentOS Linux 8`
-- Kernel: `4.18.0-348.7.1.el8_5.x86_64`
+- Kubenetes: `v1.28.2`
+- Container runtime: `containerd 1.6.25`
+- OS: `Ubuntu 23.04`
+- Kernel: `6.2.0-36-generic.x86_64`
+- CPU: `Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz`
 
-| Node     | Role          | CPU  | Memory |
-| -------- | ------------- | ---- | ------ |
-| master1  | control-plane | 4C   | 8Gi    |
-| master2  | control-plane | 4C   | 8Gi    |
-| master3  | control-plane | 4C   | 8Gi    |
-| worker4  |               | 3C   | 8Gi    |
-| worker5  |               | 3C   | 8Gi    |
-| worker6  |               | 3C   | 8Gi    |
-| worker7  |               | 3C   | 8Gi    |
-| worker8  |               | 3C   | 8Gi    |
-| worker9  |               | 3C   | 8Gi    |
-| worker10 |               | 3C   | 8Gi    |
+| Node    | Role          | CPU | Memory |
+|---------| ------------- |-----|--------|
+| master1 | control-plane | 56C | 128Gi  |
+| worker1 |               | 56C | 128Gi  |
 
 ## Nethttp
 
-The test is conducted in a pod with a CPU of 1 core.
-
-The test server is a server that sleeps for one second and then returns.
+The following resource use cases for the kdcotor agent and other pressure testing tools, 
+including memory and cpu overhead, can be used as a reference for direct deployment
 
 ### Http1.1
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|---------|--------|
-| kdoctor | 0.5m | 89660    | 2988.67 | 210Mb  |
-| ab      | 0.5m | 76700    | 2599.31 | 60Mb   |
-| wrk     | 0.5m | 86105    | 2867.67 | 50Mb   |
-| hey     | 0.5m | 58423    | 1947.42 | 210Mb  |
+| Client  | Time | CPU | QPS  | Memory |
+|---------|------|-----|------|--------|
+| kdoctor | 1m   | 1C  | 7570 | 50Mb   |
+| ab      | 1m   | 1C  | 9045 | 15Mb   |
+| wrk     | 1m   | 1C  | 8920 | 10Mb   |
+| hey     | 1m   | 1C  | 4637 | 115Mb  |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|---------|--------|
-| kdoctor | 1m   | 179634   | 2993.9  | 210Mb  |
-| ab      | 1m   | 153875   | 2564.59 | 60Mb   |
-| wrk     | 1m   | 176966   | 2945.69 | 50Mb   |
-| hey     | 1m   | 118452   | 1974.2  | 220Mb  |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 2C  | 18888 | 55Mb   |
+| ab      | 1m   | 2C  | 21031 | 20Mb   |
+| wrk     | 1m   | 2C  | 20860 | 20Mb   |
+| hey     | 1m   | 2C  | 10774 | 140Mb  |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|---------|--------|
-| kdoctor | 5m   | 897979   | 2993.26 | 210Mb  |
-| ab      | 5m   | 763983   | 2546.61 | 60Mb   |
-| wrk     | 5m   | 895324   | 2983.71 | 50Mb   |
-| hey     | 5m   | 596077   | 1986.92 | 270Mb  |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 3C  | 28879 | 60Mb   |
+| ab      | 1m   | 3C  | 35310 | 30Mb   |
+| wrk     | 1m   | 3C  | 34445 | 28Mb   |
+| hey     | 1m   | 3C  | 17174 | 167Mb  |
 
 
 ### Http2
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|---------|--------|
-| kdoctor | 0.5m | 238787   | 7959.57 | 350Mb  |
-| hey     | 0.5m | 7213     | 240.44  | 110Mb  |
+| Client  | Time | CPU | QPS  | Memory |
+|---------|------|-----|------|--------|
+| kdoctor | 1m   | 1C  | 9733 | 77Mb   |
+| hey     | 1m   | 1C  | 6100 | 140Mb  |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|----------|--------|
-| kdoctor | 1m   | 481070   | 8017.83  | 370Mb  |
-| hey     | 1m   | 14665    | 244.42   | 120Mb  |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 2C  | 20943 | 78Mb   |
+| hey     | 1m   | 2C  | 12600 | 167Mb  |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|----------|--------|
-| kdoctor | 5m   | 2419874  | 8066.25  | 390Mb  |
-| hey     | 5m   | 74776    | 249.25   | 130Mb  |
-
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 3C  | 31524 | 79Mb   |
+| hey     | 1m   | 3C  | 15300 | 230Mb  |
 
 ## Netdns
 
-The test is conducted in a Pod with a CPU of 1 core.
+Use two replicas of coredns as the test server.
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|----------|--------|
-| kdoctor | 1m   | 1855511  | 30925.18 | 23Mb   |
-| dnsperf | 1m   | 1728086  | 28800.40 | 8Mb    |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 1C  | 10064 | 82Mb   |
+| dnsperf | 1m   | 1C  | 16800 | 5Mb    |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|----------|----------|--------|
-| kdoctor | 5m   | 9171699  | 30572.33 | 100Mb  |
-| dnsperf | 5m   | 8811137  | 29370.34 | 8Mb    |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 2C  | 21137 | 91Mb   |
+| dnsperf | 1m   | 2C  | 28769 | 8Mb    |
 
-| Client  | Time | Requests | QPS     | Memory |
-|---------|------|-----------|----------|--------|
-| kdoctor | 10m  | 18561282  | 30935.47 | 173Mb  |
-| dnsperf | 10m  | 17260779  | 28767.66 | 8Mb    |
+| Client  | Time | CPU | QPS   | Memory |
+|---------|------|-----|-------|--------|
+| kdoctor | 1m   | 3C  | 29987 | 103Mb  |
+| dnsperf | 1m   | 3C  | 35800 | 9Mb    |

@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
-	config "github.com/kdoctor-io/kdoctor/pkg/types"
 	"net"
 	"strconv"
 	"sync"
@@ -96,13 +95,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 
 	logger.Sugar().Infof("plugin implement task round, instance=%+v", instance)
 
-	var workers int
-	if instance.Spec.Request.QPS > config.AgentConfig.Configmap.NetDnsMaxConcurrency {
-		workers = config.AgentConfig.Configmap.NetDnsMaxConcurrency
-	} else {
-		workers = instance.Spec.Request.QPS
-	}
-
 	var testTargetList []*testTarget
 	var server string
 
@@ -118,7 +110,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				DnsServerAddr:         server,
 				PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 				Qps:                   instance.Spec.Request.QPS,
-				Workers:               workers,
 				DurationInSecond:      instance.Spec.Request.DurationInSecond,
 				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
@@ -130,7 +121,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 				DnsServerAddr:         server,
 				PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 				Qps:                   instance.Spec.Request.QPS,
-				Workers:               workers,
 				DurationInSecond:      instance.Spec.Request.DurationInSecond,
 				EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 			}})
@@ -156,7 +146,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
-						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -168,7 +157,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
-						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -190,7 +178,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
-						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -202,7 +189,6 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 						DnsServerAddr:         server,
 						PerRequestTimeoutInMs: instance.Spec.Request.PerRequestTimeoutInMS,
 						Qps:                   instance.Spec.Request.QPS,
-						Workers:               workers,
 						DurationInSecond:      instance.Spec.Request.DurationInSecond,
 						EnableLatencyMetric:   instance.Spec.Target.EnableLatencyMetric,
 					}})
@@ -252,18 +238,12 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	return finalfailureReason, task, err
 }
 
-func (s *PluginNetDns) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
-	netdnsSpec, ok := crdSpec.(*crd.NetdnsSpec)
-	if !ok {
-		return fmt.Errorf("the given crd spec %#v doesn't match NetdnsSpec", crdSpec)
-	}
-
+func (s *PluginNetDns) SetReportWithTask(report *v1beta1.Report, task types.Task) error {
 	netDNSTask, ok := task.(*v1beta1.NetDNSTask)
 	if !ok {
 		return fmt.Errorf("task type %v doesn't match NetDNSTask", task.KindTask())
 	}
 
-	report.NetDNSTaskSpec = netdnsSpec
-	report.NetDNSTask = netDNSTask
+	report.TaskNetDNS = netDNSTask
 	return nil
 }

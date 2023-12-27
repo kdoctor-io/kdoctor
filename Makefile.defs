@@ -214,4 +214,4 @@ NGINX_CHART_NAME = ingress-nginx
 
 E2E_HELM_HTTP_PROXY ?=
 
-E2E_TEST_SERVER_NAME ?= server
+E2E_TEST_SERVER_NAME ?= kdoctor-test-server

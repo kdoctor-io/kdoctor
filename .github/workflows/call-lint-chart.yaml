@@ -65,7 +65,7 @@ jobs:
       # https://github.com/actions/setup-python
       - name: Set up Python
         if: ${{ env.RUN_JUST_LINT_CHART == 'false' }}
-        uses: actions/setup-python@v4.7.0
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: 3.8
           architecture: x64
@@ -74,7 +74,7 @@ jobs:
       # Pre-requisites: A GitHub repo containing a directory with your Helm charts (e.g: charts)
       - name: Set up chart-testing
         if: ${{ env.RUN_JUST_LINT_CHART == 'false' }}
-        uses: helm/chart-testing-action@v2.3.1
+        uses: helm/chart-testing-action@v2.6.1
 
       - name: Run chart-testing (list-changed)
         if: ${{ env.RUN_JUST_LINT_CHART == 'false' }}

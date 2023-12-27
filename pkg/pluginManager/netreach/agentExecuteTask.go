@@ -334,18 +334,13 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 
 }
 
-func (s *PluginNetReach) SetReportWithTask(report *v1beta1.Report, crdSpec interface{}, task types.Task) error {
-	NetReachSpec, ok := crdSpec.(*crd.NetReachSpec)
-	if !ok {
-		return fmt.Errorf("the given crd spec %#v doesn't match NetReachSpec", crdSpec)
-	}
+func (s *PluginNetReach) SetReportWithTask(report *v1beta1.Report, task types.Task) error {
 
 	NetReachTask, ok := task.(*v1beta1.NetReachTask)
 	if !ok {
 		return fmt.Errorf("task type %v doesn't match NetReachTask", task.KindTask())
 	}
-	report.NetReachTaskSpec = NetReachSpec
-	report.NetReachTask = NetReachTask
+	report.TaskNetReach = NetReachTask
 	return nil
 }
 

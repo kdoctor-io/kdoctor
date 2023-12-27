@@ -2,7 +2,7 @@
 
 [**English**](./netreach.md) | **简体中文**
 
-## 介绍 
+## 介绍
 
 对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 [agent](../concepts/runtime-zh_CN.md) 等资源，每一个 agent Pod 都会以一定的压力相互发送http 请求，请求地址为每一个 agent 的 Pod ip 、service ip、ingress ip 等等，并获得成功率和平均延迟。根据成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。
 
@@ -23,11 +23,11 @@
 
 接下来将展示 `NetReach` 的使用示例
 
-### 安装 kdoctor 
+### 安装 kdoctor
 
 参照[安装教程](./install-zh_CN.md)安装 kdoctor
 
-### 创建 NetReach 
+### 创建 NetReach
 
 创建 `NetReach` ，该任务将执行一轮持续 10s 的任务，每个节点的 agent 会相互使用 http 协议访问 ClusterIP、Endpoint、Ingress、NodePort、LoadBalancer 的 IPv4 地址，并立即执行。
 
@@ -88,15 +88,15 @@ task   true     1               1           succeed           0 1
 
 2. 查看具体任务报告
 
-    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮互相发压后，将 agent 报告聚合而成。
+    节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮互相发压后，将 agent 报告聚合而成，报告名称由`${TaskKind}-${TaskName}`组成。
 
     ```shell
-    root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
+    root@kdoctor-control-plane:/# kubectl get kdoctorreport neteach-task -oyaml
     apiVersion: system.kdoctor.io/v1beta1
     kind: KdoctorReport
     metadata:
       creationTimestamp: null
-      name: task
+      name: neteach-task
     spec:
       FailedRoundNumber: null
       FinishedRoundNumber: 1

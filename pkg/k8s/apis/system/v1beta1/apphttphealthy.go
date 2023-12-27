@@ -10,40 +10,40 @@ import (
 const AppHttpHealthyTaskName = "AppHttpHealthy"
 
 type AppHttpHealthyTask struct {
-	TargetType       string                     `json:"TargetType"`
-	TargetNumber     int64                      `json:"TargetNumber"`
-	FailureReason    *string                    `json:"FailureReason,omitempty"`
-	Succeed          bool                       `json:"Succeed"`
-	SystemResource   SystemResource             `json:"SystemResource"`
-	TotalRunningLoad TotalRunningLoad           `json:"TotalRunningLoad"`
-	Detail           []AppHttpHealthyTaskDetail `json:"Detail"`
+	TargetType       string                     `json:"targetType"`
+	TargetNumber     int64                      `json:"targetNumber"`
+	FailureReason    *string                    `json:"reasonsForFailure,omitempty"`
+	Succeed          bool                       `json:"roundSucceed"`
+	SystemResource   SystemResource             `json:"systemResource"`
+	TotalRunningLoad TotalRunningLoad           `json:"runningLoadTotal"`
+	Detail           []AppHttpHealthyTaskDetail `json:"roundTaskDetail"`
 }
 
 type AppHttpHealthyTaskDetail struct {
-	TargetName    string      `json:"TargetName"`
-	TargetUrl     string      `json:"TargetUrl"`
-	TargetMethod  string      `json:"TargetMethod"`
-	Succeed       bool        `json:"Succeed"`
-	MeanDelay     float32     `json:"MeanDelay"`
-	SucceedRate   float64     `json:"SucceedRate"`
-	FailureReason *string     `json:"FailureReason,omitempty"`
-	Metrics       HttpMetrics `json:"Metrics"`
+	TargetName    string      `json:"name"`
+	TargetUrl     string      `json:"url"`
+	TargetMethod  string      `json:"method"`
+	Succeed       bool        `json:"requestSucceed"`
+	MeanDelay     float32     `json:"requestMeanDelay"`
+	SucceedRate   float64     `json:"requestSucceedRate"`
+	FailureReason *string     `json:"reasonsForFailure,omitempty"`
+	Metrics       HttpMetrics `json:"requestTargetMetrics"`
 }
 
 type HttpMetrics struct {
-	StartTime             metav1.Time         `json:"StartTime"`
-	EndTime               metav1.Time         `json:"EndTime"`
-	Duration              string              `json:"Duration"`
-	RequestCounts         int64               `json:"RequestCounts"`
-	SuccessCounts         int64               `json:"SuccessCounts"`
-	TPS                   float64             `json:"TPS"`
-	Errors                map[string]int      `json:"Errors"`
-	Latencies             LatencyDistribution `json:"Latencies"`
-	ExistsNotSendRequests bool                `json:"ExistsNotSendRequests"`
+	StartTime             metav1.Time         `json:"requestStartTime"`
+	EndTime               metav1.Time         `json:"requestEndTime"`
+	Duration              string              `json:"requestDuration"`
+	RequestCounts         int64               `json:"requestCounts"`
+	SuccessCounts         int64               `json:"successCounts"`
+	TPS                   float64             `json:"tps"`
+	Errors                map[string]int      `json:"errors"`
+	Latencies             LatencyDistribution `json:"latencies"`
+	ExistsNotSendRequests bool                `json:"existsNotSendRequests"`
 
 	// request data size
-	TotalDataSize string      `json:"TotalDataSize"`
-	StatusCodes   map[int]int `json:"StatusCodes"`
+	TotalDataSize string      `json:"totalDataSize"`
+	StatusCodes   map[int]int `json:"statusCodes"`
 }
 
 func (h *AppHttpHealthyTask) KindTask() string {

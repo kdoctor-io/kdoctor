@@ -24,7 +24,7 @@ kdoctor-controller creates the necessary resources, including [agent](../concept
 
 The following example demonstrates how to use `NetDNS`.
 
-### Install kdoctor 
+### Install kdoctor
 
 Follow the [installation guide](./install.md) to install kdoctor.
 
@@ -64,7 +64,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: kdoctor.io/v1beta1
 kind: Netdns
 metadata:
-  name: netdns-cluster
+  name: cluster
 spec:
   expect:
     meanAccessDelayInMs: 1500
@@ -94,7 +94,7 @@ After completing a round of tasks, you can use the kdoctor aggregate API to view
 ```shell
 kubectl get netdns
 NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-netdns-cluster   true     1               1           succeed           0 1
+cluster           true     1               1           succeed           0 1
 ```
 
 * FINISH: indicate whether the task has been completed
@@ -115,7 +115,7 @@ netdns-cluster   true     1               1           succeed           0 1
 
 2. View specific task reports
 
-    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.
+    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively,Report name consists of `${TaskKind}-${TaskName}`
 
     ```shell
     root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
@@ -136,7 +136,7 @@ netdns-cluster   true     1               1           succeed           0 1
         RoundResult: succeed
         StartTimeStamp: "2023-08-01T09:09:39Z"
         EndTimeStamp: "2023-08-01T09:09:50Z"
-        TaskName: netdns.netdns-cluster
+        TaskName: netdns.cluster
         TaskType: Netdns
         netDNSTask:
           detail:
@@ -184,7 +184,7 @@ netdns-cluster   true     1               1           succeed           0 1
         RoundResult: succeed
         StartTimeStamp: "2023-08-01T09:09:39Z"
         EndTimeStamp: "2023-08-01T09:09:49Z"
-        TaskName: netdns.netdns-cluster
+        TaskName: netdns.cluster
         TaskType: Netdns
         netDNSTask:
           detail:
@@ -207,7 +207,7 @@ netdns-cluster   true     1               1           succeed           0 1
       ReportRoundNumber: 1
       RoundNumber: 1
       Status: Finished
-      TaskName: netdns-cluster
+      TaskName: cluster
       TaskType: Netdns
     ```
 
@@ -228,7 +228,7 @@ Below are examples of HTTP and HTTPS requests with body:
     apiVersion: kdoctor.io/v1beta1
     kind: Netdns
     metadata:
-      name: netdns- user
+      name: user
     spec:
       expect:
         meanAccessDelayInMs: 1500
@@ -253,5 +253,5 @@ Below are examples of HTTP and HTTPS requests with body:
 ## Environment Cleanup
 
 ```shell
-kubectl delete netdns netdns-cluster netdns- user
+kubectl delete netdns cluster user
 ```

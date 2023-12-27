@@ -1,105 +1,122 @@
-#aap name
-appName: server
+## @param appName the kdoctor-test-server name
+appName: kdoctor-test-server
 
-# Deployment or DaemonSet
+## @param workerLoad of kdoctor-test-server, Optional Deployment and daemonSet
 appKind: Deployment
 
+## @param deploymentReplicas the replicas number of kdoctor-test-server pod, when appKind is Deployment
 deploymentReplicas: 2
 
+## @param commonLabels Labels to add to all deployed objects
 commonLabels: {}
-#  label1: v1
-#  labele: v2
 
+## @param podLabels the additional label of kdoctor-test-server pod
 podLabels: {}
 
+## @param commonAnnotations Annotations to add to kdoctor-test-server
 commonAnnotations: {}
 
+## @param podAnnotations the additional annotations of kdoctor-test-server  pod
 podAnnotations: {}
 
 image:
-  ## @param kdoctorAgent.image.registry the image registry of kdoctorAgent
+  ## @param kdoctor-test-server.image.registry the image registry of kdoctor-test-server
   registry: ghcr.io
 
-  ## @param kdoctorAgent.image.repository the image repository of kdoctorAgent
+  ## @param kdoctor-test-server.image.repository the image repository of kdoctor-test-server
   repository: kdoctor-io/kdoctor-agent
 
-  ## @param kdoctorAgent.image.pullPolicy the image pullPolicy of kdoctorAgent
+  ## @param kdoctor-test-server.image.pullPolicy the image pullPolicy of kdoctor-test-server
   pullPolicy: IfNotPresent
 
-  ## @param kdoctorAgent.image.digest the image digest of kdoctorAgent, which takes preference over tag
+  ## @param kdoctor-test-server.image.digest the image digest of kdoctor-test-server, which takes preference over tag
   digest: ""
 
-  ## @param kdoctorAgent.image.tag the image tag of kdoctorAgent, overrides the image tag whose default is the chart appVersion.
+  ## @param kdoctor-test-server.image.tag the image tag of kdoctor-test-server, overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-  ## @param kdoctorAgent.image.imagePullSecrets the image imagePullSecrets of kdoctorAgent
+  ## @param kdoctor-test-server.image.imagePullSecrets the image imagePullSecrets of kdoctor-test-server
   imagePullSecrets: []
-  # - name: "image-pull-secret"
 
+## @param hostNetwork enable hostnetwork mode of kdoctor-test-server pod. Notice, if no CNI available before template installation, must enable this
 hostNetwork: false
 
+## @skip tolerations
 tolerations: {}
 
+## @param affinity the affinity of  kdoctor-test-server
 affinity: {}
 
+## @skip nodeSelector.kubernetes.io/os
 nodeSelector:
   kubernetes.io/os: linux
 
+## @skip updateStrategy.rollingUpdate.maxUnavailable
+## @skip updateStrategy.type
 updateStrategy:
   rollingUpdate:
     maxUnavailable: 2
   type: RollingUpdate
 
 http:
-  ## @param kdoctorAgent.httpServer.healthPort the http Port for kdoctorAgent, for health checking
+  ## @param http.healthPort the http Port for kdoctor-test-server, for health checking
   healthPort: 5710
-  ## @param kdoctorAgent.httpServer.appPort the http Port for kdoctorAgent, testing connect
+  ## @param http.appPort the http Port for kdoctor-test-server, testing connect
   appHttpPort: 80
-  ## @param kdoctorAgent.httpServer.appPort the https Port for kdoctorAgent, testing connect
+  ## @param http.appHttpsPort the https Port for kdoctor-test-server, testing connect
   appHttpsPort: 443
-
+  ## @param http.tlsIgnoreClientCert Port for kdoctor-test-server, Ignore certificate validation
   tlsIgnoreClientCert: true
 
   startupProbe:
-    ## @param kdoctorAgent.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    ## @param http.startupProbe.failureThreshold the failure threshold of startup probe for kdoctor-test-server health checking
     failureThreshold: 60
-    ## @param kdoctorAgent.httpServer.startupProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    ## @param http.startupProbe.periodSeconds the period seconds of startup probe for kdoctor-test-server health checking
     periodSeconds: 2
 
   livenessProbe:
-    ## @param kdoctorAgent.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    ## @param http.livenessProbe.failureThreshold the failure threshold of startup probe for kdoctor-test-server health checking
     failureThreshold: 6
-    ## @param kdoctorAgent.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    ## @param http.livenessProbe.periodSeconds the period seconds of startup probe for kdoctor-test-server health checking
     periodSeconds: 10
 
   readinessProbe:
-    ## @param kdoctorAgent.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for kdoctorAgent health checking
+    ## @param http.readinessProbe.failureThreshold the failure threshold of startup probe for kdoctor-test-server health checking
     failureThreshold: 3
-    ## @param kdoctorAgent.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for kdoctorAgent health checking
+    ## @param http.readinessProbe.periodSeconds the period seconds of startup probe for kdoctor-test-server health checking
     periodSeconds: 10
 
 dns:
-  ## @param kdoctorAgent.DnsServer.appDnsUdpPort the dns udp Port for kdoctorAgent, testing connect
+  ## @param dns.appDnsUdpPort the dns udp Port for kdoctor-test-server, testing connect
   appDnsUdpPort: 53
-  ## @param kdoctorAgent.DnsServer.appDnsTcpPort the dns tcp Port for kdoctorAgent, testing connect
+  ## @param dns.appDnsTcpPort the dns tcp Port for kdoctor-test-server, testing connect
   appDnsTcpPort: 53
-  ## @param kdoctorAgent.DnsServer.appDnsTcpTlsPort the dns tcp-tls Port for kdoctorAgent, testing connect
+  ## @param dns.appDnsTcpTlsPort the dns tcp-tls Port for kdoctor-test-server, testing connect
   appDnsTcpTlsPort: 853
+  ## @param dns.coreDNSServiceLabelKey  for kdoctor-test-server, The key for the coredns service label in the cluster
+  coreDNSServiceLabelKey: "kubernetes.io/name"
+  ## @param dns.coreDNSServiceLabelValue for kdoctor-test-server, The value for the coredns service label in the cluster
+  coreDNSServiceLabelValue: "CoreDNS"
 
 grpcServer:
-  ## @param kdoctorAgent.grpcServer.port the Port for grpc server
+  ## @param grpcServer.port the Port for grpc server
   port: 3000
 
-resources:
-  #limits:
-  #  cpu: 500m
-  #  memory: 1024Mi
-  #requests:
-  #  cpu: 100m
-  #  memory: 128Mi
 
+resources:
+  ## @param resources.limits.cpu the cpu limit of kdoctor-test-server pod
+  ## @param resources.limits.memory the memory limit of kdoctor-test-server pod
+  limits:
+    cpu: 500m
+    memory: 1024Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+## @param extraEnv the additional environment variables of kdoctor-test-server container
 extraEnv: []
 
+## @param securityContext the security Context of kdoctor-test-server pod
 securityContext: {}
 
 tls:
@@ -117,12 +134,16 @@ tls:
     ## @param tls.client.secretName the secret name for storing TLS certificates
     secretName: "https-client-cert"
 service:
-  ## @param kdoctorAgent.service.type the type for kdoctorAgent service
+  ## @param service.type the type for kdoctor-test-server service
   type: ClusterIP
   #type: LoadBalancer
 
 ingress:
-  enable: true
+  ## @param ingress.enable install ingress
+  enable: false
+  ## @param ingress.ingressClass ingress host
   host: "kdoctor.io"
+  ## @param ingress.ingressClass ingress class name
   ingressClass:
-  targetPath: "/"
+  ## @param ingress.targetPath the route of ingress. Default to "/kdoctoragent", if it changes, ingress please re-write url forwarded to "/kdoctoragent"
+  targetPath: "/kdoctoragent"

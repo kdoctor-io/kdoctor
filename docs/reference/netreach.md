@@ -2,7 +2,7 @@
 
 [**简体中文**](./netreach-zh_CN.md) | **English**
 
-## Basic description 
+## Basic description
 
 For this kind of task, kdoctor-controller will generate corresponding [agent](../concepts/runtime.md) and other resources. Each agent Pod sends http requests to each other with the request address of each agent's Pod IP, service IP, ingress IP and so on, and obtains the success rate and average latency. It can specify the success condition to determine whether the result is successful or not. Detailed reports can be obtained through the aggregation API.
 
@@ -60,7 +60,7 @@ status:
   lastRoundStatus: fail
 ```
 
-##  NetReach Definition
+## NetReach Definition
 
 ### Metadata
 
@@ -78,7 +78,6 @@ status:
 |Target    | Request Target Settings | [target](./apphttphealthy.md#target) | Optional |       |      |
 |Expect    |Task Success Condition Judgment | [expect](./apphttphealthy.md#expect) | Optional |       |      |
 
-
 #### AgentSpec
 
 | Fields | Description | Structure | Validation | Values | Default |
@@ -92,12 +91,11 @@ status:
 | Resources | Agent Workload Resource Usage Configuration | Resources | Optional | | Limit cpu: 1000m,Memory:1024Mi |
 | terminationGracePeriodMinutes | the minutes after a agent workload completes a task before it terminates | int | Optional |Greater than or equal to 0 | 60 |
 
-
 #### Schedule
 
 | Fields | Description | Structure | Validation | Values | Defaults |
 |--------------------|---------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| roundNumber        |Task Execution Rounds | int | Optional | A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed | 1 | Schedule | Task execution time which should be less than roundTimeoutMinute | String | Optional | Support linux crontab and interval method<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1 * * * * * means execute every minute <br/>Interval method: writing format "M N". M is a number that indicates how many minutes after the task is started; N is a number that indicates how many minutes between each round of tasks. For example, "0 1" means start the task immediately, 1min between each round of tasks. | "0 60" |
+| roundNumber        |Task Execution Rounds | int | Optional | A value greater than or equal to -1 indicates indefinite execution, with -1 representing permanent execution. A value greater than 0 represents the number of rounds to be executed | 1 | Schedule | Task execution time which should be less than roundTimeoutMinute | String | Optional | Support linux crontab and interval method<br/>[linux crontab](https://linuxhandbook.com/crontab/) : */1* ** ** means execute every minute <br/>Interval method: writing format "M N". M is a number that indicates how many minutes after the task is started; N is a number that indicates how many minutes between each round of tasks. For example, "0 1" means start the task immediately, 1min between each round of tasks. | "0 60" |
 | roundTimeoutMinute | Task timeout which needs to be greater than durationInSecond and task execution time | int | Optional | Greater than or equal to 1 | 60 |
 
 #### Request

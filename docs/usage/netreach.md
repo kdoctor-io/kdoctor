@@ -23,13 +23,13 @@ kdoctor-controller creates the necessary resources, including [agent](../concept
 
 The following example demonstrates how to use `NetReach`.
 
-### Install kdoctor 
+### Install kdoctor
 
 Follow the [installation guide](./install.md) to install kdoctor.
 
-### Create NetReach 
+### Create NetReach
 
-Create `NetReach` object that will execute a 10-second continuous task. Each agent on the nodes will use the HTTP protocol to access the IPv4 addresses of ClusterIP, Endpoint, Ingress, NodePort, and LoadBalancer immediately.
+Create `NetReach` object that will execute a 10-second continuous task. Each agent on the nodes will use the HTTP protocol to access the IPv4 addresses of ClusterIP, Endpoint, Ingress, NodePort, and LoadBalancer immediately,Report name consists of `${TaskKind}-${TaskName}`
 
 ```shell
 cat <<EOF | kubectl apply -f -
@@ -82,8 +82,8 @@ task   true     1               1           succeed           0 1
 
     ```shell
     kubectl get kdoctorreport
-    NAME   CREATED AT
-    task   0001-01-01T00:00:00Z
+    NAME           CREATED AT
+    neteach-task   0001-01-01T00:00:00Z
     ```
 
 2. View specific task reports
@@ -91,12 +91,12 @@ task   true     1               1           succeed           0 1
    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.
 
     ```shell
-    root@kdoctor-control-plane:/# kubectl get kdoctorreport task -oyaml
+    root@kdoctor-control-plane:/# kubectl get kdoctorreport neteach-task -oyaml
     apiVersion: system.kdoctor.io/v1beta1
     kind: KdoctorReport
     metadata:
       creationTimestamp: null
-      name: task
+      name: neteach-task
     spec:
       FailedRoundNumber: null
       FinishedRoundNumber: 1

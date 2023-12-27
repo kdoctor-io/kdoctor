@@ -176,7 +176,7 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 		return nil, fmt.Errorf("unmarshal plugin report failed,err : %v", err)
 	}
 
-	if len(*report.Spec.Report) != n {
+	if len(*report.Report.LatestRoundReport) != n {
 		return nil, fmt.Errorf("have agent not upload report")
 	}
 
@@ -189,14 +189,15 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 	var r *kdoctor_report.KdoctorReport
 	var err error
 	c := time.After(time.Second * 60)
-	r, err = GetPluginReportResult(f, name, n)
+	reportName := strings.ToLower(taskKind) + "-" + name
+	r, err = GetPluginReportResult(f, reportName, n)
 	for err != nil {
 		select {
 		case <-c:
 			return false, fmt.Errorf("get %s %s report time out,err: %v ", taskKind, name, err)
 		default:
 			time.Sleep(time.Second * 5)
-			r, err = GetPluginReportResult(f, name, n)
+			r, err = GetPluginReportResult(f, reportName, n)
 			break
 		}
 	}
@@ -243,8 +244,8 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 			return GetResultFromReport(r), fmt.Errorf("spec target IPv6 not equal input %v,output %v", *obj.Spec.Target.IPv6, *rs.Spec.Target.IPv6)
 		}
 
-		for _, v := range *r.Spec.Report {
-			for _, m := range v.NetReachTask.Detail {
+		for _, v := range *r.Report.LatestRoundReport {
+			for _, m := range v.TaskNetReach.Detail {
 				// qps
 				expectRequestCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realRequestCount := float64(m.Metrics.RequestCounts)
@@ -271,7 +272,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		}
 
 		// roundNumber
-		rounds := []int64{r.Spec.FinishedRoundNumber, r.Spec.ReportRoundNumber, r.Spec.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
+		rounds := []int64{r.Status.FinishedRoundNumber, r.Status.RoundNumber, r.Status.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
@@ -293,14 +294,14 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 			return GetResultFromReport(r), fmt.Errorf("failed get resource AppHttpHealthy %s", name)
 		}
 
-		if r.Spec.Report == nil {
+		if r.Report.LatestRoundReport == nil {
 			return false, fmt.Errorf("failed get resource AppHttpHealthy %s report", name)
 		}
 
 		var reportRequestCount int64
 		var realRequestCount int64
-		for _, v := range *r.Spec.Report {
-			for _, m := range v.HttpAppHealthyTask.Detail {
+		for _, v := range *r.Report.LatestRoundReport {
+			for _, m := range v.TaskAppHttpHealthy.Detail {
 				// qps
 				expectCount := float64(rs.Spec.Request.QPS * rs.Spec.Request.DurationInSecond)
 				realCount := float64(m.Metrics.RequestCounts)
@@ -342,7 +343,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		}
 
 		// roundNumber
-		rounds := []int64{r.Spec.FinishedRoundNumber, r.Spec.ReportRoundNumber, r.Spec.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
+		rounds := []int64{r.Status.FinishedRoundNumber, r.Status.RoundNumber, r.Status.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
@@ -364,14 +365,14 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 			return GetResultFromReport(r), fmt.Errorf("failed get resource AppHttpHealthy %s", name)
 		}
 
-		if r.Spec.Report == nil {
+		if r.Report.LatestRoundReport == nil {
 			return false, fmt.Errorf("failed get resource AppHttpHealthy %s report", name)
 		}
 
 		var reportRequestCount int64
 		var realRequestCount int64
-		for _, v := range *r.Spec.Report {
-			for _, m := range v.NetDNSTask.Detail {
+		for _, v := range *r.Report.LatestRoundReport {
+			for _, m := range v.TaskNetDNS.Detail {
 				// qps
 				expectCount := float64((rs.Spec.Request.QPS) * (rs.Spec.Request.DurationInSecond))
 				realCount := float64(m.Metrics.RequestCounts)
@@ -413,7 +414,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		}
 
 		// roundNumber
-		rounds := []int64{r.Spec.FinishedRoundNumber, r.Spec.ReportRoundNumber, r.Spec.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
+		rounds := []int64{r.Status.FinishedRoundNumber, r.Status.RoundNumber, r.Status.ToTalRoundNumber, rs.Spec.Schedule.RoundNumber}
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
@@ -429,15 +430,15 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 }
 
 func GetResultFromReport(r *kdoctor_report.KdoctorReport) bool {
-	for _, v := range *r.Spec.Report {
-		if v.NetReachTask != nil {
-			return v.NetReachTask.Succeed
+	for _, v := range *r.Report.LatestRoundReport {
+		if v.TaskNetReach != nil {
+			return v.TaskNetReach.Succeed
 		}
-		if v.HttpAppHealthyTask != nil {
-			return v.HttpAppHealthyTask.Succeed
+		if v.TaskAppHttpHealthy != nil {
+			return v.TaskAppHttpHealthy.Succeed
 		}
-		if v.NetDNSTask != nil {
-			return v.NetDNSTask.Succeed
+		if v.TaskNetDNS != nil {
+			return v.TaskNetDNS.Succeed
 		}
 	}
 	return true

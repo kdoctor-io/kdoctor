@@ -23,7 +23,7 @@ kdoctor-controller creates the necessary resources, including [agent](../concept
 
 The following example demonstrates how to use `AppHttpHealthy`.
 
-### Install kdoctor 
+### Install kdoctor
 
 Follow the [installation guide](./install.md) to install kdoctor.
 
@@ -38,6 +38,7 @@ helm install server kdoctor/server -n kdoctor --wait --debug --create-namespace
 ```
 
 Check the status of test server
+
 ```shell
 kubectl get pod -n kdoctor -owide
 NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
@@ -46,13 +47,14 @@ server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoct
 ```
 
 Obtain the service address of the test server
+
 ```shell
 kubectl get service -n kdoctor
 NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
 server   ClusterIP   172.41.71.0   <none>        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
 ```
 
-### Create AppHttpHealthy 
+### Create AppHttpHealthy
 
 Create an `AppHttpHealthy` task for HTTP that will run continuously for 10 seconds. The task will send GET requests to the specified server at a rate of 10 QPS and be executed immediately.
 
@@ -99,7 +101,6 @@ http        true     1               1           succeed           0 1
 * LASTROUNDSTATUS: execution status of the last round of tasks
 * SCHEDULE: schedule rules for the task
 
-
 ### View Task Reports
 
 1. View existed reports
@@ -112,15 +113,15 @@ http        true     1               1           succeed           0 1
 
 2. View specific task reports
 
-    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.
+    The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively,Report name consists of `${TaskKind}-${TaskName}`
 
     ```shell
-    kubectl get kdoctorreport http -oyaml
+    kubectl get kdoctorreport apphttphealthy-http -oyaml
     apiVersion: system.kdoctor.io/v1beta1
     kind: KdoctorReport
     metadata:
       creationTimestamp: null
-      name: http
+      name: apphttphealthy-http
     spec:
       FailedRoundNumber: null
       FinishedRoundNumber: 1
@@ -203,7 +204,7 @@ http        true     1               1           succeed           0 1
 
 > If the reports do not align with the expected results, check the MaxCPU and MaxMemory fields in the report to verify if there are available resources of the agents and adjust the resource limits for the agents accordingly.
 
-## Other Common Examples 
+## Other Common Examples
 
 Below are examples of HTTP requests with bodies and HTTPS requests:
 

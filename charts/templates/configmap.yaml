@@ -19,7 +19,6 @@ data:
     netHttpDefaultRequestQPS: {{ .Values.feature.netHttpDefaultRequestQPS }}
     netHttpDefaultRequestDurationInSecond: {{ .Values.feature.netHttpDefaultRequestDurationInSecond }}
     netHttpDefaultRequestPerRequestTimeoutInMS: {{ .Values.feature.netHttpDefaultRequestPerRequestTimeoutInMS }}
-    netDnsMaxConcurrency: {{ .Values.feature.netDnsMaxConcurrency }}
     netDnsRequestMaxQPS: {{ .Values.feature.netDnsRequestMaxQPS }}
     netReachRequestMaxQPS: {{ .Values.feature.netReachRequestMaxQPS }}
     appHttpHealthyRequestMaxQPS: {{ .Values.feature.appHttpHealthyRequestMaxQPS }}
