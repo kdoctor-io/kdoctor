@@ -145,8 +145,10 @@ jobs:
               echo "error, failed to find any chart "
               exit 1
           fi
-          chart_path=$( ls chart-package/kdoctor-*.tgz )
+          chart_path=$( ls chart-package/kdoctor-[0-9].[0-9].[0-9]*.tgz )
           echo "RUN_CHART_PATH=${chart_path}" >> $GITHUB_ENV
+          chart_app_path=$( ls chart-package/kdoctor-test-server-*.tgz )
+          echo "RUN_CHART_APP_PATH=${chart_app_path}" >> $GITHUB_ENV
           # ========== changelog
           if ! ls changelog-result/*.md &>/dev/null ; then
               echo "error, failed to find changelog "
