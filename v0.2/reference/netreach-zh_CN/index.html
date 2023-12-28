@@ -1144,56 +1144,56 @@
 <h2 id="_1">基本描述</h2>
 <p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent Pod 都会相互发送 http 请求，请求地址为每一个 agent 的 Pod IP、service IP、ingress IP 等等，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合API获取详细的报告。</p>
 <h2 id="netreach_1">NetReach 示例</h2>
-<pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
-kind: NetReach
-metadata:
-  name: netreach
-spec:
-  agentSpec:
-    hostNetwork: false
-    kind: DaemonSet
-    terminationGracePeriodMinutes: 60
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    clusterIP: true
-    enableLatencyMetric: false
-    endpoint: true
-    ingress: true
-    ipv4: true
-    ipv6: true
-    loadBalancer: true
-    multusInterface: false
-    nodePort: true
-status:
-  doneRound: 1
-  expectedRound: 1
-  finish: true
-  history:
-    - deadLineTimeStamp: &quot;2023-07-28T09:59:12Z&quot;
-      duration: 15.462579243s
-      endTimeStamp: &quot;2023-07-28T09:58:27Z&quot;
-      expectedActorNumber: 2
-      failedAgentNodeList:
-        - kdoctor-worker
-        - kdoctor-control-plane
-      failureReason: some agents failed
-      notReportAgentNodeList: []
-      roundNumber: 1
-      startTimeStamp: &quot;2023-07-28T09:58:12Z&quot;
-      status: fail
-      succeedAgentNodeList: []
-  lastRoundStatus: fail
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetReach</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">netreach</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">agentSpec</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hostNetwork</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DaemonSet</span>
+<span class="w">    </span><span class="nt">terminationGracePeriodMinutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">meanAccessDelayInMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">    </span><span class="nt">successRate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">durationInSecond</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">perRequestTimeoutInMS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">qps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">roundTimeoutMinute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0 1</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">enableLatencyMetric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">ingress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">ipv4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">ipv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">loadBalancer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">multusInterface</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">status</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">doneRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">expectedRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">finish</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">history</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deadLineTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:59:12Z&quot;</span>
+<span class="w">      </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15.462579243s</span>
+<span class="w">      </span><span class="nt">endTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:58:27Z&quot;</span>
+<span class="w">      </span><span class="nt">expectedActorNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">failedAgentNodeList</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-worker</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-control-plane</span>
+<span class="w">      </span><span class="nt">failureReason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">some agents failed</span>
+<span class="w">      </span><span class="nt">notReportAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">startTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:58:12Z&quot;</span>
+<span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fail</span>
+<span class="w">      </span><span class="nt">succeedAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">lastRoundStatus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fail</span>
+</code></pre></div>
 <h2 id="netreach_2">NetReach 定义</h2>
 <h3 id="metadata">Metadata</h3>
 <table>
@@ -1374,7 +1374,7 @@ status:
 <td>任务执行时间, 执行时间应小于roundTimeoutMinute</td>
 <td>string</td>
 <td>可选</td>
-<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
+<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： <em>/1</em> ** * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
 <td>"0 1"</td>
 </tr>
 <tr>

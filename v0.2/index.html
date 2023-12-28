@@ -437,6 +437,26 @@
     Quick Start
   </a>
   
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-get-started" class="md-nav__link">
+    Task Get Started
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1117,6 +1137,26 @@
     Quick Start
   </a>
   
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-get-started" class="md-nav__link">
+    Task Get Started
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1162,32 +1202,42 @@
 <p><strong>English</strong> | <a href="README-zh_CN/"><strong>简体中文</strong></a></p>
 <h2 id="introduction">Introduction</h2>
 <p>kdoctor is a Kubernetes data plane testing component that conducts functional and performance tests on clusters using proactive pressure injection. It addresses the operational needs of network, storage, and applications by adopting a cloud-native approach based on extensive research and abstraction. With its CRD design, kdoctor can seamlessly integrate with observability components.</p>
-<p><strong>kdoctor mainly offers three types of tasks:</strong>
-* <a href="reference/apphttphealthy/">AppHttpHealthy</a>: according to the task configuration, perform connectivity checks using HTTP and HTTPS protocols on specified addresses within or outside the cluster, supporting various request methods such as PUT, GET, and POST.
-* <a href="reference/netreach/">NetReach</a>: conduct connectivity inspections on Pod IP, ClusterIP, NodePort, LoadBalancer IP, Ingress IP, and even Pods with multiple network interfaces or dual-stack IPs.
-* <a href="reference/netdns/">NetDns</a>: perform connectivity checks on designated DNS servers within or outside the cluster, supporting UDP, TCP, and TCP-TLS protocols.</p>
-<p><strong>Advantages of kdoctor over traditional testing components:</strong>
-* By configuring inspection tasks through CRDs, users only need to focus on the inspection targets, frequency, pressure parameters, and expected results.
-* Pressure-injecting agents are dynamically run as Deployments or DaemonSets, achieving the effect of multiple pressure-injecting machines.
-* The execution of tasks utilizes default agents or newly created agents based on the task's spec configurations, enabling resource reuse and task resource isolation.
-* Agents are bound to corresponding resource targets such as ingress and service. Each agent Pod mutually accesses the bound resources according to the task configuration, deriving conclusions from the request results.
-* Through performance optimization, the pressure-injecting client significantly reduces resource consumption during requests.
-* Inspection reports can be generated through various means, including logging, aggregated APIs, and file storage.</p>
+<p><strong>kdoctor mainly offers three types of tasks:</strong></p>
+<ul>
+<li><a href="reference/apphttphealthy/">AppHttpHealthy</a>: according to the task configuration, perform connectivity checks using HTTP and HTTPS protocols on specified addresses within or outside the cluster, supporting various request methods such as PUT, GET, and POST.</li>
+<li><a href="reference/netreach/">NetReach</a>: conduct connectivity inspections on Pod IP, ClusterIP, NodePort, LoadBalancer IP, Ingress IP, and even Pods with multiple network interfaces or dual-stack IPs.</li>
+<li><a href="reference/netdns/">NetDns</a>: perform connectivity checks on designated DNS servers within or outside the cluster, supporting UDP, TCP, and TCP-TLS protocols.</li>
+</ul>
+<p><strong>Advantages of kdoctor over traditional testing components:</strong></p>
+<ul>
+<li>By configuring inspection tasks through CRDs, users only need to focus on the inspection targets, frequency, pressure parameters, and expected results.</li>
+<li>Pressure-injecting agents are dynamically run as Deployments or DaemonSets, achieving the effect of multiple pressure-injecting machines.</li>
+<li>The execution of tasks utilizes default agents or newly created agents based on the task's spec configurations, enabling resource reuse and task resource isolation.</li>
+<li>Agents are bound to corresponding resource targets such as ingress and service. Each agent Pod mutually accesses the bound resources according to the task configuration, deriving conclusions from the request results.</li>
+<li>Through performance optimization, the pressure-injecting client significantly reduces resource consumption during requests.</li>
+<li>Inspection reports can be generated through various means, including logging, aggregated APIs, and file storage.</li>
+</ul>
 <h2 id="architecture">Architecture</h2>
 <div style="text-align:center">
   <img src="./images/arch.png" alt="Your Image Description">
 </div>
 
-<p>Components:
-* kdoctor agent: kdoctor controller: a persistent Deployment responsible for CR monitoring, task creation, and task report aggregation.
-* kdoctor agent: dynamically created on-demand as Deployments or DaemonSets to execute tasks.</p>
+<p>Components:</p>
+<ul>
+<li>kdoctor agent: kdoctor controller: a persistent Deployment responsible for CR monitoring, task creation, and task report aggregation.</li>
+<li>kdoctor agent: dynamically created on-demand as Deployments or DaemonSets to execute tasks.</li>
+</ul>
 <h2 id="quick-start">Quick Start</h2>
-<p><strong>Install</strong>
-* Refer to <a href="usage/install/">Install kdoctor</a> 或 <a href="usage/get-started-kind/">kind Quick Start</a></p>
-<p><strong>Task Get Started</strong>
-* <a href="usage/apphttphealthy/">AppHttpHealthy Get Started</a>
-* <a href="usage/netreach/">NetReach Get Started</a>
-* <a href="usage/netdns/">NetDNS Get Started</a></p>
+<h3 id="install">Install</h3>
+<ul>
+<li>Refer to <a href="usage/install/">Install kdoctor</a> 或 <a href="usage/get-started-kind/">kind Quick Start</a></li>
+</ul>
+<h3 id="task-get-started">Task Get Started</h3>
+<ul>
+<li><a href="usage/apphttphealthy/">AppHttpHealthy Get Started</a></li>
+<li><a href="usage/netreach/">NetReach Get Started</a></li>
+<li><a href="usage/netdns/">NetDNS Get Started</a></li>
+</ul>
 <h2 id="contribution">Contribution</h2>
 <p>Refer to the <a href="develop/contributing/">Contribution doc</a>.</p>
 <h2 id="license">License</h2>

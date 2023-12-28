@@ -1031,38 +1031,48 @@
 
 <h1 id="debug">Debug</h1>
 <p><a href="../debug/"><strong>English</strong></a> | <strong>简体中文</strong></p>
-<p><strong>Q: 想要使用更高的 QPS 应该如何设置？</strong>
-* A: 当 QPS 设置过大，会导致服务器资源占用过高，影响业务。为了防止在生产坏境出现误操作。kdoctor 在 webhook 中添加了 QPS 的检查。如果您想使用更高的 QPS
+<p><strong>Q: 想要使用更高的 QPS 应该如何设置？</strong></p>
+<ul>
+<li>A: 当 QPS 设置过大，会导致服务器资源占用过高，影响业务。为了防止在生产坏境出现误操作。kdoctor 在 webhook 中添加了 QPS 的检查。如果您想使用更高的 QPS
 可通过参数设置 QPS 限制 <code>--set feature.appHttpHealthyRequestMaxQPS=1000</code>,<code>--set feature.netReachRequestMaxQPS=1000</code>,<code>--set feature.netDnsRequestMaxQPS=1000</code>，也可以通过 kdoctor 的 configmap 中去更改 ，
-并重启 kdoctor 的相关 pod 重新加载 configmap。</p>
-<p><strong>Q: 为什么我的任务无法达到期望的 QPS ？</strong>
-* A：无法达到 QPS 的期望原因有很多主要分为以下几种原因：
-  * 并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 <code>--set feature.netReachMaxConcurrency=50</code>，<code>--set feature.appHttpHealthyMaxConcurrency=50</code>，<code>--set feature.netDnsMaxConcurrency=50</code>。
-  * kdoctor agent 分配资源不充足，可通过 kdoctor 的聚合报告<code>kubectl get kdoctorreport</code>查看任务消耗的 cpu 与 内存使用量，确定 kdoctor agent 资源分配是否充足。
-     <code>shell
-      ~kubectl get kdoctorreport test-task -oyaml
-      ...
-      SystemResource:
-        MaxCPU: 52.951%
-        MaxMemory: 120.00MB
-        MeanCPU: 32.645%
-      ...</code>
-  * kdoctor agent 中是否在同时执行其他任务将资源占满。可通过 kdoctor 的聚合报告`kubectl get kdoctorreport 查看同时执行的其他任务 QPS 数量。
-    错开任务执行时间或通过定义 agentSpec 指定 kdoctor agent 执行任务将任务进行隔离。因 QPS 统计具有时效性，所以可搭配日志一起作为参考，在任务执行开始前，会将当前在执行的 QPS 输出到日志中。
-     <code>shell
-      ~kubectl logs kdoctor-agent-74rrp  -n kdoctor |grep "Before the current task starts"
-      {"level":"DEBUG","ts":"2023-11-07T10:01:02.821Z","agent":"agent.agentController.AppHttpHealthyReconciler.AppHttpHealthy.test-task.round1","caller":"pluginManager/agentTools.go:90","msg":"Before the current task starts, the total QPS of the tasks being executed is AppHttpHealth=100,NetReach=0,NetDNS=0","AppHttpHealthy":"test-task"}</code>
-     <code>shell
-      ~kubectl get kdoctorreport test-task -oyaml
-      ...
-      TotalRunningLoad:
-        AppHttpHealthyQPS: 100
-        NetDnsQPS: 50
-        NetReachQPS: 0
-      ...</code>
-<strong>Q: 为什么 Kdoctor agent 会 OOM？</strong>
-* A: kdoctor agent 作为默认的执行任务的 agent，在任务中没有指定 agent 时，默认使用 kdoctor agent 执行，目前的 agent 还不支持根据任务负载情况，拒绝执行任务或延迟执行任务功能。
-     因此当 kdoctor agent 同时执行大量任务时，由于请求量过大，内存限制过低，将会导致 kdoctor agent 内存过载，导致 OOM，我们可以根据任务情况，错开使用 kdoctor agent，调整内存限制，或使用指定的 agent 隔离任务。</p>
+并重启 kdoctor 的相关 pod 重新加载 configmap。</li>
+</ul>
+<p><strong>Q: 为什么我的任务无法达到期望的 QPS ？</strong></p>
+<ul>
+<li>A：无法达到 QPS 的期望原因有很多主要分为以下几种原因：</li>
+<li>并发 worker 设置过低，kdoctor 可通过设置参数调整并发数 <code>--set feature.netReachMaxConcurrency=50</code>，<code>--set feature.appHttpHealthyMaxConcurrency=50</code>，<code>--set feature.netDnsMaxConcurrency=50</code>。</li>
+<li>
+<p>kdoctor agent 分配资源不充足，可通过 kdoctor 的聚合报告<code>kubectl get kdoctorreport</code>查看任务消耗的 cpu 与 内存使用量，确定 kdoctor agent 资源分配是否充足。</p>
+<p><code>shell
+  ~kubectl get kdoctorreport test-task -oyaml
+  ...
+  SystemResource:
+    MaxCPU: 52.951%
+    MaxMemory: 120.00MB
+    MeanCPU: 32.645%
+  ...</code></p>
+</li>
+<li>
+<p>kdoctor agent 中是否在同时执行其他任务将资源占满。可通过 kdoctor 的聚合报告`kubectl get kdoctorreport 查看同时执行的其他任务 QPS 数量。
+    错开任务执行时间或通过定义 agentSpec 指定 kdoctor agent 执行任务将任务进行隔离。因 QPS 统计具有时效性，所以可搭配日志一起作为参考，在任务执行开始前，会将当前在执行的 QPS 输出到日志中。</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>~kubectl<span class="w"> </span>logs<span class="w"> </span>kdoctor-agent-74rrp<span class="w">  </span>-n<span class="w"> </span>kdoctor<span class="w"> </span><span class="p">|</span>grep<span class="w"> </span><span class="s2">&quot;Before the current task starts&quot;</span>
+<span class="w"> </span><span class="o">{</span><span class="s2">&quot;level&quot;</span>:<span class="s2">&quot;DEBUG&quot;</span>,<span class="s2">&quot;ts&quot;</span>:<span class="s2">&quot;2023-11-07T10:01:02.821Z&quot;</span>,<span class="s2">&quot;agent&quot;</span>:<span class="s2">&quot;agent.agentController.AppHttpHealthyReconciler.AppHttpHealthy.test-task.round1&quot;</span>,<span class="s2">&quot;caller&quot;</span>:<span class="s2">&quot;pluginManager/agentTools.go:90&quot;</span>,<span class="s2">&quot;msg&quot;</span>:<span class="s2">&quot;Before the current task starts, the total QPS of the tasks being executed is AppHttpHealth=100,NetReach=0,NetDNS=0&quot;</span>,<span class="s2">&quot;AppHttpHealthy&quot;</span>:<span class="s2">&quot;test-task&quot;</span><span class="o">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>~kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>test-task<span class="w"> </span>-oyaml
+<span class="w"> </span>...
+<span class="w"> </span>TotalRunningLoad:
+<span class="w">   </span>AppHttpHealthyQPS:<span class="w"> </span><span class="m">100</span>
+<span class="w">   </span>NetDnsQPS:<span class="w"> </span><span class="m">50</span>
+<span class="w">   </span>NetReachQPS:<span class="w"> </span><span class="m">0</span>
+<span class="w"> </span>...
+</code></pre></div>
+</li>
+</ul>
+<p><strong>Q: 为什么 Kdoctor agent 会 OOM？</strong></p>
+<ul>
+<li>A: kdoctor agent 作为默认的执行任务的 agent，在任务中没有指定 agent 时，默认使用 kdoctor agent 执行，目前的 agent 还不支持根据任务负载情况，拒绝执行任务或延迟执行任务功能。
+     因此当 kdoctor agent 同时执行大量任务时，由于请求量过大，内存限制过低，将会导致 kdoctor agent 内存过载，导致 OOM，我们可以根据任务情况，错开使用 kdoctor agent，调整内存限制，或使用指定的 agent 隔离任务。</li>
+</ul>
 
 
 
