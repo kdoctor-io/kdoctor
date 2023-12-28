@@ -1158,50 +1158,50 @@
 <h2 id="_1">基本描述</h2>
 <p>对于这种任务，kdoctor-controller 会根据 agentSpec 生成对应的 <a href="../../concepts/runtime-zh_CN/">agent</a> 等资源，每一个 agent Pod 都会向指定的目标发送 HTTP请求，并获得成功率和平均延迟。它可以指定成功条件来判断结果是否成功。并且，可以通过聚合 API 获取详细的报告。</p>
 <h2 id="apphttphealthy_1">AppHttpHealthy 示例</h2>
-<pre><code class="language-yaml">apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: apphttphealth
-spec:
-  agentSpec:
-    hostNetwork: false
-    kind: DaemonSet
-    terminationGracePeriodMinutes: 60
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 2000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    enableLatencyMetric: false
-    host: http://www.baidu.com
-    http2: false
-    method: GET
-status:
-  doneRound: 1
-  expectedRound: 1
-  finish: true
-  history:
-    - deadLineTimeStamp: &quot;2023-07-28T09:58:41Z&quot;
-      duration: 17.272005445s
-      endTimeStamp: &quot;2023-07-28T09:57:58Z&quot;
-      expectedActorNumber: 2
-      failedAgentNodeList: []
-      notReportAgentNodeList: []
-      roundNumber: 1
-      startTimeStamp: &quot;2023-07-28T09:57:41Z&quot;
-      status: succeed
-      succeedAgentNodeList:
-        - kdoctor-worker
-        - kdoctor-control-plane
-  lastRoundStatus: succeed
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AppHttpHealthy</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apphttphealth</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">agentSpec</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hostNetwork</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DaemonSet</span>
+<span class="w">    </span><span class="nt">terminationGracePeriodMinutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">meanAccessDelayInMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">    </span><span class="nt">successRate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">durationInSecond</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">perRequestTimeoutInMS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000</span>
+<span class="w">    </span><span class="nt">qps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">roundTimeoutMinute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0 1</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enableLatencyMetric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.baidu.com</span>
+<span class="w">    </span><span class="nt">http2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GET</span>
+<span class="nt">status</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">doneRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">expectedRound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">finish</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">history</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deadLineTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:58:41Z&quot;</span>
+<span class="w">      </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">17.272005445s</span>
+<span class="w">      </span><span class="nt">endTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:57:58Z&quot;</span>
+<span class="w">      </span><span class="nt">expectedActorNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">failedAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">notReportAgentNodeList</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">roundNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">startTimeStamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-07-28T09:57:41Z&quot;</span>
+<span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeed</span>
+<span class="w">      </span><span class="nt">succeedAgentNodeList</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-worker</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-control-plane</span>
+<span class="w">  </span><span class="nt">lastRoundStatus</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeed</span>
+</code></pre></div>
 <h2 id="apphttphealthy_2">AppHttpHealthy 定义</h2>
 <h3 id="metadata">Metadata</h3>
 <table>
@@ -1382,7 +1382,7 @@ status:
 <td>任务执行时间, 执行时间应小于roundTimeoutMinute</td>
 <td>string</td>
 <td>可选</td>
-<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： */1 * * * * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
+<td>支持 linux crontab 与间隔法两种写法<br/><a href="https://linuxhandbook.com/crontab/">linux crontab</a> ： <em>/1</em> ** * 表示每分钟执行一次 <br/>间隔法：书写格式为 “M N” ，M取值为一个数字，表示多少分钟之后开启任务，N取值为一个数字，表示每一轮任务的间隔多少分钟执行，例如 “0 1” 表示立即开始任务，每轮任务间隔1min</td>
 <td>"0 1"</td>
 </tr>
 <tr>
@@ -1566,28 +1566,28 @@ status:
 </table>
 <h4 id="body">Body</h4>
 <p>携带 body 请求，body 写法示例</p>
-<pre><code class="language-yaml">apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kdoctor-test-body-5656-89207258
-  namespace: kdoctor
-data:
-  test1: test1
-  test2: test2
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-test-body-5656-89207258</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">test1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test1</span>
+<span class="w">  </span><span class="nt">test2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test2</span>
+</code></pre></div>
 <h4 id="tls">TLS</h4>
 <p>HTTPs 请求使用证书时，若不填写 CA 证书则不对证书安全进行校验，HTTPs 请求证书示例。</p>
-<pre><code class="language-yaml">apiVersion: v1
-data:
-  ca.crt:  xxxxxxxxxbase64
-  tls.crt: xxxxxxxxxbase64
-  tls.key: xxxxxxxxxbase64
-kind: Secret
-metadata:
-  name: kdoctor-client-cert
-  namespace: kdoctor
-type: kubernetes.io/tls
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ca.crt</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">xxxxxxxxxbase64</span>
+<span class="w">  </span><span class="nt">tls.crt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xxxxxxxxxbase64</span>
+<span class="w">  </span><span class="nt">tls.key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xxxxxxxxxbase64</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor-client-cert</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdoctor</span>
+<span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.io/tls</span>
+</code></pre></div>
 <h3 id="status">Status</h3>
 <table>
 <thead>
