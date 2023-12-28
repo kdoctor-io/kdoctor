@@ -857,6 +857,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -885,19 +887,14 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#agent-report" class="md-nav__link">
-    Agent Report
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#controller-report" class="md-nav__link">
@@ -1068,19 +1065,14 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#agent-report" class="md-nav__link">
-    Agent Report
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#controller-report" class="md-nav__link">
@@ -1107,9 +1099,7 @@
   
 
 
-  <h1>Report</h1>
-
-<h2 id="agent-report">Agent Report</h2>
+<h1 id="agent-report">Agent Report</h1>
 <p>When agent finish task, it saves report to <code>/report</code> with name fmt.Sprintf("%s_%s_round%d_%s_%s", kindName, taskName, roundNumber, nodeName, suffix).
 The report will be automatically deleted with age <code>spec.schedulePlan.TimeoutMinute + 5</code> minutes. In this interval, 
 the controller Pod will collect this report and save to <code>/report</code> of controller Pod.</p>

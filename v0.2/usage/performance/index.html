@@ -71,7 +71,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#environment" class="md-skip">
+        <a href="#kdoctor-performance" class="md-skip">
           Skip to content
         </a>
       
@@ -877,6 +877,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -904,6 +906,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1095,6 +1099,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1161,14 +1167,14 @@
   
 
 
-  <h1>Performance</h1>
-
+<h1 id="kdoctor-performance">Kdoctor Performance</h1>
 <h2 id="environment">Environment</h2>
 <ul>
-<li>Kubenetes: <code>v1.25.4</code></li>
-<li>Container runtime: <code>containerd 1.6.12</code></li>
-<li>OS: <code>CentOS Linux 8</code></li>
-<li>Kernel: <code>4.18.0-348.7.1.el8_5.x86_64</code></li>
+<li>Kubenetes: <code>v1.28.2</code></li>
+<li>Container runtime: <code>containerd 1.6.25</code></li>
+<li>OS: <code>Ubuntu 23.04</code></li>
+<li>Kernel: <code>6.2.0-36-generic.x86_64</code></li>
+<li>CPU: <code>Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz</code></li>
 </ul>
 <table>
 <thead>
@@ -1183,75 +1189,27 @@
 <tr>
 <td>master1</td>
 <td>control-plane</td>
-<td>4C</td>
-<td>8Gi</td>
+<td>56C</td>
+<td>128Gi</td>
 </tr>
 <tr>
-<td>master2</td>
-<td>control-plane</td>
-<td>4C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>master3</td>
-<td>control-plane</td>
-<td>4C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker4</td>
+<td>worker1</td>
 <td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker5</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker6</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker7</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker8</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker9</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
-</tr>
-<tr>
-<td>worker10</td>
-<td></td>
-<td>3C</td>
-<td>8Gi</td>
+<td>56C</td>
+<td>128Gi</td>
 </tr>
 </tbody>
 </table>
 <h2 id="nethttp">Nethttp</h2>
-<p>The test is conducted in a pod with a CPU of 1 core.</p>
-<p>The test server is a server that sleeps for one second and then returns.</p>
+<p>The following resource use cases for the kdcotor agent and other pressure testing tools, 
+including memory and cpu overhead, can be used as a reference for direct deployment</p>
 <h3 id="http11">Http1.1</h3>
 <table>
 <thead>
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1259,31 +1217,31 @@
 <tbody>
 <tr>
 <td>kdoctor</td>
-<td>0.5m</td>
-<td>89660</td>
-<td>2988.67</td>
-<td>210Mb</td>
-</tr>
-<tr>
-<td>ab</td>
-<td>0.5m</td>
-<td>76700</td>
-<td>2599.31</td>
-<td>60Mb</td>
-</tr>
-<tr>
-<td>wrk</td>
-<td>0.5m</td>
-<td>86105</td>
-<td>2867.67</td>
+<td>1m</td>
+<td>1C</td>
+<td>7570</td>
 <td>50Mb</td>
 </tr>
 <tr>
+<td>ab</td>
+<td>1m</td>
+<td>1C</td>
+<td>9045</td>
+<td>15Mb</td>
+</tr>
+<tr>
+<td>wrk</td>
+<td>1m</td>
+<td>1C</td>
+<td>8920</td>
+<td>10Mb</td>
+</tr>
+<tr>
 <td>hey</td>
-<td>0.5m</td>
-<td>58423</td>
-<td>1947.42</td>
-<td>210Mb</td>
+<td>1m</td>
+<td>1C</td>
+<td>4637</td>
+<td>115Mb</td>
 </tr>
 </tbody>
 </table>
@@ -1292,7 +1250,7 @@
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1301,30 +1259,30 @@
 <tr>
 <td>kdoctor</td>
 <td>1m</td>
-<td>179634</td>
-<td>2993.9</td>
-<td>210Mb</td>
+<td>2C</td>
+<td>18888</td>
+<td>55Mb</td>
 </tr>
 <tr>
 <td>ab</td>
 <td>1m</td>
-<td>153875</td>
-<td>2564.59</td>
-<td>60Mb</td>
+<td>2C</td>
+<td>21031</td>
+<td>20Mb</td>
 </tr>
 <tr>
 <td>wrk</td>
 <td>1m</td>
-<td>176966</td>
-<td>2945.69</td>
-<td>50Mb</td>
+<td>2C</td>
+<td>20860</td>
+<td>20Mb</td>
 </tr>
 <tr>
 <td>hey</td>
 <td>1m</td>
-<td>118452</td>
-<td>1974.2</td>
-<td>220Mb</td>
+<td>2C</td>
+<td>10774</td>
+<td>140Mb</td>
 </tr>
 </tbody>
 </table>
@@ -1333,7 +1291,7 @@
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1341,31 +1299,31 @@
 <tbody>
 <tr>
 <td>kdoctor</td>
-<td>5m</td>
-<td>897979</td>
-<td>2993.26</td>
-<td>210Mb</td>
-</tr>
-<tr>
-<td>ab</td>
-<td>5m</td>
-<td>763983</td>
-<td>2546.61</td>
+<td>1m</td>
+<td>3C</td>
+<td>28879</td>
 <td>60Mb</td>
 </tr>
 <tr>
+<td>ab</td>
+<td>1m</td>
+<td>3C</td>
+<td>35310</td>
+<td>30Mb</td>
+</tr>
+<tr>
 <td>wrk</td>
-<td>5m</td>
-<td>895324</td>
-<td>2983.71</td>
-<td>50Mb</td>
+<td>1m</td>
+<td>3C</td>
+<td>34445</td>
+<td>28Mb</td>
 </tr>
 <tr>
 <td>hey</td>
-<td>5m</td>
-<td>596077</td>
-<td>1986.92</td>
-<td>270Mb</td>
+<td>1m</td>
+<td>3C</td>
+<td>17174</td>
+<td>167Mb</td>
 </tr>
 </tbody>
 </table>
@@ -1375,34 +1333,7 @@
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
-<th>QPS</th>
-<th>Memory</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>kdoctor</td>
-<td>0.5m</td>
-<td>238787</td>
-<td>7959.57</td>
-<td>350Mb</td>
-</tr>
-<tr>
-<td>hey</td>
-<td>0.5m</td>
-<td>7213</td>
-<td>240.44</td>
-<td>110Mb</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Client</th>
-<th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1411,16 +1342,16 @@
 <tr>
 <td>kdoctor</td>
 <td>1m</td>
-<td>481070</td>
-<td>8017.83</td>
-<td>370Mb</td>
+<td>1C</td>
+<td>9733</td>
+<td>77Mb</td>
 </tr>
 <tr>
 <td>hey</td>
 <td>1m</td>
-<td>14665</td>
-<td>244.42</td>
-<td>120Mb</td>
+<td>1C</td>
+<td>6100</td>
+<td>140Mb</td>
 </tr>
 </tbody>
 </table>
@@ -1429,7 +1360,7 @@
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1437,28 +1368,55 @@
 <tbody>
 <tr>
 <td>kdoctor</td>
-<td>5m</td>
-<td>2419874</td>
-<td>8066.25</td>
-<td>390Mb</td>
+<td>1m</td>
+<td>2C</td>
+<td>20943</td>
+<td>78Mb</td>
 </tr>
 <tr>
 <td>hey</td>
-<td>5m</td>
-<td>74776</td>
-<td>249.25</td>
-<td>130Mb</td>
+<td>1m</td>
+<td>2C</td>
+<td>12600</td>
+<td>167Mb</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th>Time</th>
+<th>CPU</th>
+<th>QPS</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kdoctor</td>
+<td>1m</td>
+<td>3C</td>
+<td>31524</td>
+<td>79Mb</td>
+</tr>
+<tr>
+<td>hey</td>
+<td>1m</td>
+<td>3C</td>
+<td>15300</td>
+<td>230Mb</td>
 </tr>
 </tbody>
 </table>
 <h2 id="netdns">Netdns</h2>
-<p>The test is conducted in a Pod with a CPU of 1 core.</p>
+<p>Use two replicas of coredns as the test server.</p>
 <table>
 <thead>
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1467,15 +1425,42 @@
 <tr>
 <td>kdoctor</td>
 <td>1m</td>
-<td>1855511</td>
-<td>30925.18</td>
-<td>23Mb</td>
+<td>1C</td>
+<td>10064</td>
+<td>82Mb</td>
 </tr>
 <tr>
 <td>dnsperf</td>
 <td>1m</td>
-<td>1728086</td>
-<td>28800.40</td>
+<td>1C</td>
+<td>16800</td>
+<td>5Mb</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th>Time</th>
+<th>CPU</th>
+<th>QPS</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kdoctor</td>
+<td>1m</td>
+<td>2C</td>
+<td>21137</td>
+<td>91Mb</td>
+</tr>
+<tr>
+<td>dnsperf</td>
+<td>1m</td>
+<td>2C</td>
+<td>28769</td>
 <td>8Mb</td>
 </tr>
 </tbody>
@@ -1485,7 +1470,7 @@
 <tr>
 <th>Client</th>
 <th>Time</th>
-<th>Requests</th>
+<th>CPU</th>
 <th>QPS</th>
 <th>Memory</th>
 </tr>
@@ -1493,44 +1478,17 @@
 <tbody>
 <tr>
 <td>kdoctor</td>
-<td>5m</td>
-<td>9171699</td>
-<td>30572.33</td>
-<td>100Mb</td>
+<td>1m</td>
+<td>3C</td>
+<td>29987</td>
+<td>103Mb</td>
 </tr>
 <tr>
 <td>dnsperf</td>
-<td>5m</td>
-<td>8811137</td>
-<td>29370.34</td>
-<td>8Mb</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Client</th>
-<th>Time</th>
-<th>Requests</th>
-<th>QPS</th>
-<th>Memory</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>kdoctor</td>
-<td>10m</td>
-<td>18561282</td>
-<td>30935.47</td>
-<td>173Mb</td>
-</tr>
-<tr>
-<td>dnsperf</td>
-<td>10m</td>
-<td>17260779</td>
-<td>28767.66</td>
-<td>8Mb</td>
+<td>1m</td>
+<td>3C</td>
+<td>35800</td>
+<td>9Mb</td>
 </tr>
 </tbody>
 </table>

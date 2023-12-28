@@ -1138,55 +1138,55 @@
 <p>参照<a href="../install-zh_CN/">安装教程</a>安装 kdoctor</p>
 <h3 id="server">安装测试 server (选做)</h3>
 <p>kdoctor 官方仓库中包含了一个名为 server 的应用，内包含 http server，https server, DNS server，可用来测试 kdoctor 功能，若存在其他测试的 server 可跳过安装。</p>
-<pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
-helm repo update kdoctor
-helm install server kdoctor/server -n kdoctor-test-server --wait --debug --create-namespace 
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>kdoctor<span class="w"> </span>https://kdoctor-io.github.io/kdoctor
+helm<span class="w"> </span>repo<span class="w"> </span>update<span class="w"> </span>kdoctor
+helm<span class="w"> </span>install<span class="w"> </span>server<span class="w"> </span>kdoctor/server<span class="w"> </span>-n<span class="w"> </span>kdoctor-test-server<span class="w"> </span>--wait<span class="w"> </span>--debug<span class="w"> </span>--create-namespace<span class="w"> </span>
+</code></pre></div>
 <p>查看测试 server 状态</p>
-<pre><code class="language-shell">kubectl get pod -n kdoctor -owide
-NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
-server-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
-server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   &lt;none&gt;           &lt;none&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>-owide
+NAME<span class="w">                                </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE<span class="w">   </span>IP<span class="w">            </span>NODE<span class="w">                    </span>NOMINATED<span class="w"> </span>NODE<span class="w">   </span>READINESS<span class="w"> </span>GATES
+server-7649566ff9-dv4jc<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>76s<span class="w">   </span><span class="m">172</span>.40.1.45<span class="w">   </span>kdoctor-worker<span class="w">          </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+server-7649566ff9-qc5dh<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>76s<span class="w">   </span><span class="m">172</span>.40.0.35<span class="w">   </span>kdoctor-control-plane<span class="w">   </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+</code></pre></div>
 <p>获取测试 server 的 service 地址</p>
-<pre><code class="language-shell">kubectl get service -n kdoctor 
-NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
-server   ClusterIP   172.41.71.0   &lt;none&gt;        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>
+NAME<span class="w">               </span>TYPE<span class="w">        </span>CLUSTER-IP<span class="w">    </span>EXTERNAL-IP<span class="w">   </span>PORT<span class="o">(</span>S<span class="o">)</span><span class="w">                                </span>AGE
+server<span class="w">   </span>ClusterIP<span class="w">   </span><span class="m">172</span>.41.71.0<span class="w">   </span>&lt;none&gt;<span class="w">        </span><span class="m">80</span>/TCP,443/TCP,53/UDP,53/TCP,853/TCP<span class="w">   </span>2m31s
+</code></pre></div>
 <h3 id="netdns_1">创建 NetDns</h3>
 <p>创建 <code>NetDns</code>，该任务将执行一轮持续 10s 的任务，任务会向集群内 DNS server 以 QPS 为 10 的速度使用 UDP 协议，请求解析 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeA 记录，并且立即执行。</p>
-<pre><code class="language-shell">cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
-metadata:
-  name: netdns-cluster
-spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    domain: kubernetes.default.svc.cluster.local
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    protocol: udp
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    targetDns:
-      serviceName: kube-dns
-      serviceNamespace: kube-system
-      testIPv4: true
-EOF
-</code></pre>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: Netdns</span>
+<span class="s">metadata:</span>
+<span class="s">  name: netdns-cluster</span>
+<span class="s">spec:</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1500</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  request:</span>
+<span class="s">    domain: kubernetes.default.svc.cluster.local</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    protocol: udp</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  target:</span>
+<span class="s">    targetDns:</span>
+<span class="s">      serviceName: kube-dns</span>
+<span class="s">      serviceNamespace: kube-system</span>
+<span class="s">      testIPv4: true</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <h3 id="_3">查看任务状态</h3>
 <p>当执行完成一轮后就可以使用 kdoctor 聚合 api 查看当前轮的报告，当 FINISH 为 true 时任务全部完成，可查看整体报告</p>
-<pre><code class="language-shell">kubectl get netdns
-NAME             FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-netdns-cluster   true     1               1           succeed           0 1
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>netdns
+NAME<span class="w">             </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+netdns-cluster<span class="w">   </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <ul>
 <li>FINISH：任务是否完成</li>
 <li>EXPECTEDROUND：希望任务执行轮数</li>
@@ -1198,106 +1198,106 @@ netdns-cluster   true     1               1           succeed           0 1
 <ol>
 <li>
 <p>查看已有报告</p>
-<p><code>shell
-kubectl get kdoctorreport
-NAME             CREATED AT
-netdns-cluster   0001-01-01T00:00:00Z</code></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport
+NAME<span class="w">             </span>CREATED<span class="w"> </span>AT
+netdns-cluster<span class="w">   </span><span class="m">0001</span>-01-01T00:00:00Z
+</code></pre></div>
 </li>
 <li>
 <p>查看具体任务报告</p>
-<p>节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成。</p>
-<p><code>shell
-root@kdoctor-control-plane:/# kubectl get kdoctorreport netdns-cluster -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<p>节点 kdoctor-control-plane 和节点 kdoctor-worker 上 agent 分别都执行一轮发压后，将 agent 报告聚合而成，报告名称由<code>${TaskKind}-${TaskName}</code>组成</p>
+<div class="highlight"><pre><span></span><code>root@kdoctor-control-plane:/#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>netdns-cluster<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-  creationTimestamp: null
-  name: netdns-cluster
+<span class="w">  </span>creationTimestamp:<span class="w"> </span>null
+<span class="w">  </span>name:<span class="w"> </span>netdns-cluster
 spec:
-  FailedRoundNumber: null
-  FinishedRoundNumber: 1
-  Report:
-  - NodeName: kdoctor-control-plane
-    PodName: kdoctor-agent-ntp9l
-    ReportType: agent test report
-    RoundDuration: 11.025723086s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-08-01T09:09:39Z"
-    EndTimeStamp: "2023-08-01T09:09:50Z"
-    TaskName: netdns.netdns-cluster
-    TaskType: Netdns
-    netDNSTask:
-      detail:
-      - FailureReason: null
-        MeanDelay: 0.2970297
-        Metrics:
-          DNSMethod: udp
-          DNSServer: 172.41.0.10:53
-          Duration: 11.002666395s
-          EndTime: "2023-08-01T09:09:50Z"
-          Errors: {}
-          FailedCounts: 0
-          Latencies:
-            MaxInMs: 0
-            MeanInMs: 0.2970297
-            MinInMs: 0
-            P50InMs: 0
-            P90InMs: 0
-            P95InMs: 0
-            P99InMs: 0
-          ReplyCode:
-            NOERROR: 101
-          RequestCounts: 101
-          StartTime: "2023-08-01T09:09:39Z"
-          SuccessCounts: 101
-          TPS: 9.179593052634765
-          TargetDomain: kubernetes.default.svc.cluster.local.
-        Succeed: true
-        SucceedRate: 1
-        TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
-        TargetProtocol: udp
-        TargetServer: 172.41.0.10:53
-      succeed: true
-      targetNumber: 1
-      targetType: kdoctor agent
-      MaxCPU: 30.651%
-      MaxMemory: 97.00MB
-    netDNSTaskSpec:
-      ...
-  - NodeName: kdoctor-worker
-    PodName: kdoctor-agent-krrnp
-    ReportType: agent test report
-    RoundDuration: 10.024533428s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-08-01T09:09:39Z"
-    EndTimeStamp: "2023-08-01T09:09:49Z"
-    TaskName: netdns.netdns-cluster
-    TaskType: Netdns
-    netDNSTask:
-      detail:
-      - FailureReason: null
-        MeanDelay: 0.58
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetName: typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
-        TargetProtocol: udp
-        TargetServer: 172.41.0.10:53
-      succeed: true
-      targetNumber: 1
-      targetType: kdoctor agent
-      MaxCPU: 30.651%
-      MaxMemory: 97.00MB
-    netDNSTaskSpec:
-      ...
-  ReportRoundNumber: 1
-  RoundNumber: 1
-  Status: Finished
-  TaskName: netdns-cluster
-  TaskType: Netdns</code></p>
+<span class="w">  </span>FailedRoundNumber:<span class="w"> </span>null
+<span class="w">  </span>FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Report:
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-ntp9l
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.025723086s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:50Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>netdns.netdns-cluster
+<span class="w">    </span>TaskType:<span class="w"> </span>Netdns
+<span class="w">    </span>netDNSTask:
+<span class="w">      </span>detail:
+<span class="w">      </span>-<span class="w"> </span>FailureReason:<span class="w"> </span>null
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">0</span>.2970297
+<span class="w">        </span>Metrics:
+<span class="w">          </span>DNSMethod:<span class="w"> </span>udp
+<span class="w">          </span>DNSServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">          </span>Duration:<span class="w"> </span><span class="m">11</span>.002666395s
+<span class="w">          </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:50Z&quot;</span>
+<span class="w">          </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">          </span>FailedCounts:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>Latencies:
+<span class="w">            </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>MeanInMs:<span class="w"> </span><span class="m">0</span>.2970297
+<span class="w">            </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>ReplyCode:
+<span class="w">            </span>NOERROR:<span class="w"> </span><span class="m">101</span>
+<span class="w">          </span>RequestCounts:<span class="w"> </span><span class="m">101</span>
+<span class="w">          </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">          </span>SuccessCounts:<span class="w"> </span><span class="m">101</span>
+<span class="w">          </span>TPS:<span class="w"> </span><span class="m">9</span>.179593052634765
+<span class="w">          </span>TargetDomain:<span class="w"> </span>kubernetes.default.svc.cluster.local.
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetName:<span class="w"> </span>typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+<span class="w">        </span>TargetProtocol:<span class="w"> </span>udp
+<span class="w">        </span>TargetServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">      </span>succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>targetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>targetType:<span class="w"> </span>kdoctor<span class="w"> </span>agent
+<span class="w">      </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">      </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">    </span>netDNSTaskSpec:
+<span class="w">      </span>...
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-krrnp
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">10</span>.024533428s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:39Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-08-01T09:09:49Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>netdns.netdns-cluster
+<span class="w">    </span>TaskType:<span class="w"> </span>Netdns
+<span class="w">    </span>netDNSTask:
+<span class="w">      </span>detail:
+<span class="w">      </span>-<span class="w"> </span>FailureReason:<span class="w"> </span>null
+<span class="w">        </span>MeanDelay:<span class="w"> </span><span class="m">0</span>.58
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetName:<span class="w"> </span>typeA_172.41.0.10:53_kubernetes.default.svc.cluster.local
+<span class="w">        </span>TargetProtocol:<span class="w"> </span>udp
+<span class="w">        </span>TargetServer:<span class="w"> </span><span class="m">172</span>.41.0.10:53
+<span class="w">      </span>succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>targetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>targetType:<span class="w"> </span>kdoctor<span class="w"> </span>agent
+<span class="w">      </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">      </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">    </span>netDNSTaskSpec:
+<span class="w">      </span>...
+<span class="w">  </span>ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Status:<span class="w"> </span>Finished
+<span class="w">  </span>TaskName:<span class="w"> </span>netdns-cluster
+<span class="w">  </span>TaskType:<span class="w"> </span>Netdns
+</code></pre></div>
 </li>
 </ol>
 <blockquote>
@@ -1310,36 +1310,36 @@ spec:
 <p>创建 <code>NetDns</code> 任务，该任务将执行一轮持续 10s 的任务，任务会向指定的 DNS server 以 QPS 为 10 的速度进行 UDP 请求 <code>kubernetes.default.svc.cluster.local</code> 域名的 typeAAAA，并且立即执行。</p>
 <p>这里使用 server 的 service 地址，若有其他 server 地址 可使用其他 server 地址。</p>
 <p>创建 <code>NetDns</code></p>
-<p><code>shell
-SERVER="172.41.71.0"
-apiVersion: kdoctor.io/v1beta1
-kind: Netdns
+<div class="highlight"><pre><span></span><code><span class="nv">SERVER</span><span class="o">=</span><span class="s2">&quot;172.41.71.0&quot;</span>
+apiVersion:<span class="w"> </span>kdoctor.io/v1beta1
+kind:<span class="w"> </span>Netdns
 metadata:
-  name: netdns- user
+<span class="w">  </span>name:<span class="w"> </span>netdns-<span class="w"> </span>user
 spec:
-  expect:
-    meanAccessDelayInMs: 1500
-    successRate: 1
-  request:
-    domain: kubernetes.default.svc.cluster.local
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    protocol: udp
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  target:
-    targetUser:
-      port: 53
-      server: ${SERVER}
-EOF</code></p>
+<span class="w">  </span>expect:
+<span class="w">    </span>meanAccessDelayInMs:<span class="w"> </span><span class="m">1500</span>
+<span class="w">    </span>successRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>request:
+<span class="w">    </span>domain:<span class="w"> </span>kubernetes.default.svc.cluster.local
+<span class="w">    </span>durationInSecond:<span class="w"> </span><span class="m">10</span>
+<span class="w">    </span>perRequestTimeoutInMS:<span class="w"> </span><span class="m">1000</span>
+<span class="w">    </span>protocol:<span class="w"> </span>udp
+<span class="w">    </span>qps:<span class="w"> </span><span class="m">10</span>
+<span class="w">  </span>schedule:
+<span class="w">    </span>roundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>roundTimeoutMinute:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>schedule:<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>target:
+<span class="w">    </span>targetUser:
+<span class="w">      </span>port:<span class="w"> </span><span class="m">53</span>
+<span class="w">      </span>server:<span class="w"> </span><span class="si">${</span><span class="nv">SERVER</span><span class="si">}</span>
+EOF
+</code></pre></div>
 </li>
 </ol>
 <h2 id="_5">环境清理</h2>
-<pre><code class="language-shell">kubectl delete netdns netdns-cluster netdns- user
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>delete<span class="w"> </span>netdns<span class="w"> </span>netdns-cluster<span class="w"> </span>netdns-<span class="w"> </span>user
+</code></pre></div>
 
 
 
