@@ -2,8 +2,29 @@ apiVersion: v1
 entries:
   kdoctor:
   - apiVersion: v2
+    appVersion: 0.2.2
+    created: "2023-12-28T07:43:58.043312551Z"
+    description: kdoctor
+    digest: 9eeebeb57924a51e4f411ac748af5c60c54b599e5e27b5aec469672dac91502d
+    home: https://kdoctor-io.github.io/kdoctor
+    icon: https://raw.githubusercontent.com/kdoctor-io/kdoctor/main/docs/images/kdoctor.svg
+    keywords:
+    - kdoctor
+    - operation
+    kubeVersion: '>= 1.16.0-0'
+    maintainers:
+    - name: kdoctor-io
+      url: https://github.com/kdoctor-io
+    name: kdoctor
+    sources:
+    - https://github.com/kdoctor-io/kdoctor
+    type: application
+    urls:
+    - https://kdoctor-io.github.io/kdoctor/charts/kdoctor-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
     appVersion: 0.2.1
-    created: "2023-11-29T12:55:14.625319189Z"
+    created: "2023-12-28T07:43:58.041491922Z"
     description: kdoctor
     digest: c453611040545be70ed2affc97984a7a9ab0d89870ba725610be5e40d3d0990f
     home: https://kdoctor-io.github.io/kdoctor
@@ -24,7 +45,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: 0.2.0
-    created: "2023-11-29T12:55:14.622130285Z"
+    created: "2023-12-28T07:43:58.039645907Z"
     description: kdoctor
     digest: 2dcb4596eced48597764785889f32be1349bb13ea781443a1319d0772ebbbd84
     home: https://kdoctor-io.github.io/kdoctor
@@ -44,7 +65,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 0.2.0-rc1
-    created: "2023-11-29T12:55:14.620288482Z"
+    created: "2023-12-28T07:43:58.036921633Z"
     description: kdoctor
     digest: 35d6634b6c1c80a2feb8fb6d7c8b1ba7c2557e98d6f32ad6e0f2776bd326e7b1
     home: https://kdoctor-io.github.io/kdoctor
@@ -64,7 +85,7 @@ entries:
     version: 0.2.0-rc1
   - apiVersion: v2
     appVersion: 0.2.0-rc0
-    created: "2023-11-29T12:55:14.61823846Z"
+    created: "2023-12-28T07:43:58.03503403Z"
     description: kdoctor
     digest: 286039a44925b158fdb30513ae36dcd335b26d3ae61872fd7898cc01f3bbfdde
     home: https://kdoctor-io.github.io/kdoctor
@@ -84,7 +105,7 @@ entries:
     version: 0.2.0-rc0
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-11-29T12:55:14.614790136Z"
+    created: "2023-12-28T07:43:58.032582022Z"
     description: kdoctor
     digest: 462b2f47cbe1425fd4b35bb641b7e29eae9461ea8ad84650876efcd21c99419e
     home: https://kdoctor-io.github.io/kdoctor
@@ -104,7 +125,7 @@ entries:
     version: 0.1.0
   - apiVersion: v2
     appVersion: 0.1.0-rc0
-    created: "2023-11-29T12:55:14.613368265Z"
+    created: "2023-12-28T07:43:58.030281171Z"
     description: kdoctor
     digest: d0fe119482e77a22355a98507d5d2f9385b59a874e4f7c45eb5e15dec3fd3bb2
     home: https://kdoctor-io.github.io/kdoctor
@@ -122,10 +143,31 @@ entries:
     urls:
     - https://kdoctor-io.github.io/kdoctor/charts/kdoctor-0.1.0-rc0.tgz
     version: 0.1.0-rc0
+  kdoctor-test-server:
+  - apiVersion: v2
+    appVersion: 0.2.2
+    created: "2023-12-28T07:43:58.043885657Z"
+    description: server for kdoctor test
+    digest: 85b847f7f616c34b172f44af8ada95e2accf0d47abc8642b30fbf6c751144909
+    home: https://kdoctor-io.github.io/kdoctor
+    keywords:
+    - kdoctor
+    - operation
+    kubeVersion: '>= 1.16.0-0'
+    maintainers:
+    - name: kdoctor-io
+      url: https://github.com/kdoctor-io
+    name: kdoctor-test-server
+    sources:
+    - https://github.com/kdoctor-io/kdoctor
+    type: application
+    urls:
+    - https://kdoctor-io.github.io/kdoctor/charts/kdoctor-test-server-0.2.2.tgz
+    version: 0.2.2
   server:
   - apiVersion: v2
     appVersion: 0.2.1
-    created: "2023-11-29T12:55:14.627550228Z"
+    created: "2023-12-28T07:43:58.046821282Z"
     description: server for kdoctor test
     digest: 9444af244abbffdc32ac81721f6fc281bf1b6168e9195c86ef0b2600a0d733da
     home: https://kdoctor-io.github.io/kdoctor
@@ -145,7 +187,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: 0.2.0
-    created: "2023-11-29T12:55:14.627036821Z"
+    created: "2023-12-28T07:43:58.046274284Z"
     description: server for kdoctor test
     digest: d584e7d2ee1a4069673c44b3f619bc663e9fa929b8dcd3faafe943c541a426b8
     home: https://kdoctor-io.github.io/kdoctor
@@ -165,7 +207,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 0.2.0-rc1
-    created: "2023-11-29T12:55:14.626486265Z"
+    created: "2023-12-28T07:43:58.044980585Z"
     description: server for kdoctor test
     digest: b6f5ad45d15f3a8da5b9feb5e8b1e6d9bf801f7e4c2d0eb7a9deb23fb5996f15
     home: https://kdoctor-io.github.io/kdoctor
@@ -185,7 +227,7 @@ entries:
     version: 0.2.0-rc1
   - apiVersion: v2
     appVersion: 0.2.0-rc0
-    created: "2023-11-29T12:55:14.625948833Z"
+    created: "2023-12-28T07:43:58.044450669Z"
     description: server for kdoctor test
     digest: c7f2b1356e822a71a4c7c3d1b8fdb7c940786307030c91f238be6395c90723c1
     home: https://kdoctor-io.github.io/kdoctor
@@ -203,4 +245,4 @@ entries:
     urls:
     - https://kdoctor-io.github.io/kdoctor/charts/server-0.2.0-rc0.tgz
     version: 0.2.0-rc0
-generated: "2023-11-29T12:55:14.61134298Z"
+generated: "2023-12-28T07:43:58.028746234Z"
