@@ -1038,10 +1038,30 @@
     快速开始
   </a>
   
+    <nav class="md-nav" aria-label="快速开始">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    安装
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    开始任务
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     参与开发
   </a>
   
@@ -1083,33 +1103,43 @@
 <p><strong>简体中文</strong> | <a href="../"><strong>English</strong></a></p>
 <h2 id="_1">介绍</h2>
 <p>kdoctor 是一个基于主动式压力注入的 Kubernetes 数据面测试组件，对集群进行功能、性能的测试。通过调研和抽象了运维人员的常规运维需求，让网络、存储、应用等运维任务进行了云原生实现，基于 CRD的设计，能够对接观测性组件。</p>
-<p><strong>kdoctor 主要包含以下 3 个类型的任务：</strong>
-* <a href="../reference/apphttphealthy-zh_CN/">AppHttpHealthy</a>: 根据任务配置对集群内外指定访问地址，使用 HTTP、HTTPS 协议进行连通性检查，支持 PUT、GET、POST 等多种请求方式。
-* <a href="../reference/netreach-zh_CN/">NetReach</a>: 根据任务配置对集群内 Pod IP、ClusterIP、NodePort、Loadbalancer IP、Ingress IP, 甚至是 POD 多网卡、双栈IP进行连通性巡检。
-* <a href="../reference/netdns-zh_CN/">NetDns</a>: 根据任务配置，对集群内外的指定 DNS Server 进行连通性检测，支持 udp、tcp、tcp-tls 协议。</p>
-<p><strong>kdoctor 较传统的测试组件有哪些优势:</strong>
-* 通过下发 CRD 配置巡检任务需求，使用者只需要关注巡检目标、巡检频率、发压参数以及期望巡检结果。
-* 通过读取任务配置，以 Deployment 或 DaemonSet 的方式运行发压 agent，以达到多台发压机器的效果。
-* 根据任务的 spec 配置，使用 default agent 或创建新的 agent 执行任务，以达到资源重复利用和任务资源隔离。
-* 绑定相对应的资源目标，如 ingress 、service，每一个 agent pod 根据任务配置相互访问绑定的资源，根据请求结果得出结论。
-* 发压 client 通过性能调优，大大降低了发压请求时的资源消耗。
-* 巡检报告通过日志、聚合 api 、文件落盘等方式输出。</p>
+<p><strong>kdoctor 主要包含以下 3 个类型的任务：</strong></p>
+<ul>
+<li><a href="../reference/apphttphealthy-zh_CN/">AppHttpHealthy</a>: 根据任务配置对集群内外指定访问地址，使用 HTTP、HTTPS 协议进行连通性检查，支持 PUT、GET、POST 等多种请求方式。</li>
+<li><a href="../reference/netreach-zh_CN/">NetReach</a>: 根据任务配置对集群内 Pod IP、ClusterIP、NodePort、Loadbalancer IP、Ingress IP, 甚至是 POD 多网卡、双栈IP进行连通性巡检。</li>
+<li><a href="../reference/netdns-zh_CN/">NetDns</a>: 根据任务配置，对集群内外的指定 DNS Server 进行连通性检测，支持 udp、tcp、tcp-tls 协议。</li>
+</ul>
+<p><strong>kdoctor 较传统的测试组件有哪些优势:</strong></p>
+<ul>
+<li>通过下发 CRD 配置巡检任务需求，使用者只需要关注巡检目标、巡检频率、发压参数以及期望巡检结果。</li>
+<li>通过读取任务配置，以 Deployment 或 DaemonSet 的方式运行发压 agent，以达到多台发压机器的效果。</li>
+<li>根据任务的 spec 配置，使用 default agent 或创建新的 agent 执行任务，以达到资源重复利用和任务资源隔离。</li>
+<li>绑定相对应的资源目标，如 ingress 、service，每一个 agent pod 根据任务配置相互访问绑定的资源，根据请求结果得出结论。</li>
+<li>发压 client 通过性能调优，大大降低了发压请求时的资源消耗。</li>
+<li>巡检报告通过日志、聚合 api 、文件落盘等方式输出。</li>
+</ul>
 <h2 id="_2">架构</h2>
 <div style="text-align:center">
   <img src="./images/arch.png" alt="Your Image Description">
 </div>
 
-<p>组件构成：
-* kdoctor controller: 以 Deployment 形式常驻，实施 CR 监控，任务创建，任务报告汇聚等。
-* kdoctor agent: 以 Deployment 或 DaemonSet 形式按需动态创建，任务的执行者。</p>
+<p>组件构成：</p>
+<ul>
+<li>kdoctor controller: 以 Deployment 形式常驻，实施 CR 监控，任务创建，任务报告汇聚等。</li>
+<li>kdoctor agent: 以 Deployment 或 DaemonSet 形式按需动态创建，任务的执行者。</li>
+</ul>
 <h2 id="_3">快速开始</h2>
-<p><strong>安装</strong>
-* <a href="../usage/install-zh_CN/">安装 kdoctor</a> 或 <a href="../usage/install-zh_CN/">kind 快速开始</a></p>
-<p><strong>开始任务</strong>
-* <a href="../usage/apphttphealthy-zh_CN/">开始任务 AppHttpHealthy</a>
-* <a href="../usage/netreach-zh_CN/">开始任务 NetReach</a>
-* <a href="../usage/netdns-zh_CN/">开始任务 NetDNS</a></p>
-<h2 id="_4">参与开发</h2>
+<h3 id="_4">安装</h3>
+<ul>
+<li><a href="../usage/install-zh_CN/">安装 kdoctor</a> 或 <a href="../usage/install-zh_CN/">kind 快速开始</a></li>
+</ul>
+<h3 id="_5">开始任务</h3>
+<ul>
+<li><a href="../usage/apphttphealthy-zh_CN/">开始任务 AppHttpHealthy</a></li>
+<li><a href="../usage/netreach-zh_CN/">开始任务 NetReach</a></li>
+<li><a href="../usage/netdns-zh_CN/">开始任务 NetDNS</a></li>
+</ul>
+<h2 id="_6">参与开发</h2>
 <p>可参考 <a href="../develop/contributing/">开发搭建文档</a>.</p>
 <h2 id="license">License</h2>
 <p>kdoctor is licensed under the Apache License, Version 2.0. See <a href="../LICENSE">LICENSE</a> for the full license text.</p>

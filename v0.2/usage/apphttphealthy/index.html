@@ -1253,53 +1253,53 @@
 <p>Follow the <a href="../install/">installation guide</a> to install kdoctor.</p>
 <h3 id="install-test-server-optional">Install Test Server (Optional)</h3>
 <p>The official kdoctor repository includes an application called "server" that contains an HTTP server, HTTPS server, and DNS server. This server can be employed to test the functionality of kdoctor. If you have other test servers available, you can skip this installation step.</p>
-<pre><code class="language-shell">helm repo add kdoctor https://kdoctor-io.github.io/kdoctor
-helm repo update kdoctor
-helm install server kdoctor/server -n kdoctor --wait --debug --create-namespace 
-</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>kdoctor<span class="w"> </span>https://kdoctor-io.github.io/kdoctor
+helm<span class="w"> </span>repo<span class="w"> </span>update<span class="w"> </span>kdoctor
+helm<span class="w"> </span>install<span class="w"> </span>server<span class="w"> </span>kdoctor/server<span class="w"> </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>--wait<span class="w"> </span>--debug<span class="w"> </span>--create-namespace<span class="w"> </span>
+</code></pre></div>
 <p>Check the status of test server</p>
-<pre><code class="language-shell">kubectl get pod -n kdoctor -owide
-NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                    NOMINATED NODE   READINESS GATES
-server-7649566ff9-dv4jc   1/1     Running   0          76s   172.40.1.45   kdoctor-worker          &lt;none&gt;           &lt;none&gt;
-server-7649566ff9-qc5dh   1/1     Running   0          76s   172.40.0.35   kdoctor-control-plane   &lt;none&gt;           &lt;none&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kdoctor<span class="w"> </span>-owide
+NAME<span class="w">                                </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE<span class="w">   </span>IP<span class="w">            </span>NODE<span class="w">                    </span>NOMINATED<span class="w"> </span>NODE<span class="w">   </span>READINESS<span class="w"> </span>GATES
+server-7649566ff9-dv4jc<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>76s<span class="w">   </span><span class="m">172</span>.40.1.45<span class="w">   </span>kdoctor-worker<span class="w">          </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+server-7649566ff9-qc5dh<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>76s<span class="w">   </span><span class="m">172</span>.40.0.35<span class="w">   </span>kdoctor-control-plane<span class="w">   </span>&lt;none&gt;<span class="w">           </span>&lt;none&gt;
+</code></pre></div>
 <p>Obtain the service address of the test server</p>
-<pre><code class="language-shell">kubectl get service -n kdoctor
-NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)                                AGE
-server   ClusterIP   172.41.71.0   &lt;none&gt;        80/TCP,443/TCP,53/UDP,53/TCP,853/TCP   2m31s
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>-n<span class="w"> </span>kdoctor
+NAME<span class="w">               </span>TYPE<span class="w">        </span>CLUSTER-IP<span class="w">    </span>EXTERNAL-IP<span class="w">   </span>PORT<span class="o">(</span>S<span class="o">)</span><span class="w">                                </span>AGE
+server<span class="w">   </span>ClusterIP<span class="w">   </span><span class="m">172</span>.41.71.0<span class="w">   </span>&lt;none&gt;<span class="w">        </span><span class="m">80</span>/TCP,443/TCP,53/UDP,53/TCP,853/TCP<span class="w">   </span>2m31s
+</code></pre></div>
 <h3 id="create-apphttphealthy">Create AppHttpHealthy</h3>
 <p>Create an <code>AppHttpHealthy</code> task for HTTP that will run continuously for 10 seconds. The task will send GET requests to the specified server at a rate of 10 QPS and be executed immediately.</p>
 <p>We are using the service address of the test server. If you have a different server address available, feel free to use it instead.</p>
-<pre><code class="language-shell">SERVER=&quot;172.41.71.0&quot;
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: http1
-spec:
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  expect:
-    meanAccessDelayInMs: 1000
-    successRate: 1
-  target:
-    host: http://${SERVER}
-    method: GET
-EOF
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">SERVER</span><span class="o">=</span><span class="s2">&quot;172.41.71.0&quot;</span>
+cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: AppHttpHealthy</span>
+<span class="s">metadata:</span>
+<span class="s">  name: http1</span>
+<span class="s">spec:</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1000</span>
+<span class="s">    successRate: 1</span>
+<span class="s">  target:</span>
+<span class="s">    host: http://${SERVER}</span>
+<span class="s">    method: GET</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <h3 id="check-task-status">Check Task Status</h3>
 <p>After completing a round of tasks, you can use the kdoctor aggregate API to view the report for the current round. When the FINISH field is set to true, it indicates that all tasks have been completed, and you can access the overall report.</p>
-<pre><code class="language-shell">kubectl get apphttphealthy
-NAME        FINISH   EXPECTEDROUND   DONEROUND   LASTROUNDSTATUS   SCHEDULE
-http        true     1               1           succeed           0 1
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>apphttphealthy
+NAME<span class="w">        </span>FINISH<span class="w">   </span>EXPECTEDROUND<span class="w">   </span>DONEROUND<span class="w">   </span>LASTROUNDSTATUS<span class="w">   </span>SCHEDULE
+http<span class="w">        </span><span class="nb">true</span><span class="w">     </span><span class="m">1</span><span class="w">               </span><span class="m">1</span><span class="w">           </span>succeed<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="m">1</span>
+</code></pre></div>
 <ul>
 <li>FINISH: indicate whether the task has been completed</li>
 <li>EXPECTEDROUND: number of expected task rounds</li>
@@ -1311,99 +1311,99 @@ http        true     1               1           succeed           0 1
 <ol>
 <li>
 <p>View existed reports</p>
-<p><code>shell
-kubectl get kdoctorreport
-NAME        CREATED AT
-http        0001-01-01T00:00:00Z</code></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport
+NAME<span class="w">        </span>CREATED<span class="w"> </span>AT
+http<span class="w">        </span><span class="m">0001</span>-01-01T00:00:00Z
+</code></pre></div>
 </li>
 <li>
 <p>View specific task reports</p>
-<p>The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively.</p>
-<p><code>shell
-kubectl get kdoctorreport http -oyaml
-apiVersion: system.kdoctor.io/v1beta1
-kind: KdoctorReport
+<p>The reports are aggregated from the agents running on both the kdoctor-control-plane node and the kdoctor-worker nodes after performing two rounds of stress testing respectively,Report name consists of <code>${TaskKind}-${TaskName}</code></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>kdoctorreport<span class="w"> </span>apphttphealthy-http<span class="w"> </span>-oyaml
+apiVersion:<span class="w"> </span>system.kdoctor.io/v1beta1
+kind:<span class="w"> </span>KdoctorReport
 metadata:
-  creationTimestamp: null
-  name: http
+<span class="w">  </span>creationTimestamp:<span class="w"> </span>null
+<span class="w">  </span>name:<span class="w"> </span>apphttphealthy-http
 spec:
-  FailedRoundNumber: null
-  FinishedRoundNumber: 1
-  Report:
-  - NodeName: kdoctor-control-plane
-    HttpAppHealthyTask:
-      Detail:
-      - MeanDelay: 10.317307
-        Metrics:
-          Duration: 11.022081662s
-          EndTime: "2023-07-31T07:25:23Z"
-          Errors: {}
-          Latencies:
-            MaxInMs: 0
-            MeanInMs: 10.317307
-            MinInMs: 0
-            P50InMs: 0
-            P90InMs: 0
-            P95InMs: 0
-            P99InMs: 0
-          RequestCounts: 104
-          StartTime: "2023-07-31T07:25:12Z"
-          StatusCodes:
-            "200": 104
-          SuccessCounts: 104
-          TPS: 9.435604197939574
-          TotalDataSize: 40040 byte
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetName: HttpAppHealthy target
-        TargetUrl: http://172.41.71.0
-      Succeed: true
-      TargetNumber: 1
-      TargetType: HttpAppHealthy
-      MaxCPU: 30.651%
-      MaxMemory: 97.00MB
-    HttpAppHealthyTaskSpec:
-    ...
-    PodName: kdoctor-agent-fmr9m
-    ReportType: agent test report
-    RoundDuration: 11.038965547s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-07-31T07:25:12Z"
-    EndTimeStamp: "2023-07-31T07:25:23Z"
-    TaskName: apphttphealthy.http
-    TaskType: AppHttpHealthy
-  - NodeName: kdoctor-worker
-    HttpAppHealthyTask:
-      Detail:
-      - MeanDelay: 10.548077
-        Metrics:
-          ...
-        Succeed: true
-        SucceedRate: 1
-        TargetMethod: GET
-        TargetName: HttpAppHealthy target
-        TargetUrl: http://172.41.71.0
-      Succeed: true
-      TargetNumber: 1
-      TargetType: HttpAppHealthy
-    HttpAppHealthyTaskSpec:
-    ...
-    PodName: kdoctor-agent-s468h
-    ReportType: agent test report
-    RoundDuration: 11.034140236s
-    RoundNumber: 1
-    RoundResult: succeed
-    StartTimeStamp: "2023-07-31T07:25:12Z"
-    EndTimeStamp: "2023-07-31T07:25:23Z"
-    TaskName: apphttphealthy.http
-    TaskType: AppHttpHealthy
-  ReportRoundNumber: 1
-  RoundNumber: 1
-  Status: Finished
-  TaskName: http
-  TaskType: AppHttpHealthy</code></p>
+<span class="w">  </span>FailedRoundNumber:<span class="w"> </span>null
+<span class="w">  </span>FinishedRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Report:
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-control-plane
+<span class="w">    </span>HttpAppHealthyTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>MeanDelay:<span class="w"> </span><span class="m">10</span>.317307
+<span class="w">        </span>Metrics:
+<span class="w">          </span>Duration:<span class="w"> </span><span class="m">11</span>.022081662s
+<span class="w">          </span>EndTime:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:23Z&quot;</span>
+<span class="w">          </span>Errors:<span class="w"> </span><span class="o">{}</span>
+<span class="w">          </span>Latencies:
+<span class="w">            </span>MaxInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>MeanInMs:<span class="w"> </span><span class="m">10</span>.317307
+<span class="w">            </span>MinInMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P50InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P90InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P95InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">            </span>P99InMs:<span class="w"> </span><span class="m">0</span>
+<span class="w">          </span>RequestCounts:<span class="w"> </span><span class="m">104</span>
+<span class="w">          </span>StartTime:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:12Z&quot;</span>
+<span class="w">          </span>StatusCodes:
+<span class="w">            </span><span class="s2">&quot;200&quot;</span>:<span class="w"> </span><span class="m">104</span>
+<span class="w">          </span>SuccessCounts:<span class="w"> </span><span class="m">104</span>
+<span class="w">          </span>TPS:<span class="w"> </span><span class="m">9</span>.435604197939574
+<span class="w">          </span>TotalDataSize:<span class="w"> </span><span class="m">40040</span><span class="w"> </span>byte
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetName:<span class="w"> </span>HttpAppHealthy<span class="w"> </span>target
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.71.0
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>HttpAppHealthy
+<span class="w">      </span>MaxCPU:<span class="w"> </span><span class="m">30</span>.651%
+<span class="w">      </span>MaxMemory:<span class="w"> </span><span class="m">97</span>.00MB
+<span class="w">    </span>HttpAppHealthyTaskSpec:
+<span class="w">    </span>...
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-fmr9m
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.038965547s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:12Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:23Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>apphttphealthy.http
+<span class="w">    </span>TaskType:<span class="w"> </span>AppHttpHealthy
+<span class="w">  </span>-<span class="w"> </span>NodeName:<span class="w"> </span>kdoctor-worker
+<span class="w">    </span>HttpAppHealthyTask:
+<span class="w">      </span>Detail:
+<span class="w">      </span>-<span class="w"> </span>MeanDelay:<span class="w"> </span><span class="m">10</span>.548077
+<span class="w">        </span>Metrics:
+<span class="w">          </span>...
+<span class="w">        </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span>SucceedRate:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>TargetMethod:<span class="w"> </span>GET
+<span class="w">        </span>TargetName:<span class="w"> </span>HttpAppHealthy<span class="w"> </span>target
+<span class="w">        </span>TargetUrl:<span class="w"> </span>http://172.41.71.0
+<span class="w">      </span>Succeed:<span class="w"> </span><span class="nb">true</span>
+<span class="w">      </span>TargetNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">      </span>TargetType:<span class="w"> </span>HttpAppHealthy
+<span class="w">    </span>HttpAppHealthyTaskSpec:
+<span class="w">    </span>...
+<span class="w">    </span>PodName:<span class="w"> </span>kdoctor-agent-s468h
+<span class="w">    </span>ReportType:<span class="w"> </span>agent<span class="w"> </span><span class="nb">test</span><span class="w"> </span>report
+<span class="w">    </span>RoundDuration:<span class="w"> </span><span class="m">11</span>.034140236s
+<span class="w">    </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>RoundResult:<span class="w"> </span>succeed
+<span class="w">    </span>StartTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:12Z&quot;</span>
+<span class="w">    </span>EndTimeStamp:<span class="w"> </span><span class="s2">&quot;2023-07-31T07:25:23Z&quot;</span>
+<span class="w">    </span>TaskName:<span class="w"> </span>apphttphealthy.http
+<span class="w">    </span>TaskType:<span class="w"> </span>AppHttpHealthy
+<span class="w">  </span>ReportRoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>RoundNumber:<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>Status:<span class="w"> </span>Finished
+<span class="w">  </span>TaskName:<span class="w"> </span>http
+<span class="w">  </span>TaskType:<span class="w"> </span>AppHttpHealthy
+</code></pre></div>
 </li>
 </ol>
 <blockquote>
@@ -1416,82 +1416,82 @@ spec:
 <p>Create an <code>AppHttpHealthy</code> task for HTTP with a body. This task will run continuously for 10 seconds. It will send POST requests with the provided body to the specified server at a rate of 10 QPS and be executed immediately.</p>
 <p>We are using the service address of the test server. If you have a different server address available, feel free to use it instead.</p>
 <p>Creating test body data</p>
-<p><code>shell
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kdoctor-test-body
-  namespace: kdoctor-test-server
-data:
-  test1: test1
-  test2: test2
-EOF
-kubectl apply -f http-body.yaml</code></p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: v1</span>
+<span class="s">kind: ConfigMap</span>
+<span class="s">metadata:</span>
+<span class="s">  name: kdoctor-test-body</span>
+<span class="s">  namespace: kdoctor-test-server</span>
+<span class="s">data:</span>
+<span class="s">  test1: test1</span>
+<span class="s">  test2: test2</span>
+<span class="s">EOF</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>http-body.yaml
+</code></pre></div>
 <p>Create <code>AppHttpHealthy</code></p>
-<p><code>shell
-SERVER="172.41.71.0"
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: http-body
-spec:
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  expect:
-    meanAccessDelayInMs: 1000
-    successRate: 1
-    statusCode: 200
-  target:
-    bodyConfigmapName: kdoctor-test-body
-    bodyConfigmapNamespace: kdoctor-test-server
-    header:
-     - "Content-Type: application/json"
-    host: http://${SERVER}
-    method: POST
-EOF</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">SERVER</span><span class="o">=</span><span class="s2">&quot;172.41.71.0&quot;</span>
+cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: AppHttpHealthy</span>
+<span class="s">metadata:</span>
+<span class="s">  name: http-body</span>
+<span class="s">spec:</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1000</span>
+<span class="s">    successRate: 1</span>
+<span class="s">    statusCode: 200</span>
+<span class="s">  target:</span>
+<span class="s">    bodyConfigmapName: kdoctor-test-body</span>
+<span class="s">    bodyConfigmapNamespace: kdoctor-test-server</span>
+<span class="s">    header:</span>
+<span class="s">     - &quot;Content-Type: application/json&quot;</span>
+<span class="s">    host: http://${SERVER}</span>
+<span class="s">    method: POST</span>
+<span class="s">EOF</span>
+</code></pre></div>
 </li>
 <li>
 <p>Create an <code>AppHttpHealthy</code> task for HTTPS. This task will run continuously for 10 seconds. It will send GET requests using the HTTPS protocol with the provided certificate to the specified server at a rate of 10 QPS and be executed immediately.</p>
 <p>The TLS certificate used in this example is generated by the server and is only valid for the Pod's IP. Hence, we are accessing the server using the Pod's IP. If you are using a different server, please create the certificate secret accordingly.</p>
-<p><code>shell
-SERVER="172.40.0.35"
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: kdoctor.io/v1beta1
-kind: AppHttpHealthy
-metadata:
-  name: https
-spec:
-  request:
-    durationInSecond: 10
-    perRequestTimeoutInMS: 1000
-    qps: 10
-  schedule:
-    roundNumber: 1
-    roundTimeoutMinute: 1
-    schedule: 0 1
-  expect:
-    meanAccessDelayInMs: 1000
-    successRate: 1
-    statusCode: 200
-  target:
-    host: https://${SERVER}
-    method: GET
-    tlsSecretName: https-client-cert
-    tlsSecretNamespace: kdoctor-test-server
-EOF</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">SERVER</span><span class="o">=</span><span class="s2">&quot;172.40.0.35&quot;</span>
+cat<span class="w"> </span><span class="s">&lt;&lt;EOF | kubectl apply -f -</span>
+<span class="s">apiVersion: kdoctor.io/v1beta1</span>
+<span class="s">kind: AppHttpHealthy</span>
+<span class="s">metadata:</span>
+<span class="s">  name: https</span>
+<span class="s">spec:</span>
+<span class="s">  request:</span>
+<span class="s">    durationInSecond: 10</span>
+<span class="s">    perRequestTimeoutInMS: 1000</span>
+<span class="s">    qps: 10</span>
+<span class="s">  schedule:</span>
+<span class="s">    roundNumber: 1</span>
+<span class="s">    roundTimeoutMinute: 1</span>
+<span class="s">    schedule: 0 1</span>
+<span class="s">  expect:</span>
+<span class="s">    meanAccessDelayInMs: 1000</span>
+<span class="s">    successRate: 1</span>
+<span class="s">    statusCode: 200</span>
+<span class="s">  target:</span>
+<span class="s">    host: https://${SERVER}</span>
+<span class="s">    method: GET</span>
+<span class="s">    tlsSecretName: https-client-cert</span>
+<span class="s">    tlsSecretNamespace: kdoctor-test-server</span>
+<span class="s">EOF</span>
+</code></pre></div>
 </li>
 </ol>
 <h2 id="environment-cleanup">Environment Cleanup</h2>
-<pre><code class="language-shell">kubectl delete apphttphealthy http https http-body
-</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>delete<span class="w"> </span>apphttphealthy<span class="w"> </span>http<span class="w"> </span>https<span class="w"> </span>http-body
+</code></pre></div>
 
 
 
