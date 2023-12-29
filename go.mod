@@ -1,6 +1,6 @@
 module github.com/kdoctor-io/kdoctor
 
-go 1.20
+go 1.21
 
 require (
 	github.com/google/gops v0.3.27

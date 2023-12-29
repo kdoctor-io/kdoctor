@@ -3,7 +3,7 @@
 
 #====modify====
 ARG BASE_IMAGE=ghcr.io/kdoctor-io/kdoctor-agent-base:bd4eba101d4fb9c6fa5c90c704fff5c6446bda70
-ARG GOLANG_IMAGE=docker.io/library/golang:1.20
+ARG GOLANG_IMAGE=docker.io/library/golang:1.21
 
 #======= build bin ==========
 # use BUILDPLATFORM to cross build

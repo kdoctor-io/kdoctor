@@ -3,7 +3,7 @@
 # Copyright 2023 Authors of kdoctor-io
 # SPDX-License-Identifier: Apache-2.0
 
-ARG GOLANG_IMAGE=docker.io/library/golang:1.20
+ARG GOLANG_IMAGE=docker.io/library/golang:1.21
 ARG UBUNTU_IMAGE=docker.io/library/ubuntu:22.10
 
 #========= build gops ===============
