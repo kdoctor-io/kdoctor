@@ -54,7 +54,7 @@ require (
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/spec v0.20.14
 	github.com/go-openapi/strfmt v0.21.7
-	github.com/go-openapi/swag v0.22.6
+	github.com/go-openapi/swag v0.22.8
 	github.com/go-openapi/validate v0.22.1
 	github.com/go-swagger/go-swagger v0.30.4
 	k8s.io/kube-openapi v0.0.0-20221110221610-a28e98eb7c70 // indirect
