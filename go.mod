@@ -67,7 +67,7 @@ require (
 	github.com/ii2day/connexus v0.1.10
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	k8s.io/apiserver v0.26.3
-	sigs.k8s.io/yaml v1.3.0
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
