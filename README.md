@@ -40,7 +40,7 @@ Components:
 ## Quick Start
 
 **Install**
-* Refer to [Install kdoctor](./docs/usage/install.md) 或 [kind Quick Start](./docs/usage//get-started-kind.md)
+* Refer to [Install kdoctor](./docs/usage/install.md) and [kind Quick Start](./docs/usage//get-started-kind.md)
 
 **Task Get Started**
 * [AppHttpHealthy Get Started](./docs/usage/apphttphealthy.md)
