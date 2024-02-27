@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload artifact digests
         if: ${{ steps.yaml-lint.outcome == 'failure' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: log
           path: ${{ steps.yaml-lint.outputs.logfile }}

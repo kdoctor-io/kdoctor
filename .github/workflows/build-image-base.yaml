@@ -149,7 +149,7 @@ jobs:
 
       - name: Upload artifact digests
         if: ${{ env.RUN_EXIST == 'false' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image-digest-${{ matrix.name }}
           path: image-digest
