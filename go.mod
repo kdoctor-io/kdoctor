@@ -31,7 +31,7 @@ require (
 	go.uber.org/zap v1.25.0
 	golang.org/x/net v0.21.0
 	google.golang.org/grpc v1.61.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.34.2
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.26.3
