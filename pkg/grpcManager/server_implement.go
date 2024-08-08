@@ -6,13 +6,14 @@ package grpcManager
 import (
 	"context"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/kdoctor-io/kdoctor/api/v1/agentGrpc"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"io"
-	"time"
 )
 
 // ------ implement
@@ -82,9 +83,8 @@ func (s *myGrpcServer) ExecRemoteCmd(stream agentGrpc.CmdService_ExecRemoteCmdSe
 		}
 
 		if e := stream.Send(re); e != nil {
-			c := fmt.Sprintf("grpc server failed to send msg: %v", err)
-			logger.Error(c)
-			finalError = fmt.Errorf(c)
+			finalError := fmt.Errorf("grpc server failed to send msg: %v", e)
+			logger.Error(finalError.Error())
 			break
 		}
 	}

@@ -11,9 +11,10 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"time"
+
 	"github.com/kdoctor-io/kdoctor/pkg/fileManager"
 	"github.com/kdoctor-io/kdoctor/pkg/logger"
-	"time"
 )
 
 var _ = Describe("test fileManager", Label("fileManager"), func() {

@@ -13,15 +13,17 @@
 package tools
 
 import (
+	"errors"
 	"fmt"
-	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
-	"github.com/robfig/cron"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"net"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
+
+	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
+	"github.com/robfig/cron"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
 var DomainRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-Z]{2,}$`)
@@ -29,7 +31,7 @@ var DomainRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*\.[a-zA-
 func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 
 	if plan == nil {
-		return fmt.Errorf("Schedule is empty ")
+		return errors.New("schedule is empty")
 	}
 
 	args := strings.Split(*plan.Schedule, " ")
@@ -37,11 +39,11 @@ func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 	if len(args) == 2 {
 		startAfterMinute, err := strconv.Atoi(args[0])
 		if err != nil {
-			return fmt.Errorf("The format of the schedule is incorrect, it should be number ")
+			return errors.New("the format of the schedule is incorrect, it should be number")
 		}
 		intervalMinute, err := strconv.Atoi(args[1])
 		if err != nil {
-			return fmt.Errorf("The format of the schedule is incorrect, it should be number ")
+			return errors.New("the format of the schedule is incorrect, it should be number")
 		}
 		if startAfterMinute < 0 {
 			return fmt.Errorf("Schedule.StartAfterMinute %v must not be smaller than 0 ", startAfterMinute)
@@ -58,11 +60,11 @@ func ValidataCrdSchedule(plan *crd.SchedulePlan) error {
 	} else if len(args) == 5 {
 		_, err := cron.ParseStandard(*plan.Schedule)
 		if err != nil {
-			return fmt.Errorf("Crontab configuration error,err: %v ", err)
+			return fmt.Errorf("crontab configuration error,err: %v", err)
 		}
 
 	} else {
-		return fmt.Errorf("The format of the schedule is incorrect, it should be two or five ")
+		return errors.New("the format of the schedule is incorrect, it should be two or five")
 	}
 
 	if plan.RoundTimeoutMinute < 1 {

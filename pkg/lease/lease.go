@@ -4,6 +4,7 @@ package lease
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -25,16 +26,16 @@ var (
 func NewLeaseElector(ctx context.Context, leaseNamespace, leaseName, leaseID string, logger *zap.Logger) (getLease chan struct{}, lossLease chan struct{}, err error) {
 
 	if len(leaseNamespace) == 0 {
-		return nil, nil, fmt.Errorf("failed to new lease elector: Lease Namespace must be specified")
+		return nil, nil, errors.New("failed to new lease elector: Lease Namespace must be specified")
 	}
 	if len(leaseName) == 0 {
-		return nil, nil, fmt.Errorf("failed to new lease elector: Lease Name must be specified")
+		return nil, nil, errors.New("failed to new lease elector: Lease Name must be specified")
 	}
 	if len(leaseID) == 0 {
-		return nil, nil, fmt.Errorf("failed to new lease elector: Lease Identity must be specified")
+		return nil, nil, errors.New("failed to new lease elector: Lease Identity must be specified")
 	}
 	if logger == nil {
-		return nil, nil, fmt.Errorf("miss logger")
+		return nil, nil, errors.New("miss logger")
 	}
 
 	getLease = make(chan struct{})

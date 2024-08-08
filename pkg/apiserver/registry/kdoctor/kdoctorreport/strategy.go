@@ -5,7 +5,7 @@ package kdoctorreport
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
@@ -74,7 +74,7 @@ func (p kdoctorReportStrategy) ValidateUpdate(ctx context.Context, obj, old runt
 func GetAttrs(obj runtime.Object) (labels.Set, fields.Set, error) {
 	kdoctorReport, ok := obj.(*v1beta1.KdoctorReport)
 	if !ok {
-		return nil, nil, fmt.Errorf("given object is not a KdoctorReport")
+		return nil, nil, errors.New("given object is not a KdoctorReport")
 	}
 	return labels.Set(kdoctorReport.ObjectMeta.Labels), SelectableFields(kdoctorReport), nil
 }

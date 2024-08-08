@@ -5,7 +5,8 @@ package k8sObjManager
 
 import (
 	"context"
-	"fmt"
+	"errors"
+
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -40,7 +41,7 @@ func (nm *k8sObjManager) ListSelectedPodIPs(ctx context.Context, labelSelector *
 		return nil, e
 	}
 	if len(podlist) == 0 {
-		return nil, fmt.Errorf("failed to get any pods")
+		return nil, errors.New("failed to get any pods")
 	}
 
 	result := PodIps{}
@@ -66,7 +67,7 @@ func (nm *k8sObjManager) ListSelectedPodMultusIPs(ctx context.Context, labelSele
 		return nil, e
 	}
 	if len(podlist) == 0 {
-		return nil, fmt.Errorf("failed to get any pods")
+		return nil, errors.New("failed to get any pods")
 	}
 
 	return parseMultusIP(podlist)

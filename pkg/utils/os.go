@@ -6,6 +6,7 @@ package utils
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +15,7 @@ import (
 
 func SearchExecutable(name string) (string, error) {
 	if len(name) == 0 {
-		return "", fmt.Errorf("error, empty name")
+		return "", errors.New("error, empty name")
 	}
 
 	if path, err := exec.LookPath(name); err != nil {
@@ -32,7 +33,7 @@ func RunFrondendCmd(ctx context.Context, cmdName string, env []string, stdin_msg
 	var cmd *exec.Cmd
 
 	if len(cmdName) == 0 {
-		e = fmt.Errorf("error, empty cmd")
+		e = errors.New("error, empty cmd")
 		return
 	}
 
@@ -48,7 +49,7 @@ func RunFrondendCmd(ctx context.Context, cmdName string, env []string, stdin_msg
 		goto EXE
 	}
 
-	e = fmt.Errorf("error, no sh or bash installed")
+	e = errors.New("error, no sh or bash installed")
 	return
 
 EXE:

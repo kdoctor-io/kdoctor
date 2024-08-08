@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -22,7 +23,7 @@ import (
 	frame "github.com/spidernet-io/e2eframework/framework"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	api_errors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
@@ -161,7 +162,7 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("plugin report not found ")
+		return nil, errors.New("plugin report not found")
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -177,7 +178,7 @@ func GetPluginReportResult(f *frame.Framework, name string, n int) (*kdoctor_rep
 	}
 
 	if len(*report.Report.LatestRoundReport) != n {
-		return nil, fmt.Errorf("have agent not upload report")
+		return nil, errors.New("have agent not upload report")
 	}
 
 	return report, nil
@@ -253,20 +254,20 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 					return GetResultFromReport(r), fmt.Errorf("the error in the number of requests is greater than %.2f ,real request count: %d,expect request count:%d", RequestFaultRate, int(realRequestCount), int(expectRequestCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 			}
 			// startTime
-			shcedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
-			startTime := shcedule.StartTime(rs.CreationTimestamp.Time)
+			schedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
+			startTime := schedule.StartTime(rs.CreationTimestamp.Time)
 			if v.StartTimeStamp.Time.Compare(startTime) > 5 {
-				return GetResultFromReport(r), fmt.Errorf("The task start time error is greater than 5 seconds ")
+				return GetResultFromReport(r), errors.New("the task start time error is greater than 5 seconds")
 			}
 
 		}
@@ -276,7 +277,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
-					return GetResultFromReport(r), fmt.Errorf("roundNumber not equal ")
+					return GetResultFromReport(r), errors.New("roundNumber not equal ")
 				}
 			}
 		}
@@ -308,23 +309,23 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > RequestFaultRate {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than %.2f ,real request count: %d,expect request count:%d", RequestFaultRate, int(realCount), int(expectCount))
+					return GetResultFromReport(r), fmt.Errorf("the error in the number of requests is greater than %.2f ,real request count: %d,expect request count:%d", RequestFaultRate, int(realCount), int(expectCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 			}
 			// startTime
-			shcedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
-			startTime := shcedule.StartTime(rs.CreationTimestamp.Time)
+			schedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
+			startTime := schedule.StartTime(rs.CreationTimestamp.Time)
 			if v.StartTimeStamp.Time.Compare(startTime) > 5 {
-				return GetResultFromReport(r), fmt.Errorf("The task start time error is greater than 5 seconds ")
+				return GetResultFromReport(r), errors.New("the task start time error is greater than 5 seconds")
 			}
 		}
 		// real request count
@@ -347,7 +348,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
-					return GetResultFromReport(r), fmt.Errorf("roundNumber not equal ")
+					return GetResultFromReport(r), errors.New("roundNumber not equal")
 				}
 			}
 		}
@@ -379,23 +380,23 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 				// report request count
 				reportRequestCount += m.Metrics.RequestCounts
 				if math.Abs(realCount-expectCount)/expectCount > RequestFaultRate {
-					return GetResultFromReport(r), fmt.Errorf("The error in the number of requests is greater than %.2f, real request count: %d,expect request count:%d ", RequestFaultRate, int(realCount), int(expectCount))
+					return GetResultFromReport(r), fmt.Errorf("the error in the number of requests is greater than %.2f, real request count: %d,expect request count:%d", RequestFaultRate, int(realCount), int(expectCount))
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 				if float64(m.Metrics.SuccessCounts)/float64(m.Metrics.RequestCounts) != m.SucceedRate {
-					return GetResultFromReport(r), fmt.Errorf("succeedRate not equal")
+					return GetResultFromReport(r), errors.New("succeedRate not equal")
 				}
 			}
 			// startTime
-			shcedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
-			startTime := shcedule.StartTime(rs.CreationTimestamp.Time)
+			schedule := pluginManager.NewSchedule(*rs.Spec.Schedule.Schedule)
+			startTime := schedule.StartTime(rs.CreationTimestamp.Time)
 			if v.StartTimeStamp.Time.Compare(startTime) > 5 {
-				return GetResultFromReport(r), fmt.Errorf("The task start time error is greater than 5 seconds ")
+				return GetResultFromReport(r), errors.New("the task start time error is greater than 5 seconds")
 			}
 		}
 		// real request count
@@ -418,7 +419,7 @@ func CompareResult(f *frame.Framework, name, taskKind string, podIPs []string, n
 		for i := 0; i < len(rounds); i++ {
 			for j := i + 1; j < len(rounds); j++ {
 				if rounds[i] != rounds[j] {
-					return GetResultFromReport(r), fmt.Errorf("roundNumber not equal ")
+					return GetResultFromReport(r), errors.New("roundNumber not equal")
 				}
 			}
 		}
@@ -809,7 +810,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 			if runtimeResource.RuntimeType == kdoctor_types.KindDaemonSet {
 				_, err := f.GetDaemonSet(runtimeResource.RuntimeName, TestNameSpace)
 				if err != nil {
-					if errors.IsNotFound(err) {
+					if api_errors.IsNotFound(err) {
 						ginkgo.GinkgoWriter.Printf("task runtime daemonSet %s deleted \n", runtimeResource.RuntimeName)
 						runtimeDeleted = true
 						break
@@ -820,7 +821,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 			} else {
 				_, err := f.GetDeployment(runtimeResource.RuntimeName, TestNameSpace)
 				if err != nil {
-					if errors.IsNotFound(err) {
+					if api_errors.IsNotFound(err) {
 						ginkgo.GinkgoWriter.Printf("task runtime deployment %s deleted \n", runtimeResource.RuntimeName)
 						runtimeDeleted = true
 						break
@@ -845,7 +846,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 			if TestIPv4 {
 				_, err := f.GetService(*runtimeResource.ServiceNameV4, TestNameSpace)
 				if err != nil {
-					if errors.IsNotFound(err) {
+					if api_errors.IsNotFound(err) {
 						ginkgo.GinkgoWriter.Printf("task runtime service v4 %s deleted \n", *runtimeResource.ServiceNameV4)
 						serviceV4Deleted = true
 					} else {
@@ -863,7 +864,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 					key := client.ObjectKeyFromObject(fake)
 					err = f.GetResource(key, ig)
 					if err != nil {
-						if errors.IsNotFound(err) {
+						if api_errors.IsNotFound(err) {
 							ginkgo.GinkgoWriter.Printf("task runtime ingress %s deleted \n", *runtimeResource.ServiceNameV4)
 							ingressDeleted = true
 						} else {
@@ -879,7 +880,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 			if TestIPv6 {
 				_, err := f.GetService(*runtimeResource.ServiceNameV6, TestNameSpace)
 				if err != nil {
-					if errors.IsNotFound(err) {
+					if api_errors.IsNotFound(err) {
 						ginkgo.GinkgoWriter.Printf("task runtime service v6 %s deleted \n", *runtimeResource.ServiceNameV6)
 						serviceV6Deleted = true
 						break
@@ -899,7 +900,7 @@ func CheckRuntimeDeadLine(f *frame.Framework, taskName, taskKind string, timeout
 
 func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingress bool) error {
 	if resource == nil {
-		return fmt.Errorf("runtime resource is nil")
+		return errors.New("runtime resource is nil")
 	}
 
 	c := time.After(time.Minute)
@@ -909,19 +910,19 @@ func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingr
 
 	case kdoctor_types.KindDaemonSet:
 		_, err := f.GetDaemonSet(resource.RuntimeName, TestNameSpace)
-		if !errors.IsNotFound(err) {
+		if !api_errors.IsNotFound(err) {
 			return fmt.Errorf("after 1 min runtime daemonset %s not delete", resource.RuntimeName)
 		}
 	case kdoctor_types.KindDeployment:
 		_, err := f.GetDeployment(resource.RuntimeName, TestNameSpace)
-		if !errors.IsNotFound(err) {
+		if !api_errors.IsNotFound(err) {
 			return fmt.Errorf("after 1 min runtime deployment %s not delete", resource.RuntimeName)
 		}
 	}
 
 	if resource.ServiceNameV4 != nil {
 		_, err := f.GetService(*resource.ServiceNameV4, TestNameSpace)
-		if !errors.IsNotFound(err) {
+		if !api_errors.IsNotFound(err) {
 			return fmt.Errorf("after 1 min runtime service %s not delete", *resource.ServiceNameV4)
 		}
 
@@ -935,7 +936,7 @@ func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingr
 			}
 			key := client.ObjectKeyFromObject(fake)
 			err := f.GetResource(key, ig)
-			if !errors.IsNotFound(err) {
+			if !api_errors.IsNotFound(err) {
 				return fmt.Errorf("after 1 min runtime ingress %s not delete", *resource.ServiceNameV4)
 			}
 		}
@@ -943,7 +944,7 @@ func GetRuntimeResource(f *frame.Framework, resource *v1beta1.TaskResource, ingr
 
 	if resource.ServiceNameV6 != nil {
 		_, err := f.GetService(*resource.ServiceNameV6, TestNameSpace)
-		if !errors.IsNotFound(err) {
+		if !api_errors.IsNotFound(err) {
 			return fmt.Errorf("after 1 min runtime service %s not delete", *resource.ServiceNameV6)
 		}
 	}
