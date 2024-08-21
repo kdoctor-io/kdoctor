@@ -4,7 +4,7 @@
 package pluginManager
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,7 +32,7 @@ func NewStatusHistoryRecord(startTime time.Time, RoundNumber int, schedulePlan *
 
 func CheckItemInList(item string, checklist []string) (bool, error) {
 	if len(item) == 0 {
-		return false, fmt.Errorf("empty item")
+		return false, errors.New("empty item")
 	}
 	if len(checklist) == 0 {
 		return false, nil

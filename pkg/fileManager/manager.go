@@ -4,12 +4,14 @@
 package fileManager
 
 import (
+	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type FileManager interface {
@@ -28,7 +30,7 @@ var _ FileManager = &fileManager{}
 
 func NewManager(logger *zap.Logger, reportDir string, cleanInterval time.Duration) (FileManager, error) {
 	if logger == nil || len(reportDir) == 0 {
-		return nil, fmt.Errorf("bad request")
+		return nil, errors.New("bad request")
 	}
 
 	// create directory if not exist
@@ -58,7 +60,7 @@ func NewManager(logger *zap.Logger, reportDir string, cleanInterval time.Duratio
 func getTaskFileEndTime(filePath string) (endTime time.Time, err error) {
 	name := path.Base(filePath)
 	if len(name) == 0 {
-		return time.Time{}, fmt.Errorf("failed to get file name")
+		return time.Time{}, errors.New("failed to get file name")
 	}
 	v := strings.Split(name, "_")
 	if len(v) < 3 {

@@ -6,7 +6,9 @@ package k8sObjManager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	appsv1 "k8s.io/api/apps/v1"
@@ -121,7 +123,7 @@ func (nm *k8sObjManager) ListDaemonsetPodMultusIPs(ctx context.Context, daemonse
 		return nil, e
 	}
 	if len(podlist) == 0 {
-		return nil, fmt.Errorf("failed to get any pods")
+		return nil, errors.New("failed to get any pods")
 	}
 	return parseMultusIP(podlist)
 }
@@ -133,7 +135,7 @@ func (nm *k8sObjManager) ListDaemonsetPodIPs(ctx context.Context, daemonsetName,
 		return nil, e
 	}
 	if len(podlist) == 0 {
-		return nil, fmt.Errorf("failed to get any pods")
+		return nil, errors.New("failed to get any pods")
 	}
 
 	result := PodIps{}

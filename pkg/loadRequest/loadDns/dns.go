@@ -24,10 +24,11 @@ package loadDns
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
 	"github.com/miekg/dns"
 	"go.uber.org/zap"
-	"time"
 )
 
 type RequestProtocol string

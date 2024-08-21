@@ -5,11 +5,13 @@ package netdns
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	"net"
 	"strconv"
 	"sync"
+
+	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 
 	"github.com/miekg/dns"
 	"go.uber.org/zap"
@@ -89,7 +91,7 @@ func (s *PluginNetDns) AgentExecuteTask(logger *zap.Logger, ctx context.Context,
 	if !ok {
 		msg := "failed to get instance"
 		logger.Error(msg)
-		err = fmt.Errorf(msg)
+		err = errors.New(msg)
 		return
 	}
 

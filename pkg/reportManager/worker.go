@@ -6,16 +6,17 @@ package reportManager
 import (
 	"context"
 	"fmt"
+	"net"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/kdoctor-io/kdoctor/pkg/grpcManager"
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	"github.com/kdoctor-io/kdoctor/pkg/scheduler"
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"github.com/kdoctor-io/kdoctor/pkg/utils"
 	"go.uber.org/zap"
-	"net"
-	"path"
-	"strings"
-	"time"
 )
 
 func GetMissRemoteReport(remoteFileList []string, localFileList []string) []string {
@@ -116,10 +117,10 @@ func (s *reportManager) runControllerAggregateReportOnce(ctx context.Context, lo
 		podIP, err = k8sObjManager.GetK8sObjManager().ListDeploymentPodIPs(context.Background(), task.RuntimeName, types.ControllerConfig.PodNamespace)
 	}
 	if err != nil {
-		m := fmt.Sprintf("failed to get kind %s name %s agent ip, error=%v", task.RuntimeKind, task.RuntimeName, err)
-		logger.Error(m)
+		errMsg := fmt.Errorf("failed to get kind %s name %s agent ip, error=%v", task.RuntimeKind, task.RuntimeName, err)
+		logger.Error(errMsg.Error())
 		// retry
-		return fmt.Errorf(m)
+		return errMsg
 	}
 	logger.Sugar().Debugf("podIP : %v", podIP)
 

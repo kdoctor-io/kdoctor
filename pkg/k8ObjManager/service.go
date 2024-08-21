@@ -5,12 +5,14 @@ package k8sObjManager
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
+
 	"github.com/kdoctor-io/kdoctor/pkg/types"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"net"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -54,7 +56,7 @@ func (nm *k8sObjManager) GetServiceAccessUrl(ctx context.Context, name, namespac
 			return nil, fmt.Errorf("variable portName is empty, but service has multiple ports: %v", s.Spec.Ports)
 		}
 		if t == 0 {
-			return nil, fmt.Errorf("service has empty ports ")
+			return nil, errors.New("service has empty ports ")
 		}
 		portIndex = 0
 	} else {

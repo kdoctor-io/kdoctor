@@ -5,9 +5,10 @@ package pluginManager
 
 import (
 	"context"
-	"github.com/kdoctor-io/kdoctor/pkg/types"
 	"reflect"
 	"time"
+
+	"github.com/kdoctor-io/kdoctor/pkg/types"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -37,7 +38,7 @@ type pluginControllerReconciler struct {
 
 // controller reconcile
 // (1) schedule all task time
-// (2) update stauts result
+// (2) update status result
 // (3) collect report from agent
 func (s *pluginControllerReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 

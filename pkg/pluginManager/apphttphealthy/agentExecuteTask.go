@@ -9,6 +9,8 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	k8sObjManager "github.com/kdoctor-io/kdoctor/pkg/k8ObjManager"
 	crd "github.com/kdoctor-io/kdoctor/pkg/k8s/apis/kdoctor.io/v1beta1"
 	"github.com/kdoctor-io/kdoctor/pkg/k8s/apis/system/v1beta1"
@@ -19,7 +21,6 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
-	"strings"
 )
 
 func ParseSuccessCondition(successCondition *crd.NetSuccessCondition, metricResult *v1beta1.HttpMetrics) (failureReason string) {
@@ -82,7 +83,7 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	if !ok {
 		msg := "failed to get instance"
 		logger.Error(msg)
-		err = fmt.Errorf(msg)
+		err = fmt.Errorf("error: %v", msg)
 		return finalfailureReason, task, err
 	}
 
@@ -111,9 +112,8 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 
 		tlsData, err := k8sObjManager.GetK8sObjManager().GetSecret(context.Background(), *target.TlsSecretName, *target.TlsSecretNamespace)
 		if err != nil {
-			msg := fmt.Sprintf("failed get [%s/%s] secret err : %v", *target.TlsSecretNamespace, *target.TlsSecretName, err)
-			logger.Sugar().Errorf(msg)
-			err = fmt.Errorf(msg)
+			err = fmt.Errorf("failed get [%s/%s] secret err : %v", *target.TlsSecretNamespace, *target.TlsSecretName, err)
+			logger.Sugar().Errorf(err.Error())
 			return finalfailureReason, task, err
 		}
 		ca, caOk := tlsData.Data["ca.crt"]
@@ -127,9 +127,8 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 		if crtOk && keyOk {
 			cert, err := tls.X509KeyPair(crt, key)
 			if err != nil {
-				msg := fmt.Sprintf("failed to load certificate and key: %v", err)
-				logger.Sugar().Errorf(msg)
-				err = fmt.Errorf(msg)
+				err := fmt.Errorf("failed to load certificate and key: %v", err)
+				logger.Sugar().Errorf(err.Error())
 				return finalfailureReason, task, err
 			}
 			d.ClientCert = cert
@@ -141,17 +140,15 @@ func (s *PluginAppHttpHealthy) AgentExecuteTask(logger *zap.Logger, ctx context.
 	if target.BodyConfigName != nil {
 		bodyCM, err := k8sObjManager.GetK8sObjManager().GetConfigMap(context.Background(), *target.BodyConfigName, *target.BodyConfigNamespace)
 		if err != nil {
-			msg := fmt.Sprintf("failed get [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
-			logger.Sugar().Errorf(msg)
-			err = fmt.Errorf(msg)
-			return finalfailureReason, task, err
+			errMsg := fmt.Errorf("failed get [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
+			logger.Sugar().Errorf(errMsg.Error())
+			return finalfailureReason, task, errMsg
 		}
 		body, err := json.Marshal(bodyCM.Data)
 		if err != nil {
-			msg := fmt.Sprintf("failed get body from [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
-			logger.Sugar().Errorf(msg)
-			err = fmt.Errorf(msg)
-			return finalfailureReason, task, err
+			errMsg := fmt.Errorf("failed get body from [%s/%s] configmap err : %v", *target.BodyConfigNamespace, *target.BodyConfigName, err)
+			logger.Sugar().Errorf(errMsg.Error())
+			return finalfailureReason, task, errMsg
 		}
 		d.Body = body
 	}

@@ -5,11 +5,13 @@ package netreach
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/kdoctor-io/kdoctor/pkg/resource"
 	"github.com/kdoctor-io/kdoctor/pkg/runningTask"
 	networkingv1 "k8s.io/api/networking/v1"
-	"sync"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -85,7 +87,7 @@ func (s *PluginNetReach) AgentExecuteTask(logger *zap.Logger, ctx context.Contex
 	if !ok {
 		msg := "failed to get instance"
 		logger.Error(msg)
-		err = fmt.Errorf(msg)
+		err = errors.New(msg)
 		return
 	}
 
