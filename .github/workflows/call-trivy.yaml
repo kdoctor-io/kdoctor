@@ -9,6 +9,10 @@ on:
         required: true
         type: string
 
+env:
+  kdoctor_agent_image: image-tar-kdoctor-agent/kdoctor-agent.tar
+  kdoctor_controller_image: image-tar-kdoctor-controller/kdoctor-controller.tar
+
 jobs:
   e2e_against_commit:
     runs-on: ubuntu-latest
@@ -26,32 +30,23 @@ jobs:
         with:
           path: output/artifact-trivy
 
-      - name: Load And Scan Images
-        run: |
-          PROJECT_DIR=`pwd`
-          cd output/artifact-trivy
-          ls
-          ALL_DIR=`ls`
-          IMAGE_DIR=""
-          for ITEM in $ALL_DIR ; do
-              grep -E "^image-tar" <<< "${ITEM}" &>/dev/null && IMAGE_DIR+=" ${ITEM} "
-          done
-          echo "IMAGE_DIR=${IMAGE_DIR}"
-          RESULT=true
-          for ITEM in $IMAGE_DIR ; do
-              TAR_FILES=`ls ${ITEM}`
-              for TAR in $TAR_FILES ; do
-                echo "image tar ${ITEM}/${TAR}"
-                cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ inputs.ref }}
-                echo "---------trivy checkout image ${TAR%*.tar}:${{ inputs.ref }} --------------------"
-                make -C ${PROJECT_DIR} lint_image_trivy -e IMAGE_NAME=${TAR%*.tar}:${{ inputs.ref }} \
-                    || { RESULT=false ; echo "error, image ${TAR%*.tar}:${{ inputs.ref }} is bad" ; }
-              done
-          done
-          docker images
-          if [ "$RESULT" != "true" ]; then
-              echo "error, image is not secure, see detail on Step 'Load And Scan Images' "
-              exit 1
-          else
-              exit 0
-          fi
+      - name: List downloaded files
+        run:  |
+          ls -al output/artifact-trivy
+
+      # https://github.com/aquasecurity/trivy-action/issues/389
+      - name: Load And Scan Kdoctor-agent Image
+        uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db
+        with:
+          input: output/artifact-trivy/${{ env.kdoctor_agent_image }}
+          severity: 'CRITICAL,HIGH'
+
+      - name: Load And Scan Kdoctor-controller Images
+        uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db
+        with:
+          input: output/artifact-trivy/${{ env.kdoctor_controller_image }}
+          severity: 'CRITICAL,HIGH'

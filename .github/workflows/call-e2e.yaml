@@ -101,7 +101,9 @@ jobs:
               ls -l ${ITEM}
               for TAR in $TAR_FILES ; do
                 echo "image tar ${ITEM}/${TAR}"
-                cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ inputs.ref }}
+                docker load -i ${ITEM}/${TAR}
+                ITEM_IMAGE_ID=$(docker images | grep ${TAR%*.tar} | grep ${{ inputs.ref }} | awk '{print $3}')
+                docker tag ${ITEM_IMAGE_ID} ${TAR%*.tar}:${{ inputs.ref }}
               done
           done
           docker images

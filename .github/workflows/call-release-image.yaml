@@ -135,7 +135,7 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           github-token: ${{ secrets.WELAN_PAT }}
-          outputs: type=tar,dest=/tmp/${{ env.RUN_IMAGE_SUFFIX }}.tar
+          outputs: type=docker,dest=/tmp/${{ env.RUN_IMAGE_SUFFIX }}.tar
           platforms: linux/amd64
           tags: |
             ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}
