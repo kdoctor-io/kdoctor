@@ -285,8 +285,8 @@ github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-# github.com/jessevdk/go-flags v1.5.0
-## explicit; go 1.15
+# github.com/jessevdk/go-flags v1.6.1
+## explicit; go 1.20
 github.com/jessevdk/go-flags
 # github.com/jonboulle/clockwork v0.3.0
 ## explicit; go 1.13
@@ -687,7 +687,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.5.0
 ## explicit; go 1.18
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.17.0
+# golang.org/x/sys v0.21.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
