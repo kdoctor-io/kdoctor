@@ -405,7 +405,7 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
-# github.com/petermattis/goid v0.0.0-20221018141743-354ef7f2fd21
+# github.com/petermattis/goid v0.0.0-20250813065127-a731cc31b4fe
 ## explicit; go 1.17
 github.com/petermattis/goid
 # github.com/pkg/errors v0.9.1
@@ -456,7 +456,7 @@ github.com/sagikazarmark/locafero
 # github.com/sagikazarmark/slog-shim v0.1.0
 ## explicit; go 1.20
 github.com/sagikazarmark/slog-shim
-# github.com/sasha-s/go-deadlock v0.3.1
+# github.com/sasha-s/go-deadlock v0.3.6
 ## explicit
 github.com/sasha-s/go-deadlock
 # github.com/shirou/gopsutil v3.21.11+incompatible
