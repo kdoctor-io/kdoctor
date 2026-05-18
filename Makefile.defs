@@ -200,14 +200,12 @@ METALLB_CHART_NAME = metallb
 
 
 E2E_ENABLE_CONTOUR = true
-CONTOUR_CHART_VERSION = 12.1.1
-CONTOUR_CHART_REPO ?= https://charts.bitnami.com/bitnami
+CONTOUR_CHART_REPO ?= https://projectcontour.github.io/helm-charts
 CONTOUR_REPO_NAME = contour
 CONTOUR_CHART_NAME = contour
 
 
 E2E_ENABLE_NGINX = false
-NGINX_CHART_VERSION = 4.7.1
 NGINX_CHART_REPO ?= https://kubernetes.github.io/ingress-nginx
 NGINX_REPO_NAME = ingress-nginx
 NGINX_CHART_NAME = ingress-nginx

@@ -34,9 +34,11 @@ func CheckItemInList(item string, checklist []string) (bool, error) {
 	if len(item) == 0 {
 		return false, errors.New("empty item")
 	}
+
 	if len(checklist) == 0 {
 		return false, nil
 	}
+
 	for _, v := range checklist {
 		if v == item {
 			return true, nil

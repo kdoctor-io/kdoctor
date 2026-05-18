@@ -26,9 +26,10 @@ jobs:
       # download all artifact
       # https://github.com/actions/download-artifact#download-all-artifacts
       - name: Download images
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: output/artifact-trivy
+          pattern: image-tar-*
 
       - name: List downloaded files
         run:  |
@@ -36,7 +37,7 @@ jobs:
 
       # https://github.com/aquasecurity/trivy-action/issues/389
       - name: Load And Scan Kdoctor-agent Image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         env:
           TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db
         with:
@@ -44,7 +45,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Load And Scan Kdoctor-controller Images
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         env:
           TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db
         with:
