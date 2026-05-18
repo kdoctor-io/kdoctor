@@ -165,4 +165,15 @@ func (s *pluginManager) RunControllerController(healthPort int, webhookPort int,
 		time.Sleep(5 * time.Second)
 	}()
 
+	// Wait until the webhook server is ready before returning, so that
+	// the webhook endpoints are actually serving before the caller proceeds.
+	checker := mgr.GetWebhookServer().StartedChecker()
+	for {
+		if err := checker(nil); err == nil {
+			logger.Sugar().Infof("webhook server is ready on port %d", webhookPort)
+			break
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+
 }
