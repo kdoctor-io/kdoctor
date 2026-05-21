@@ -9,6 +9,14 @@ if [ -n "$http_proxy" ]; then
   DOWNLOAD_OPT=" -x $http_proxy "
 fi
 
+# Install jq if not present
+if ! jq --version &>/dev/null; then
+    echo "error, miss 'jq', try to install it"
+    curl ${DOWNLOAD_OPT} -Lo /usr/local/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
+    chmod +x /usr/local/bin/jq
+    ! jq --version &>/dev/null && echo "error, failed to install jq" && exit 1
+fi
+
 
 
 if ! kubectl help &>/dev/null  ; then
@@ -26,7 +34,7 @@ fi
 # Install Kind Bin
 if ! kind &> /dev/null ; then
     echo "error, miss 'kind', try to install it "
-    LATEST_VERSION=` curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest |  grep -Po '"tag_name": "\K.*?(?=")' `
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq -r '.tag_name')
     if [ -z "$LATEST_VERSION" ] ; then
         echo "error, failed to get latest version for kind"
         exit 1
@@ -43,7 +51,7 @@ fi
 # Install Helm
 if ! helm > /dev/null 2>&1 ; then
     echo "error, miss 'helm', try to install it "
-    LATEST_VERSION=` curl -s https://api.github.com/repos/helm/helm/releases/latest |  grep -Po '"tag_name": "\K.*?(?=")' `
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r '.tag_name')
     if [ -z "$LATEST_VERSION" ] ; then
         echo "error, failed to get latest version for helm"
         exit 1

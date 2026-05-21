@@ -126,6 +126,8 @@ jobs:
             GIT_COMMIT_TIME=${{ env.RUN_COMMIT_TIME }}
             VERSION=${{ env.RUN_REF }}
             RACE=${{ inputs.race }}
+          provenance: false
+          sbom: false
 
       - name: Build Image ${{ matrix.name }} and output docker
         uses: docker/build-push-action@v7.1.0
@@ -139,6 +141,8 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}
+          provenance: false
+          sbom: false
           build-args: |
             GIT_COMMIT_VERSION=${{ env.RUN_COMMIT_VER }}
             GIT_COMMIT_TIME=${{ env.RUN_COMMIT_TIME }}

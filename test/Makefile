@@ -427,8 +427,8 @@ install_contour:
 	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
 		helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
 		helm repo update $(CONTOUR_REPO_NAME) ; \
-		HELM_OPTIONS=" --set global.imageRegistry=docker.$(E2E_PROXY_REGISTER)io  "  ; \
-		IMAGE_LIST=` helm template --version=$(CONTOUR_CHART_VERSION)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+		HELM_OPTIONS=" "  ; \
+		IMAGE_LIST=` helm template $(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION))  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
 		else \
@@ -445,12 +445,10 @@ install_contour:
 		fi ; \
 		helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG) \
-			--version=$(CONTOUR_CHART_VERSION) --wait  --timeout 5m  $${HELM_OPTIONS} \
-			  --set envoy.kind=daemonset \
+			$(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION)) --wait  --timeout 5m  $${HELM_OPTIONS} \
 			  --set envoy.service.type=LoadBalancer \
 			  --set envoy.service.externalTrafficPolicy=Local \
 			  --set envoy.hostNetwork=false \
-			  --set envoy.dnsPolicy=ClusterFirst \
 			  --set ingress.enabled=true \
 			  --set envoy.nodeSelector."kubernetes\.io/hostname"=$(E2E_KIND_CLUSTER_NAME)-control-plane
 
@@ -483,7 +481,7 @@ install_nginx:
                        --set controller.admissionWebhooks.enabled=false \
                        --set controller.admissionWebhooks.patch.image.registry=k8s.$(E2E_PROXY_REGISTER)io \
                        --set controller.admissionWebhooks.patch.image.digest='' "; \
-		IMAGE_LIST=` helm template --version=$(NGINX_CHART_VERSION)  $(NGINX_REPO_NAME)/$(NGINX_CHART_NAME) $${HELM_OPTION} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+		IMAGE_LIST=` helm template $(if $(NGINX_CHART_VERSION),--version=$(NGINX_CHART_VERSION))  $(NGINX_REPO_NAME)/$(NGINX_CHART_NAME) $${HELM_OPTION} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
 		else \
@@ -500,7 +498,7 @@ install_nginx:
 		fi ; \
 		helm install -n kube-system $(NGINX_CHART_NAME)  $(NGINX_REPO_NAME)/$(NGINX_CHART_NAME) \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG) \
-			--version=$(NGINX_CHART_VERSION) --wait  --timeout 5m \
+			$(if $(NGINX_CHART_VERSION),--version=$(NGINX_CHART_VERSION)) --wait  --timeout 5m \
 			  --set controller.kind=DaemonSet \
 			  --set controller.nodeSelector."kubernetes\.io/hostname"=kdoctor-control-plane \
 			  --set controller.admissionWebhooks.patch.enabled=true \

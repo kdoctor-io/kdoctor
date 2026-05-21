@@ -56,6 +56,12 @@ jobs:
             VAR=${TMP##*:}
             VAR=${VAR//./_}
             echo "RUN_VAR=${VAR}" >> $GITHUB_ENV
+            # 如果 kind_node_image 不包含 '/'，则补全为 kindest/node:版本号
+            if [[ "${TMP}" != */* ]] ; then
+              echo "RUN_KIND_NODE_IMAGE=kindest/node:${TMP}" >> $GITHUB_ENV
+            else
+              echo "RUN_KIND_NODE_IMAGE=${TMP}" >> $GITHUB_ENV
+            fi
           else
             echo "RUN_VAR=latest" >> $GITHUB_ENV            
           fi
@@ -69,21 +75,22 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@v5
         with:
-          go-version: '1.20.0'
+          go-version: '1.25.0'
           id: go
 
       # https://github.com/helm/kind-action
       - name: Install Kind Bin
-        uses: helm/kind-action@v1.8.0
+        uses: helm/kind-action@v1.14.0
         with:
           install_only: true
 
       # download all artifact
       # https://github.com/actions/download-artifact#download-all-artifacts
       - name: Download images
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: output/artifact-${{ inputs.ipfamily }}
+          pattern: image-tar-*
 
       - name: Load And Scan Images
         run: |
@@ -120,7 +127,7 @@ jobs:
                 -e PROJECT_IMAGE_VERSION=${{ inputs.ref }} \
                 -e E2E_IP_FAMILY=${{ inputs.ipfamily }} \
                 -e PYROSCOPE_LOCAL_PORT='' \
-                -e E2E_KIND_NODE_IMAGE=${{ inputs.kind_node_image }}
+                -e E2E_KIND_NODE_IMAGE=${{ env.RUN_KIND_NODE_IMAGE }}
 
       - name: Run e2e Test
         continue-on-error: true
