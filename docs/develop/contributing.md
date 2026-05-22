@@ -13,7 +13,7 @@ run the following command to check unitest
 1. check required developing tools on you local host. If something missing, please run 'test/scripts/install-tools.sh' to install them
 
         # make -C test  checkBin
-         pass   'kubectl' installed:   GitVersion:"v1.24.4"
+         pass   'kubectl' installed:   GitVersion:"v1.35.0"
          pass   'kind' installed:  kind version 0.19.0
          pass   'helm' installed:  Version:"v3.12.0"
          pass   'docker' installed:  Docker version 24.0.6, build ed223bc

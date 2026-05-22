@@ -427,7 +427,7 @@ install_contour:
 	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
 		helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
 		helm repo update $(CONTOUR_REPO_NAME) ; \
-		HELM_OPTIONS=" "  ; \
+		HELM_OPTIONS="$(CONTOUR_HELM_OPTIONS)"  ; \
 		IMAGE_LIST=` helm template $(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION))  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \

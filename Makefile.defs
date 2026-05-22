@@ -10,6 +10,7 @@ GIT_REPO ?= kdoctor-io/kdoctor
 
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
+export PS1 ?=
 
 ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 RELATIVE_DIR := $(shell echo $(realpath .) | sed "s;$(ROOT_DIR)[/]*;;")
@@ -168,7 +169,7 @@ E2E_KIND_KUBECONFIG_PATH := $(E2E_RUNTIME_DIR)/kubeconfig_$(E2E_KIND_CLUSTER_NAM
 E2E_LOG_FILE ?= $(E2E_RUNTIME_DIR)/e2edebugLog.txt
 E2E_GINKGO_REPORT_FILE ?= $(E2E_RUNTIME_DIR)/ginkgoreport.json
 E2E_MULTUS_CNI_CONFIG_DIR ?= $(E2E_RUNTIME_DIR)/multus
-E2E_KIND_NODE_IMAGE ?=
+E2E_KIND_NODE_IMAGE ?= kindest/node:v1.35.0
 
 E2E_INSTALL_NAMESPACE ?= kdoctor
 
@@ -203,6 +204,8 @@ E2E_ENABLE_CONTOUR = true
 CONTOUR_CHART_REPO ?= https://projectcontour.github.io/helm-charts
 CONTOUR_REPO_NAME = contour
 CONTOUR_CHART_NAME = contour
+CONTOUR_CHART_VERSION ?= 0.5.0
+CONTOUR_HELM_OPTIONS ?= --set contour.manageCRDs=false
 
 
 E2E_ENABLE_NGINX = false

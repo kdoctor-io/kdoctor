@@ -24,6 +24,8 @@ on:
 jobs:
   cherry_pick:
     runs-on: ubuntu-latest
+    env:
+      HAS_GPG_SECRET: ${{ secrets.GPG_PRIVATE_KEY != '' && secrets.GPG_PASSPHRASE != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,6 +33,7 @@ jobs:
           fetch-depth: 0
 
       - uses: crazy-max/ghaction-import-gpg@v5
+        if: ${{ env.HAS_GPG_SECRET == 'true' }}
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}

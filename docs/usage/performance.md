@@ -3,7 +3,7 @@
 
 ## Environment
 
-- Kubenetes: `v1.28.2`
+- Kubenetes: `v1.35.0`
 - Container runtime: `containerd 1.6.25`
 - OS: `Ubuntu 23.04`
 - Kernel: `6.2.0-36-generic.x86_64`

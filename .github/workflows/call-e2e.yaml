@@ -63,7 +63,8 @@ jobs:
               echo "RUN_KIND_NODE_IMAGE=${TMP}" >> $GITHUB_ENV
             fi
           else
-            echo "RUN_VAR=latest" >> $GITHUB_ENV            
+            echo "RUN_VAR=v1_35_0" >> $GITHUB_ENV
+            echo "RUN_KIND_NODE_IMAGE=kindest/node:v1.35.0" >> $GITHUB_ENV
           fi
           
       - name: Checkout Code

@@ -50,8 +50,8 @@ You can see the following output:
 ```bash
 ~# kubectl get nodes 
 NAME                    STATUS   ROLES           AGE     VERSION
-kdoctor-control-plane   Ready    control-plane   3h50m    v1.27.1
-kdoctor-worker          Ready    <none>          3h50m   v1.27.1
+kdoctor-control-plane   Ready    control-plane   3h50m   v1.35.0
+kdoctor-worker          Ready    <none>          3h50m   v1.35.0
 
 ~# kubectl get pod -n kdoctor -owide
 NAME                                     READY   STATUS    RESTARTS   AGE     IP            NODE                    NOMINATED NODE   READINESS GATES

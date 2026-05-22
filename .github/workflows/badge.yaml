@@ -21,6 +21,8 @@ jobs:
   update-badges:
     name: Update Badges
     runs-on: ubuntu-latest
+    env:
+      WELAN_PAT: ${{ secrets.WELAN_PAT }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -40,11 +42,17 @@ jobs:
           E2E_COVER=$( ${TOOL_PATH} )
           echo "E2E_COVER=${E2E_COVER}" >> $GITHUB_ENV
 
+      - name: Validate Badge Token
+        if: ${{ (env.BADGE_CODELINE_ID != '' || env.BADGE_COMMENT_ID != '' || env.BADGE_E2ECOVER_ID != '') && env.WELAN_PAT == '' }}
+        run: |
+          echo "WELAN_PAT is required to update configured badge gists"
+          exit 1
+
       - name: Create Lines-of-Code-Badge
-        if: ${{ env.BADGE_CODELINE_ID != '' }}
+        if: ${{ env.BADGE_CODELINE_ID != '' && env.WELAN_PAT != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
-          auth: ${{ secrets.WELAN_PAT }}
+          auth: ${{ env.WELAN_PAT }}
           gistID: ${{ env.BADGE_CODELINE_ID }}
           filename: ${{ env.BADGE_CODELINE_FILENAME }}
           label: Code Lines
@@ -52,11 +60,11 @@ jobs:
           color: lightgrey
 
       - name: Create Comments-Badge
-        if: ${{ env.BADGE_COMMENT_LINE != '' }}
+        if: ${{ env.BADGE_COMMENT_ID != '' && env.WELAN_PAT != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
-          auth: ${{ secrets.WELAN_PAT }}
-          gistID: ${{ env.BADGE_COMMENT_LINE }}
+          auth: ${{ env.WELAN_PAT }}
+          gistID: ${{ env.BADGE_COMMENT_ID }}
           filename: ${{ env.BADGE_COMMENT_FILENAME }}
           label: Comments
           message: ${{ env.COMMENT_PERCENTAGE }}%
@@ -65,10 +73,10 @@ jobs:
           minColorRange: 0
 
       - name: Create E2E-Badge
-        if: ${{ env.BADGE_E2ECOVER_ID != '' }}
+        if: ${{ env.BADGE_E2ECOVER_ID != '' && env.WELAN_PAT != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
-          auth: ${{ secrets.E2ECOVER_II2DAY }}
+          auth: ${{ env.WELAN_PAT }}
           gistID: ${{ env.BADGE_E2ECOVER_ID }}
           filename: ${{ env.BADGE_E2ECOVER_FILENAME }}
           label: e2e cover
