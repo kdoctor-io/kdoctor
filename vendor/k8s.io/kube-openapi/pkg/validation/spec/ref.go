@@ -16,11 +16,9 @@ package spec
 
 import (
 	"encoding/json"
-	"net/http"
-	"os"
-	"path/filepath"
-
 	"github.com/go-openapi/jsonreference"
+
+	"k8s.io/kube-openapi/pkg/internal"
 )
 
 // Refable is a struct for things that accept a $ref property
@@ -52,52 +50,6 @@ func (r *Ref) RemoteURI() string {
 	u := *r.GetURL()
 	u.Fragment = ""
 	return u.String()
-}
-
-// IsValidURI returns true when the url the ref points to can be found
-func (r *Ref) IsValidURI(basepaths ...string) bool {
-	if r.String() == "" {
-		return true
-	}
-
-	v := r.RemoteURI()
-	if v == "" {
-		return true
-	}
-
-	if r.HasFullURL {
-		rr, err := http.Get(v)
-		if err != nil {
-			return false
-		}
-
-		return rr.StatusCode/100 == 2
-	}
-
-	if !(r.HasFileScheme || r.HasFullFilePath || r.HasURLPathOnly) {
-		return false
-	}
-
-	// check for local file
-	pth := v
-	if r.HasURLPathOnly {
-		base := "."
-		if len(basepaths) > 0 {
-			base = filepath.Dir(filepath.Join(basepaths...))
-		}
-		p, e := filepath.Abs(filepath.ToSlash(filepath.Join(base, pth)))
-		if e != nil {
-			return false
-		}
-		pth = p
-	}
-
-	fi, err := os.Stat(filepath.ToSlash(pth))
-	if err != nil {
-		return false
-	}
-
-	return !fi.IsDir()
 }
 
 // Inherits creates a new reference from a parent and a child
@@ -149,19 +101,5 @@ func (r *Ref) UnmarshalJSON(d []byte) error {
 }
 
 func (r *Ref) fromMap(v map[string]interface{}) error {
-	if v == nil {
-		return nil
-	}
-
-	if vv, ok := v["$ref"]; ok {
-		if str, ok := vv.(string); ok {
-			ref, err := jsonreference.New(str)
-			if err != nil {
-				return err
-			}
-			*r = Ref{Ref: ref}
-		}
-	}
-
-	return nil
+	return internal.JSONRefFromMap(&r.Ref, v)
 }
