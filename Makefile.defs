@@ -203,6 +203,11 @@ E2E_ENABLE_CONTOUR = true
 CONTOUR_CHART_REPO ?= https://projectcontour.github.io/helm-charts
 CONTOUR_REPO_NAME = contour
 CONTOUR_CHART_NAME = contour
+# the official contour chart CRDs use x-kubernetes-validations, which is not supported by k8s < 1.23,
+# so fall back to the legacy bitnami chart (images archived under docker.io/bitnamilegacy) for old k8s
+CONTOUR_LEGACY_CHART_VERSION = 12.1.1
+CONTOUR_LEGACY_CHART_REPO ?= https://charts.bitnami.com/bitnami
+CONTOUR_LEGACY_REPO_NAME = bitnami
 
 
 E2E_ENABLE_NGINX = false

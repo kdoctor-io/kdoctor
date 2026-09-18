@@ -423,12 +423,25 @@ install_contour: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 install_contour:
 	@echo "beign to install contour"
 	- helm repo remove $(CONTOUR_REPO_NAME)
+	- helm repo remove $(CONTOUR_LEGACY_REPO_NAME)
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system $(CONTOUR_CHART_NAME) || true
 	[ -z "$(E2E_HELM_HTTP_PROXY)" ] || export https_proxy=$(E2E_HELM_HTTP_PROXY) ; \
-		helm repo add $(CONTOUR_REPO_NAME) $(CONTOUR_CHART_REPO) ; \
-		helm repo update $(CONTOUR_REPO_NAME) ; \
-		HELM_OPTIONS=" "  ; \
-		IMAGE_LIST=` helm template $(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION))  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
+		K8S_MINOR=` kubectl --kubeconfig=$(KIND_KUBECONFIG) version -o json 2>/dev/null | grep '"minor"' | tail -1 | grep -oE '[0-9]+' | head -1 ` ; \
+		if [ -n "$${K8S_MINOR}" ] && [ "$${K8S_MINOR}" -lt 23 ] ; then \
+			echo "k8s server version 1.$${K8S_MINOR} < 1.23 does not support x-kubernetes-validations in official contour chart CRDs, fall back to legacy bitnami chart $(CONTOUR_LEGACY_CHART_VERSION)" ; \
+			CHART_REPO_NAME=$(CONTOUR_LEGACY_REPO_NAME) ; \
+			CHART_REPO=$(CONTOUR_LEGACY_CHART_REPO) ; \
+			CHART_VERSION_OPT="--version=$(CONTOUR_LEGACY_CHART_VERSION)" ; \
+			HELM_OPTIONS=" --set contour.image.repository=bitnamilegacy/contour --set envoy.image.repository=bitnamilegacy/envoy --set global.security.allowInsecureImages=true "  ; \
+		else \
+			CHART_REPO_NAME=$(CONTOUR_REPO_NAME) ; \
+			CHART_REPO=$(CONTOUR_CHART_REPO) ; \
+			CHART_VERSION_OPT="$(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION))" ; \
+			HELM_OPTIONS=" "  ; \
+		fi ; \
+		helm repo add $${CHART_REPO_NAME} $${CHART_REPO} ; \
+		helm repo update $${CHART_REPO_NAME} ; \
+		IMAGE_LIST=` helm template $${CHART_VERSION_OPT}  $${CHART_REPO_NAME}/$(CONTOUR_CHART_NAME) $${HELM_OPTIONS} | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 		if [ -z "$${IMAGE_LIST}" ] ; then \
 			echo "warning, failed to find image from chart template" ; \
 		else \
@@ -443,9 +456,9 @@ install_contour:
 				kind load docker-image $${IMAGE}  --name $(KIND_CLUSTER_NAME)  ; \
 			done ; \
 		fi ; \
-		helm install -n kube-system $(CONTOUR_CHART_NAME)  $(CONTOUR_REPO_NAME)/$(CONTOUR_CHART_NAME) \
+		helm install -n kube-system $(CONTOUR_CHART_NAME)  $${CHART_REPO_NAME}/$(CONTOUR_CHART_NAME) \
 			-n kube-system --kubeconfig=$(KIND_KUBECONFIG) \
-			$(if $(CONTOUR_CHART_VERSION),--version=$(CONTOUR_CHART_VERSION)) --wait  --timeout 5m  $${HELM_OPTIONS} \
+			$${CHART_VERSION_OPT} --wait  --timeout 5m  $${HELM_OPTIONS} \
 			  --set envoy.service.type=LoadBalancer \
 			  --set envoy.service.externalTrafficPolicy=Local \
 			  --set envoy.hostNetwork=false \
